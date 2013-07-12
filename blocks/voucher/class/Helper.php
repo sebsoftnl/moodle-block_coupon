@@ -1,16 +1,15 @@
 <?php
 
-/**
+/*
  * File: Helper.php
  * Encoding: UTF-8
- * @package: voucher
- *
- * @Version: 1.0.0
- * @Since 10-jul-2012
- * @Author: Menno de Ridder :: menno@sebsoft.nl
- * @Copyright menno@sebsoft.nl
+ * @package voucher
  * 
- * */
+ * @Version 1.0.0
+ * @Since 11-jul-2013
+ * @copyright Sebsoft.nl
+ * @author Menno de Ridder <menno@sebsoft.nl>
+ */
 
 /**
  * Helper class for various functionality
@@ -38,8 +37,8 @@ class voucher_Helper
         $array = array();
         //FIRST check if you are a super admin
         $array['administration'] = (has_capability('blocks/voucher:administration', $context)) ? true : false;
-        //$array['secretariat'] = (has_capability('blocks/voucher:secretariat', $context)) ? true : false;
-        //$array['student'] = (has_capability('blocks/voucher:view', $context)) ? true : false;
+        $array['inputvouchers'] = (has_capability('blocks/voucher:inputvouchers', $context)) ? true : false;
+        $array['generatevouchers'] = (has_capability('blocks/voucher:generatevouchers', $context)) ? true : false;
 
         if (!empty($name))
         {
@@ -117,7 +116,7 @@ class voucher_Helper
         }
     }
 
-    public static final function createBlockUrl($relUrl, $params)
+    public static final function createBlockUrl($relUrl, $params = array())
     {
         return new moodle_url(BLOCK_VOUCHER_WWWROOT . $relUrl, $params);
     }

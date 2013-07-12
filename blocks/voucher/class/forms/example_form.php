@@ -8,7 +8,7 @@
  * @Version 1.0.0
  * @Since 11-jul-2013
  * @copyright Sebsoft.nl
- * @author R.J. van Dongen <menno@sebsoft.nl>
+ * @author Menno de Ridder <menno@sebsoft.nl>
  */
 
 require_once $CFG->libdir.'/formslib.php';

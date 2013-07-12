@@ -1,31 +1,46 @@
 <?php
-/**
+
+/*
  * File: access.php
  * Encoding: UTF-8
- * @package: voucher
- *
- * @Version: 1.0.0
+ * @package voucher
+ * 
+ * @Version 1.0.0
  * @Since 11-jul-2013
- * @Author: Menno de Ridder :: menno@sebsoft.nl
- * @Copyright menno@sebsoft.nl
- *
- **/
+ * @copyright Sebsoft.nl
+ * @author Menno de Ridder <menno@sebsoft.nl>
+ */
+
 defined('MOODLE_INTERNAL') || die;
 
 $capabilities = array(
     'blocks/voucher:administration' => array(
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_MODULE,
+        'captype' => 'view',
+        'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
             'manager' => CAP_ALLOW
         )
     ),
-    'blocks/voucher:use_voucher' => array(
+    'blocks/voucher:generatevouchers' => array(
         'captype' => 'view',
-        'contextlevel' => CONTEXT_MODULE,
+        'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
-            'guest' => CAP_PREVENT,
+            'manager' => CAP_ALLOW,
+        )
+    ),
+    'blocks/voucher:inputvouchers' => array(
+        'captype' => 'view',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
             'student' => CAP_ALLOW
         )
+    ),
+    'block/voucher:addinstance' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        ),
     )
+
 );

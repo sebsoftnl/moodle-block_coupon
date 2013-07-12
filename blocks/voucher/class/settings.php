@@ -1,15 +1,16 @@
 <?php
-/**
+
+/*
  * File: settings.php
  * Encoding: UTF-8
- * @package: voucher
- *
- * @Version: 1.0.0
+ * @package voucher
+ * 
+ * @Version 1.0.0
  * @Since 11-jul-2013
- * @Author: Menno de Ridder :: menno@sebsoft.nl
- * @Copyright menno@sebsoft.nl
- *
- **/
+ * @copyright Sebsoft.nl
+ * @author Menno de Ridder <menno@sebsoft.nl>
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
 define('BLOCK_VOUCHER', 'block_voucher');

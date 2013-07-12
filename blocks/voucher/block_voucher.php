@@ -1,16 +1,16 @@
 <?php
 
-/**
+/*
  * File: block_voucher.php
  * Encoding: UTF-8
- * @package: voucher
- *
- * @Version: 1.0.0
+ * @package voucher
+ * 
+ * @Version 1.0.0
  * @Since 11-jul-2013
- * @Author: Menno de Ridder :: menno@sebsoft.nl
- * @Copyright menno@sebsoft.nl
- *
- * */
+ * @copyright Sebsoft.nl
+ * @author Menno de Ridder <menno@sebsoft.nl>
+ */
+
 defined('MOODLE_INTERNAL') || die();
 require_once 'class/settings.php';
 
@@ -46,19 +46,21 @@ class block_voucher extends block_base
         $arrParam['id'] = $this->instance->id;
         $arrParam['courseid'] = $this->course->id;
 
-        if ($permissions['administration'])
+        if ($permissions['generatevouchers'])
         {
-            $this->content->text .= html_writer::start_tag('div');
-            $this->content->text .= html_writer::tag('div', get_string('heading:administration', BLOCK_VOUCHER));
-            $this->content->text .= html_writer::end_tag('div');
-
-			// add code here
-        }
-        elseif ($permissions['use_voucher'])
-        {
-            $this->content->text .= html_writer::start_tag('div');
-            $this->content->text .= html_writer::tag('div', get_string('heading:use_voucher', BLOCK_VOUCHER));
-            $this->content->text .= html_writer::start_tag('div');
+            
+            $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/generate_voucher.php', array('id' => $this->instance->id));
+            $this->content->footer = html_writer::link($url, get_string('url:generate_vouchers', BLOCK_VOUCHER));
+            
+//            $this->content->text .= "<div>" . get_string('heading:generatevouchers', BLOCK_VOUCHER) . "</div>";
+//            $this->content->text .= "<a href='" . BLOCK_VOUCHER_WWWROOT . "view/generate_voucher.php'>" . get_string('url:generate_vouchers', BLOCK_VOUCHER) . "</a>";
+            
+        } elseif ($permissions['inputvouchers']) {
+            
+            /*TODO:
+             * create input field & button
+             */
+            
         }
     }
 
