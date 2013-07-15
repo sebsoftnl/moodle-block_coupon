@@ -24,6 +24,43 @@ class voucher_Helper
     {
         // static's only please!
     }
+    
+    
+    /**
+     * Collect all courses connected to the provided cohort ID
+     * 
+     * Return false if no courses are connected or an array of course records
+     */
+    final static public function get_courses_by_cohort($cohort_id) {
+        global $CFG, $DB;
+        
+        $sql_connected_courses = "
+            SELECT * FROM {$CFG->prefix}enrol e
+            LEFT JOIN {$CFG->prefix}course c
+                ON e.courseid = c.id
+            WHERE customint1 = {$cohort_id}
+            AND e.enrol = 'cohort'";
+        $connected_courses = $DB->get_records_sql($sql_connected_courses);
+
+        return (count($connected_courses) > 0) ? $connected_courses : false;
+    }
+    
+    /**
+     * Collect all cohort records based on an array of ids
+     * 
+     * returns false if no records are found or an array of cohort records
+     */
+    final static public function get_cohorts_by_id($cohort_ids) {
+        global $CFG, $DB;
+        
+        // Collect cohort records
+        $sql_cohorts = "
+            SELECT * FROM {$CFG->prefix}cohort
+            WHERE id IN (" . join($cohort_ids, ',') . ")";
+        $cohorts = $DB->get_records_sql($sql_cohorts);
+        
+        return (count($cohorts) > 0) ? $cohorts : false;
+    }
 
     /**
      * Check if we have permission for this

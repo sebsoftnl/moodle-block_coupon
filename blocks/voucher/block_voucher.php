@@ -27,6 +27,8 @@ class block_voucher extends block_base
 
     function get_content()
     {
+        global $CFG;
+        
         if ($this->content !== NULL)
         {
             return $this->content;
@@ -46,22 +48,32 @@ class block_voucher extends block_base
         $arrParam['id'] = $this->instance->id;
         $arrParam['courseid'] = $this->course->id;
 
+        exit("<pre>" . print_r($permissions, true) . "</pre>");
         if ($permissions['generatevouchers'])
         {
             
             $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/generate_voucher.php', array('id' => $this->instance->id));
             $this->content->footer = html_writer::link($url, get_string('url:generate_vouchers', BLOCK_VOUCHER));
             
-//            $this->content->text .= "<div>" . get_string('heading:generatevouchers', BLOCK_VOUCHER) . "</div>";
-//            $this->content->text .= "<a href='" . BLOCK_VOUCHER_WWWROOT . "view/generate_voucher.php'>" . get_string('url:generate_vouchers', BLOCK_VOUCHER) . "</a>";
-            
-        } elseif ($permissions['inputvouchers']) {
-            
-            /*TODO:
-             * create input field & button
-             */
-            
-        }
+        }// elseif ($permissions['inputvouchers']) {
+
+            $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/input_voucher.php', array('id' => $this->instance->id));
+            $this->content->footer = html_writer::link($url, get_string('url:input_voucher', BLOCK_VOUCHER));
+
+//            require_once BLOCK_VOUCHER_CLASSROOT.'forms/input_voucher_form.php';
+//            $mform = new input_voucher_form($url);
+//            
+//            // If the form is submitted
+//            if ($data = $mform->get_data()) {
+//                
+//                exit("<pre>" . print_r($data, true) . "</pre>");
+//                
+//            } else {
+//                $this->content->footer .= $mform->_form->toHtml();
+//                
+//            }
+
+        //}
     }
 
     function applicable_formats()

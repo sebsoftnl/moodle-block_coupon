@@ -28,42 +28,62 @@ class generate_voucher_groups_form extends moodleform
      */
     function definition()
     {
-        global $CFG, $DB, $USER;
+        global $CFG, $DB, $SESSION;
 
         $mform = & $this->_form;
 
-        // First we'll get some useful info
-        foreach($SESSION->voucher->cohorts as $cohortid) {
-            
-            $cohort = $DB->get_record('cohort', array('id'=>$cohortid));
-        
-            $mform->addElement('static', 'cohort', '', $cohort->name);
-            
-            $sql_cohort_courses = "
-                SELECT * FROM {$CFG->prefix}course c
-                LEFT JOIN {$CFG->prefix}enrol e
-                    ON e.courseid = c.id
-                WHERE e.enrol = 'cohort'
-                AND e.customint1 = $cohortid";
-            $cohort_courses = $DB->get_records_sql($sql_cohort_courses);
-            
-            $arr_cohort_courses = array();
-            foreach($cohort_courses as $cohort_course) $arr_cohort_courses[$cohort_course->id] = $cohort_course->fullname;
-            
-            
-//            $type_options[] =& $mform->createElement('static', 'type', '', '');
-//            $type_options[] =& $mform->createElement('radio', 'type', '', get_string('label:type_cohorts', BLOCK_VOUCHER), 1);
-//            $mform->addGroup($type_options, 'voucher_type', get_string('label:voucher_type', BLOCK_VOUCHER), array(' '));
+        // Collect cohort records
+        $cohorts = voucher_Helper::get_cohorts_by_id($SESSION->voucher->cohorts);
 
+        // Now we'll show the cohorts one by one
+        foreach($cohorts as $cohort) {
+
+            // cohort name
+            $mform->addElement('static', 'cohort_name', get_string('label:cohort', BLOCK_VOUCHER), $cohort->name);
+            
+            // Collect courses connected to cohort
+            $cohort_courses = voucher_Helper::get_courses_by_cohort($cohort->id);
+            
+            // if we have connected courses we'll display them
+            if ($cohort_courses) {
+                
+                $mform->addElement('static', 'connected_courses', get_string('label:connected_courses', BLOCK_VOUCHER), '');
+                
+                foreach($cohort_courses as $course) {
+                    $mform->addElement('static', 'connected_courses[' . $cohort->id . '][]', '', $course->fullname);
+                }
+                
+            } else {
+                $mform->addElement('static', 'connected_courses[' . $cohort->id . '][]', get_string('label:connected_courses', BLOCK_VOUCHER), get_string('label:no_courses_connected', BLOCK_VOUCHER));
+            }
+            
+            // Collect not connected courses
+            $sql_not_connected_courses = "
+                SELECT * FROM {$CFG->prefix}course c
+                WHERE c.id NOT IN (
+                    SELECT courseid FROM {$CFG->prefix}enrol e
+                    WHERE e.customint1 = {$cohort->id}
+                    AND e.enrol = 'cohort'
+                )";
+            $not_connected_courses = $DB->get_records_sql($sql_not_connected_courses);
+            
+            // If we have not connected courses we'll display them
+            if (count($not_connected_courses) > 0) {
+                
+                $arr_not_connected_courses = array();
+                foreach($not_connected_courses as $not_connected_course) {
+                    $arr_not_connected_courses[$not_connected_course->id] = $not_connected_course->fullname;
+                }
+
+                $select_cohort_courses = &$mform->addElement('checkbox', 'connect_courses[' . $cohort->id . '][]', get_string('label:voucher_connect_course', BLOCK_VOUCHER), $arr_not_connected_courses);
+                $select_cohort_courses->setMultiple(true);
+                
+            }
+            
+            // That's the end of the loop
         }
         
-        $arr_groups_select = array();
-        foreach($groups as $group) $arr_groups_select[$group->id] = $group->name;
-        
-        $select_groups = &$mform->addElement('select', 'voucher_groups', get_string('label:voucher_cohorts', BLOCK_VOUCHER), $arr_groups_select);
-        $select_groups->setMultiple(true);
-        
-//        $mform->createElement('submit', 'submitbutton', get_string('savechanges'));
+        // action buttons
         $this->add_action_buttons(true, get_string('button:next', BLOCK_VOUCHER));
         
     }

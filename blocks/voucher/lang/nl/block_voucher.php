@@ -35,6 +35,7 @@ $string['error:invalid_email'] = 'Dit e-mail adres is ongeldig.';
 
 // URL texts
 $string['url:generate_vouchers'] = 'Genereer Voucher';
+$string['url:input_voucher'] = 'Voucher invoeren';
 
 // Form Labels
 $string['label:voucher_type'] = 'Genereer gebaseerd op';
@@ -42,6 +43,23 @@ $string['label:voucher_email'] = 'E-mail adres';
 $string['label:voucher_amount'] = 'Aantal vouchers';
 $string['label:type_course'] = 'Cursus';
 $string['label:type_cohorts'] = 'Cohort(s)';
+
+$string['label:voucher_connect_course'] = 'Cursus(sen) toevoegen';
+$string['label:connected_courses'] = 'Toegevoegde cursus(sen)';
+$string['label:no_courses_connected'] = 'Er zijn nog geen cursussen toegevoegd aan deze cohort.';
+
+$string['label:add_groups'] = 'Groep(en) toevoegen';
+$string['label:no_groups_selected'] = 'Er zijn nog geen groepen aan deze cursus toegevoegd.';
+
+$string['label:generate_pdfs'] = 'Genereer losse PDF\'s';
+
+$string['label:cohort'] = 'Cohort';
+$string['label:voucher_code'] = 'Voucher Code';
+
+// Labels for already selected stuffz
+$string['label:selected_groups'] = 'Geselecteerde groep(en)';
+$string['label:selected_course'] = 'Geselecteerde cursus';
+$string['label:selected_cohort'] = 'Geselecteerde cohort(en)';
 
 // help texts
 $string['label:voucher_type_help'] = 'De vouchers worden gebaseerd op een cursus of een of meer cohorts.';
@@ -51,6 +69,8 @@ $string['label:voucher_amount_help'] = 'Het aantal vouchers dat gegenereerd zal 
 
 // buttons
 $string['button:next'] = 'Volgende';
+$string['button:save'] = 'Genereer Vouchers';
+$string['button:submit_voucher_code'] = 'Invoeren';
 
 // view strings
 $string['view:generate_voucher:title'] = 'Genereer Voucher';

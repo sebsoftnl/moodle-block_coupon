@@ -74,26 +74,19 @@ if (voucher_Helper::getPermission('generatevouchers'))
     }
     elseif ($data = $mform->get_data())
     {
-
-        // Save param, its only about course or cohorts
-        $SESSION->voucher->{$SESSION->voucher->type} = $data->{$SESSION->voucher->type};
         
-        if ($data->voucher_type == 'course') {
-            $SESSION->course = $data->course;
+        if ($SESSION->voucher->type == 'course') {
+            $SESSION->voucher->course = $data->voucher_course;
             
-            $groups = $DB->get_records("groups", array('courseid'=>$data->course));
-            if (count($groups) > 0) {
-                $next_page = 'generate_voucher_step_three';
-            } else {
-                $next_page = 'generate_voucher_step_four';
-            }
+            $course_groups = $DB->get_records("groups", array('courseid'=>$data->voucher_course));
+            $next_page = (count($course_groups) > 0) ? 'generate_voucher_step_three' : $next_page = 'generate_voucher_step_four';
             
         } else {
-            $SESSION->cohorts = $data->cohorts;
+            $SESSION->voucher->cohorts = $data->voucher_cohorts;
             $next_page = 'generate_voucher_step_three';
         }
-        
-        redirect(voucher_Helper::createBlockUrl(BLOCK_VOUCHER_WWWROOT . 'view/' . $next_page . '.php', $data));
+
+        redirect(voucher_Helper::createBlockUrl('view/' . $next_page . '.php', array('id'=>$id)));
     }
     else
     {

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * File: generate_voucher_step_three.php
+ * File: generate_voucher_step_four.php
  * Encoding: UTF-8
  * @package voucher
  * 
@@ -41,7 +41,7 @@ if ($id)    //DEFAULT CHECKS
 // Make sure the voucher object is set in cache
 if (!isset($SESSION->voucher)) print_error(get_string('error:nopermission', BLOCK_VOUCHER));
 
-$url = new moodle_url('/blocks/voucher/view/generate_voucher_step_three.php', array('id' => $id));
+$url = new moodle_url('/blocks/voucher/view/generate_voucher_step_four.php', array('id' => $id));
 $PAGE->set_url($url);
 
 $PAGE->set_title(get_string('view:generate_voucher:title', BLOCK_VOUCHER));
@@ -58,13 +58,13 @@ if (voucher_Helper::getPermission('generatevouchers'))
     // Depending on our data we'll get the right form
     if ($SESSION->voucher->type == 'course') {
         
-        require_once BLOCK_VOUCHER_CLASSROOT.'forms/generate_voucher_groups_form.php';
-        $mform = new generate_voucher_groups_form($url);
+        require_once BLOCK_VOUCHER_CLASSROOT.'forms/generate_confirm_course_form.php';
+        $mform = new generate_confirm_course_form($url);
 
     } else {
 
-        require_once BLOCK_VOUCHER_CLASSROOT.'forms/generate_voucher_cohortcourses_form.php';
-        $mform = new generate_voucher_groups_form($url);
+        require_once BLOCK_VOUCHER_CLASSROOT.'forms/generate_confirm_cohorts_form.php';
+        $mform = new generate_confirm_cohorts_form($url);
         
     }
     
@@ -75,21 +75,13 @@ if (voucher_Helper::getPermission('generatevouchers'))
     elseif ($data = $mform->get_data())
     {
 
-        // Save param, its only about course or cohorts
-//        $SESSION->voucher->{$SESSION->voucher->type} = $data->{$SESSION->voucher->type};
-        if ($SESSION->voucher->type == 'course') {
-            
-//            exit("<pre>" . print_r($data, true) . "</pre>");
-            
-            $SESSION->voucher->groups = $data->voucher_groups;
-//            exit("<pre>" . print_r($SESSION, true) . "</pre>");
-            // Add group to session
-        } else {
-            // Check if a course is selected
-            // if so we'll need to add that course to the cohort
-        }
+        $SESSION->voucher->amount = $data->voucher_amount;
+        $SESSION->voucher->email = $data->voucher_email;
+        $SESSION->voucher->generate_pdf = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
+        echo("<pre>" . print_r($SESSION, true) . "</pre>");
         
-        redirect(voucher_Helper::createBlockUrl('view/generate_voucher_step_four.php', array('id'=>$id)));
+        exit("<p>We should have processed all data now. Go to confirm screen.</p>");
+        redirect(voucher_Helper::createBlockUrl(BLOCK_VOUCHER_WWWROOT . 'view/generate_voucher_confirm.php', array('id'=>$id)));
     }
     else
     {

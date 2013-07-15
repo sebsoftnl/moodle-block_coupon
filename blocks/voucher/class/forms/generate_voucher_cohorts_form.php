@@ -1,7 +1,7 @@
 <?php
 
 /*
- * File: generate_voucher_form.php
+ * File: generate_voucher_cohorts_form.php
  * Encoding: UTF-8
  * @package voucher
  * 

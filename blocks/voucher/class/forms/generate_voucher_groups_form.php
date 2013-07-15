@@ -28,18 +28,28 @@ class generate_voucher_groups_form extends moodleform
      */
     function definition()
     {
-        global $CFG, $DB, $USER;
+        global $CFG, $DB, $SESSION;
 
         $mform = & $this->_form;
 
-        // First we'll get some useful info
-        $groups = $DB->get_records('groups', array('courseid'=>$SESSION->voucher->courseid));
+        // Display which course we selected
+        $course = $DB->get_record('course', array('id'=>$SESSION->voucher->course));
+        $mform->addElement('static', 'selected_course', get_string('label:selected_course', BLOCK_VOUCHER), $course->fullname);
         
-        $arr_groups_select = array();
-        foreach($groups as $group) $arr_groups_select[$group->id] = $group->name;
+        // Collect connected groups
+        $groups = $DB->get_records('groups', array('courseid'=>$SESSION->voucher->course));
         
-        $select_groups = &$mform->addElement('select', 'voucher_groups', get_string('label:voucher_cohorts', BLOCK_VOUCHER), $arr_groups_select);
-        $select_groups->setMultiple(true);
+        if (count($groups) > 0) {
+            $arr_groups_select = array();
+            foreach($groups as $group) $arr_groups_select[$group->id] = $group->name;
+
+            $select_groups = &$mform->addElement('select', 'voucher_groups', get_string('label:add_groups', BLOCK_VOUCHER), $arr_groups_select);
+            $select_groups->setMultiple(true);
+        
+        // Shouldn't happen cause it'll just skip this step if no groups are connected
+        } else {
+            $select_groups = &$mform->addElement('static', 'voucher_groups', '', get_string('label:no_groups_selected', BLOCK_VOUCHER));
+        }
         
 //        $mform->createElement('submit', 'submitbutton', get_string('savechanges'));
         $this->add_action_buttons(true, get_string('button:next', BLOCK_VOUCHER));
