@@ -1,7 +1,7 @@
 <?php
 
 /*
- * File: generate_voucher_step_two.php
+ * File: generate_voucher_step_four.php
  * Encoding: UTF-8
  * @package voucher
  * 
@@ -39,7 +39,7 @@ if ($id)    //DEFAULT CHECKS
 // Make sure the voucher object is set in cache
 if (!isset($SESSION->voucher)) print_error(get_string('error:nopermission', BLOCK_VOUCHER));
 
-$url = new moodle_url('/blocks/voucher/view/generate_voucher_step_two.php', array('id' => $id));
+$url = new moodle_url('/blocks/voucher/view/generate_voucher_step_four.php', array('id' => $id));
 $PAGE->set_url($url);
 
 $PAGE->set_title(get_string('view:generate_voucher:title', BLOCK_VOUCHER));
@@ -53,47 +53,51 @@ voucher_Helper::forceNoEditingMode();
 if (voucher_Helper::getPermission('generatevouchers'))
 {
     
-    // Depending on our data we'll get the right form
-    if ($SESSION->voucher->type == 'course') {
-        
-        require_once BLOCK_VOUCHER_CLASSROOT.'forms/generate_voucher_course_form.php';
-        $mform = new generate_voucher_course_form($url);
-
-    } else {
-
-        require_once BLOCK_VOUCHER_CLASSROOT.'forms/generate_voucher_cohorts_form.php';
-        $mform = new generate_voucher_cohorts_form($url);
-
-    }
+    echo "Done or smthing?";
     
-    if ($mform->is_cancelled())
-    {
-        redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
-    }
-    elseif ($data = $mform->get_data())
-    {
-        
-        if ($SESSION->voucher->type == 'course') {
-            $SESSION->voucher->course = $data->voucher_course;
-            
-            $course_groups = $DB->get_records("groups", array('courseid'=>$data->voucher_course));
-            $next_page = (count($course_groups) > 0) ? 'generate_voucher_step_three' : $next_page = 'generate_voucher_step_four';
-            
-        } else {
-            $SESSION->voucher->cohorts = $data->voucher_cohorts;
-            $next_page = 'generate_voucher_step_three';
-        }
-
-        redirect(voucher_Helper::createBlockUrl('view/' . $next_page . '.php', array('id'=>$id)));
-    }
-    else
-    {
-//        if (isset($SESSION->voucher_type)) unset($SESSION->voucher_type);
-        
-        echo $OUTPUT->header();
-        $mform->display();
-        echo $OUTPUT->footer();
-    }
+    
+   // Now we've got:
+    // - cohorts
+    // - amount of
+    // - email
+    
+    
+    
+//    // Depending on our data we'll get the right form
+//    if ($SESSION->voucher->type == 'course') {
+//        
+//        require_once BLOCK_VOUCHER_CLASSROOT.'forms/generate_confirm_course_form.php';
+//        $mform = new generate_confirm_course_form($url);
+//
+//    } else {
+//
+//        require_once BLOCK_VOUCHER_CLASSROOT.'forms/generate_confirm_cohorts_form.php';
+//        $mform = new generate_confirm_cohorts_form($url);
+//        
+//    }
+//    
+//    if ($mform->is_cancelled())
+//    {
+//        redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+//    }
+//    elseif ($data = $mform->get_data())
+//    {
+//
+//        $SESSION->voucher->amount = $data->voucher_amount;
+//        $SESSION->voucher->email = $data->voucher_email;
+//        $SESSION->voucher->generate_pdf = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
+//        echo("<pre>" . print_r($SESSION, true) . "</pre>");
+//        
+//        exit("<p>We should have processed all data now. Go to confirm screen.</p>");
+//        redirect(voucher_Helper::createBlockUrl(BLOCK_VOUCHER_WWWROOT . 'view/generate_voucher_confirm.php', array('id'=>$id)));
+//    }
+//    else
+//    {
+//        
+//        echo $OUTPUT->header();
+//        $mform->display();
+//        echo $OUTPUT->footer();
+//    }
 }
 else
 {

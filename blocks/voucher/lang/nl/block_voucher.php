@@ -32,6 +32,8 @@ $string['error:nopermission'] = 'U heeft geen toestemming om dit te doen';
 $string['error:required'] = 'Dit is een verplicht veld.';
 $string['error:numeric_only'] = 'Dit veld is een verplicht numeriek veld.';
 $string['error:invalid_email'] = 'Dit e-mail adres is ongeldig.';
+$string['error:invalid_voucher_code'] = 'U heeft een ongeldig voucher code ingevuld.';
+$string['error:voucher_already_used'] = 'Deze voucher is al gebruikt.';
 
 // URL texts
 $string['url:generate_vouchers'] = 'Genereer Voucher';
@@ -75,3 +77,6 @@ $string['button:submit_voucher_code'] = 'Invoeren';
 // view strings
 $string['view:generate_voucher:title'] = 'Genereer Voucher';
 $string['view:generate_voucher:heading'] = 'Genereer Voucher';
+
+$string['view:input_voucher:title'] = 'Voucher invoeren';
+$string['view:input_voucher:heading'] = 'Voucher invoeren';

@@ -28,9 +28,7 @@ if ($id)    //DEFAULT CHECKS
     if (!$course = $DB->get_record("course", array("id" => $courseid)))
     {
         //print_error("Course is misconfigured");
-        $course = new stdClass();
-        $course->id = 1;
-        $course->fullname = get_string('my',BLOCK_VOUCHERGEN);
+        $course = get_site();
     }
 
     require_login($course, true);
@@ -74,18 +72,79 @@ if (voucher_Helper::getPermission('generatevouchers'))
     }
     elseif ($data = $mform->get_data())
     {
+//                exit("<pre>" . print_r($SESSION->voucher, true) . "</pre>");
 
+        // Set last settings
         $SESSION->voucher->amount = $data->voucher_amount;
         $SESSION->voucher->email = $data->voucher_email;
         $SESSION->voucher->generate_pdf = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
-        echo("<pre>" . print_r($SESSION, true) . "</pre>");
         
-        exit("<p>We should have processed all data now. Go to confirm screen.</p>");
-        redirect(voucher_Helper::createBlockUrl(BLOCK_VOUCHER_WWWROOT . 'view/generate_voucher_confirm.php', array('id'=>$id)));
+        // Now we've got everything, lets create dat data
+        $voucher = new stdClass();
+        $voucher->userid = null;
+        $voucher->ownerid = $USER->id;
+        $voucher->courseid = (isset($SESSION->voucher->course)) ? $SESSION->voucher->course : false;
+        $voucher->amount = $SESSION->voucher->amount;
+        $voucher->timecreated = time();
+        $voucher->timeexpired = null;
+        
+        // Create vouchers
+        for($i = 0; $i < $SESSION->voucher->amount; $i++) {
+
+            // Generate a unique code
+            $voucher->submission_code = voucher_Helper::get_submission_code();
+            
+            // And insert the record
+            $voucher_id = $DB->insert_record('vouchers', $voucher);
+
+            // In case this is a Cohort Voucher
+            if ($SESSION->voucher->type == 'cohorts') {
+
+                // Now create cohorts
+                foreach($SESSION->voucher->cohorts as $cohort_id) {
+
+                    // Build up the class
+                    $voucher_cohort = new stdClass();
+                    $voucher_cohort->voucher_id = $voucher_id;
+                    $voucher_cohort->cohort_id = $cohort_id;
+
+                    // And insert in db
+                    $DB->insert_record('voucher_cohorts', $voucher_cohort);
+                }
+                
+            // Otherwise it must be a course voucher
+            } else {
+                
+                // Insert the course of the voucher
+//                $voucher_course = new stdClass();
+//                $voucher_course->voucher_id = $voucher_id;
+//                $voucher_course->course_id = $SESSION->voucher->course;
+//                
+//                $DB->insert_record('voucher_courses', $voucher_course);
+                // if we have groups set
+                if (isset($SESSION->voucher->groups)) {
+                    
+                    // Loop through the groups and insert the record
+                    foreach($SESSION->voucher->groups as $group_id) {
+
+                        $voucher_group = new stdClass();
+                        $voucher_group->voucher_id = $voucher_id;
+                        $voucher_group->group_id = $group_id;
+
+                        $DB->insert_record('voucher_groups', $voucher_group);
+                    }
+                }
+                
+            }
+            
+            // Mail
+            // Generate PDF
+        }
+        
+        redirect(voucher_Helper::createBlockUrl('view/generate_voucher_finish.php', array('id'=>$id)));
     }
     else
     {
-//        if (isset($SESSION->voucher_type)) unset($SESSION->voucher_type);
         
         echo $OUTPUT->header();
         $mform->display();

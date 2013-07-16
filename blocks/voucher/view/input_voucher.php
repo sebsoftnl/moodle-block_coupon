@@ -27,10 +27,7 @@ if ($id)    //DEFAULT CHECKS
 
     if (!$course = $DB->get_record("course", array("id" => $courseid)))
     {
-        //print_error("Course is misconfigured");
-        $course = new stdClass();
-        $course->id = 1;
-        $course->fullname = get_string('my',BLOCK_VOUCHERGEN);
+        $course = get_site();
     }
 
     require_login($course, true);
@@ -49,9 +46,9 @@ $PAGE->set_pagelayout('standard');
 //make sure the moodle editmode is off
 voucher_Helper::forceNoEditingMode();
 
-if (voucher_Helper::getPermission('generatevouchers'))
+if (voucher_Helper::getPermission('inputvouchers'))
 {
-    //
+    // Include the form
     require_once BLOCK_VOUCHER_CLASSROOT.'forms/input_voucher_form.php';
     $mform = new input_voucher_form($url);
     
@@ -61,9 +58,48 @@ if (voucher_Helper::getPermission('generatevouchers'))
     }
     elseif ($data = $mform->get_data())
     {
-        echo("<pre>" . print_r($data, true) . "</pre>");
         
         exit("About to input the voucher and enrol the user 'n stuff..");
+        
+        $role = $DB->get_record('role', array('shortname'=>'student'));
+        $voucher = $DB->get_record('vouchers', array('submission_code'=>$data->voucher_code));
+        
+        // We'll handle voucher_cohorts
+        if ($voucher->courseid === null) {
+            
+            $voucher_cohorts = $DB->get_records('voucher_cohorts', array('voucher_id'=>$voucher->id));
+            
+            foreach($voucher_cohorts as $cohort) {
+                // Add $USER->id to $cohort->id
+                // execute cohort_sync
+                echo 'creating cohort member';
+                echo 'executing cohort sync';
+            }
+            
+        // Otherwise we'll handle based on courses
+        } else {
+            
+            // Enrol $USER->id in $voucher->courseid with $role->id
+            echo 'enrolling user in course';
+            
+            // We might have groups we need to add the user to
+            $voucher_groups = $DB->get_records('voucher_groups', array('voucher_id'=>$voucher->id));
+            if (count($voucher_groups) > 0) {
+                foreach($voucher_groups as $group) {
+                    
+                    // Add $USER->id to $group->id
+                    echo 'creating group member';
+                    
+                }
+            }
+            
+        }
+        
+        // And finally update the voucher record
+        $voucher->userid = $USER->id;
+        $voucher->timemodified = time();
+//        $DB->update_record('vouchers', $voucher);
+        echo 'updating voucher record';
         
         // Redirect to success page
         redirect(voucher_Helper::createBlockUrl('view/input_voucher_step_two.php', array('id' => $id)));

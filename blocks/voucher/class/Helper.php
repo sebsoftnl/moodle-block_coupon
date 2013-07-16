@@ -25,6 +25,30 @@ class voucher_Helper
         // static's only please!
     }
     
+    final static public function get_submission_code() {
+        global $CFG, $DB;
+        
+        $submission_code = self::get_random_string();
+        $records = $DB->get_records('vouchers', array('submission_code'=>$submission_code));
+        if (count($records) > 0) self::get_submission_code();
+        
+        return $submission_code;
+    }
+    
+    /**
+     *Simple function to generate a random string of 
+     * @return type 
+     */
+    final static public function get_random_string() {
+        $characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        $string = '';
+        
+        for ($i = 0; $i < 32; $i++) {
+            $string .= $characters[rand(0, strlen($characters) - 1)];
+        }
+        
+        return $string;
+    }
     
     /**
      * Collect all courses connected to the provided cohort ID
@@ -73,9 +97,10 @@ class voucher_Helper
 
         $array = array();
         //FIRST check if you are a super admin
-        $array['administration'] = (has_capability('blocks/voucher:administration', $context)) ? true : false;
-        $array['inputvouchers'] = (has_capability('blocks/voucher:inputvouchers', $context)) ? true : false;
-        $array['generatevouchers'] = (has_capability('blocks/voucher:generatevouchers', $context)) ? true : false;
+        $array['administration'] = (has_capability('block/voucher:administration', $context)) ? true : false;
+        $array['addinstance'] = (has_capability('block/voucher:administration', $context)) ? true : false;
+        $array['inputvouchers'] = (has_capability('block/voucher:inputvouchers', $context)) ? true : false;
+        $array['generatevouchers'] = (has_capability('block/voucher:generatevouchers', $context)) ? true : false;
 
         if (!empty($name))
         {

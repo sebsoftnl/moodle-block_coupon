@@ -40,6 +40,20 @@ class input_voucher_form extends moodleform
         
     }
     
+    function validation($data) {
+        global $DB;
+        
+        $errors = array();
+        if (!$voucher = $DB->get_record('vouchers', array('submission_code'=>$data['voucher_code']))) {
+            $errors['voucher_code'] = get_string('error:invalid_voucher_code', BLOCK_VOUCHER);
+        } elseif ($voucher->userid != null) {
+            $errors['voucher_code'] = get_string('error:voucher_already_used', BLOCK_VOUCHER);
+        }
+//        
+        return $errors;
+    }
+    
+    
 }
 
 

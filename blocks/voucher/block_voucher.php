@@ -48,14 +48,13 @@ class block_voucher extends block_base
         $arrParam['id'] = $this->instance->id;
         $arrParam['courseid'] = $this->course->id;
 
-        exit("<pre>" . print_r($permissions, true) . "</pre>");
         if ($permissions['generatevouchers'])
         {
             
             $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/generate_voucher.php', array('id' => $this->instance->id));
             $this->content->footer = html_writer::link($url, get_string('url:generate_vouchers', BLOCK_VOUCHER));
             
-        }// elseif ($permissions['inputvouchers']) {
+        } elseif ($permissions['inputvouchers']) {
 
             $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/input_voucher.php', array('id' => $this->instance->id));
             $this->content->footer = html_writer::link($url, get_string('url:input_voucher', BLOCK_VOUCHER));
@@ -73,7 +72,7 @@ class block_voucher extends block_base
 //                
 //            }
 
-        //}
+        }
     }
 
     function applicable_formats()

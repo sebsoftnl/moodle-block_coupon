@@ -32,6 +32,8 @@ $string['error:nopermission'] = 'You have no permission to do this';
 $string['error:required'] = 'This field is required.';
 $string['error:numeric_only'] = 'This field must be numeric.';
 $string['error:invalid_email'] = 'Please enter a valid email adress.';
+$string['error:invalid_voucher_code'] = 'You have entered an invalid voucher code.';
+$string['error:voucher_already_used'] = 'The voucher with this code has already been used.';
 
 // URL texts
 $string['url:generate_vouchers'] = 'Generate Voucher';
@@ -82,3 +84,5 @@ $string['button:submit_voucher_code'] = 'Submit Voucher';
 $string['view:generate_voucher:title'] = 'Generate Voucher';
 $string['view:generate_voucher:heading'] = 'Generate Voucher';
 
+$string['view:input_voucher:title'] = 'Input Voucher';
+$string['view:input_voucher:heading'] = 'Input Voucher';

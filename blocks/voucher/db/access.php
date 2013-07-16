@@ -14,25 +14,29 @@
 defined('MOODLE_INTERNAL') || die;
 
 $capabilities = array(
-    'blocks/voucher:administration' => array(
+    'block/voucher:administration' => array(
         'captype' => 'view',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
             'manager' => CAP_ALLOW
         )
     ),
-    'blocks/voucher:generatevouchers' => array(
+    'block/voucher:generatevouchers' => array(
         'captype' => 'view',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
             'manager' => CAP_ALLOW,
         )
     ),
-    'blocks/voucher:inputvouchers' => array(
+    'block/voucher:inputvouchers' => array(
         'captype' => 'view',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
-            'student' => CAP_ALLOW
+            'user' => CAP_ALLOW,
+            'guest' => CAP_PREVENT,
+            'editingteacher' => CAP_PREVENT,
+            'teacher' => CAP_PREVENT,
+            'coursecreator' => CAP_PREVENT,
         )
     ),
     'block/voucher:addinstance' => array(
@@ -40,7 +44,7 @@ $capabilities = array(
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
             'manager' => CAP_ALLOW
-        ),
+        )
     )
 
 );

@@ -28,9 +28,7 @@ if ($id)    //DEFAULT CHECKS
     if (!$course = $DB->get_record("course", array("id" => $courseid)))
     {
         //print_error("Course is misconfigured");
-        $course = new stdClass();
-        $course->id = 1;
-        $course->fullname = get_string('my',BLOCK_VOUCHERGEN);
+        $course = get_site();
     }
 
     require_login($course, true);
@@ -64,7 +62,7 @@ if (voucher_Helper::getPermission('generatevouchers'))
     } else {
 
         require_once BLOCK_VOUCHER_CLASSROOT.'forms/generate_voucher_cohortcourses_form.php';
-        $mform = new generate_voucher_groups_form($url);
+        $mform = new generate_voucher_cohortcourses_form($url);
         
     }
     
@@ -79,14 +77,31 @@ if (voucher_Helper::getPermission('generatevouchers'))
 //        $SESSION->voucher->{$SESSION->voucher->type} = $data->{$SESSION->voucher->type};
         if ($SESSION->voucher->type == 'course') {
             
-//            exit("<pre>" . print_r($data, true) . "</pre>");
-            
-            $SESSION->voucher->groups = $data->voucher_groups;
-//            exit("<pre>" . print_r($SESSION, true) . "</pre>");
-            // Add group to session
+            // Add selected groups to session
+            if (isset($data->voucher_groups)) $SESSION->voucher->groups = $data->voucher_groups;
         } else {
+            
             // Check if a course is selected
-            // if so we'll need to add that course to the cohort
+            if (isset($data->connect_courses)) {
+
+                // Get required records
+                $enrol = enrol_get_plugin('cohort');
+                $role = $DB->get_record('role', array('shortname'=>'student'));
+                
+                // Loop over all cohorts
+                foreach($data->connect_courses as $cohort_id => $courses) {
+                    
+                    // Loop over all courses selected for this cohort
+                    foreach($courses as $course_id) {
+                        
+                        // And enroll the shizzle
+                        $course = $DB->get_record('course', array('id'=>$course_id));
+                        $enrol->add_instance($course, array('customint1'=>$cohort_id, 'roleid'=>$role->id));
+                        
+                    }
+                    
+                }
+            }
         }
         
         redirect(voucher_Helper::createBlockUrl('view/generate_voucher_step_four.php', array('id'=>$id)));

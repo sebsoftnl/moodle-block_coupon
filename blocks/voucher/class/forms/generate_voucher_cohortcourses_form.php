@@ -18,7 +18,7 @@ require_once $CFG->libdir . '/formslib.php';
  *
  * @author Rogier
  */
-class generate_voucher_groups_form extends moodleform
+class generate_voucher_cohortcourses_form extends moodleform
 {
 
     /**
@@ -60,7 +60,8 @@ class generate_voucher_groups_form extends moodleform
             // Collect not connected courses
             $sql_not_connected_courses = "
                 SELECT * FROM {$CFG->prefix}course c
-                WHERE c.id NOT IN (
+                WHERE c.id != 1
+                AND c.id NOT IN (
                     SELECT courseid FROM {$CFG->prefix}enrol e
                     WHERE e.customint1 = {$cohort->id}
                     AND e.enrol = 'cohort'
@@ -71,13 +72,13 @@ class generate_voucher_groups_form extends moodleform
             if (count($not_connected_courses) > 0) {
                 
                 $arr_not_connected_courses = array();
-                foreach($not_connected_courses as $not_connected_course) {
-                    $arr_not_connected_courses[$not_connected_course->id] = $not_connected_course->fullname;
-                }
-
-                $select_cohort_courses = &$mform->addElement('checkbox', 'connect_courses[' . $cohort->id . '][]', get_string('label:voucher_connect_course', BLOCK_VOUCHER), $arr_not_connected_courses);
-                $select_cohort_courses->setMultiple(true);
+                foreach($not_connected_courses as $not_connected_course) $arr_not_connected_courses[$not_connected_course->id] = $not_connected_course->fullname;
                 
+                
+//                $select_cohorts = &$mform->addElement('select', 'voucher_cohorts', get_string('label:voucher_cohorts', BLOCK_VOUCHER), $arr_cohort_select);
+                $select_connect_courses = &$mform->addElement('select', 'connect_courses[' . $cohort->id . ']', get_string('label:voucher_connect_course', BLOCK_VOUCHER), $arr_not_connected_courses);
+                $select_connect_courses->setMultiple(true);
+                    
             }
             
             // That's the end of the loop

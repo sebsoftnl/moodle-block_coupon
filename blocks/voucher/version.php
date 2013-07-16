@@ -12,6 +12,6 @@
  */
 
 $plugin = new stdClass();
-$plugin->version  = 2013071103;
+$plugin->version  = 2013071106;
 $plugin->requires = 2010112400; // YYYYMMDDHH (This is the release version for Moodle 2.0)
 $plugin->cron     = 0;
