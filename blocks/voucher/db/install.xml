@@ -8,7 +8,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true" NEXT="userid"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="ownerid"/>
-        <FIELD NAME="ownerid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="userid" NEXT="courseid"/>
+        <FIELD NAME="ownerid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="courseid" NEXT="courseid"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="ownerid" NEXT="submission_code"/>
         <FIELD NAME="submission_code" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false" PREVIOUS="courseid" NEXT="timecreated"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="submission_code" NEXT="timemodified"/>
@@ -21,9 +21,9 @@
     </TABLE>
     <TABLE NAME="voucher_cohorts" COMMENT="voucher_cohorts table retrofitted from MySQL" PREVIOUS="vouchers" NEXT="voucher_groups">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true" NEXT="voucher_id"/>
-        <FIELD NAME="voucher_id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="cohort_id"/>
-        <FIELD NAME="cohort_id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="voucher_id"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true" NEXT="voucherid"/>
+        <FIELD NAME="voucherid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="cohortid"/>
+        <FIELD NAME="cohortid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="voucherid"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
@@ -31,9 +31,9 @@
     </TABLE>
     <TABLE NAME="voucher_groups" COMMENT="voucher_groups table retrofitted from MySQL" PREVIOUS="voucher_cohorts">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true" NEXT="voucher_id"/>
-        <FIELD NAME="voucher_id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="group_id"/>
-        <FIELD NAME="group_id" TYPE="int" LENGTH="9" NOTNULL="true" SEQUENCE="false" PREVIOUS="voucher_id"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true" NEXT="voucherid"/>
+        <FIELD NAME="voucherid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="groupid"/>
+        <FIELD NAME="groupid" TYPE="int" LENGTH="9" NOTNULL="true" SEQUENCE="false" PREVIOUS="voucherid"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>

@@ -72,8 +72,11 @@ if (voucher_Helper::getPermission('generatevouchers'))
     }
     elseif ($data = $mform->get_data())
     {
-//                exit("<pre>" . print_r($SESSION->voucher, true) . "</pre>");
-
+        // Include the voucher generator
+        require_once(BLOCK_VOUCHER_CLASSROOT . 'VoucherGenerator.php');
+        
+//        $voucherGenerator = new VoucherGenerator();
+        
         // Set last settings
         $SESSION->voucher->amount = $data->voucher_amount;
         $SESSION->voucher->email = $data->voucher_email;
@@ -83,16 +86,19 @@ if (voucher_Helper::getPermission('generatevouchers'))
         $voucher = new stdClass();
         $voucher->userid = null;
         $voucher->ownerid = $USER->id;
-        $voucher->courseid = (isset($SESSION->voucher->course)) ? $SESSION->voucher->course : false;
+        $voucher->courseid = ($SESSION->voucher->type == 'course') ? $SESSION->voucher->course : null;
         $voucher->amount = $SESSION->voucher->amount;
         $voucher->timecreated = time();
         $voucher->timeexpired = null;
+        
+        // Get max length for the voucher code
+        if (!$voucher_code_length = get_config('block/' . BLOCK_VOUCHER, 'default_email')) $voucher_code_length = 16;
         
         // Create vouchers
         for($i = 0; $i < $SESSION->voucher->amount; $i++) {
 
             // Generate a unique code
-            $voucher->submission_code = voucher_Helper::get_submission_code();
+            $voucher->submission_code = VoucherGenerator::GenerateUniqueCode($voucher_code_length);
             
             // And insert the record
             $voucher_id = $DB->insert_record('vouchers', $voucher);
@@ -105,8 +111,8 @@ if (voucher_Helper::getPermission('generatevouchers'))
 
                     // Build up the class
                     $voucher_cohort = new stdClass();
-                    $voucher_cohort->voucher_id = $voucher_id;
-                    $voucher_cohort->cohort_id = $cohort_id;
+                    $voucher_cohort->voucherid = $voucher_id;
+                    $voucher_cohort->cohortid = $cohort_id;
 
                     // And insert in db
                     $DB->insert_record('voucher_cohorts', $voucher_cohort);
@@ -115,12 +121,13 @@ if (voucher_Helper::getPermission('generatevouchers'))
             // Otherwise it must be a course voucher
             } else {
                 
-                // Insert the course of the voucher
+//                // Insert the course of the voucher
 //                $voucher_course = new stdClass();
 //                $voucher_course->voucher_id = $voucher_id;
 //                $voucher_course->course_id = $SESSION->voucher->course;
 //                
 //                $DB->insert_record('voucher_courses', $voucher_course);
+                
                 // if we have groups set
                 if (isset($SESSION->voucher->groups)) {
                     
@@ -128,8 +135,8 @@ if (voucher_Helper::getPermission('generatevouchers'))
                     foreach($SESSION->voucher->groups as $group_id) {
 
                         $voucher_group = new stdClass();
-                        $voucher_group->voucher_id = $voucher_id;
-                        $voucher_group->group_id = $group_id;
+                        $voucher_group->voucherid = $voucher_id;
+                        $voucher_group->groupid = $group_id;
 
                         $DB->insert_record('voucher_groups', $voucher_group);
                     }
@@ -140,7 +147,58 @@ if (voucher_Helper::getPermission('generatevouchers'))
             // Mail
             // Generate PDF
         }
+
         
+        
+//        $send_to = $DB->get_record('user', array('email'=>get_config('block/' . BLOCK_VOUCHER, 'default_email')));
+        
+        // Build an object of parameters we'll need in the body of the email
+        // This so we can use the get_string method properly
+//        $message_params = new stdClass();
+//        $message_params->user_fullname = $USER->firstname . ' ' . $USER->lastname;
+////        $message_params->user_fullname = $send_to->firstname . ' ' . $send_to->lastname;
+//        $message_params->voucher_amount = $SESSION->voucher->amount;
+//        $message_params->voucher_type = get_string($SESSION->voucher->type, BLOCK_VOUCHER);
+//        $message_params->voucher_owner = $USER->firstname . ' ' . $USER->lastname;
+//        $message_params->salutation = $CFC->noreplyaddress;
+//        $message_params->generate_pdf = ($SESSION->voucher->generate_pdf) ? get_string('generate_pdf', BLOCK_VOUCHER) : '';
+//
+//        // The param holding the course/group names or cohort names
+//        $message_params->voucher_subscribes = '';
+//        
+//        // If we're creating course vouchers
+//        if ($SESSION->voucher->type == 'course') {
+//            
+//            $course = $DB->get_record('course', array('id'=>$SESSION->voucher->course));
+//            $message_params->voucher_subscribes = $course->fullname . '<br />';
+//            
+//            // If groups are set
+//            if (isset($SESSION->voucher->groups)) {
+//                
+//                $message_params->voucher_subscribes .= '<i>Groups</i><br />';
+//                $groups = $DB->get_records_sql("SELECT * FROM {$CFG->prefix}groups WHERE id IN (" . join($SESSION->voucher->groups, ',') . ")");
+//                foreach($groups as $group) {
+//                    $message_params->voucher_subscribes .= $group->name . '<br />';
+//                }
+//                
+//            }
+//            
+//        // Else we're trying to create cohort vouchers
+//        } else {
+//            
+//            $cohorts = $DB->get_records_sql("SELECT * FROM {$CFG->prefix}cohort WHERE id IN (" . join($SESSION->voucher->cohorts, ',') . ")");
+//            foreach($cohorts as $cohort) {
+//                $message_params->voucher_subscribes .= $cohort->name . '<br />';
+//            }
+//        }
+//        
+//        $message = get_string('mail:body:voucher_generated', BLOCK_VOUCHER, $message_params);
+//        $subject = get_string('mail:subject:voucher_generated', BLOCK_VOUCHER);
+//        
+//        exit("<pre>" . print_r($message, true) . "</pre>");
+//
+//        email_to_user($USER, $USER, $subject, $message);
+
         redirect(voucher_Helper::createBlockUrl('view/generate_voucher_finish.php', array('id'=>$id)));
     }
     else

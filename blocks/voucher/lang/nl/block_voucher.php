@@ -34,6 +34,15 @@ $string['error:numeric_only'] = 'Dit veld is een verplicht numeriek veld.';
 $string['error:invalid_email'] = 'Dit e-mail adres is ongeldig.';
 $string['error:invalid_voucher_code'] = 'U heeft een ongeldig voucher code ingevuld.';
 $string['error:voucher_already_used'] = 'Deze voucher is al gebruikt.';
+$string['error:unable_to_enrol'] = 'Een error is opgetreden tijdens het inschrijven in een nieuwe cursus. Neem contact op met support.';
+$string['error:missing_course'] = 'De cursus die aan de Voucher is gelinkt bestaat niet meer. Neem contact op met support.';
+$string['error:cohort_sync'] = 'Een error is opgetreden tijdens het synchroniseren van de cohortes. Neem contact op met support.';
+$string['error:plugin_disabled'] = 'De cohort_sync plugin staat uit. Neem contact op met support.';
+$string['error:missing_cohort'] = 'De cohort(en) die aan deze Voucher gelinkt is bestaat niet meer. Neem contact op met support.';
+$string['error:missing_group'] = 'De groep(en) die aan deze Voucher gelinkt is bestaat niet meer. Neem contact op met support.';
+
+// Success strings
+$string['success:voucher_used'] = 'Voucher gebruikt - U kunt nu uw nieuwe cursus(en) in';
 
 // URL texts
 $string['url:generate_vouchers'] = 'Genereer Voucher';
@@ -80,3 +89,22 @@ $string['view:generate_voucher:heading'] = 'Genereer Voucher';
 
 $string['view:input_voucher:title'] = 'Voucher invoeren';
 $string['view:input_voucher:heading'] = 'Voucher invoeren';
+
+$string['course'] = 'cursus';
+$string['cohort'] = 'cohort';
+
+$string['pdf_generated'] = 'The vouchers have been attached to this email in PDF files.<br /><br />';
+
+//$string['mail:body:vouchers_generated'] = '
+//        Hello {$a->user_fullname},<br /><br />
+//        A new Moodle Voucher has been generated. {$a->generate_pdf}The specifications are listed below.<br /><br />
+//        <hr />
+//        Voucher type: ' . $a->voucher_type . '<br />
+//        Created by: ' . $a->voucher_owner . '<br />
+//        Amount: ' . $a->voucher_amount . '<br />
+//        Subscriptions:<br />
+//        ' . $a->voucher_submission . '<br />
+//        <hr /><br /><br />
+//        With kind regards,<br /><br />
+//        ' . $a->salutation;
+//$string['mail:subject:vouchers_generated'] = 'Moodle Vouchers generated';

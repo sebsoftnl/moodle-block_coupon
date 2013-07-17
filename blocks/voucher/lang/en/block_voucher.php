@@ -34,6 +34,15 @@ $string['error:numeric_only'] = 'This field must be numeric.';
 $string['error:invalid_email'] = 'Please enter a valid email adress.';
 $string['error:invalid_voucher_code'] = 'You have entered an invalid voucher code.';
 $string['error:voucher_already_used'] = 'The voucher with this code has already been used.';
+$string['error:unable_to_enrol'] = 'An error occured while trying to enrol you in the new course. Please contact support.';
+$string['error:missing_course'] = 'The course linked to this voucher does not exist anymore. Please contact support.';
+$string['error:cohort_sync'] = 'An error occured while trying to synchronize the cohorts. Please contact support.';
+$string['error:plugin_disabled'] = 'The cohort_sync plugin has been disabled. Please contact support.';
+$string['error:missing_cohort'] = 'The cohort(s) linked to this voucher does not exist anymore. Please contact support.';
+$string['error:missing_group'] = 'The group(s) linked to this voucher does not exist anymore. Please contact support.';
+
+// Success strings
+$string['success:voucher_used'] = 'Voucher used - You can now access the course(s)';
 
 // URL texts
 $string['url:generate_vouchers'] = 'Generate Voucher';
@@ -86,3 +95,43 @@ $string['view:generate_voucher:heading'] = 'Generate Voucher';
 
 $string['view:input_voucher:title'] = 'Input Voucher';
 $string['view:input_voucher:heading'] = 'Input Voucher';
+
+$string['course'] = 'course';
+$string['cohort'] = 'cohort';
+
+$string['use_supportuser'] = 'Use support user';
+$string['use_supportuser_desc'] = 'Send Vouchers to support user by default';
+
+$string['pdf_generated'] = 'The vouchers have been attached to this email in PDF files.<br /><br />';
+//
+//$string['mail:body:vouchers_generated'] = '
+//        Hello ' . $a->user_fullname . ',<br /><br />
+//        A new Moodle Voucher has been generated. ' . $a->generate_pdf . 'The specifications are listed below.<br /><br />
+//        <hr />
+//        Voucher type: ' . $a->voucher_type . '<br />
+//        Created by: ' . $a->voucher_owner . '<br />
+//        Amount: ' . $a->voucher_amount . '<br />
+//        Subscriptions:<br />
+//        ' . $a->voucher_submission . '<br />
+//        <hr /><br /><br />
+//        With kind regards,<br /><br />
+//        ' . $a->salutation;
+//$string['mail:subject:vouchers_generated'] = 'Moodle Vouchers generated';
+
+
+
+//$string['default-voucher-page-template'] = '<p style="font-weight: bold;">Welkom bij Jumbo!</p><br/><br/>
+//<p>Hierbij ontvang je de voucher om je aan te melden op de digitale leeromgeving van Jumbo. 
+//Tijdens je registratie op de digitale leeromgeving heb je de vouchercode nodig om je aan te melden.</p><br/><br/>
+//<p><table style="width:100%"><tr><td style="border:1px solid #000000; font-weight: bold; vertical-align: middle; text-align: center;">Dit is je vouchercode: {vouchercode}</td></tr></table></p>
+//<p></p>
+//<p>Volg de volgende stappen:</p><br/>
+//<ol>
+//<li>Open Internet Explorer</li>
+//<li>Ga naar de website: <a href="http://winkel.jumboleerplein.nl">winkel.jumboleerplein.nl</a></li>
+//<li>Klik onderaan in het blok Aanmelden op "Nieuw account maken"</li>
+//<li>Vul de vouchercode in (let op deze is hoofdlettergevoelig)</li>
+//<li>Volg de stappen</li>
+//<li>Je bent nu op de startpagina. Kies onder Mijn cursussen de cursus die je wilt volgen.</li>
+//</ol><br/><br/>
+//<p>Veel leerplezier gewenst!</p>';

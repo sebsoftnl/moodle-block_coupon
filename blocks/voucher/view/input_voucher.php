@@ -59,7 +59,11 @@ if (voucher_Helper::getPermission('inputvouchers'))
     elseif ($data = $mform->get_data())
     {
         
-        exit("About to input the voucher and enrol the user 'n stuff..");
+        // Because we're outside course context we've got to include groups library manually
+        require_once($CFG->dirroot . '/group/lib.php');
+
+        
+//        exit("About to input the voucher and enrol the user 'n stuff..");
         
         $role = $DB->get_record('role', array('shortname'=>'student'));
         $voucher = $DB->get_record('vouchers', array('submission_code'=>$data->voucher_code));
@@ -67,28 +71,55 @@ if (voucher_Helper::getPermission('inputvouchers'))
         // We'll handle voucher_cohorts
         if ($voucher->courseid === null) {
             
-            $voucher_cohorts = $DB->get_records('voucher_cohorts', array('voucher_id'=>$voucher->id));
+            $voucher_cohorts = $DB->get_records('voucher_cohorts', array('voucherid'=>$voucher->id));
+            if (count($voucher_cohorts) == 0) print_error(get_string('error:missing_cohort', BLOCK_VOUCHER));
             
-            foreach($voucher_cohorts as $cohort) {
-                // Add $USER->id to $cohort->id
-                // execute cohort_sync
-                echo 'creating cohort member';
-                echo 'executing cohort sync';
+            // Add user to cohort
+            foreach($voucher_cohorts as $voucher_cohort) {
+
+                if (!$DB->get_record('cohort', array('id'=>$voucher_cohort->cohortid))) print_error(get_string('error:missing_cohort', BLOCK_VOUCHER));
+                
+                cohort_add_member($voucher_cohort->cohortid, $USER->id);
+                
+            }
+            // Now execute the cohort sync
+            $result = enrol_cohort_sync();
+            // If result = 0 it went ok. (lol!)
+            if ($result === 1) {
+                print_error(get_string('error:cohort_sync', BLOCK_VOUCHER));
+            } elseif ($result === 2) {
+                print_error(get_string('error:plugin_disabled', BLOCK_VOUCHER));
             }
             
         // Otherwise we'll handle based on courses
         } else {
             
-            // Enrol $USER->id in $voucher->courseid with $role->id
-            echo 'enrolling user in course';
+            // Important checks
+            if (!$DB->get_record('course', array('id'=>$voucher->courseid))) print_error(get_string('error:missing_course', BLOCK_VOUCHER));
             
-            // We might have groups we need to add the user to
-            $voucher_groups = $DB->get_records('voucher_groups', array('voucher_id'=>$voucher->id));
+            // Make sure we only enrol if its not enrolled yet
+            $context = get_context_instance(CONTEXT_COURSE, $voucher->courseid);
+            if (!is_enrolled($context, $USER->id)) {
+                
+                // Now we can enrol
+                if (!enrol_try_internal_enrol($voucher->courseid, $USER->id, $role->id)) {
+                    print_error(get_string('error:unable_to_enrol', BLOCK_VOUCHER));
+                }
+                
+            }
+            
+            // And add user to groups
+            $voucher_groups = $DB->get_records('voucher_groups', array('voucherid'=>$voucher->id));
             if (count($voucher_groups) > 0) {
-                foreach($voucher_groups as $group) {
+                foreach($voucher_groups as $voucher_group) {
                     
-                    // Add $USER->id to $group->id
-                    echo 'creating group member';
+                    // Check if the group exists
+                    if (!$DB->get_record('groups', array('id'=>$voucher_group->groupid))) print_error(get_string('error:missing_group', BLOCK_VOUCHER));
+                    
+                    // Add user if its not a member yet
+                    if (!groups_is_member($voucher_group->groupid, $USER->id)) {
+                        groups_add_member($voucher_group->groupid, $USER->id);
+                    }
                     
                 }
             }
@@ -98,16 +129,14 @@ if (voucher_Helper::getPermission('inputvouchers'))
         // And finally update the voucher record
         $voucher->userid = $USER->id;
         $voucher->timemodified = time();
-//        $DB->update_record('vouchers', $voucher);
-        echo 'updating voucher record';
+        $DB->update_record('vouchers', $voucher);
         
-        // Redirect to success page
-        redirect(voucher_Helper::createBlockUrl('view/input_voucher_step_two.php', array('id' => $id)));
+        // Redirect to my directly
+//        redirect(voucher_Helper::createBlockUrl('view/input_voucher_finish.php', array('id' => $id)));
+        redirect($CFG->wwwroot . '/my', get_string('success:voucher_used', BLOCK_VOUCHER));
     }
     else
     {
-        if (isset($SESSION->voucher)) unset($SESSION->voucher);
-        
         echo $OUTPUT->header();
         $mform->display();
         echo $OUTPUT->footer();

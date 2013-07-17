@@ -36,14 +36,15 @@ class input_voucher_form extends moodleform
         $mform->addElement('text', 'voucher_code', get_string('label:voucher_code', BLOCK_VOUCHER));
         $mform->addRule('voucher_code', get_string('error:required', BLOCK_VOUCHER), 'required', null, 'client');
 
-        $this->add_action_buttons(true, get_string('button:submit_voucher_code', BLOCK_VOUCHER));
+        $this->add_action_buttons(false, get_string('button:submit_voucher_code', BLOCK_VOUCHER));
         
     }
     
-    function validation($data) {
+    public function validation($data, $files) {
         global $DB;
+
+        $errors = parent::validation($data, $files);
         
-        $errors = array();
         if (!$voucher = $DB->get_record('vouchers', array('submission_code'=>$data['voucher_code']))) {
             $errors['voucher_code'] = get_string('error:invalid_voucher_code', BLOCK_VOUCHER);
         } elseif ($voucher->userid != null) {

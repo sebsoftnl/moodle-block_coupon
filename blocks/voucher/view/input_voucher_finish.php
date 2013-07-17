@@ -49,12 +49,11 @@ voucher_Helper::forceNoEditingMode();
 
 if (voucher_Helper::getPermission('inputvouchers'))
 {
-    // Include the form
-    require_once BLOCK_VOUCHER_CLASSROOT.'forms/input_voucher_form.php';
-    $mform = new input_voucher_form($url);
+    // No form needed?
+//    require_once BLOCK_VOUCHER_CLASSROOT.'forms/input_voucher_form.php';
+//    $mform = new input_voucher_form($url);
     
-    echo "Uw voucher is ingevoerd. U kunt nu de cursussen in die aan de voucher gekoppeld is.";
-    echo "<br />Redirect naar /my";
+    
     
 //    if ($mform->is_cancelled())
 //    {

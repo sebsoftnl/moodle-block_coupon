@@ -28,12 +28,17 @@ if ($ADMIN->fulltree)
 //            '0', '1', '0'
 //        ));
 //
-//    $supportuser = generate_email_supportuser();
-//    $settings->add(new admin_setting_configtext(
-//            'voucher_debugemail', '', 
-//            get_string("form-desc:voucher_debugemail", "block_voucher"),
-//            $supportuser->email, PARAM_EMAIL
-//        ));
+    
+//$settings->add(new admin_setting_configcheckbox('forum_replytouser', get_string('replytouser', 'forum'),
+//                    get_string('replytouser_desc', 'forum'), 1));
 
+//    $supportuser = generate_email_supportuser();
+    $settings->add(new admin_setting_configcheckbox(
+            'use_supportuser',
+            get_string('use_supportuser', BLOCK_VOUCHER),
+            get_string('use_supportuser_desc', BLOCK_VOUCHER),
+            1
+        ));
+    
 }
 
