@@ -75,52 +75,57 @@ if (voucher_Helper::getPermission('generatevouchers'))
         // Include the voucher generator
         require_once(BLOCK_VOUCHER_CLASSROOT . 'VoucherGenerator.php');
         
-//        $voucherGenerator = new VoucherGenerator();
-        
-        // Set last settings
+        // Save last settings in sessions
         $SESSION->voucher->amount = $data->voucher_amount;
         $SESSION->voucher->email = $data->voucher_email;
         $SESSION->voucher->generate_pdf = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
-        
-        // Now we've got everything, lets create dat data
-        $voucher = new stdClass();
-        $voucher->userid = null;
-        $voucher->ownerid = $USER->id;
-        $voucher->courseid = ($SESSION->voucher->type == 'course') ? $SESSION->voucher->course : null;
-        $voucher->amount = $SESSION->voucher->amount;
-        $voucher->timecreated = time();
-        $voucher->timeexpired = null;
+
+        // Set up array to put each voucher in
+        $vouchers = array();
         
         // Get max length for the voucher code
-        if (!$voucher_code_length = get_config('block/' . BLOCK_VOUCHER, 'default_email')) $voucher_code_length = 16;
+        if (!$voucher_code_length = get_config('block/' . BLOCK_VOUCHER, 'default_email')) $voucher_code_length = null;
         
-        // Create vouchers
+        // Build individual voucher objects
         for($i = 0; $i < $SESSION->voucher->amount; $i++) {
-
-            // Generate a unique code
+            
+            // Now we've got everything, lets create dat data
+            $voucher = new stdClass();
+            $voucher->userid = null;
+            $voucher->ownerid = $USER->id;
+            $voucher->courseid = ($SESSION->voucher->type == 'course') ? $SESSION->voucher->course : null;
+            $voucher->amount = $SESSION->voucher->amount;
+            $voucher->timecreated = time();
+            $voucher->timeexpired = null;
             $voucher->submission_code = VoucherGenerator::GenerateUniqueCode($voucher_code_length);
             
-            // And insert the record
-            $voucher_id = $DB->insert_record('vouchers', $voucher);
+//            // And insert the record
+//            $voucher_id = $DB->insert_record('vouchers', $voucher);
 
+            // Now add the cohorts to the voucher
             // In case this is a Cohort Voucher
             if ($SESSION->voucher->type == 'cohorts') {
 
+                // Make it into an array
+                $voucher->cohorts = array();
+                
                 // Now create cohorts
                 foreach($SESSION->voucher->cohorts as $cohort_id) {
 
                     // Build up the class
                     $voucher_cohort = new stdClass();
-                    $voucher_cohort->voucherid = $voucher_id;
+//                    $voucher_cohort->voucherid = $voucher_id;
                     $voucher_cohort->cohortid = $cohort_id;
 
-                    // And insert in db
-                    $DB->insert_record('voucher_cohorts', $voucher_cohort);
+//                    // And insert in db
+//                    $DB->insert_record('voucher_cohorts', $voucher_cohort);
+                    $voucher->cohorts[] = $voucher_cohort;
                 }
                 
-            // Otherwise it must be a course voucher
-            } else {
+            // Otherwise we'll add groups if they are selected
+            } elseif (isset($SESSION->voucher->groups)) {
                 
+                $voucher->groups = array();
 //                // Insert the course of the voucher
 //                $voucher_course = new stdClass();
 //                $voucher_course->voucher_id = $voucher_id;
@@ -129,24 +134,24 @@ if (voucher_Helper::getPermission('generatevouchers'))
 //                $DB->insert_record('voucher_courses', $voucher_course);
                 
                 // if we have groups set
-                if (isset($SESSION->voucher->groups)) {
                     
                     // Loop through the groups and insert the record
-                    foreach($SESSION->voucher->groups as $group_id) {
+                foreach($SESSION->voucher->groups as $group_id) {
 
-                        $voucher_group = new stdClass();
-                        $voucher_group->voucherid = $voucher_id;
-                        $voucher_group->groupid = $group_id;
+                    $voucher_group = new stdClass();
+//                        $voucher_group->voucherid = $voucher_id;
+                    $voucher_group->groupid = $group_id;
 
-                        $DB->insert_record('voucher_groups', $voucher_group);
-                    }
+//                  $DB->insert_record('voucher_groups', $voucher_group);
                 }
+//                }
                 
             }
-            
-            // Mail
-            // Generate PDF
         }
+        
+        // Now we've got a fully initiated vouchers array
+//        voucher_Helper::GenerateVouchers($vouchers);
+        voucher_Helper::MailVouchers($vouchers);
 
         
         

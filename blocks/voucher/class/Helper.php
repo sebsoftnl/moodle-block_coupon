@@ -25,6 +25,109 @@ class voucher_Helper
         // static's only please!
     }
     
+    public static final function MailVouchers($reqdate, $email, $opts, $forUser=null)
+    {
+        global $DB, $CFG, $USER;
+        
+        $vouchers = voucher_Db::GetVouchersByDate($reqdate);
+        if (!is_array($vouchers))
+        {
+            print_error(get_string('error:no-vouchers-for-date', BLOCK_VOUCHER));
+        }
+        
+        if ($forUser === null)
+        {
+            $forUser = $USER;
+        }
+        elseif (is_numeric($forUser))
+        {
+            $forUser = $DB->get_record('user', array('id' => $forUser));
+        }
+        
+        //
+        require_once BLOCK_VOUCHER_CLASSROOT."PDF.php";
+        switch ((int)$opts)
+        {
+            case 1: //single/single (een mail met alle vouchers in 1 pdf)
+                $phpmailer = self::_GenerateVoucherMail($email, $forUser);
+                
+                $pdfgen = new voucher_PDF(get_string('pdf:titlename', BLOCK_VOUCHER));
+                $pdfgen->setVoucherPageTemplate($CFG->voucher_voucherpagetemplate);
+                $pdfgen->generate($vouchers);
+                $pdfstr = $pdfgen->Output('vouchers.pdf', 'S'); //'FI' enables storing on local system, this could be nice to have?
+                $phpmailer->AddStringAttachment($pdfstr, 'vouchers.pdf');
+                $res = $phpmailer->Send();
+                break;
+            case 2: //single/multi (een mail met losse PDFS als attachment)
+                $phpmailer = self::_GenerateVoucherMail($email, $forUser);
+                foreach($vouchers as $voucher)
+                {
+                    $pdfgen = new voucher_PDF(get_string('pdf:titlename', BLOCK_VOUCHER));
+                    $pdfgen->setVoucherPageTemplate($CFG->voucher_voucherpagetemplate);
+                    $pdfgen->generate($voucher);
+                    $pdfstr = $pdfgen->Output('voucher'.$voucher->id.'.pdf', 'S'); //'FI' enables storing on local system, this could be nice to have?
+                    $phpmailer->AddStringAttachment($pdfstr, 'voucher'.$voucher->id.'.pdf');
+                }
+                $res = $phpmailer->Send();
+                break;
+            case 3: //multi/single (NIET RELEVANT)
+                foreach($vouchers as $voucher)
+                {
+                    $phpmailer = self::_GenerateVoucherMail($email, $forUser);
+                    $pdfgen = new voucher_PDF(get_string('pdf:titlename', BLOCK_VOUCHER));
+                    $pdfgen->setVoucherPageTemplate($CFG->voucher_voucherpagetemplate);
+                    $pdfgen->generate($voucher);
+                    $pdfstr = $pdfgen->Output('voucher'.$voucher->id.'.pdf', 'S'); //'FI' enables storing on local system, this could be nice to have?
+                    $phpmailer->AddStringAttachment($pdfstr, 'voucher'.$voucher->id.'.pdf');
+                    $res = $phpmailer->Send();
+                }
+                break;
+        }
+    }
+
+
+    protected static final function _GenerateVoucherMail($email, $forUser)
+    {
+        global $CFG, $USER;
+        
+        require_once $CFG->libdir.'/phpmailer/class.phpmailer.php';
+        $supportuser = generate_email_supportuser();
+        $tpldata = new stdClass();
+        $tpldata->name = $forUser->firstname;
+        $tpldata->supportname = $supportuser->firstname;
+        $tpldata->supportemail = $supportuser->email;
+        $generatedHtml = get_string('voucher_mail_content', BLOCK_VOUCHER, $tpldata);
+        
+        $phpmailer = new PHPMailer();
+        $phpmailer->Body = $generatedHtml;
+        $phpmailer->AltBody = strip_tags($generatedHtml);
+        $phpmailer->From = $CFG->voucher_mail_from;
+        $phpmailer->FromName = $CFG->voucher_mail_fromname;
+        $phpmailer->IsHTML(true);
+        $phpmailer->Subject = get_string('voucher_mail_subject', BLOCK_VOUCHER);
+        $phpmailer->AddReplyTo($CFG->voucher_mail_from, $CFG->voucher_mail_fromname);
+        
+//        $phpmailer->AddBcc('sebastian@sebsoft.nl');
+//        $phpmailer->AddBcc('rogier@sebsoft.nl');
+//        if (strstr($this->siteemail, ':') !== false)
+//        {
+//            $mailaddrs = explode(':', $this->siteemail);
+//            foreach ($mailaddrs as $mailaddr)
+//            {
+//                $phpmailer->AddBcc($mailaddr);
+//            }
+//        }
+//        elseif (!empty($this->siteemail))
+//        {
+//            $phpmailer->AddBcc($this->siteemail);
+//        }
+        $phpmailer->AddCustomHeader("X-VOUCHER-Send: " . time());
+        $phpmailer->AddAddress($email);
+        
+        return $phpmailer;
+    }
+
+    
     /**
      * Collect all courses connected to the provided cohort ID
      * 
@@ -49,7 +152,7 @@ class voucher_Helper
      * 
      * returns false if no records are found or an array of cohort records
      */
-    final static public function get_cohorts_by_id($cohort_ids) {
+    final static public function get_cohorts_by_ids($cohort_ids) {
         global $CFG, $DB;
         
         // Collect cohort records

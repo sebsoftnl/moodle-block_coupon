@@ -22,6 +22,41 @@ class voucher_Db
         // static's only please!
     }
 
+//    /**
+//     * Might not be neccesary, instead we'll probably use what we've 
+//     * already got stored in the sessions.
+//     */
+//    public final static function GetVouchersByDate($date)
+//    {
+//        if (is_string($date))
+//        {
+//            $date = strtotime($date);
+//        }
+//        global $DB;
+//        $rs = $DB->get_records('vouchergen_vouchers', array('created_on' => $date));
+//        if (!$rs)
+//        {
+//            return null;
+//        }
+//        $v0 = reset($rs);
+//        $store = $DB->get_record('jumbo_franchise_store', array('userid' => $v0->issuer_id), 'establ_name, storenumber, debtor_city');
+//        if (!$store)
+//        {
+//            $store = new stdClass();
+//            $store->store_name = 'UNKNOWN';
+//            $store->store_number = '000';
+//            $store->store_city = 'UNKNOWN';
+//        }
+//        foreach ($rs as &$voucher)
+//        {
+//            $voucher->store_name = $store->establ_name;
+//            $voucher->store_number = $store->storenumber;
+//            $voucher->store_city = $store->debtor_city;
+//        }
+//        return $rs;
+//    }
+
+    
     static public final function GetBlockVersion()
     {
         static $currentVersion = null;

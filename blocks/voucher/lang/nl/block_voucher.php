@@ -95,16 +95,19 @@ $string['cohort'] = 'cohort';
 
 $string['pdf_generated'] = 'The vouchers have been attached to this email in PDF files.<br /><br />';
 
-//$string['mail:body:vouchers_generated'] = '
-//        Hello {$a->user_fullname},<br /><br />
-//        A new Moodle Voucher has been generated. {$a->generate_pdf}The specifications are listed below.<br /><br />
-//        <hr />
-//        Voucher type: ' . $a->voucher_type . '<br />
-//        Created by: ' . $a->voucher_owner . '<br />
-//        Amount: ' . $a->voucher_amount . '<br />
-//        Subscriptions:<br />
-//        ' . $a->voucher_submission . '<br />
-//        <hr /><br /><br />
-//        With kind regards,<br /><br />
-//        ' . $a->salutation;
-//$string['mail:subject:vouchers_generated'] = 'Moodle Vouchers generated';
+$string['default-voucher-page-template'] = '<p>{store_name}<br/>Winkelnummer: {store_number}</p>
+<p style="font-weight: bold;">Welkom bij Jumbo!</p><br/><br/>
+<p>Hierbij ontvang je de voucher om je aan te melden op de digitale leeromgeving van Jumbo. 
+Tijdens je registratie op de digitale leeromgeving heb je de vouchercode nodig om je aan te melden.</p><br/><br/>
+<p><table style="width:100%"><tr><td style="border:1px solid #000000; font-weight: bold; vertical-align: middle; text-align: center;">Dit is je vouchercode: {vouchercode}</td></tr></table></p>
+<p></p>
+<p>Volg de volgende stappen:</p><br/>
+<ol>
+<li>Open Internet Explorer</li>
+<li>Ga naar de website: <a href="http://winkel.jumboleerplein.nl">winkel.jumboleerplein.nl</a></li>
+<li>Klik onderaan in het blok Aanmelden op "Nieuw account maken"</li>
+<li>Vul de vouchercode in (let op deze is hoofdlettergevoelig)</li>
+<li>Volg de stappen</li>
+<li>Je bent nu op de startpagina. Kies onder Mijn cursussen de cursus die je wilt volgen.</li>
+</ol><br/><br/>
+<p>Veel leerplezier gewenst!</p>';

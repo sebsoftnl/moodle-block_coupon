@@ -33,7 +33,7 @@ class generate_voucher_cohortcourses_form extends moodleform
         $mform = & $this->_form;
 
         // Collect cohort records
-        $cohorts = voucher_Helper::get_cohorts_by_id($SESSION->voucher->cohorts);
+        $cohorts = voucher_Helper::get_cohorts_by_ids($SESSION->voucher->cohorts);
 
         // Now we'll show the cohorts one by one
         foreach($cohorts as $cohort) {

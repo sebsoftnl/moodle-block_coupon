@@ -51,7 +51,7 @@ class generate_confirm_cohorts_form extends moodleform
         $mform->addElement('checkbox', 'generate_pdf', get_string('label:generate_pdfs', BLOCK_VOUCHER));
 
         // Collect cohort records
-        $cohorts = voucher_Helper::get_cohorts_by_id($SESSION->voucher->cohorts);
+        $cohorts = voucher_Helper::get_cohorts_by_ids($SESSION->voucher->cohorts);
 
         // Cohorts to add
         foreach($cohorts as $cohort) {
