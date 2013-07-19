@@ -41,6 +41,8 @@ $string['error:plugin_disabled'] = 'The cohort_sync plugin has been disabled. Pl
 $string['error:missing_cohort'] = 'The cohort(s) linked to this voucher does not exist anymore. Please contact support.';
 $string['error:missing_group'] = 'The group(s) linked to this voucher does not exist anymore. Please contact support.';
 
+$string['error:wrong_code_length'] = 'Please enter a number between 6 and 32.';
+
 // Success strings
 $string['success:voucher_used'] = 'Voucher used - You can now access the course(s)';
 
@@ -72,7 +74,7 @@ $string['label:selected_cohort'] = 'Selected cohort(s)';
 
 // help texts
 $string['label:voucher_type_help'] = 'The Vouchers will be generated based on either the course or one or more cohorts.';
-$string['label:voucher_email_help'] = 'This is the email address the generated vouchers will be send to.<br />By default it takes the email address from the plugin configuration.';
+$string['label:voucher_email_help'] = 'This is the email address the generated vouchers will be send to.';
 $string['label:voucher_amount_help'] = 'This is the the amount of vouchers that will be generated.';
 
 $string['label:voucher_cohorts_help'] = 'Select the one or more cohorts your users will be enrolled in.';
@@ -82,7 +84,7 @@ $string['label:add_groups'] = 'Add group(s)';
 $string['label:no_groups_selected'] = 'There are no groups connected to this course yet.';
 
 // generate pdfs
-$string['label:generate_pdfs'] = 'Generate loose PDF\'s';
+$string['label:generate_pdfs'] = 'Generate seperate PDF\'s';
 
 // buttons
 $string['button:next'] = 'Next';
@@ -99,24 +101,40 @@ $string['view:input_voucher:heading'] = 'Input Voucher';
 $string['course'] = 'course';
 $string['cohort'] = 'cohort';
 
+$string['voucher_code_length'] = 'Code length';
+$string['voucher_code_length_desc'] = 'Amount of characters of the voucher code (minimum of 6).';
+
 $string['use_supportuser'] = 'Use support user';
 $string['use_supportuser_desc'] = 'Send Vouchers to support user by default';
 
 $string['pdf_generated'] = 'The vouchers have been attached to this email in PDF files.<br /><br />';
 
-$string['default-voucher-page-template'] = '<p>{store_name}<br/>Winkelnummer: {store_number}</p>
-<p style="font-weight: bold;">Welkom bij Jumbo!</p><br/><br/>
-<p>Hierbij ontvang je de voucher om je aan te melden op de digitale leeromgeving van Jumbo. 
-Tijdens je registratie op de digitale leeromgeving heb je de vouchercode nodig om je aan te melden.</p><br/><br/>
-<p><table style="width:100%"><tr><td style="border:1px solid #000000; font-weight: bold; vertical-align: middle; text-align: center;">Dit is je vouchercode: {vouchercode}</td></tr></table></p>
+
+$string['voucher_mail_content'] = '
+    Hello{$a->str_name},<br /><br />
+    You receive this email because new vouchers have recently been generated. The vouchers are added to the attachments of this e-mail.<br /><br />
+    With kind regards,<br /><br />
+    Your friendly neighbourhood Moodle Site';
+$string['voucher_mail_subject'] = 'Moodle Voucher generated';
+
+$string['vouchers_sent'] = 'Your voucher(s) has/have been generated. Within several minutes you will receive an email with the voucher(s) in the attachment.';
+
+$string['default-voucher-page-template'] = '
+<p style="font-weight: bold;">Moodle Voucher</p><br/><br/>
+<p>Hereby you receive the voucher with which you can subscribe for your course(s) in the digital learning environment.</p><br/><br/>
+<p><table style="width:100%"><tr><td style="border:1px solid #000000; font-weight: bold; vertical-align: middle; text-align: center;">This is your voucher code: {vouchercode}</td></tr></table></p>
 <p></p>
-<p>Volg de volgende stappen:</p><br/>
+<p>Please follow the instructions below:</p><br/>
 <ol>
-<li>Open Internet Explorer</li>
-<li>Ga naar de website: <a href="http://winkel.jumboleerplein.nl">winkel.jumboleerplein.nl</a></li>
-<li>Klik onderaan in het blok Aanmelden op "Nieuw account maken"</li>
-<li>Vul de vouchercode in (let op deze is hoofdlettergevoelig)</li>
-<li>Volg de stappen</li>
-<li>Je bent nu op de startpagina. Kies onder Mijn cursussen de cursus die je wilt volgen.</li>
+<li>Open an internet browser</li>
+<li>Go to the following website: <a href="moodle.menno.extern.ds.office.sebsoft.nl">moodle.menno.blabla.nl</a></li>
+<li>Click - in the Voucher block - on the url "Input Voucher"</li>
+<li>Enter the voucher code provided in this document (please note: This code is case-sensitive)</li>
+<li>You are now subscribed and can enter your course(s).</li>
 </ol><br/><br/>
-<p>Veel leerplezier gewenst!</p>';
+<p>Happy learning!</p>';
+
+$string['pdf:titlename'] = 'Moodle Voucher';
+$string['pdf-meta:title'] = 'Moodle Voucher';
+$string['pdf-meta:subject'] = 'Moodle Voucher';
+$string['pdf-meta:keywords'] = 'Moodle Voucher';

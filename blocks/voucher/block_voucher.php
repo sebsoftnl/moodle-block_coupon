@@ -57,7 +57,11 @@ class block_voucher extends block_base
         } elseif ($permissions['inputvouchers']) {
 
             $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/input_voucher.php', array('id' => $this->instance->id));
-            $this->content->footer = html_writer::link($url, get_string('url:input_voucher', BLOCK_VOUCHER));
+            
+//            $this->content->footer = '
+//                <form action="{' . BLOCK_ . '"'
+            
+//            $this->content->footer = html_writer::link($url, get_string('url:input_voucher', BLOCK_VOUCHER));
 
 //            require_once BLOCK_VOUCHER_CLASSROOT.'forms/input_voucher_form.php';
 //            $mform = new input_voucher_form($url);

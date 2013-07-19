@@ -32,6 +32,14 @@ class generate_confirm_cohorts_form extends moodleform
 
         $mform = & $this->_form;
 
+        // Set email_to variable
+        if (get_config('voucher', 'use_supportuser')) {
+            $supportuser = generate_email_supportuser();
+            $email_to = $supportuser->email;
+        } else {
+            $email_to = '';
+        }
+        
         // Amount of vouchers
         $mform->addElement('text', 'voucher_amount', get_string('label:voucher_amount', BLOCK_VOUCHER));
         $mform->setType('voucher_amount', PARAM_INT);
@@ -42,7 +50,7 @@ class generate_confirm_cohorts_form extends moodleform
         // Email address to mail to
         $mform->addElement('text', 'voucher_email', get_string('label:voucher_email', BLOCK_VOUCHER));
         $mform->setType('voucher_email', PARAM_EMAIL);
-        $mform->setDefault('voucher_email', get_config('block/' . BLOCK_VOUCHER, 'default_email'));
+        $mform->setDefault('voucher_email', $email_to);
         $mform->addRule('voucher_email', get_string('error:invalid_email', BLOCK_VOUCHER), 'email', null, 'client');
         $mform->addRule('voucher_email', get_string('error:required', BLOCK_VOUCHER), 'required', null, 'client');
         $mform->addHelpButton('voucher_email', 'label:voucher_email', BLOCK_VOUCHER);

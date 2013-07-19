@@ -26,7 +26,7 @@ final class VoucherGenerator
     const ALNUM = 3;
     const ALL = 7;
     
-    static final function GenerateUniqueCode($size = 16, $flags = self::ALL, $exclude=array('i', 'I', 'l', 'L', 1, 0 , 'o', 'O')) {
+    static final function GenerateUniqueCode($size, $flags = self::ALL, $exclude=array('i', 'I', 'l', 'L', 1, 0 , 'o', 'O')) {
         global $DB;
         
         $vcode = self::GenerateCode($size, $flags = self::ALL, $exclude=array('i', 'I', 'l', 'L', 1, 0 , 'o', 'O'));

@@ -36,9 +36,6 @@ if ($id)    //DEFAULT CHECKS
     $PAGE->navbar->add(ucfirst($course->fullname), new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
-// Make sure the voucher object is set in cache
-if (!isset($SESSION->voucher)) print_error(get_string('error:nopermission', BLOCK_VOUCHER));
-
 $url = new moodle_url('/blocks/voucher/view/generate_voucher_step_four.php', array('id' => $id));
 $PAGE->set_url($url);
 
@@ -47,57 +44,21 @@ $PAGE->set_heading(get_string('view:generate_voucher:heading', BLOCK_VOUCHER));
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('standard');
 
+// Get rid of the session
+unset($SESSION->voucher);
+
 //make sure the moodle editmode is off
 voucher_Helper::forceNoEditingMode();
 
 if (voucher_Helper::getPermission('generatevouchers'))
 {
     
-    echo "Done or smthing?";
+    echo $OUTPUT->header();
     
+    echo "<p>" . get_string('vouchers_sent', BLOCK_VOUCHER) . "</p>";
     
-   // Now we've got:
-    // - cohorts
-    // - amount of
-    // - email
-    
-    
-    
-//    // Depending on our data we'll get the right form
-//    if ($SESSION->voucher->type == 'course') {
-//        
-//        require_once BLOCK_VOUCHER_CLASSROOT.'forms/generate_confirm_course_form.php';
-//        $mform = new generate_confirm_course_form($url);
-//
-//    } else {
-//
-//        require_once BLOCK_VOUCHER_CLASSROOT.'forms/generate_confirm_cohorts_form.php';
-//        $mform = new generate_confirm_cohorts_form($url);
-//        
-//    }
-//    
-//    if ($mform->is_cancelled())
-//    {
-//        redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
-//    }
-//    elseif ($data = $mform->get_data())
-//    {
-//
-//        $SESSION->voucher->amount = $data->voucher_amount;
-//        $SESSION->voucher->email = $data->voucher_email;
-//        $SESSION->voucher->generate_pdf = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
-//        echo("<pre>" . print_r($SESSION, true) . "</pre>");
-//        
-//        exit("<p>We should have processed all data now. Go to confirm screen.</p>");
-//        redirect(voucher_Helper::createBlockUrl(BLOCK_VOUCHER_WWWROOT . 'view/generate_voucher_confirm.php', array('id'=>$id)));
-//    }
-//    else
-//    {
-//        
-//        echo $OUTPUT->header();
-//        $mform->display();
-//        echo $OUTPUT->footer();
-//    }
+    echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $course->id)));
+    echo $OUTPUT->footer();
 }
 else
 {

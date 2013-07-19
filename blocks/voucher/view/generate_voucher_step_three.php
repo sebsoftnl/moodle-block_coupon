@@ -68,6 +68,7 @@ if (voucher_Helper::getPermission('generatevouchers'))
     
     if ($mform->is_cancelled())
     {
+        unset($SESSION->voucher);
         redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
     }
     elseif ($data = $mform->get_data())
@@ -103,7 +104,6 @@ if (voucher_Helper::getPermission('generatevouchers'))
                 }
             }
         }
-        
         redirect(voucher_Helper::createBlockUrl('view/generate_voucher_step_four.php', array('id'=>$id)));
     }
     else

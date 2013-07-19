@@ -61,7 +61,8 @@ if (voucher_Helper::getPermission('inputvouchers'))
         
         // Because we're outside course context we've got to include groups library manually
         require_once($CFG->dirroot . '/group/lib.php');
-
+        require_once($CFG->dirroot . '/cohort/lib.php');
+        require_once($CFG->dirroot . '/enrol/cohort/locallib.php');
         
 //        exit("About to input the voucher and enrol the user 'n stuff..");
         

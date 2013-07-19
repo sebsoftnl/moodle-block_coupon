@@ -41,6 +41,8 @@ $string['error:plugin_disabled'] = 'De cohort_sync plugin staat uit. Neem contac
 $string['error:missing_cohort'] = 'De cohort(en) die aan deze Voucher gelinkt is bestaat niet meer. Neem contact op met support.';
 $string['error:missing_group'] = 'De groep(en) die aan deze Voucher gelinkt is bestaat niet meer. Neem contact op met support.';
 
+$string['error:wrong_code_length'] = 'Vul een getal tussen 6 en 32 in.';
+
 // Success strings
 $string['success:voucher_used'] = 'Voucher gebruikt - U kunt nu uw nieuwe cursus(en) in';
 
@@ -74,8 +76,7 @@ $string['label:selected_cohort'] = 'Geselecteerde cohort(en)';
 
 // help texts
 $string['label:voucher_type_help'] = 'De vouchers worden gebaseerd op een cursus of een of meer cohorts.';
-$string['label:voucher_email_help'] = 'Dit is het e-mail adres waar de gegenereerde vouchers naar toe gestuurd worden.<br />
-    Standaard wordt hier het e-mail adres uit de plugin config ingevuld.';
+$string['label:voucher_email_help'] = 'Dit is het e-mail adres waar de gegenereerde vouchers naar toe gestuurd worden.';
 $string['label:voucher_amount_help'] = 'Het aantal vouchers dat gegenereerd zal worden.';
 
 // buttons
@@ -93,21 +94,32 @@ $string['view:input_voucher:heading'] = 'Voucher invoeren';
 $string['course'] = 'cursus';
 $string['cohort'] = 'cohort';
 
-$string['pdf_generated'] = 'The vouchers have been attached to this email in PDF files.<br /><br />';
+$string['vouchers_sent'] = 'Uw vouchers zijn gegenereerd. Binnen enkele minuten ontvangt u een email bericht met de voucher(s) in de bijlage.';
 
-$string['default-voucher-page-template'] = '<p>{store_name}<br/>Winkelnummer: {store_number}</p>
-<p style="font-weight: bold;">Welkom bij Jumbo!</p><br/><br/>
-<p>Hierbij ontvang je de voucher om je aan te melden op de digitale leeromgeving van Jumbo. 
-Tijdens je registratie op de digitale leeromgeving heb je de vouchercode nodig om je aan te melden.</p><br/><br/>
+$string['voucher_code_length'] = 'Code lengte';
+$string['voucher_code_length_desc'] = 'Aantal karakters voor het voucher code (minimaal 6).';
+
+$string['pdf_generated'] = 'De Vouchers zijn aan dit email bericht toegevoegd als PDF bestanden.<br /><br />';
+
+$string['default-voucher-page-template'] = '
+<p style="font-weight: bold;">Moodle Voucher</p><br/><br/>
+<p>Hierbij ontvang je de voucher om je in te schrijven voor cursussen op de digitale leeromgeving.</p><br/><br/>
 <p><table style="width:100%"><tr><td style="border:1px solid #000000; font-weight: bold; vertical-align: middle; text-align: center;">Dit is je vouchercode: {vouchercode}</td></tr></table></p>
 <p></p>
 <p>Volg de volgende stappen:</p><br/>
 <ol>
 <li>Open Internet Explorer</li>
-<li>Ga naar de website: <a href="http://winkel.jumboleerplein.nl">winkel.jumboleerplein.nl</a></li>
-<li>Klik onderaan in het blok Aanmelden op "Nieuw account maken"</li>
-<li>Vul de vouchercode in (let op deze is hoofdlettergevoelig)</li>
-<li>Volg de stappen</li>
-<li>Je bent nu op de startpagina. Kies onder Mijn cursussen de cursus die je wilt volgen.</li>
+<li>Ga naar de website: <a href="moodle.menno.extern.ds.office.sebsoft.nl">moodle.menno.blabla.nl</a></li>
+<li>Log in met je gebruikelijke gegevens</li>
+<li>Klik in het blok Voucher op de link "Voucher invoeren"</li>
+<li>Vul het voucher code in (let op deze is hoofdlettergevoelig)</li>
+<li>Je bent nu ingeschreven op de cursussen die bij deze voucher horen.</li>
 </ol><br/><br/>
 <p>Veel leerplezier gewenst!</p>';
+
+$string['voucher_mail_content'] = '
+    Hallo{$a->str_name},<br /><br />
+    U ontvangt dit bericht omdat er zojuist nieuwe Moodle Vouchers aangemaakt zijn. De Vouchers zijn in de bijlage van dit bericht toegevoegd.<br /><br />
+    Met vriendelijke groet,<br /><br />
+    Moodle';
+$string['voucher_mail_subject'] = 'Moodle Voucher generated';

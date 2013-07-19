@@ -1,28 +1,23 @@
 <?php
 
 /*
- * File: PDF.php
+ * File: Helper.php
  * Encoding: UTF-8
- * @package vouchergen
+ * @package voucher
  * 
  * @Version 1.0.0
- * @Since 10-okt-2012
+ * @Since 18-jul-2013
  * @copyright Sebsoft.nl
- * @author R.J. van Dongen <rogier@sebsoft.nl>
+ * @author Menno de Ridder <menno@sebsoft.nl>
  */
 
 require_once $CFG->dirroot . '/lib/pdflib.php';
 
-/**
- * Description of PDF
- *
- * @author Rogier
- */
 class voucher_PDF extends pdf
 {
 
     protected $_JUMBOYELLOW = array(252, 197, 0);
-    protected $_voucherHeaderText = 'Voucher Jumbo Leerplein';
+    protected $_voucherHeaderText = 'Moodle Voucher Avetica';
     protected $_fontPath = '';
     private $namestring;
     private $generatorDate;
@@ -63,15 +58,15 @@ class voucher_PDF extends pdf
         return $this;
     }
 
-    public function getFontPath()
-    {
-        return $this->_fontPath;
-    }
-
-    public function setFontPath($fontPath)
-    {
-        $this->_fontPath = $fontPath;
-    }
+//    public function getFontPath()
+//    {
+//        return $this->_fontPath;
+//    }
+//
+//    public function setFontPath($fontPath)
+//    {
+//        $this->_fontPath = $fontPath;
+//    }
     
     public function getLogo()
     {
@@ -103,9 +98,9 @@ class voucher_PDF extends pdf
         $this->SetCreator('PDF Generator build 1.0');
         $this->SetAuthor('Sebsoft PDF Generator build 1.0');
 
-        $this->SetTitle(get_string('pdf-meta:title', 'block_vouchergen'));
-        $this->SetSubject(get_string('pdf-meta:subject', 'block_vouchergen'));
-        $this->SetKeywords(get_string('pdf-meta:keywords', 'block_vouchergen'));
+        $this->SetTitle(get_string('pdf-meta:title', BLOCK_VOUCHER));
+        $this->SetSubject(get_string('pdf-meta:subject', BLOCK_VOUCHER));
+        $this->SetKeywords(get_string('pdf-meta:keywords', BLOCK_VOUCHER));
 
         $this->SetHeaderMargin(50);
         $this->SetFooterMargin(20);
@@ -119,26 +114,26 @@ class voucher_PDF extends pdf
         //$this->_logo = $CFG->dirroot . '/blocks/jumbobase/pix/JUMBO_FC_C.svg';
     }
 
-    function _loadFonts()
-    {
-        $fonts = array(
-            'trebuchetms' => array('', 'trebuchetms.php'),
-            'trebuchetmsB' => array('B', 'trebuchetmsb.php'),
-            'trebuchetmsBI' => array('BI', 'trebuchetmsbi.php'),
-            'trebuchetmsI' => array('I', 'trebuchetmsi.php'),
-            'jumbosans5' => array('', 'jthsab5_.php'),
-            'jumbosans5I' => array('I', 'jthsab5i.php'),
-            'jumbosans7' => array('', 'jthsab7_.php'),
-            'jumbosans7I' => array('I', 'jthsab7i.php'),
-            'jumbosans9' => array('', 'jthsab9_.php'),
-            'jumbosans9I' => array('I', 'jthsab9i.php'),
-        );
-
-        foreach ($fonts as $family => $font)
-        {
-            $this->addFont($family, $font[0], $this->_fontPath . $font[1]);
-        }
-    }
+//    function _loadFonts()
+//    {
+//        $fonts = array(
+//            'trebuchetms' => array('', 'trebuchetms.php'),
+//            'trebuchetmsB' => array('B', 'trebuchetmsb.php'),
+//            'trebuchetmsBI' => array('BI', 'trebuchetmsbi.php'),
+//            'trebuchetmsI' => array('I', 'trebuchetmsi.php'),
+//            'jumbosans5' => array('', 'jthsab5_.php'),
+//            'jumbosans5I' => array('I', 'jthsab5i.php'),
+//            'jumbosans7' => array('', 'jthsab7_.php'),
+//            'jumbosans7I' => array('I', 'jthsab7i.php'),
+//            'jumbosans9' => array('', 'jthsab9_.php'),
+//            'jumbosans9I' => array('I', 'jthsab9i.php'),
+//        );
+//
+//        foreach ($fonts as $family => $font)
+//        {
+//            $this->addFont($family, $font[0], $this->_fontPath . $font[1]);
+//        }
+//    }
 
     public function setGeneratorDate($string)
     {
@@ -156,7 +151,7 @@ class voucher_PDF extends pdf
 
         // header text
         $this->SetXY(0, 5);
-        $this->SetFont('jumbosans7', '', 24);
+        $this->SetFont('helvetica', '', 24);
         $this->Cell(0, 0, $this->_voucherHeaderText, 0, 1, 'C');
     }
 
@@ -198,7 +193,7 @@ class voucher_PDF extends pdf
         $this->Line($ml, $this->h - 20, $w, $this->h - 20, $style);
         
         // this is just guessing about SVG placement (i hope this will work everywhere)
-        $this->ImageSVG($this->_logo, $ml - 18, $this->h - 32, 80, 0, '', 'L', '', '');
+//        $this->ImageSVG($this->_logo, $ml - 18, $this->h - 32, 80, 0, '', 'L', '', '');
     }
 
     function FrontPage()
@@ -244,17 +239,14 @@ class voucher_PDF extends pdf
     protected function _compileTemplate($voucher)
     {
         $find = array(
-            '{vouchercode}',
-            '{store_name}',
-            '{store_number}',
+            '{vouchercode}'
         );
         $replace = array(
-            $voucher->code,
-            $voucher->store_name,
-            $voucher->store_number,
+            $voucher->submission_code
         );
         $html = $this->_voucherPageTemplate;
         $html = str_replace($find, $replace, $html);
+        
         return $html;
     }
 

@@ -25,87 +25,164 @@ class voucher_Helper
         // static's only please!
     }
     
-    public static final function MailVouchers($reqdate, $email, $opts, $forUser=null)
+    /**
+     * GenerateVouchers
+     * This function will generate the vouchers.
+     * Basically all it does is insert the records
+     * in the database, as all checks have been 
+     * done in the view.
+     * 
+     * @param array $vouchers An array of voucher objects
+     * @return True or an array of errors
+     **/
+    public static final function GenerateVouchers($vouchers) {
+        global $SESSION, $DB;
+        
+        $errors = array();
+        
+        // Lets loop through the vouchers
+        foreach($vouchers as $voucher) {
+            
+            // An object for the voucher itself
+            $obj_voucher = new stdClass();
+            $obj_voucher->ownerid = $voucher->ownerid;
+            $obj_voucher->amount = $SESSION->voucher->amount;
+            $obj_voucher->submission_code = $voucher->submission_code;
+            $obj_voucher->timecreated = time();
+            $obj_voucher->userid = null;
+            $obj_voucher->timeexpired = null;
+            $obj_voucher->courseid = (!isset($voucher->courseid) || $voucher->courseid === null) ? null : $voucher->courseid;
+            
+            // insert voucher in db so we've got an id
+            if (!$voucher_id = $DB->insert_record('vouchers', $obj_voucher)) {
+                $errors[] = 'Failed to create general voucher object in database.';
+                continue;
+            }
+            
+            // Cohort voucher
+            if (!isset($voucher->courseid) || $voucher->courseid === null) {
+                
+                // Loop through all cohorts
+                foreach($voucher->cohorts as $cohort) {
+
+                    // An object for each added cohort
+                    $obj_cohort = new stdClass();
+                    $obj_cohort->voucherid = $voucher_id;
+                    $obj_cohort->cohortid = $cohort->cohortid;
+
+                    // And insert in db
+                    if (!$DB->insert_record('voucher_cohorts', $obj_cohort)) {
+                        $errors[] = 'Failed to create cohort ' . $cohort->cohortid . ' for voucher id ' . $voucher_id . '.';
+                        continue;
+                    }
+                }
+
+            // Course voucher
+            } elseif(isset($voucher->groups)) {
+                
+                foreach($voucher->groups as $group) {
+
+                    // An object for each added cohort
+                    $obj_group = new stdClass();
+                    $obj_group->groupid = $group->groupid;
+                    $obj_group->voucherid = $voucher_id;
+
+                    // And insert in db
+                    if (!$DB->insert_record('voucher_groups', $obj_group)) {
+                        $errors[] = 'Failed to create group ' . $group->groupid . ' for voucher id ' . $voucher_id . '.';
+                        continue;
+                    }
+                }
+            }
+        }
+        
+        return (count($errors) > 0) ? $errors : true;
+    }
+    
+    /**
+     * MailVouchers
+     * This function will mail the generated vouchers.
+     * 
+     * @param array $vouchers An array of generated vouchers
+     * @param string $email The email address the vouchers are to be send to
+     * @param bool $generate_single_pdfs Whether each voucher gets a PDF or 1 PDF for all vouchers
+     **/
+    public static final function MailVouchers($vouchers, $email, $generate_single_pdfs)
     {
         global $DB, $CFG, $USER;
         
-        $vouchers = voucher_Db::GetVouchersByDate($reqdate);
-        if (!is_array($vouchers))
-        {
-            print_error(get_string('error:no-vouchers-for-date', BLOCK_VOUCHER));
-        }
-        
-        if ($forUser === null)
-        {
-            $forUser = $USER;
-        }
-        elseif (is_numeric($forUser))
-        {
-            $forUser = $DB->get_record('user', array('id' => $forUser));
-        }
-        
-        //
-        require_once BLOCK_VOUCHER_CLASSROOT."PDF.php";
-        switch ((int)$opts)
-        {
-            case 1: //single/single (een mail met alle vouchers in 1 pdf)
-                $phpmailer = self::_GenerateVoucherMail($email, $forUser);
-                
+        // include pdf generator
+        require_once BLOCK_VOUCHER_CLASSROOT."VoucherPDFGenerator.php";
+
+        // One PDF for each voucher
+        if ($generate_single_pdfs) {
+            
+            // Initiate the mailer
+            $phpmailer = self::_GenerateVoucherMail($email);
+            $zip = new ZipArchive();
+            
+            $filename = "{$CFG->dataroot}/vouchers.zip";
+            if (file_exists($filename)) unlink($filename);
+            
+            $zip->open($filename, ZipArchive::CREATE|ZipArchive::OVERWRITE);
+            
+            $increment = 0;
+            foreach($vouchers as $voucher)
+            {
+                // Generate the PDF
                 $pdfgen = new voucher_PDF(get_string('pdf:titlename', BLOCK_VOUCHER));
-                $pdfgen->setVoucherPageTemplate($CFG->voucher_voucherpagetemplate);
-                $pdfgen->generate($vouchers);
-                $pdfstr = $pdfgen->Output('vouchers.pdf', 'S'); //'FI' enables storing on local system, this could be nice to have?
-                $phpmailer->AddStringAttachment($pdfstr, 'vouchers.pdf');
-                $res = $phpmailer->Send();
-                break;
-            case 2: //single/multi (een mail met losse PDFS als attachment)
-                $phpmailer = self::_GenerateVoucherMail($email, $forUser);
-                foreach($vouchers as $voucher)
-                {
-                    $pdfgen = new voucher_PDF(get_string('pdf:titlename', BLOCK_VOUCHER));
-                    $pdfgen->setVoucherPageTemplate($CFG->voucher_voucherpagetemplate);
-                    $pdfgen->generate($voucher);
-                    $pdfstr = $pdfgen->Output('voucher'.$voucher->id.'.pdf', 'S'); //'FI' enables storing on local system, this could be nice to have?
-                    $phpmailer->AddStringAttachment($pdfstr, 'voucher'.$voucher->id.'.pdf');
-                }
-                $res = $phpmailer->Send();
-                break;
-            case 3: //multi/single (NIET RELEVANT)
-                foreach($vouchers as $voucher)
-                {
-                    $phpmailer = self::_GenerateVoucherMail($email, $forUser);
-                    $pdfgen = new voucher_PDF(get_string('pdf:titlename', BLOCK_VOUCHER));
-                    $pdfgen->setVoucherPageTemplate($CFG->voucher_voucherpagetemplate);
-                    $pdfgen->generate($voucher);
-                    $pdfstr = $pdfgen->Output('voucher'.$voucher->id.'.pdf', 'S'); //'FI' enables storing on local system, this could be nice to have?
-                    $phpmailer->AddStringAttachment($pdfstr, 'voucher'.$voucher->id.'.pdf');
-                    $res = $phpmailer->Send();
-                }
-                break;
+                $pdfgen->setVoucherPageTemplate(get_string('default-voucher-page-template', BLOCK_VOUCHER));
+                $pdfgen->generate($voucher);
+                $pdfstr = $pdfgen->Output('voucher_'.$increment.'.pdf', 'S'); //'FI' enables storing on local system, this could be nice to have?
+                // Add PDF to the zip
+                $zip->addFromString("voucher_$increment.pdf", $pdfstr);
+                // And up the increment
+                $increment ++;
+            }
+            
+            $zip->close();
+            // Add zip to the attachment
+            $phpmailer->AddAttachment($filename);
+            
+        // All vouchers in 1 PDF
+        } else {
+            
+            $phpmailer = self::_GenerateVoucherMail($email);
+
+            $pdfgen = new voucher_PDF(get_string('pdf:titlename', BLOCK_VOUCHER));
+            $pdfgen->setVoucherPageTemplate(get_string('default-voucher-page-template', BLOCK_VOUCHER));
+            $pdfgen->generate($vouchers);
+            $pdfstr = $pdfgen->Output('vouchers.pdf', 'S'); //'FI' enables storing on local system, this could be nice to have?
+            $phpmailer->AddStringAttachment($pdfstr, 'vouchers.pdf');
+            
         }
+        $res = $phpmailer->Send();
+
     }
 
 
-    protected static final function _GenerateVoucherMail($email, $forUser)
-    {
+    protected static final function _GenerateVoucherMail($email) {
         global $CFG, $USER;
         
         require_once $CFG->libdir.'/phpmailer/class.phpmailer.php';
+
+        // FROM is always $USER
+        // TO is either support user or $email
         $supportuser = generate_email_supportuser();
-        $tpldata = new stdClass();
-        $tpldata->name = $forUser->firstname;
-        $tpldata->supportname = $supportuser->firstname;
-        $tpldata->supportemail = $supportuser->email;
-        $generatedHtml = get_string('voucher_mail_content', BLOCK_VOUCHER, $tpldata);
+        
+        $email_to = new stdClass();
+        $email_to->str_name = ($email == $supportuser->email) ? ' ' . $supportuser->firstname : '';
+        
+        $mail_content = get_string('voucher_mail_content', BLOCK_VOUCHER, $email_to);
         
         $phpmailer = new PHPMailer();
-        $phpmailer->Body = $generatedHtml;
-        $phpmailer->AltBody = strip_tags($generatedHtml);
-        $phpmailer->From = $CFG->voucher_mail_from;
-        $phpmailer->FromName = $CFG->voucher_mail_fromname;
+        $phpmailer->Body = $mail_content;
+        $phpmailer->AltBody = strip_tags($mail_content);
+        $phpmailer->From = $USER->email;
+        $phpmailer->FromName = $USER->firstname . ' ' . $USER->lastname;
         $phpmailer->IsHTML(true);
         $phpmailer->Subject = get_string('voucher_mail_subject', BLOCK_VOUCHER);
-        $phpmailer->AddReplyTo($CFG->voucher_mail_from, $CFG->voucher_mail_fromname);
+        $phpmailer->AddReplyTo($CFG->noreplyaddress);
         
 //        $phpmailer->AddBcc('sebastian@sebsoft.nl');
 //        $phpmailer->AddBcc('rogier@sebsoft.nl');
@@ -162,6 +239,23 @@ class voucher_Helper
         $cohorts = $DB->get_records_sql($sql_cohorts);
         
         return (count($cohorts) > 0) ? $cohorts : false;
+    }
+
+    /**
+     * Collect all group records based on an array of ids
+     * 
+     * returns false if no records are found or an array of cohort records
+     */
+    final static public function get_groups_by_ids($group_ids) {
+        global $CFG, $DB;
+        
+        // Collect cohort records
+        $sql_groups = "
+            SELECT * FROM {$CFG->prefix}groups
+            WHERE id IN (" . join($group_ids, ',') . ")";
+        $groups = $DB->get_records_sql($sql_groups);
+        
+        return (count($groups) > 0) ? $groups : false;
     }
 
     /**
