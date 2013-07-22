@@ -139,7 +139,7 @@ $string['default-voucher-page-template'] = '
 <p>Please follow the instructions below:</p><br/>
 <ol>
 <li>Open an internet browser</li>
-<li>Go to the following website: <a href="moodle.menno.extern.ds.office.sebsoft.nl">moodle.menno.blabla.nl</a></li>
+<li>Go to the following website: <a href="{site_url}">{site_name}</a></li>
 <li>Click - in the Voucher block - on the url "Input Voucher"</li>
 <li>Enter the voucher code provided in this document (please note: This code is case-sensitive)</li>
 <li>You are now subscribed and can enter your course(s).</li>

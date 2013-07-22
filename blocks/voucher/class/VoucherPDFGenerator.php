@@ -238,11 +238,17 @@ class voucher_PDF extends pdf
 
     protected function _compileTemplate($voucher)
     {
+        global $CFG;
+        
         $find = array(
-            '{vouchercode}'
+            '{vouchercode}',
+            '{site_url}',
+            '{site_name}'
         );
         $replace = array(
-            $voucher->submission_code
+            $voucher->submission_code,
+            $CFG->wwwroot,
+            'moodle.avetica.nl'
         );
         $html = $this->_voucherPageTemplate;
         $html = str_replace($find, $replace, $html);

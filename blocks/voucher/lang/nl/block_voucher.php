@@ -121,7 +121,7 @@ $string['default-voucher-page-template'] = '
 <p>Volg de volgende stappen:</p><br/>
 <ol>
 <li>Open Internet Explorer</li>
-<li>Ga naar de website: <a href="moodle.menno.extern.ds.office.sebsoft.nl">moodle.menno.blabla.nl</a></li>
+<li>Ga naar de website: <a href="{site_url}">{site_name}</a></li>
 <li>Log in met je gebruikelijke gegevens</li>
 <li>Klik in het blok Voucher op de link "Voucher invoeren"</li>
 <li>Vul het voucher code in (let op deze is hoofdlettergevoelig)</li>
