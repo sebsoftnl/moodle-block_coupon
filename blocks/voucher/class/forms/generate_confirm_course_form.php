@@ -31,6 +31,8 @@ class generate_confirm_course_form extends moodleform
         global $CFG, $DB, $SESSION;
 
         $mform = & $this->_form;
+        
+        $mform->addElement('header', 'confirmheader', get_string('heading:general_settings', BLOCK_VOUCHER));
 
         // Set email_to variable
         if (get_config('voucher', 'use_supportuser')) {
@@ -57,6 +59,7 @@ class generate_confirm_course_form extends moodleform
 
         // Generate_pdf checkbox
         $mform->addElement('checkbox', 'generate_pdf', get_string('label:generate_pdfs', BLOCK_VOUCHER));
+        $mform->addHelpButton('generate_pdf', 'label:generate_pdfs', BLOCK_VOUCHER);
         
         // Course fullname
         $course = $DB->get_record('course', array('id'=>$SESSION->voucher->course));

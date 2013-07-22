@@ -43,7 +43,8 @@ class generate_voucher_groups_form extends moodleform
             $arr_groups_select = array();
             foreach($groups as $group) $arr_groups_select[$group->id] = $group->name;
 
-            $select_groups = &$mform->addElement('select', 'voucher_groups', get_string('label:add_groups', BLOCK_VOUCHER), $arr_groups_select);
+            $select_groups = &$mform->addElement('select', 'voucher_groups', get_string('label:voucher_groups', BLOCK_VOUCHER), $arr_groups_select);
+            $mform->addHelpButton('voucher_groups', 'label:voucher_groups', BLOCK_VOUCHER);
             $select_groups->setMultiple(true);
         
         // Shouldn't happen cause it'll just skip this step if no groups are connected

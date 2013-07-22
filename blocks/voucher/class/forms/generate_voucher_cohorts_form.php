@@ -32,6 +32,8 @@ class generate_voucher_cohorts_form extends moodleform
 
         $mform = & $this->_form;
         
+        $mform->addElement('header', 'header', get_string('heading:input_cohorts', BLOCK_VOUCHER));
+        
         // First we'll get some useful info
         $cohorts = $DB->get_records('cohort');
         

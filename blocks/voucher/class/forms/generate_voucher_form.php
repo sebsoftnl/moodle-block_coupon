@@ -31,7 +31,9 @@ class generate_voucher_form extends moodleform
         global $CFG, $DB, $USER;
 
         $mform = & $this->_form;
-
+        
+        $mform->addElement('header', 'header', get_string('heading:voucher_type', BLOCK_VOUCHER));
+        
         // Type of voucher
         $type_options = array();
         $type_options[] =& $mform->createElement('radio', 'type', '', get_string('label:type_course', BLOCK_VOUCHER), 0);

@@ -58,6 +58,29 @@ class block_voucher extends block_base
 
             $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/input_voucher.php', array('id' => $this->instance->id));
             
+            $voucher_form = "
+                <form action='$url' method='POST'>
+                    <table>
+                        <tr>
+                            <td>" . get_string('label:enter_voucher_code', BLOCK_VOUCHER) . ":</td>
+                        </tr>
+                        <tr>
+                            <td><input type='text' name='voucher_code'></td>
+                        </tr>
+                        <tr>
+                            <td><input type='submit' value='" . get_string('button:submit_voucher_code', BLOCK_VOUCHER) . "'></td>
+                        </tr>
+                    </table>
+                    <input type='hidden' name='submitbutton' value='Submit Voucher' />
+                    <input type='hidden' name='_qf__input_voucher_form' value='1' />
+                    <input type='hidden' name='sesskey' value='DJXXgzhwg5' />
+                </form>";
+            $this->content->footer = $voucher_form;
+
+
+
+
+
 //            $this->content->footer = '
 //                <form action="{' . BLOCK_ . '"'
             

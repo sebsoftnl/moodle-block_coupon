@@ -32,9 +32,13 @@ class input_voucher_form extends moodleform
 
         $mform = & $this->_form;
         
+        $mform->addElement('header', 'header', get_string('heading:input_voucher', BLOCK_VOUCHER));
+        
         // All we need is the voucher code
         $mform->addElement('text', 'voucher_code', get_string('label:voucher_code', BLOCK_VOUCHER));
         $mform->addRule('voucher_code', get_string('error:required', BLOCK_VOUCHER), 'required', null, 'client');
+        $mform->addRule('voucher_code', get_string('error:required', BLOCK_VOUCHER), 'required', null, 'server');
+        $mform->addHelpButton('voucher_code', 'label:voucher_code', BLOCK_VOUCHER);
 
         $this->add_action_buttons(false, get_string('button:submit_voucher_code', BLOCK_VOUCHER));
         
@@ -42,15 +46,15 @@ class input_voucher_form extends moodleform
     
     public function validation($data, $files) {
         global $DB;
-
-        $errors = parent::validation($data, $files);
         
+        $errors = parent::validation($data, $files);
+
         if (!$voucher = $DB->get_record('vouchers', array('submission_code'=>$data['voucher_code']))) {
             $errors['voucher_code'] = get_string('error:invalid_voucher_code', BLOCK_VOUCHER);
         } elseif ($voucher->userid != null) {
             $errors['voucher_code'] = get_string('error:voucher_already_used', BLOCK_VOUCHER);
         }
-//        
+
         return $errors;
     }
     

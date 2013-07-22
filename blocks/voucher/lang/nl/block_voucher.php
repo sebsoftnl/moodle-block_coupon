@@ -27,6 +27,12 @@ $string['heading:administration'] = 'Beheer';
 $string['heading:generatevouchers'] = 'Voucher genereren';
 $string['heading:inputvouchers'] = 'Voucher invoeren';
 
+$string['heading:voucher_type'] = 'Type voucher';
+$string['heading:input_voucher'] = 'Voucher invoeren';
+$string['heading:input_cohorts'] = 'Selecteer cohorten';
+$string['heading:input_course'] = 'Selecteer cursus';
+$string['heading:general_settings'] = 'Laatste instellingen';
+
 // Errors
 $string['error:nopermission'] = 'U heeft geen toestemming om dit te doen';
 $string['error:required'] = 'Dit is een verplicht veld.';
@@ -58,16 +64,22 @@ $string['label:type_course'] = 'Cursus';
 $string['label:type_cohorts'] = 'Cohort(s)';
 
 $string['label:voucher_connect_course'] = 'Cursus(sen) toevoegen';
+$string['label:voucher_connect_course_help'] = 'Selecteer de cursussen die aan de cohort moeten worden toegevoegd.
+    <br /><b><i>Let op: </i></b>Als er al deelnemers aan die cohort toegevoegd zijn worden deze ook in de cursussen ingeschreven!';
 $string['label:connected_courses'] = 'Toegevoegde cursus(sen)';
 $string['label:no_courses_connected'] = 'Er zijn nog geen cursussen toegevoegd aan deze cohort.';
 
-$string['label:add_groups'] = 'Groep(en) toevoegen';
+$string['label:voucher_groups'] = 'Groep(en) toevoegen';
+$string['label:voucher_groups_help'] = 'Selecteer hier de groepen waar uw gebruikers in toegevoegd moeten worden zodra ze worden ingeschreven bij de cursus.';
 $string['label:no_groups_selected'] = 'Er zijn nog geen groepen aan deze cursus toegevoegd.';
 
 $string['label:generate_pdfs'] = 'Genereer losse PDF\'s';
+$string['label:generate_pdfs_help'] = 'Hier kunt u aangeven of u alle vouchers in 1 bestand of iedere voucher een apart bestand wilt ontvangen.';
 
 $string['label:cohort'] = 'Cohort';
 $string['label:voucher_code'] = 'Voucher Code';
+$string['label:voucher_code_help'] = 'Het voucher code is de unieke code die aan iedere voucher is toegekend. U vindt dit code op uw voucher.';
+$string['label:enter_voucher_code'] = 'Vul hier uw Voucher code in';
 
 // Labels for already selected stuffz
 $string['label:selected_groups'] = 'Geselecteerde groep(en)';

@@ -27,6 +27,12 @@ $string['heading:administration'] = 'Manage';
 $string['heading:generatevouchers'] = 'Generate vouchers';
 $string['heading:inputvouchers'] = 'Input Voucher';
 
+$string['heading:voucher_type'] = 'Type of voucher';
+$string['heading:input_voucher'] = 'Input voucher';
+$string['heading:general_settings'] = 'Last settings';
+$string['heading:input_cohorts'] = 'Select cohorts';
+$string['heading:input_course'] = 'Select course';
+
 // Errors
 $string['error:nopermission'] = 'You have no permission to do this';
 $string['error:required'] = 'This field is required.';
@@ -58,6 +64,8 @@ $string['label:type_course'] = 'Course';
 $string['label:type_cohorts'] = 'Cohort(s)';
 
 $string['label:voucher_connect_course'] = 'Add course(s)';
+$string['label:voucher_connect_course_help'] = 'Select all courses you wish to add to the cohort.
+    <br /><b><i>Note: </i></b>All users who are already enrolled in this cohort will also be enrolled in the selected courses!';
 $string['label:connected_courses'] = 'Connected course(s)';
 $string['label:no_courses_connected'] = 'There are no courses connected to this cohort.';
 
@@ -66,6 +74,8 @@ $string['label:voucher_cohorts'] = 'Cohort(s)';
 
 $string['label:cohort'] = 'Cohort';
 $string['label:voucher_code'] = 'Voucher Code';
+$string['label:voucher_code_help'] = 'The voucher code is the unique code which is linked to each individual voucher. You can find this code on your voucher.';
+$string['label:enter_voucher_code'] = 'Please enter your voucher code here';
 
 // Labels for already selected stuffz
 $string['label:selected_groups'] = 'Selected group(s)';
@@ -80,11 +90,13 @@ $string['label:voucher_amount_help'] = 'This is the the amount of vouchers that 
 $string['label:voucher_cohorts_help'] = 'Select the one or more cohorts your users will be enrolled in.';
 $string['label:voucher_course_help'] = 'Select the course your users will be enrolled in.';
 
-$string['label:add_groups'] = 'Add group(s)';
+$string['label:voucher_groups'] = 'Add group(s)';
+$string['label:voucher_groups_help'] = 'Select the groups you wish your users to be enrolled in upon enrolment in the course.';
 $string['label:no_groups_selected'] = 'There are no groups connected to this course yet.';
 
 // generate pdfs
 $string['label:generate_pdfs'] = 'Generate seperate PDF\'s';
+$string['label:generate_pdfs_help'] = 'You can select here if you want to receive your vouchers in either a single file or each voucher in a saperate PDF file.';
 
 // buttons
 $string['button:next'] = 'Next';

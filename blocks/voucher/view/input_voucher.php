@@ -48,6 +48,8 @@ voucher_Helper::forceNoEditingMode();
 
 if (voucher_Helper::getPermission('inputvouchers'))
 {
+//    exit("<pre>" . print_r($_POST, true) . "</pre>");
+    
     // Include the form
     require_once BLOCK_VOUCHER_CLASSROOT.'forms/input_voucher_form.php';
     $mform = new input_voucher_form($url);

@@ -32,6 +32,8 @@ class generate_voucher_course_form extends moodleform
 
         $mform = & $this->_form;
         
+        $mform->addElement('header', 'header', get_string('heading:input_course', BLOCK_VOUCHER));
+        
         // First we'll get some useful info
         $courses_sql = "
             SELECT * FROM {$CFG->prefix}course

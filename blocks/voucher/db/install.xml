@@ -8,7 +8,7 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true" NEXT="userid"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="ownerid"/>
-        <FIELD NAME="ownerid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="courseid" NEXT="courseid"/>
+        <FIELD NAME="ownerid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="userid" NEXT="courseid"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="ownerid" NEXT="submission_code"/>
         <FIELD NAME="submission_code" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false" PREVIOUS="courseid" NEXT="timecreated"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="submission_code" NEXT="timemodified"/>

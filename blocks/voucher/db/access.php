@@ -45,6 +45,15 @@ $capabilities = array(
         'archetypes' => array(
             'manager' => CAP_ALLOW
         )
+    ),
+    'block/voucher:myaddinstance' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'user' => CAP_ALLOW,
+            'guest' => CAP_PREVENT,
+            'manager' => CAP_ALLOW
+        )
     )
 
 );

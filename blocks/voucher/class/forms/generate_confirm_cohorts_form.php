@@ -40,6 +40,9 @@ class generate_confirm_cohorts_form extends moodleform
             $email_to = '';
         }
         
+        // Header
+        $mform->addElement('header', 'confirmheader', get_string('heading:general_settings', BLOCK_VOUCHER));
+        
         // Amount of vouchers
         $mform->addElement('text', 'voucher_amount', get_string('label:voucher_amount', BLOCK_VOUCHER));
         $mform->setType('voucher_amount', PARAM_INT);
@@ -57,6 +60,7 @@ class generate_confirm_cohorts_form extends moodleform
 
         // Generate PDF
         $mform->addElement('checkbox', 'generate_pdf', get_string('label:generate_pdfs', BLOCK_VOUCHER));
+        $mform->addHelpButton('generate_pdf', 'label:generate_pdfs', BLOCK_VOUCHER);
 
         // Collect cohort records
         $cohorts = voucher_Helper::get_cohorts_by_ids($SESSION->voucher->cohorts);
@@ -64,7 +68,8 @@ class generate_confirm_cohorts_form extends moodleform
         // Cohorts to add
         foreach($cohorts as $cohort) {
 
-            $mform->addElement('static', 'cohort_name', get_string('label:selected_cohort', BLOCK_VOUCHER), $cohort->name);
+            $mform->addElement('header', 'cohortsheader[]', $cohort->name);
+//            $mform->addElement('static', 'cohort_name', get_string('label:selected_cohort', BLOCK_VOUCHER), $cohort->name);
 
             // Fetch the courses that are connected to this cohort
             if ($cohort_courses = voucher_Helper::get_courses_by_cohort($cohort->id)) {

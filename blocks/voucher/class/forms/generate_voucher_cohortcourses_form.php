@@ -38,8 +38,11 @@ class generate_voucher_cohortcourses_form extends moodleform
         // Now we'll show the cohorts one by one
         foreach($cohorts as $cohort) {
 
+            // Header for the cohort
+            $mform->addElement('header', 'cohortsheader[]', $cohort->name);
+            
             // cohort name
-            $mform->addElement('static', 'cohort_name', get_string('label:cohort', BLOCK_VOUCHER), $cohort->name);
+//            $mform->addElement('static', 'cohort_name', get_string('label:cohort', BLOCK_VOUCHER), $cohort->name);
             
             // Collect courses connected to cohort
             $cohort_courses = voucher_Helper::get_courses_by_cohort($cohort->id);
@@ -74,9 +77,8 @@ class generate_voucher_cohortcourses_form extends moodleform
                 $arr_not_connected_courses = array();
                 foreach($not_connected_courses as $not_connected_course) $arr_not_connected_courses[$not_connected_course->id] = $not_connected_course->fullname;
                 
-                
-//                $select_cohorts = &$mform->addElement('select', 'voucher_cohorts', get_string('label:voucher_cohorts', BLOCK_VOUCHER), $arr_cohort_select);
                 $select_connect_courses = &$mform->addElement('select', 'connect_courses[' . $cohort->id . ']', get_string('label:voucher_connect_course', BLOCK_VOUCHER), $arr_not_connected_courses);
+                $mform->addHelpButton('connect_courses[' . $cohort->id . ']', 'label:voucher_connect_course', BLOCK_VOUCHER);
                 $select_connect_courses->setMultiple(true);
                     
             }
