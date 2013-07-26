@@ -1,6 +1,6 @@
 <?php
 
-class admin_setting_customIntConfigText extends admin_setting {
+class admin_setting_customConfigTextInt extends admin_setting {
 
     /** @var mixed int means PARAM_XXX type, string is a allowed format in regex */
     public $paramtype;

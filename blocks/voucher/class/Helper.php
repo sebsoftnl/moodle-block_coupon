@@ -224,6 +224,174 @@ class voucher_Helper
         return (count($connected_courses) > 0) ? $connected_courses : false;
     }
     
+    
+    /**
+     * Load the course completion info
+     * 
+     * @param object $user User object from database
+     * @param object $cinfo Course object from database
+     */
+    protected static final function _LoadCourseCompletionInfo($user, $cinfo)
+    {
+        global $DB, $CFG;
+        static $cstatus, $completion_info = array();
+        //static $cert_mod;
+
+        require_once $CFG->dirroot . '/grade/querylib.php';
+        require_once $CFG->dirroot . '/lib/completionlib.php';
+
+        // completion status 'cache' values (speed up, lass!)
+        if ($cstatus === null)
+        {
+            $cstatus = array();
+            $cstatus['started'] = get_string('status:started', BLOCK_MANAGERREPORTS);
+            $cstatus['notstarted'] = get_string('status:not-started', BLOCK_MANAGERREPORTS);
+            $cstatus['complete'] = get_string('status:complete', BLOCK_MANAGERREPORTS);
+        }
+        // completion info 'cache' (speed up, lass!)
+        if (!isset($completion_info[$cinfo->id]))
+        {
+            $completion_info[$cinfo->id] = new completion_info($cinfo);
+        }
+        // cache instance of certificate module record (speed up, lass!)
+        //if ($cert_mod === null)
+        //{
+        //    $cert_mod = $DB->get_record('modules', array('name' => 'certificate'));
+        //}
+
+        $ci = new stdClass();
+        $ci->complete = false;
+        $ci->str_status = $cstatus['notstarted'];
+        $ci->date_started = '-';
+        $ci->date_complete = '-';
+        $ci->str_grade = '-';
+        $ci->gradeinfo = null;
+
+        //$ci->certificates = array();
+        // ok, fill out real data according to completion status/info
+        $com = $completion_info[$cinfo->id];
+        if ($com->is_tracked_user($user->id))
+        {
+            // do we have an enrolment for the course for this user
+            $sql = 'SELECT ue.* FROM {user_enrolments} ue JOIN {enrol} e ON ue.enrolid=e.id WHERE ue.userid=' . $user->id . ' ORDER BY timestart ASC, timecreated ASC';
+            $records = $DB->get_records_sql($sql);
+            if (count($records) === 1)
+            {
+                $record = $records[0];
+                $ci->date_started = ($record->timestart > 0) ? $record->timestart : $record->timecreated;
+            }
+            else
+            {
+                $started = 0;
+                $created = 0;
+                foreach ($records as $record)
+                {
+                    if ($record->timestart > 0)
+                    {
+                        $started = ($started == 0) ? $record->timestart : min($record->timestart, $started);
+                    }
+                    $created = ($created == 0) ? $record->timecreated : min($record->timecreated, $created);
+                }
+
+                $ci->date_started = date('d-m-Y H:i:s', ($started > 0) ? $started : $created);
+            }
+
+            if ($com->is_course_complete($user->id))
+            {
+                // fetch details for course completion
+                $ci->complete = true;
+                $comcom = new completion_completion(array(
+                            'userid' => $user->id,
+                            'course' => $cinfo->id
+                        ));
+                $ci->date_complete = date('d-m-Y H:i:s', $comcom->timecompleted);
+                $ci->gradeinfo = grade_get_course_grade($cinfo->id);
+                if ($ci->gradeinfo !== false)
+                {
+                    $ci->str_grade = $ci->grade_info->str_grade;
+                }
+                $ci->str_status = $cstatus['complete'];
+            }
+            else
+            {
+                // grrr... we need some complete info percentage... :(
+                $ci->str_status = $cstatus['started'];
+                // now append get completion percentage
+                //$ci->str_status .= get_string('status:progress', BLOCK_MANAGERREPORTS, self::_loadCompletionProgress($com, $user));
+            }
+        }
+
+        return $ci;
+    }
+    
+    /**
+     * Render HTML table from the course completion info
+     * 
+     * @param object $reportdata Data provided by loadCourseCompletionInfo
+     */
+    protected function _render_html()
+    {
+        global $CFG;
+        $title = 'Jumbo Admin Report';
+
+        $table = new html_table();
+        
+        $table->head = array(
+            get_string('report:heading:username', BLOCK_MANAGERREPORTS),
+            get_string('report:heading:function', BLOCK_MANAGERREPORTS),
+            get_string('report:heading:department', BLOCK_MANAGERREPORTS),
+            get_string('report:heading:coursename', BLOCK_MANAGERREPORTS),
+            get_string('report:heading:coursetype', BLOCK_MANAGERREPORTS),
+            get_string('report:heading:status', BLOCK_MANAGERREPORTS),
+            get_string('report:heading:datestart', BLOCK_MANAGERREPORTS),
+            get_string('report:heading:datecomplete', BLOCK_MANAGERREPORTS),
+            get_string('report:heading:grade', BLOCK_MANAGERREPORTS)
+        );
+
+        $colcount = count($table->head);
+        $table->summary = $title;
+        $table->align = array_fill(0, $colcount-1, 'left');
+        //$table->size = array_fill(0, $colcount-1, (100/$colcount).'%');
+
+        // SOME value-specific coloring on cells
+        $typeDef = array(
+            get_string('str:mandatory', BLOCK_MANAGERREPORTS) => '<span style="background-color: orange; font-weight: bold">' . get_string('str:mandatory', BLOCK_MANAGERREPORTS) . '</span>',
+            get_string('str:optional', BLOCK_MANAGERREPORTS) => '<span style="background-color: yellow; font-weight: bold">' . get_string('str:optional', BLOCK_MANAGERREPORTS) . '</span>',
+        );
+        $statusDef = array(
+            get_string('status:started', BLOCK_MANAGERREPORTS) => '<span style="background-color: orange; font-weight: bold">' . get_string('status:started', BLOCK_MANAGERREPORTS) . '</span>',
+            get_string('status:not-started', BLOCK_MANAGERREPORTS) => '<span style="background-color: red; font-weight: bold">' . get_string('status:not-started', BLOCK_MANAGERREPORTS) . '</span>',
+            get_string('status:complete', BLOCK_MANAGERREPORTS) => '<span style="background-color: lime; font-weight: bold">' . get_string('status:complete', BLOCK_MANAGERREPORTS) . '</span>',
+        );
+
+        // add data
+        $table->data = array();
+        foreach ($this->_reportdata as $data)
+        {
+            $ulink = '<a href="'.$CFG->wwwroot.'/user/profile.php?id='.$data->user->id.'">'.fullname($data->user).'</a>';
+            $rowdata = array(
+                $ulink, 
+                $data->function,
+                $data->department,
+                $data->coursename,
+                $typeDef[$data->coursetype],
+                $statusDef[$data->status],
+                is_numeric($data->datestart) ? $this->renderDate($data->datestart, false) : $data->datestart,
+                is_numeric($data->datecomplete) ? $this->renderDate($data->datecomplete, false) : $data->datecomplete,
+                $data->grade
+            );
+
+            $table->data[] = $rowdata;
+        }
+
+        $this->result = $table;
+    }
+
+    protected function renderDate($time, $incTime=true) 
+    { 
+        return userdate($time, get_string($incTime?'report:dateformat':'report:dateformatymd', BLOCK_MANAGERREPORTS)); 
+    }
+    
     /**
      * Collect all cohort records based on an array of ids
      * 
@@ -308,6 +476,26 @@ class voucher_Helper
         else
             return 'B';
     }
+    
+    
+    /**
+     * Generate the HTML for a helpbutton.
+     * @param  
+     */
+    final public static function generateHelpButton($element, $element_str, $block) {
+        global $CFG;
+        
+        $element_button = '
+            <span class="helplink">
+                <a class="tooltip" aria-haspopup="true" href="' . $CFG->wwwroot . '/help.php?identifier=' . $element . '&component=' . $block . '&lang=' . current_language() . '">
+                    <img class="iconhelp" src="' . $CFG->wwwroot . '/pix/help.png">
+                </a>
+            </span>
+        ';
+        
+        return $element_button;
+    }
+
 
     /**
      * Make sure editing mode is off and moodle doesn't use complete overview

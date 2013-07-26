@@ -33,12 +33,8 @@ class generate_confirm_cohorts_form extends moodleform
         $mform = & $this->_form;
 
         // Set email_to variable
-        if (get_config('voucher', 'use_supportuser')) {
-            $supportuser = generate_email_supportuser();
-            $email_to = $supportuser->email;
-        } else {
-            $email_to = '';
-        }
+        $use_alternative_email = get_config('use_alternative_email', BLOCK_VOUCHER);
+        $alternative_email = get_config('alternative_email', BLOCK_VOUCHER);
         
         // Header
         $mform->addElement('header', 'confirmheader', get_string('heading:general_settings', BLOCK_VOUCHER));
@@ -50,13 +46,18 @@ class generate_confirm_cohorts_form extends moodleform
         $mform->addRule('voucher_amount', get_string('error:numeric_only', BLOCK_VOUCHER), 'numeric', null, 'client');
         $mform->addHelpButton('voucher_amount', 'label:voucher_amount', BLOCK_VOUCHER);
         
+        // Use alternative email address
+        $mform->addElement('checkbox', 'voucher_use_alternative_email', get_string('label:use_alternative_email', BLOCK_VOUCHER));
+        $mform->setType('voucher_use_alternative_email', PARAM_BOOL);
+        $mform->setDefault('voucher_use_alternative_email', $use_alternative_email);
+        
         // Email address to mail to
-        $mform->addElement('text', 'voucher_email', get_string('label:voucher_email', BLOCK_VOUCHER));
-        $mform->setType('voucher_email', PARAM_EMAIL);
-        $mform->setDefault('voucher_email', $email_to);
-        $mform->addRule('voucher_email', get_string('error:invalid_email', BLOCK_VOUCHER), 'email', null, 'client');
-        $mform->addRule('voucher_email', get_string('error:required', BLOCK_VOUCHER), 'required', null, 'client');
-        $mform->addHelpButton('voucher_email', 'label:voucher_email', BLOCK_VOUCHER);
+        $mform->addElement('text', 'alternative_email', get_string('label:alternative_email', BLOCK_VOUCHER));
+        $mform->setType('alternative_email', PARAM_EMAIL);
+        $mform->setDefault('alternative_email', $alternative_email);
+        $mform->addRule('alternative_email', get_string('error:invalid_email', BLOCK_VOUCHER), 'email', null, 'client');
+        $mform->addHelpButton('alternative_email', 'label:alternative_email', BLOCK_VOUCHER);
+        $mform->disabledIf('alternative_email', 'voucher_use_alternative_email', 'notchecked');
 
         // Generate PDF
         $mform->addElement('checkbox', 'generate_pdf', get_string('label:generate_pdfs', BLOCK_VOUCHER));

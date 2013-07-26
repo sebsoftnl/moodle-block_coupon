@@ -11,6 +11,13 @@
  * @author Menno de Ridder <menno@sebsoft.nl>
  */
 
+// Capabilities
+$string['voucher:addinstance'] = 'Voeg een nieuw Voucher block toe';
+$string['voucher:administration'] = 'Beheer het Voucher block';
+$string['voucher:generatevouchers'] = 'Genereer een nieuwe Voucher';
+$string['voucher:inputvouchers'] = 'Gebruik een Voucher';
+$string['voucher:myaddinstance'] = 'Voeg een nieuw Voucher block toe aan de Mijn Moodle pagina';
+
 //DEFAULT
 $string['blockname'] = 'Voucher';
 $string['pluginname'] = 'Voucher';
@@ -26,6 +33,15 @@ $string['seconds'] = 'seconden';
 $string['heading:administration'] = 'Beheer';
 $string['heading:generatevouchers'] = 'Voucher genereren';
 $string['heading:inputvouchers'] = 'Voucher invoeren';
+$string['heading:label_instructions'] = 'Instructies';
+$string['heading:instructions_1'] = 'Course or Cohorts - Voer dit en dat uit om dit en dat te doen..';
+// Ditjes en datjes:)
+$string['heading:instructions_1.1'] = 'Course - Voer dit en dat uit om dit en dat te doen..';
+$string['heading:instructions_1.2'] = 'Course - Voer dit en dat uit om dit en dat te doen..';
+$string['heading:instructions_1.3'] = 'Course - Voer dit en dat uit om dit en dat te doen..';
+$string['heading:instructions_2.1'] = 'Cohorts - Voer dit en dat uit om dit en dat te doen..';
+$string['heading:instructions_2.2'] = 'Cohorts - Voer dit en dat uit om dit en dat te doen..';
+$string['heading:instructions_2.3'] = 'Cohorts - Voer dit en dat uit om dit en dat te doen..';
 
 $string['heading:voucher_type'] = 'Type voucher';
 $string['heading:input_voucher'] = 'Voucher invoeren';
@@ -55,6 +71,7 @@ $string['success:voucher_used'] = 'Voucher gebruikt - U kunt nu uw nieuwe cursus
 // URL texts
 $string['url:generate_vouchers'] = 'Genereer Voucher';
 $string['url:input_voucher'] = 'Voucher invoeren';
+$string['url:view_reports'] = 'Bekijk rapporten';
 
 // Form Labels
 $string['label:voucher_type'] = 'Genereer gebaseerd op';
@@ -86,6 +103,19 @@ $string['label:selected_groups'] = 'Geselecteerde groep(en)';
 $string['label:selected_course'] = 'Geselecteerde cursus';
 $string['label:selected_cohort'] = 'Geselecteerde cohort(en)';
 
+
+$string['label:alternative_email'] = 'Alternatief e-mail adres';
+$string['label:alternative_email_desc'] = 'Vouchers worden standaard naar dit e-mail adres gestuurd indien het veld \'Gebruik alternatief e-mail\' aangevinkt staat.';
+
+$string['label:use_alternative_email'] = 'Gebruik alternatief e-mail adres';
+$string['label:use_alternative_email_desc'] = 'Indien aangevinkt wordt het e-mail adres uit \'Alternatief e-mail adres\' standaard gebruikt bij het aanmaken van een voucher.';
+
+$string['label:max_vouchers'] = 'Maximum vouchers';
+$string['label:max_vouchers_desc'] = 'Aantal vouchers dat in 1 keer aangemaakt kan worden.';
+
+$string['label:voucher_code_length'] = 'Code length';
+$string['label:voucher_code_length_desc'] = 'Aantal characters van het Voucher code.';
+
 // help texts
 $string['label:voucher_type_help'] = 'De vouchers worden gebaseerd op een cursus of een of meer cohorts.';
 $string['label:voucher_email_help'] = 'Dit is het e-mail adres waar de gegenereerde vouchers naar toe gestuurd worden.';
@@ -107,9 +137,6 @@ $string['course'] = 'cursus';
 $string['cohort'] = 'cohort';
 
 $string['vouchers_sent'] = 'Uw vouchers zijn gegenereerd. Binnen enkele minuten ontvangt u een email bericht met de voucher(s) in de bijlage.';
-
-$string['voucher_code_length'] = 'Code lengte';
-$string['voucher_code_length_desc'] = 'Aantal karakters voor het voucher code (minimaal 6).';
 
 $string['pdf_generated'] = 'De Vouchers zijn aan dit email bericht toegevoegd als PDF bestanden.<br /><br />';
 
@@ -135,3 +162,4 @@ $string['voucher_mail_content'] = '
     Met vriendelijke groet,<br /><br />
     Moodle';
 $string['voucher_mail_subject'] = 'Moodle Voucher generated';
+

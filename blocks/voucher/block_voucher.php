@@ -48,16 +48,26 @@ class block_voucher extends block_base
         $arrParam['id'] = $this->instance->id;
         $arrParam['courseid'] = $this->course->id;
 
+        // Generate Voucher
         if ($permissions['generatevouchers'])
         {
             
             $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/generate_voucher.php', array('id' => $this->instance->id));
-            $this->content->footer = html_writer::link($url, get_string('url:generate_vouchers', BLOCK_VOUCHER));
+            $this->content->footer .= "<p>" . html_writer::link($url, get_string('url:generate_vouchers', BLOCK_VOUCHER)) . "</p>";
             
-        } elseif ($permissions['inputvouchers']) {
+        }
+        
+        // View Reports
+        if ($permissions['generatevouchers'])
+        {
+            $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/reports.php', array('id' => $this->instance->id));
+            $this->content->footer .= "<p>" . html_writer::link($url, get_string('url:view_reports', BLOCK_VOUCHER)) . "</p>";
+        }
 
+        // Input Voucher
+        if ($permissions['inputvouchers']) {
             $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/input_voucher.php', array('id' => $this->instance->id));
-            
+
             $voucher_form = "
                 <form action='$url' method='POST'>
                     <table>
@@ -73,32 +83,10 @@ class block_voucher extends block_base
                     </table>
                     <input type='hidden' name='submitbutton' value='Submit Voucher' />
                     <input type='hidden' name='_qf__input_voucher_form' value='1' />
-                    <input type='hidden' name='sesskey' value='DJXXgzhwg5' />
+                    <input type='hidden' name='sesskey' value='" . sesskey() . "' />
                 </form>";
-            $this->content->footer = $voucher_form;
 
-
-
-
-
-//            $this->content->footer = '
-//                <form action="{' . BLOCK_ . '"'
-            
-//            $this->content->footer = html_writer::link($url, get_string('url:input_voucher', BLOCK_VOUCHER));
-
-//            require_once BLOCK_VOUCHER_CLASSROOT.'forms/input_voucher_form.php';
-//            $mform = new input_voucher_form($url);
-//            
-//            // If the form is submitted
-//            if ($data = $mform->get_data()) {
-//                
-//                exit("<pre>" . print_r($data, true) . "</pre>");
-//                
-//            } else {
-//                $this->content->footer .= $mform->_form->toHtml();
-//                
-//            }
-
+            $this->content->footer .= $voucher_form;
         }
     }
 

@@ -31,7 +31,9 @@ class generate_voucher_groups_form extends moodleform
         global $CFG, $DB, $SESSION;
 
         $mform = & $this->_form;
-
+        
+        $mform->addElement('static', 'header', get_string('header:label_instructions', BLOCK_VOUCHER), get_string('header:instructions_txt', BLOCK_VOUCHER));
+        
         // Display which course we selected
         $course = $DB->get_record('course', array('id'=>$SESSION->voucher->course));
         $mform->addElement('static', 'selected_course', get_string('label:selected_course', BLOCK_VOUCHER), $course->fullname);

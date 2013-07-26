@@ -10,24 +10,50 @@
  * @copyright Sebsoft.nl
  * @author Menno de Ridder <menno@sebsoft.nl>
  */
-require_once BLOCK_VOUCHER_CLASSROOT . 'customIntConfigText.php';
+require_once(BLOCK_VOUCHER_CLASSROOT . 'admin_setting_customConfigTextInt.php');
 
 defined('MOODLE_INTERNAL') || die('moodle_internal not defined');
 if ($ADMIN->fulltree)
 {
 
+//    // Use alternative email
+//    $usealtemail_help = voucher_Helper::generateHelpButton(
+//        'label:use_alternative_email',
+//        BLOCK_VOUCHER
+//    );
     $settings->add(new admin_setting_configcheckbox(
-            'voucher/use_supportuser',
-            get_string('use_supportuser', BLOCK_VOUCHER),
-            get_string('use_supportuser_desc', BLOCK_VOUCHER),
-            1
+            'voucher/use_alternative_email',
+            get_string('label:use_alternative_email', BLOCK_VOUCHER),
+            get_string('label:use_alternative_email_desc', BLOCK_VOUCHER),
+            0
         ));
-
-    $settings->add(new admin_setting_customIntConfigText(
+//    $altemail_help = voucher_Helper::generateHelpButton(
+//        'label:alternative_email',
+//        BLOCK_VOUCHER
+//    );
+    $settings->add(new admin_setting_configtext(
+            'voucher/alternative_email',
+            get_string('label:alternative_email', BLOCK_VOUCHER),
+            get_string('label:alternative_email_desc', BLOCK_VOUCHER),
+            ''
+        ));
+    
+    $max_code_length_choices = array(6=>6, 8=>8, 16=>16, 32=>32);
+    $settings->add(new admin_setting_configselect(
             'voucher/voucher_code_length',
-            get_string('voucher_code_length', BLOCK_VOUCHER),
-            get_string('voucher_code_length_desc', BLOCK_VOUCHER),
-            '16'
+            get_string('label:voucher_code_length', BLOCK_VOUCHER),
+            get_string('label:voucher_code_length_desc', BLOCK_VOUCHER),
+            16,
+            $max_code_length_choices
+        ));
+    
+    $max_voucher_choices = array(5=>5, 10=>10, 25=>25, 50=>50, 100=>100);
+    $settings->add(new admin_setting_configselect(
+            'voucher/max_vouchers',
+            get_string('label:max_vouchers', BLOCK_VOUCHER),
+            get_string('label:max_vouchers_desc', BLOCK_VOUCHER),
+            50,
+            $max_voucher_choices
         ));
 }
 

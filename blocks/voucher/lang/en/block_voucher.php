@@ -11,6 +11,14 @@
  * @author Menno de Ridder <menno@sebsoft.nl>
  */
 
+// Capabilities
+$string['voucher:addinstance'] = 'Add a new Voucher block';
+$string['voucher:administration'] = 'Administrate the Voucher block';
+$string['voucher:generatevouchers'] = 'Generate a new voucher';
+$string['voucher:inputvouchers'] = 'Use a voucher to subscribe';
+$string['voucher:myaddinstance'] = 'Add a new Voucher block to the My Moodle page';
+
+
 //DEFAULT
 $string['blockname'] = 'Voucher';
 $string['pluginname'] = 'Voucher';
@@ -22,6 +30,7 @@ $string['form-desc:voucher_debugemail'] = 'Block debugging email address';
 $string['redirect_in'] = 'Auto-redirecting in ';
 $string['seconds'] = 'seconds';
 
+
 // Headers
 $string['heading:administration'] = 'Manage';
 $string['heading:generatevouchers'] = 'Generate vouchers';
@@ -32,6 +41,7 @@ $string['heading:input_voucher'] = 'Input voucher';
 $string['heading:general_settings'] = 'Last settings';
 $string['heading:input_cohorts'] = 'Select cohorts';
 $string['heading:input_course'] = 'Select course';
+
 
 // Errors
 $string['error:nopermission'] = 'You have no permission to do this';
@@ -49,12 +59,16 @@ $string['error:missing_group'] = 'The group(s) linked to this voucher does not e
 
 $string['error:wrong_code_length'] = 'Please enter a number between 6 and 32.';
 
+
 // Success strings
 $string['success:voucher_used'] = 'Voucher used - You can now access the course(s)';
+
 
 // URL texts
 $string['url:generate_vouchers'] = 'Generate Voucher';
 $string['url:input_voucher'] = 'Input Voucher';
+$string['url:view_reports'] = 'View reports';
+
 
 // Form Labels
 $string['label:voucher_type'] = 'Generate based on';
@@ -77,10 +91,27 @@ $string['label:voucher_code'] = 'Voucher Code';
 $string['label:voucher_code_help'] = 'The voucher code is the unique code which is linked to each individual voucher. You can find this code on your voucher.';
 $string['label:enter_voucher_code'] = 'Please enter your voucher code here';
 
+$string['label:alternative_email'] = 'Alternative email';
+$string['label:alternative_email_desc'] = 'Send vouchers by default to this email address.';
+$string['label:alternative_email_help'] = 'The email address the vouchers will be sent to.';
+
+$string['label:use_alternative_email'] = 'Use alternative email';
+$string['label:use_alternative_email_desc'] = 'When checked it will by default use the email address provided in the Alternative email field.';
+$string['label:use_alternative_email_help'] = 'When checked the vouchers will be send to the provided alternative email address. Ohterwise the vouchers
+    will be send to the user generating the vouchers.';
+
+$string['label:max_vouchers'] = 'Maximum vouchers';
+$string['label:max_vouchers_desc'] = 'Amount of vouchers that can be created in one time.';
+
+$string['label:voucher_code_length'] = 'Code length';
+$string['label:voucher_code_length_desc'] = 'Amount of characters of the voucher code.';
+
+
 // Labels for already selected stuffz
 $string['label:selected_groups'] = 'Selected group(s)';
 $string['label:selected_course'] = 'Selected course';
 $string['label:selected_cohort'] = 'Selected cohort(s)';
+
 
 // help texts
 $string['label:voucher_type_help'] = 'The Vouchers will be generated based on either the course or one or more cohorts.';
@@ -112,12 +143,6 @@ $string['view:input_voucher:heading'] = 'Input Voucher';
 
 $string['course'] = 'course';
 $string['cohort'] = 'cohort';
-
-$string['voucher_code_length'] = 'Code length';
-$string['voucher_code_length_desc'] = 'Amount of characters of the voucher code (minimum of 6).';
-
-$string['use_supportuser'] = 'Use support user';
-$string['use_supportuser_desc'] = 'Send Vouchers to support user by default';
 
 $string['pdf_generated'] = 'The vouchers have been attached to this email in PDF files.<br /><br />';
 
