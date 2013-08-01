@@ -61,10 +61,12 @@ if (voucher_Helper::getPermission('inputvouchers'))
     elseif ($data = $mform->get_data())
     {
         
+//        exit("<pre>" . print_r($CFG->version, true) . "</pre>");
+        
         // Because we're outside course context we've got to include groups library manually
         require_once($CFG->dirroot . '/group/lib.php');
         require_once($CFG->dirroot . '/cohort/lib.php');
-        require_once($CFG->dirroot . '/enrol/cohort/locallib.php');
+//        require_once($CFG->dirroot . '/enrol/cohort/locallib.php');
         
 //        exit("About to input the voucher and enrol the user 'n stuff..");
         
@@ -86,7 +88,7 @@ if (voucher_Helper::getPermission('inputvouchers'))
                 
             }
             // Now execute the cohort sync
-            $result = enrol_cohort_sync();
+            $result = voucher_Helper::enrol_cohort_sync();
             // If result = 0 it went ok. (lol!)
             if ($result === 1) {
                 print_error(get_string('error:cohort_sync', BLOCK_VOUCHER));

@@ -38,6 +38,7 @@ class input_voucher_form extends moodleform
         $mform->addElement('text', 'voucher_code', get_string('label:voucher_code', BLOCK_VOUCHER));
         $mform->addRule('voucher_code', get_string('error:required', BLOCK_VOUCHER), 'required', null, 'client');
         $mform->addRule('voucher_code', get_string('error:required', BLOCK_VOUCHER), 'required', null, 'server');
+        $mform->setType('voucher_code', PARAM_RAW);
         $mform->addHelpButton('voucher_code', 'label:voucher_code', BLOCK_VOUCHER);
 
         $this->add_action_buttons(false, get_string('button:submit_voucher_code', BLOCK_VOUCHER));

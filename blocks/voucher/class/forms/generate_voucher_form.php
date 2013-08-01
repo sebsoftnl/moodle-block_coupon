@@ -32,6 +32,9 @@ class generate_voucher_form extends moodleform
 
         $mform = & $this->_form;
         
+        $mform->addElement('header', 'header', get_string('heading:info', BLOCK_VOUCHER));
+        $mform->addElement('static', 'info', '', get_string('info:voucher_type', BLOCK_VOUCHER));
+        
         $mform->addElement('header', 'header', get_string('heading:voucher_type', BLOCK_VOUCHER));
         
         // Type of voucher
@@ -48,6 +51,3 @@ class generate_voucher_form extends moodleform
     }
     
 }
-
-
-?>

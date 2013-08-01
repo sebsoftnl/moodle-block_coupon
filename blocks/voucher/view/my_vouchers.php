@@ -61,11 +61,6 @@ if (voucher_Helper::getPermission('generatevouchers'))
         WHERE ownerid = {$USER->id}";
     $vouchers = $DB->get_records_sql($sql_vouchers);
     
-    echo "
-        <table>
-            <tr>
-                <th></th>";
-    
     foreach($vouchers as $voucher) {
         
     }

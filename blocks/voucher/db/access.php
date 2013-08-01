@@ -33,8 +33,7 @@ $capabilities = array(
         'captype' => 'view',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
-            'manager' => CAP_ALLOW,
-            'editingteacher' => CAP_PREVENT
+            'manager' => CAP_ALLOW
         )
     ),
     'block/voucher:generatevouchers' => array(

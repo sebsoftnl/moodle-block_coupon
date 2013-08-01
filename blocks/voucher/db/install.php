@@ -13,9 +13,13 @@
 
 function xmldb_block_voucher_install()
 {
-    global $DB;
+    global $DB, $CFG;
 
     // perform install tasks
-
+    if (!is_dir($CFG->dataroot . '/voucher_logos')) {
+        
+        
+        if (!@mkdir($CFG->dataroot .'/voucher_logos')) print_error('error:moodledata_not_writable', BLOCK_VOUCHER);
+    }
 }
 

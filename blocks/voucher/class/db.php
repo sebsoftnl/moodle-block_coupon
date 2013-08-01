@@ -55,7 +55,103 @@ class voucher_Db
 //        }
 //        return $rs;
 //    }
+    
+    
 
+    /**
+     * Collect all courses connected to the provided cohort ID
+     * 
+     * Return false if no courses are connected or an array of course records
+     */
+    final static public function GetCoursesByCohort($cohortid) {
+        global $DB;
+
+        $sql_cohort_courses = "
+            SELECT * FROM {enrol} e
+            LEFT JOIN {course} c
+                ON e.courseid = c.id
+            WHERE customint1 = {$cohortid}
+            AND e.enrol = 'cohort'
+            AND c.visible = 1
+            AND c.id != 1";
+        $cohort_courses = $DB->get_records_sql($sql_cohort_courses);
+
+        return (count($cohort_courses) > 0) ? $cohort_courses : false;
+    }
+    
+    final static public function GetUnconnectedCohortCourses($cohortid) {
+        global $DB;
+        
+        $sql_unconnected_courses = "
+            SELECT * FROM {course} c
+            WHERE c.id != 1
+            AND c.visible = 1
+            AND c.id NOT IN (
+                SELECT courseid FROM {enrol} e
+                WHERE e.customint1 = {$cohortid}
+                AND e.enrol = 'cohort'
+            )";
+        $unconnected_courses = $DB->get_records_sql($sql_unconnected_courses);
+        
+        return (!empty($unconnected_courses)) ? $unconnected_courses : false;
+    }
+    
+    static public final function GetGroupsByCourseId($courseid) {
+        global $DB;
+        
+        $groups = $DB->get_records('groups', array('courseid'=>$courseid));
+        
+        return (!empty($groups)) ? $groups : false;
+    }
+    
+    static public final function GetCourseById($courseid) {
+        global $DB;
+        
+        return ($DB->get_record('course', array('id'=>$courseid)));
+    }
+    
+    static public final function GetCohorts() {
+        global $DB;
+        
+        $cohorts = $DB->get_records('cohort');
+        
+        return (!empty($cohorts)) ? $cohorts : false;
+    }
+    
+    static public final function GetVouchers() {
+        global $DB;
+        
+        $sql_vouchers = "
+            SELECT * FROM {vouchers}
+            WHERE userid IS NOT NULL";
+        $vouchers = $DB->get_records_sql($sql_vouchers);
+        
+        return (!empty($vouchers)) ? $vouchers : false;
+    }
+    
+    static public final function GetVouchersByOwner($ownerid) {
+        global $DB;
+        
+        $sql_vouchers = "
+            SELECT * FROM {vouchers}
+            WHERE userid IS NOT NULL
+            AND ownerid = $ownerid";
+        $vouchers = $DB->get_records_sql($sql_vouchers);
+
+        return (!empty($vouchers)) ? $vouchers : false;
+    }
+    
+    static public final function GetVisibleCourses() {
+        global $DB;
+        
+        $courses_sql = "
+            SELECT * FROM {course}
+            WHERE id != 1
+            AND visible = 1";
+        $courses = $DB->get_records_sql($courses_sql);
+        
+        return (!empty($courses)) ? $courses : false;
+    }
     
     static public final function GetBlockVersion()
     {

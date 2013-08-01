@@ -19,6 +19,8 @@ define('BLOCK_VOUCHER_WWWROOT', $CFG->wwwroot . '/blocks/voucher/');
 define('BLOCK_VOUCHER_DIRROOT', $CFG->dirroot . '/blocks/voucher/');
 define('BLOCK_VOUCHER_CLASSROOT', BLOCK_VOUCHER_DIRROOT.'class/');
 
+define('BLOCK_VOUCHER_LOGOFILE', $CFG->dataroot.'/voucher_logos/logo.png'); // logo file
+
 //include the core DEFAULTS
 require_once BLOCK_VOUCHER_CLASSROOT.'voucher_exception.php';
 require_once BLOCK_VOUCHER_CLASSROOT.'db.php';

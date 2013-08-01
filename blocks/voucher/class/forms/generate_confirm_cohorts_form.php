@@ -32,9 +32,13 @@ class generate_confirm_cohorts_form extends moodleform
 
         $mform = & $this->_form;
 
+        $mform->addElement('header', 'header', get_string('heading:info', BLOCK_VOUCHER));
+        $mform->addElement('static', 'info', '', get_string('info:voucher_confirm', BLOCK_VOUCHER));
+
         // Set email_to variable
-        $use_alternative_email = get_config('use_alternative_email', BLOCK_VOUCHER);
-        $alternative_email = get_config('alternative_email', BLOCK_VOUCHER);
+        $use_alternative_email = get_config('voucher', 'use_alternative_email');
+        $alternative_email = get_config('voucher', 'alternative_email');
+//        $max_vouchers_amount = get_config('voucher', 'max_vouchers');
         
         // Header
         $mform->addElement('header', 'confirmheader', get_string('heading:general_settings', BLOCK_VOUCHER));
@@ -47,9 +51,9 @@ class generate_confirm_cohorts_form extends moodleform
         $mform->addHelpButton('voucher_amount', 'label:voucher_amount', BLOCK_VOUCHER);
         
         // Use alternative email address
-        $mform->addElement('checkbox', 'voucher_use_alternative_email', get_string('label:use_alternative_email', BLOCK_VOUCHER));
-        $mform->setType('voucher_use_alternative_email', PARAM_BOOL);
-        $mform->setDefault('voucher_use_alternative_email', $use_alternative_email);
+        $mform->addElement('checkbox', 'use_alternative_email', get_string('label:use_alternative_email', BLOCK_VOUCHER));
+        $mform->setType('use_alternative_email', PARAM_BOOL);
+        $mform->setDefault('use_alternative_email', $use_alternative_email);
         
         // Email address to mail to
         $mform->addElement('text', 'alternative_email', get_string('label:alternative_email', BLOCK_VOUCHER));
@@ -57,7 +61,7 @@ class generate_confirm_cohorts_form extends moodleform
         $mform->setDefault('alternative_email', $alternative_email);
         $mform->addRule('alternative_email', get_string('error:invalid_email', BLOCK_VOUCHER), 'email', null, 'client');
         $mform->addHelpButton('alternative_email', 'label:alternative_email', BLOCK_VOUCHER);
-        $mform->disabledIf('alternative_email', 'voucher_use_alternative_email', 'notchecked');
+        $mform->disabledIf('alternative_email', 'use_alternative_email', 'notchecked');
 
         // Generate PDF
         $mform->addElement('checkbox', 'generate_pdf', get_string('label:generate_pdfs', BLOCK_VOUCHER));
@@ -73,7 +77,7 @@ class generate_confirm_cohorts_form extends moodleform
 //            $mform->addElement('static', 'cohort_name', get_string('label:selected_cohort', BLOCK_VOUCHER), $cohort->name);
 
             // Fetch the courses that are connected to this cohort
-            if ($cohort_courses = voucher_Helper::get_courses_by_cohort($cohort->id)) {
+            if ($cohort_courses = voucher_Db::GetCoursesByCohort($cohort->id)) {
                 
                 $mform->addElement('static', 'connected_courses', get_string('label:connected_courses', BLOCK_VOUCHER), '');
                 
@@ -92,7 +96,33 @@ class generate_confirm_cohorts_form extends moodleform
         $this->add_action_buttons(true, get_string('button:save', BLOCK_VOUCHER));
         
     }
-    
+        
+    public function validation($data, $files) {
+        
+        $errors = parent::validation($data, $files);
+        
+        $max_vouchers_amount = get_config('voucher', 'max_vouchers');
+        if ($data['voucher_amount'] > $max_vouchers_amount) {
+            $errors['voucher_amount'] = get_string('error:voucher_amount_too_high', BLOCK_VOUCHER, array('max_vouchers'=>$max_vouchers_amount));
+        }
+        
+        // When we want to use alternative email
+        if (isset($data['use_alternative_email']) && $data['use_alternative_email']) {
+            
+            if (empty($data['alternative_email'])) {
+                
+                $error['alternative_email'] = get_string('error:alternative_email_required', BLOCK_VOUCHER);
+                
+            } elseif (!filter_var($data['alternative_email'], FILTER_VALIDATE_EMAIL)) {
+            
+                $error['alternative_email'] = get_string('error:alternative_email_invalid', BLOCK_VOUCHER);
+                
+            }
+        }
+        
+        return $errors;
+    }
+
 }
 
 

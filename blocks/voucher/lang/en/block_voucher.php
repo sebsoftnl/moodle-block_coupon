@@ -41,7 +41,19 @@ $string['heading:input_voucher'] = 'Input voucher';
 $string['heading:general_settings'] = 'Last settings';
 $string['heading:input_cohorts'] = 'Select cohorts';
 $string['heading:input_course'] = 'Select course';
+$string['heading:input_groups'] = 'Select groups';
+$string['heading:imageupload'] = 'Upload image';
 
+$string['heading:info'] = 'Info';
+
+// Info
+$string['info:voucher_type'] = 'Select which type of voucher you wish to create.';
+$string['info:voucher_course'] = 'Select the course you are creating your voucher(s) for.';
+$string['info:voucher_cohorts'] = 'Select the cohort(s) you are creating your voucher(s) for.';
+$string['info:voucher_course_groups'] = 'Select which groups you wish your users to be enrolled in when they use a voucher.';
+$string['info:voucher_cohort_courses'] = 'You can now connect courses to the cohorts.';
+$string['info:voucher_confirm'] = 'Please fill out the last information to confirm your voucher.';
+$string['info:imageupload'] = 'Please select an image of the type .png to be used in the Voucher PDF files.';
 
 // Errors
 $string['error:nopermission'] = 'You have no permission to do this';
@@ -56,16 +68,25 @@ $string['error:cohort_sync'] = 'An error occured while trying to synchronize the
 $string['error:plugin_disabled'] = 'The cohort_sync plugin has been disabled. Please contact support.';
 $string['error:missing_cohort'] = 'The cohort(s) linked to this voucher does not exist anymore. Please contact support.';
 $string['error:missing_group'] = 'The group(s) linked to this voucher does not exist anymore. Please contact support.';
+$string['error:voucher_amount_too_high'] = 'You are only allowed to generate {$a->max_vouchers} at one given time.';
+$string['error:alternative_email_required'] = 'If you have checked \'use alternative email\' this field is required.';
+$string['error:alternative_email_invalid'] = 'If you have checked \'use alternative email\' this field should contain a valid email address.';
 
 $string['error:wrong_code_length'] = 'Please enter a number between 6 and 32.';
+$string['error:no_vouchers_submitted'] = 'None of your vouchers have been used yet.';
 
+$string['error:wrong_image_size'] = 'The uploaded logo does not have the required size. Please upload an image with a ratio of 210 mm by 297 mm.';
+
+$string['error:moodledata_not_writable'] = 'Your moodledata/voucher_logos folder is not writable. Please fix your permissions.';
 
 // Success strings
 $string['success:voucher_used'] = 'Voucher used - You can now access the course(s)';
+$string['success:uploadimage'] = 'Your new voucher image has been uploaded.';
 
 
 // URL texts
 $string['url:generate_vouchers'] = 'Generate Voucher';
+$string['url:uploadimage'] = 'Change voucher image';
 $string['url:input_voucher'] = 'Input Voucher';
 $string['url:view_reports'] = 'View reports';
 
@@ -112,6 +133,12 @@ $string['label:selected_groups'] = 'Selected group(s)';
 $string['label:selected_course'] = 'Selected course';
 $string['label:selected_cohort'] = 'Selected cohort(s)';
 
+$string['label:api_enabled'] = 'Enable API';
+$string['label:api_enabled_desc'] = 'The Voucher API grants the possibility to generate vouchers from an external system.';
+$string['label:api_user'] = 'API User';
+$string['label:api_user_desc'] = 'The username that can be used to generate a voucher using the API.';
+$string['label:api_password'] = 'API Password';
+$string['label:api_password_desc'] = 'The password that can be used to generate a voucher using the API.';
 
 // help texts
 $string['label:voucher_type_help'] = 'The Vouchers will be generated based on either the course or one or more cohorts.';
@@ -124,6 +151,11 @@ $string['label:voucher_course_help'] = 'Select the course your users will be enr
 $string['label:voucher_groups'] = 'Add group(s)';
 $string['label:voucher_groups_help'] = 'Select the groups you wish your users to be enrolled in upon enrolment in the course.';
 $string['label:no_groups_selected'] = 'There are no groups connected to this course yet.';
+
+$string['label:image'] = 'Voucher logo';
+$string['label:image_desc'] = 'Logo to be placed in the generated vouchers';
+
+$string['label:current_image'] = 'Current Voucher logo';
 
 // generate pdfs
 $string['label:generate_pdfs'] = 'Generate seperate PDF\'s';
@@ -138,6 +170,9 @@ $string['button:submit_voucher_code'] = 'Submit Voucher';
 $string['view:generate_voucher:title'] = 'Generate Voucher';
 $string['view:generate_voucher:heading'] = 'Generate Voucher';
 
+$string['view:reports:heading'] = 'Voucher Reports';
+$string['view:reports:title'] = 'Voucher Reports';
+
 $string['view:input_voucher:title'] = 'Input Voucher';
 $string['view:input_voucher:heading'] = 'Input Voucher';
 
@@ -148,7 +183,7 @@ $string['pdf_generated'] = 'The vouchers have been attached to this email in PDF
 
 
 $string['voucher_mail_content'] = '
-    Hello{$a->str_name},<br /><br />
+    Hello,<br /><br />
     You receive this email because new vouchers have recently been generated. The vouchers are added to the attachments of this e-mail.<br /><br />
     With kind regards,<br /><br />
     Your friendly neighbourhood Moodle Site';
@@ -175,3 +210,21 @@ $string['pdf:titlename'] = 'Moodle Voucher';
 $string['pdf-meta:title'] = 'Moodle Voucher';
 $string['pdf-meta:subject'] = 'Moodle Voucher';
 $string['pdf-meta:keywords'] = 'Moodle Voucher';
+
+$string['report:status_not_started'] = 'Course not started yet';
+$string['report:status_started'] = 'Course started';
+$string['report:status_completed'] = 'Course completed';
+
+$string['report:dateformat'] = '%d-%m-%Y %H:%M:%S'; 
+$string['report:dateformatymd'] = '%d-%m-%Y';
+
+$string['report:heading:username'] = 'Username';
+$string['report:heading:coursename'] = 'Course name';
+$string['report:heading:coursetype'] = 'Course type';
+$string['report:heading:status'] = 'Status';
+$string['report:heading:datestart'] = 'Startdate';
+$string['report:heading:datecomplete'] = 'Date completed';
+$string['report:heading:grade'] = 'Grade';
+
+$string['str:mandatory'] = 'Mandatory or smthing';
+$string['str:optional'] = 'Optional or smthing';

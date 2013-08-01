@@ -31,11 +31,14 @@ class generate_voucher_cohorts_form extends moodleform
         global $CFG, $DB, $USER;
 
         $mform = & $this->_form;
-        
+                
+        $mform->addElement('header', 'header', get_string('heading:info', BLOCK_VOUCHER));
+        $mform->addElement('static', 'info', '', get_string('info:voucher_cohorts', BLOCK_VOUCHER));
+
         $mform->addElement('header', 'header', get_string('heading:input_cohorts', BLOCK_VOUCHER));
         
         // First we'll get some useful info
-        $cohorts = $DB->get_records('cohort');
+        $cohorts = voucher_Db::GetCohorts();
         
         // And create data for multiselect
         $arr_cohort_select = array();

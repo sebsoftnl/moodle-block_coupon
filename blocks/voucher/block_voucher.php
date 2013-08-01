@@ -54,11 +54,14 @@ class block_voucher extends block_base
             
             $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/generate_voucher.php', array('id' => $this->instance->id));
             $this->content->footer .= "<p>" . html_writer::link($url, get_string('url:generate_vouchers', BLOCK_VOUCHER)) . "</p>";
-            
+
+            $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/uploadimage.php', array('id' => $this->instance->id));
+            $this->content->footer .= "<p>" . html_writer::link($url, get_string('url:uploadimage', BLOCK_VOUCHER)) . "</p>";
+
         }
         
         // View Reports
-        if ($permissions['generatevouchers'])
+        if ($permissions['viewreports'])
         {
             $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/reports.php', array('id' => $this->instance->id));
             $this->content->footer .= "<p>" . html_writer::link($url, get_string('url:view_reports', BLOCK_VOUCHER)) . "</p>";

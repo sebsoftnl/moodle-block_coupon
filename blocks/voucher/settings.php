@@ -55,5 +55,26 @@ if ($ADMIN->fulltree)
             50,
             $max_voucher_choices
         ));
-}
 
+    $settings->add(new admin_setting_configcheckbox(
+            'voucher/api_enabled',
+            get_string('label:api_enabled', BLOCK_VOUCHER),
+            get_string('label:api_enabled_desc', BLOCK_VOUCHER),
+            0
+        ));
+
+    $settings->add(new admin_setting_configtext(
+            'voucher/api_user',
+            get_string('label:api_user', BLOCK_VOUCHER),
+            get_string('label:api_user_desc', BLOCK_VOUCHER),
+            ''
+        ));
+    
+    $settings->add(new admin_setting_configtext(
+            'voucher/api_password',
+            get_string('label:api_password', BLOCK_VOUCHER),
+            get_string('label:api_password_desc', BLOCK_VOUCHER),
+            ''
+        ));
+
+}

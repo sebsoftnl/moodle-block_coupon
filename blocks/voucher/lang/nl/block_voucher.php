@@ -48,6 +48,18 @@ $string['heading:input_voucher'] = 'Voucher invoeren';
 $string['heading:input_cohorts'] = 'Selecteer cohorten';
 $string['heading:input_course'] = 'Selecteer cursus';
 $string['heading:general_settings'] = 'Laatste instellingen';
+$string['heading:imageupload'] = 'Upload afbeelding';
+
+$string['heading:info'] = 'Informatie';
+
+// Info
+$string['info:voucher_type'] = 'Selecteer welk type voucher u wilt genereren.';
+$string['info:voucher_course'] = 'Selecteer welke cursus(sen) u aan uw voucher wilt koppelen.';
+$string['info:voucher_cohorts'] = 'Selecteer hier welke cohort(en) u aan uw voucher wilt koppelen.';
+$string['info:voucher_groups'] = 'Selecteer hier in welke groepen uw gebruikers ingeschreven moeten worden wanneer ze een voucher gebruiken.';
+$string['info:voucher_cohort_courses'] = 'U kunt hier een of meer cursussen aan de geselecteerde cohort(en) koppelen.';
+$string['info:voucher_confirm'] = 'Vul hier de laatste gegevens in om uw vouchers aan te maken.';
+$string['info:imageupload'] = 'Hier kunt u een nieuw voucher logo van het type png uploaden voor gebruik in de voucher PDF bestanden.';
 
 // Errors
 $string['error:nopermission'] = 'U heeft geen toestemming om dit te doen';
@@ -64,12 +76,21 @@ $string['error:missing_cohort'] = 'De cohort(en) die aan deze Voucher gelinkt is
 $string['error:missing_group'] = 'De groep(en) die aan deze Voucher gelinkt is bestaat niet meer. Neem contact op met support.';
 
 $string['error:wrong_code_length'] = 'Vul een getal tussen 6 en 32 in.';
+$string['error:no_vouchers_submitted'] = 'Er zijn nog geen vouchers ingedient.';
+$string['error:voucher_amount_too_high'] = 'U kunt slechts {$a->max_vouchers} vouchers tegelijk genereren.';
+$string['error:alternative_email_required'] = 'If you have checked \'use alternative email\' this field is required.';
+$string['error:alternative_email_invalid'] = 'If you have checked \'use alternative email\' this field should contain a valid email address.';
+
+$string['error:moodledata_not_writable'] = 'U heeft geen schrijf rechten op moodledata/voucher_logos. Pas uw rechten aan.';
+$string['error:wrong_image_size'] = 'De afbeelding heeft niet de juiste afmetingen. Probeer het opnieuw met een afbeelding met een verhouding van 210 mm bij 297 mm.';
 
 // Success strings
 $string['success:voucher_used'] = 'Voucher gebruikt - U kunt nu uw nieuwe cursus(en) in';
+$string['success:uploadimage'] = 'Uw nieuwe voucher afbeelding is geupload.';
 
 // URL texts
 $string['url:generate_vouchers'] = 'Genereer Voucher';
+$string['url:uploadimage'] = 'Wijzig voucher logo';
 $string['url:input_voucher'] = 'Voucher invoeren';
 $string['url:view_reports'] = 'Bekijk rapporten';
 
@@ -116,10 +137,22 @@ $string['label:max_vouchers_desc'] = 'Aantal vouchers dat in 1 keer aangemaakt k
 $string['label:voucher_code_length'] = 'Code length';
 $string['label:voucher_code_length_desc'] = 'Aantal characters van het Voucher code.';
 
+$string['label:image'] = 'Voucher logo';
+$string['label:image_desc'] = 'Logo dat bovenaan de Vouchers komt';
+
+$string['label:current_image'] = 'Huidige Voucher logo';
+
 // help texts
 $string['label:voucher_type_help'] = 'De vouchers worden gebaseerd op een cursus of een of meer cohorts.';
 $string['label:voucher_email_help'] = 'Dit is het e-mail adres waar de gegenereerde vouchers naar toe gestuurd worden.';
 $string['label:voucher_amount_help'] = 'Het aantal vouchers dat gegenereerd zal worden.';
+
+$string['label:api_enabled'] = 'Activeer API';
+$string['label:api_enabled_desc'] = 'Met de Voucher API kan men een voucher genereren van een extern systeem.';
+$string['label:api_user'] = 'API gebruiker';
+$string['label:api_user_desc'] = 'De gebruiker waarmee men de voucher API kan gebruiken.';
+$string['label:api_password'] = 'API Password';
+$string['label:api_password_desc'] = 'Het wachtwoord waarmee men de voucher API kan gebruiken.';
 
 // buttons
 $string['button:next'] = 'Volgende';
@@ -129,6 +162,9 @@ $string['button:submit_voucher_code'] = 'Invoeren';
 // view strings
 $string['view:generate_voucher:title'] = 'Genereer Voucher';
 $string['view:generate_voucher:heading'] = 'Genereer Voucher';
+
+$string['view:reports:heading'] = 'Voucher Rapporten';
+$string['view:reports:title'] = 'Voucher Rapporten';
 
 $string['view:input_voucher:title'] = 'Voucher invoeren';
 $string['view:input_voucher:heading'] = 'Voucher invoeren';
@@ -157,9 +193,26 @@ $string['default-voucher-page-template'] = '
 <p>Veel leerplezier gewenst!</p>';
 
 $string['voucher_mail_content'] = '
-    Hallo{$a->str_name},<br /><br />
+    Hallo,<br /><br />
     U ontvangt dit bericht omdat er zojuist nieuwe Moodle Vouchers aangemaakt zijn. De Vouchers zijn in de bijlage van dit bericht toegevoegd.<br /><br />
     Met vriendelijke groet,<br /><br />
     Moodle';
 $string['voucher_mail_subject'] = 'Moodle Voucher generated';
 
+$string['report:status_not_started'] = 'Cursus nog niet gestart';
+$string['report:status_started'] = 'Cursus gestart';
+$string['report:status_completed'] = 'Cursus afgerond';
+
+$string['report:dateformat'] = '%d-%m-%Y %H:%M:%S';
+$string['report:dateformatymd'] = '%d-%m-%Y';
+
+$string['report:heading:username'] = 'Gebruikersnaam';
+$string['report:heading:coursename'] = 'Cursus naam';
+$string['report:heading:coursetype'] = 'Cursus type';
+$string['report:heading:status'] = 'Status';
+$string['report:heading:datestart'] = 'Start datum';
+$string['report:heading:datecomplete'] = 'Datum afgerond';
+$string['report:heading:grade'] = 'Cijfer';
+
+$string['str:mandatory'] = 'Mandatory or smthing';
+$string['str:optional'] = 'Optional or smthing';

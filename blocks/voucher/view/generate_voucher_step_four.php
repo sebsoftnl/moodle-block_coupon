@@ -76,11 +76,9 @@ if (voucher_Helper::getPermission('generatevouchers'))
         // Include the voucher generator
         require_once(BLOCK_VOUCHER_CLASSROOT . 'VoucherGenerator.php');
         
-        exit("<pre>" . print_r($data, true) . "</pre>");
-        
         // Save last settings in sessions
         $SESSION->voucher->amount = $data->voucher_amount;
-        $SESSION->voucher->email = $data->voucher_email;
+        $SESSION->voucher->email = (isset($data->use_alternative_email) && $data->use_alternative_email) ? $data->alternative_email : $USER->email;
         $SESSION->voucher->generate_single_pdfs = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
         
         // Get max length for the voucher code
@@ -119,7 +117,6 @@ if (voucher_Helper::getPermission('generatevouchers'))
             $vouchers[] = $voucher;
         }
 
-//        exit("<pre>" . print_r($vouchers, true) . "</pre>");
         // Now that we've got all the vouchers
         $result = voucher_Helper::GenerateVouchers($vouchers);
         if ($result !== true) {

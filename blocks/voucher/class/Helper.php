@@ -14,17 +14,15 @@
 /**
  * Helper class for various functionality
  */
-class voucher_Helper
-{
+class voucher_Helper {
 
     /**
      * __construct() HIDE: WE'RE STATIC 
      */
-    protected function __construct()
-    {
+    protected function __construct() {
         // static's only please!
     }
-    
+
     /**
      * GenerateVouchers
      * This function will generate the vouchers.
@@ -34,36 +32,36 @@ class voucher_Helper
      * 
      * @param array $vouchers An array of voucher objects
      * @return True or an array of errors
-     **/
+     * */
     public static final function GenerateVouchers($vouchers) {
         global $SESSION, $DB;
-        
+
         $errors = array();
-        
+
         // Lets loop through the vouchers
-        foreach($vouchers as $voucher) {
-            
+        foreach ($vouchers as $voucher) {
+
             // An object for the voucher itself
             $obj_voucher = new stdClass();
             $obj_voucher->ownerid = $voucher->ownerid;
-            $obj_voucher->amount = $SESSION->voucher->amount;
+            $obj_voucher->amount = $voucher->amount;
             $obj_voucher->submission_code = $voucher->submission_code;
             $obj_voucher->timecreated = time();
             $obj_voucher->userid = null;
             $obj_voucher->timeexpired = null;
             $obj_voucher->courseid = (!isset($voucher->courseid) || $voucher->courseid === null) ? null : $voucher->courseid;
-            
+
             // insert voucher in db so we've got an id
             if (!$voucher_id = $DB->insert_record('vouchers', $obj_voucher)) {
                 $errors[] = 'Failed to create general voucher object in database.';
                 continue;
             }
-            
+
             // Cohort voucher
             if (!isset($voucher->courseid) || $voucher->courseid === null) {
-                
+
                 // Loop through all cohorts
-                foreach($voucher->cohorts as $cohort) {
+                foreach ($voucher->cohorts as $cohort) {
 
                     // An object for each added cohort
                     $obj_cohort = new stdClass();
@@ -77,10 +75,10 @@ class voucher_Helper
                     }
                 }
 
-            // Course voucher
-            } elseif(isset($voucher->groups)) {
-                
-                foreach($voucher->groups as $group) {
+                // Course voucher
+            } elseif (isset($voucher->groups)) {
+
+                foreach ($voucher->groups as $group) {
 
                     // An object for each added cohort
                     $obj_group = new stdClass();
@@ -95,10 +93,10 @@ class voucher_Helper
                 }
             }
         }
-        
+
         return (count($errors) > 0) ? $errors : true;
     }
-    
+
     /**
      * MailVouchers
      * This function will mail the generated vouchers.
@@ -106,47 +104,46 @@ class voucher_Helper
      * @param array $vouchers An array of generated vouchers
      * @param string $email The email address the vouchers are to be send to
      * @param bool $generate_single_pdfs Whether each voucher gets a PDF or 1 PDF for all vouchers
-     **/
-    public static final function MailVouchers($vouchers, $email, $generate_single_pdfs)
-    {
+     * */
+    public static final function MailVouchers($vouchers, $email, $generate_single_pdfs) {
         global $DB, $CFG, $USER;
-        
+
         // include pdf generator
-        require_once BLOCK_VOUCHER_CLASSROOT."VoucherPDFGenerator.php";
+        require_once BLOCK_VOUCHER_CLASSROOT . "VoucherPDFGenerator.php";
 
         // One PDF for each voucher
         if ($generate_single_pdfs) {
-            
+
             // Initiate the mailer
             $phpmailer = self::_GenerateVoucherMail($email);
             $zip = new ZipArchive();
-            
+
             $filename = "{$CFG->dataroot}/vouchers.zip";
-            if (file_exists($filename)) unlink($filename);
-            
-            $zip->open($filename, ZipArchive::CREATE|ZipArchive::OVERWRITE);
-            
-            $increment = 0;
-            foreach($vouchers as $voucher)
-            {
+            if (file_exists($filename))
+                unlink($filename);
+
+            $zip->open($filename, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+            $increment = 1;
+            foreach ($vouchers as $voucher) {
                 // Generate the PDF
                 $pdfgen = new voucher_PDF(get_string('pdf:titlename', BLOCK_VOUCHER));
                 $pdfgen->setVoucherPageTemplate(get_string('default-voucher-page-template', BLOCK_VOUCHER));
                 $pdfgen->generate($voucher);
-                $pdfstr = $pdfgen->Output('voucher_'.$increment.'.pdf', 'S'); //'FI' enables storing on local system, this could be nice to have?
+                $pdfstr = $pdfgen->Output('voucher_' . $increment . '.pdf', 'S'); //'FI' enables storing on local system, this could be nice to have?
                 // Add PDF to the zip
                 $zip->addFromString("voucher_$increment.pdf", $pdfstr);
                 // And up the increment
-                $increment ++;
+                $increment++;
             }
-            
+
             $zip->close();
             // Add zip to the attachment
             $phpmailer->AddAttachment($filename);
-            
-        // All vouchers in 1 PDF
+
+            // All vouchers in 1 PDF
         } else {
-            
+
             $phpmailer = self::_GenerateVoucherMail($email);
 
             $pdfgen = new voucher_PDF(get_string('pdf:titlename', BLOCK_VOUCHER));
@@ -154,36 +151,28 @@ class voucher_Helper
             $pdfgen->generate($vouchers);
             $pdfstr = $pdfgen->Output('vouchers.pdf', 'S'); //'FI' enables storing on local system, this could be nice to have?
             $phpmailer->AddStringAttachment($pdfstr, 'vouchers.pdf');
-            
         }
         $res = $phpmailer->Send();
-
     }
 
-
     protected static final function _GenerateVoucherMail($email) {
-        global $CFG, $USER;
-        
-        require_once $CFG->libdir.'/phpmailer/class.phpmailer.php';
+        global $CFG;
 
-        // FROM is always $USER
-        // TO is either support user or $email
+        require_once $CFG->libdir . '/phpmailer/class.phpmailer.php';
+
         $supportuser = generate_email_supportuser();
-        
-        $email_to = new stdClass();
-        $email_to->str_name = ($email == $supportuser->email) ? ' ' . $supportuser->firstname : '';
-        
-        $mail_content = get_string('voucher_mail_content', BLOCK_VOUCHER, $email_to);
-        
+
+        $mail_content = get_string('voucher_mail_content', BLOCK_VOUCHER);
+
         $phpmailer = new PHPMailer();
         $phpmailer->Body = $mail_content;
         $phpmailer->AltBody = strip_tags($mail_content);
-        $phpmailer->From = $USER->email;
-        $phpmailer->FromName = $USER->firstname . ' ' . $USER->lastname;
+        $phpmailer->From = $supportuser->email;
+        $phpmailer->FromName = $supportuser->firstname . ' ' . $supportuser->lastname;
         $phpmailer->IsHTML(true);
         $phpmailer->Subject = get_string('voucher_mail_subject', BLOCK_VOUCHER);
         $phpmailer->AddReplyTo($CFG->noreplyaddress);
-        
+
 //        $phpmailer->AddBcc('sebastian@sebsoft.nl');
 //        $phpmailer->AddBcc('rogier@sebsoft.nl');
 //        if (strstr($this->siteemail, ':') !== false)
@@ -200,39 +189,30 @@ class voucher_Helper
 //        }
         $phpmailer->AddCustomHeader("X-VOUCHER-Send: " . time());
         $phpmailer->AddAddress($email);
-        
+
         return $phpmailer;
     }
-
     
-    /**
-     * Collect all courses connected to the provided cohort ID
-     * 
-     * Return false if no courses are connected or an array of course records
-     */
-    final static public function get_courses_by_cohort($cohort_id) {
-        global $CFG, $DB;
+    public static final function GetVouchers() {
+        global $USER;
+
+        if (self::getPermission('viewallreports')) {
+            $vouchers = voucher_Db::GetVouchers();
+        } else {
+            $vouchers = voucher_Db::GetVouchersByOwner($USER->id);
+        }
         
-        $sql_connected_courses = "
-            SELECT * FROM {$CFG->prefix}enrol e
-            LEFT JOIN {$CFG->prefix}course c
-                ON e.courseid = c.id
-            WHERE customint1 = {$cohort_id}
-            AND e.enrol = 'cohort'";
-        $connected_courses = $DB->get_records_sql($sql_connected_courses);
-
-        return (count($connected_courses) > 0) ? $connected_courses : false;
+        return $vouchers;
+        
     }
-    
-    
+
     /**
      * Load the course completion info
      * 
      * @param object $user User object from database
      * @param object $cinfo Course object from database
      */
-    protected static final function _LoadCourseCompletionInfo($user, $cinfo)
-    {
+    public static final function _LoadCourseCompletionInfo($user, $cinfo) {
         global $DB, $CFG;
         static $cstatus, $completion_info = array();
         //static $cert_mod;
@@ -241,16 +221,14 @@ class voucher_Helper
         require_once $CFG->dirroot . '/lib/completionlib.php';
 
         // completion status 'cache' values (speed up, lass!)
-        if ($cstatus === null)
-        {
+        if ($cstatus === null) {
             $cstatus = array();
-            $cstatus['started'] = get_string('status:started', BLOCK_MANAGERREPORTS);
-            $cstatus['notstarted'] = get_string('status:not-started', BLOCK_MANAGERREPORTS);
-            $cstatus['complete'] = get_string('status:complete', BLOCK_MANAGERREPORTS);
+            $cstatus['started'] = get_string('report:status_started', BLOCK_VOUCHER);
+            $cstatus['notstarted'] = get_string('report:status_not_started', BLOCK_VOUCHER);
+            $cstatus['complete'] = get_string('report:status_completed', BLOCK_VOUCHER);
         }
         // completion info 'cache' (speed up, lass!)
-        if (!isset($completion_info[$cinfo->id]))
-        {
+        if (!isset($completion_info[$cinfo->id])) {
             $completion_info[$cinfo->id] = new completion_info($cinfo);
         }
         // cache instance of certificate module record (speed up, lass!)
@@ -270,24 +248,18 @@ class voucher_Helper
         //$ci->certificates = array();
         // ok, fill out real data according to completion status/info
         $com = $completion_info[$cinfo->id];
-        if ($com->is_tracked_user($user->id))
-        {
+        if ($com->is_tracked_user($user->id)) {
             // do we have an enrolment for the course for this user
             $sql = 'SELECT ue.* FROM {user_enrolments} ue JOIN {enrol} e ON ue.enrolid=e.id WHERE ue.userid=' . $user->id . ' ORDER BY timestart ASC, timecreated ASC';
             $records = $DB->get_records_sql($sql);
-            if (count($records) === 1)
-            {
-                $record = $records[0];
+            if (count($records) === 1) {
+                $record = array_shift($records);
                 $ci->date_started = ($record->timestart > 0) ? $record->timestart : $record->timecreated;
-            }
-            else
-            {
+            } else {
                 $started = 0;
                 $created = 0;
-                foreach ($records as $record)
-                {
-                    if ($record->timestart > 0)
-                    {
+                foreach ($records as $record) {
+                    if ($record->timestart > 0) {
                         $started = ($started == 0) ? $record->timestart : min($record->timestart, $started);
                     }
                     $created = ($created == 0) ? $record->timecreated : min($record->timecreated, $created);
@@ -296,8 +268,7 @@ class voucher_Helper
                 $ci->date_started = date('d-m-Y H:i:s', ($started > 0) ? $started : $created);
             }
 
-            if ($com->is_course_complete($user->id))
-            {
+            if ($com->is_course_complete($user->id)) {
                 // fetch details for course completion
                 $ci->complete = true;
                 $comcom = new completion_completion(array(
@@ -306,14 +277,11 @@ class voucher_Helper
                         ));
                 $ci->date_complete = date('d-m-Y H:i:s', $comcom->timecompleted);
                 $ci->gradeinfo = grade_get_course_grade($cinfo->id);
-                if ($ci->gradeinfo !== false)
-                {
+                if ($ci->gradeinfo !== false) {
                     $ci->str_grade = $ci->grade_info->str_grade;
                 }
                 $ci->str_status = $cstatus['complete'];
-            }
-            else
-            {
+            } else {
                 // grrr... we need some complete info percentage... :(
                 $ci->str_status = $cstatus['started'];
                 // now append get completion percentage
@@ -324,74 +292,90 @@ class voucher_Helper
         return $ci;
     }
     
+    public static final function enrol_cohort_sync() {
+        global $CFG;
+        
+        require_once($CFG->dirroot . '/enrol/cohort/locallib.php');
+        
+        if ($CFG->version < 2013051400) {
+            return enrol_cohort_sync();
+        } else {
+            $trace = new null_progress_trace();
+            return enrol_cohort_sync($trace);
+        }
+    }
+    
+
     /**
      * Render HTML table from the course completion info
      * 
      * @param object $reportdata Data provided by loadCourseCompletionInfo
      */
-    protected function _render_html()
-    {
+    public static final function _render_html($reportdata) {
         global $CFG;
-        $title = 'Jumbo Admin Report';
+        $title = 'User Report';
 
+//        exit("<pre>" . print_r($reportdata, true) . "</pre>");
         $table = new html_table();
-        
+
         $table->head = array(
-            get_string('report:heading:username', BLOCK_MANAGERREPORTS),
-            get_string('report:heading:function', BLOCK_MANAGERREPORTS),
-            get_string('report:heading:department', BLOCK_MANAGERREPORTS),
-            get_string('report:heading:coursename', BLOCK_MANAGERREPORTS),
-            get_string('report:heading:coursetype', BLOCK_MANAGERREPORTS),
-            get_string('report:heading:status', BLOCK_MANAGERREPORTS),
-            get_string('report:heading:datestart', BLOCK_MANAGERREPORTS),
-            get_string('report:heading:datecomplete', BLOCK_MANAGERREPORTS),
-            get_string('report:heading:grade', BLOCK_MANAGERREPORTS)
+            get_string('report:heading:username', BLOCK_VOUCHER),
+//            get_string('report:heading:function', BLOCK_VOUCHER),
+//            get_string('report:heading:department', BLOCK_VOUCHER),
+            get_string('report:heading:coursename', BLOCK_VOUCHER),
+            //get_string('report:heading:coursetype', BLOCK_VOUCHER),
+            get_string('report:heading:status', BLOCK_VOUCHER),
+            get_string('report:heading:datestart', BLOCK_VOUCHER),
+            get_string('report:heading:datecomplete', BLOCK_VOUCHER),
+            get_string('report:heading:grade', BLOCK_VOUCHER)
         );
 
         $colcount = count($table->head);
         $table->summary = $title;
-        $table->align = array_fill(0, $colcount-1, 'left');
+        $table->align = array_fill(0, $colcount - 1, 'left');
         //$table->size = array_fill(0, $colcount-1, (100/$colcount).'%');
-
         // SOME value-specific coloring on cells
         $typeDef = array(
-            get_string('str:mandatory', BLOCK_MANAGERREPORTS) => '<span style="background-color: orange; font-weight: bold">' . get_string('str:mandatory', BLOCK_MANAGERREPORTS) . '</span>',
-            get_string('str:optional', BLOCK_MANAGERREPORTS) => '<span style="background-color: yellow; font-weight: bold">' . get_string('str:optional', BLOCK_MANAGERREPORTS) . '</span>',
+            get_string('str:mandatory', BLOCK_VOUCHER) => '<span style="background-color: orange; font-weight: bold">' . get_string('str:mandatory', BLOCK_VOUCHER) . '</span>',
+            get_string('str:optional', BLOCK_VOUCHER) => '<span style="background-color: yellow; font-weight: bold">' . get_string('str:optional', BLOCK_VOUCHER) . '</span>',
         );
         $statusDef = array(
-            get_string('status:started', BLOCK_MANAGERREPORTS) => '<span style="background-color: orange; font-weight: bold">' . get_string('status:started', BLOCK_MANAGERREPORTS) . '</span>',
-            get_string('status:not-started', BLOCK_MANAGERREPORTS) => '<span style="background-color: red; font-weight: bold">' . get_string('status:not-started', BLOCK_MANAGERREPORTS) . '</span>',
-            get_string('status:complete', BLOCK_MANAGERREPORTS) => '<span style="background-color: lime; font-weight: bold">' . get_string('status:complete', BLOCK_MANAGERREPORTS) . '</span>',
+            get_string('report:status_started', BLOCK_VOUCHER) => '<span style="background-color: orange; font-weight: bold">' . get_string('report:status_started', BLOCK_VOUCHER) . '</span>',
+            get_string('report:status_not_started', BLOCK_VOUCHER) => '<span style="background-color: red; font-weight: bold">' . get_string('report:status_not_started', BLOCK_VOUCHER) . '</span>',
+            get_string('report:status_completed', BLOCK_VOUCHER) => '<span style="background-color: lime; font-weight: bold">' . get_string('report:status_completed', BLOCK_VOUCHER) . '</span>',
         );
-
+        //echo "<pre>";
+        //print_r($reportdata);
         // add data
         $table->data = array();
-        foreach ($this->_reportdata as $data)
-        {
-            $ulink = '<a href="'.$CFG->wwwroot.'/user/profile.php?id='.$data->user->id.'">'.fullname($data->user).'</a>';
-            $rowdata = array(
-                $ulink, 
-                $data->function,
-                $data->department,
-                $data->coursename,
-                $typeDef[$data->coursetype],
-                $statusDef[$data->status],
-                is_numeric($data->datestart) ? $this->renderDate($data->datestart, false) : $data->datestart,
-                is_numeric($data->datecomplete) ? $this->renderDate($data->datecomplete, false) : $data->datecomplete,
-                $data->grade
-            );
+        foreach ($reportdata->userdata as $uid => $cdata) {
+            $user = $reportdata->users[$uid];
+            foreach ($cdata as $cid => $data) {
+                $course = $reportdata->courses[$cid];
+                $ulink = '<a href="' . $CFG->wwwroot . '/user/profile.php?id=' . $user->id . '">' . fullname($user) . '</a>';
+                $rowdata = array(
+                    $ulink,
+//                $data->function,
+//                $data->department,
+                    $course->fullname,
+                    //$typeDef[$data->coursetype],
+                    $data->str_status,
+                    is_numeric($data->date_started) ? self::renderDate($data->date_started, false) : $data->date_started,
+                    is_numeric($data->date_complete) ? self::renderDate($data->date_complete, false) : $data->date_complete,
+                    $data->str_grade
+                );
 
-            $table->data[] = $rowdata;
+                $table->data[] = $rowdata;
+            }
         }
 
-        $this->result = $table;
-    }
-
-    protected function renderDate($time, $incTime=true) 
-    { 
-        return userdate($time, get_string($incTime?'report:dateformat':'report:dateformatymd', BLOCK_MANAGERREPORTS)); 
+        return $table;
     }
     
+    final static public function renderDate($time, $incTime = true) {
+        return userdate($time, get_string($incTime ? 'report:dateformat' : 'report:dateformatymd', BLOCK_VOUCHER));
+    }
+
     /**
      * Collect all cohort records based on an array of ids
      * 
@@ -399,13 +383,13 @@ class voucher_Helper
      */
     final static public function get_cohorts_by_ids($cohort_ids) {
         global $CFG, $DB;
-        
+
         // Collect cohort records
         $sql_cohorts = "
             SELECT * FROM {$CFG->prefix}cohort
             WHERE id IN (" . join($cohort_ids, ',') . ")";
         $cohorts = $DB->get_records_sql($sql_cohorts);
-        
+
         return (count($cohorts) > 0) ? $cohorts : false;
     }
 
@@ -416,13 +400,13 @@ class voucher_Helper
      */
     final static public function get_groups_by_ids($group_ids) {
         global $CFG, $DB;
-        
+
         // Collect cohort records
         $sql_groups = "
             SELECT * FROM {$CFG->prefix}groups
             WHERE id IN (" . join($group_ids, ',') . ")";
         $groups = $DB->get_records_sql($sql_groups);
-        
+
         return (count($groups) > 0) ? $groups : false;
     }
 
@@ -431,8 +415,7 @@ class voucher_Helper
      * @param type $name
      * @return array | boolean
      */
-    final static public function getPermission($name = '')
-    {
+    final static public function getPermission($name = '') {
         $context = get_context_instance(CONTEXT_SYSTEM);
 
         $array = array();
@@ -441,30 +424,26 @@ class voucher_Helper
         $array['addinstance'] = (has_capability('block/voucher:administration', $context)) ? true : false;
         $array['inputvouchers'] = (has_capability('block/voucher:inputvouchers', $context)) ? true : false;
         $array['generatevouchers'] = (has_capability('block/voucher:generatevouchers', $context)) ? true : false;
+        $array['viewreports'] = (has_capability('block/voucher:viewreports', $context)) ? true : false;
+        $array['viewallreports'] = (has_capability('block/voucher:viewallreports', $context)) ? true : false;
 
-        if (!empty($name))
-        {
+        if (!empty($name)) {
             return $array[$name];
-        }
-        else
-        {
+        } else {
             return $array;
         }
     }
 
-    final public static function formatSize($size)
-    {
+    final public static function formatSize($size) {
         $size = (int) $size;
         $fmt = '%.02f' . self::_size_modifier($size);
-        while ($size > 1024)
-        {
+        while ($size > 1024) {
             $size /= 1024.0;
         }
         return sprintf($fmt, $size);
     }
 
-    final private static function _size_modifier($size)
-    {
+    final private static function _size_modifier($size) {
         if ($size > 1099511627776)
             return 'TB';
         elseif ($size > 1073741824)
@@ -476,15 +455,14 @@ class voucher_Helper
         else
             return 'B';
     }
-    
-    
+
     /**
      * Generate the HTML for a helpbutton.
      * @param  
      */
     final public static function generateHelpButton($element, $element_str, $block) {
         global $CFG;
-        
+
         $element_button = '
             <span class="helplink">
                 <a class="tooltip" aria-haspopup="true" href="' . $CFG->wwwroot . '/help.php?identifier=' . $element . '&component=' . $block . '&lang=' . current_language() . '">
@@ -492,10 +470,9 @@ class voucher_Helper
                 </a>
             </span>
         ';
-        
+
         return $element_button;
     }
-
 
     /**
      * Make sure editing mode is off and moodle doesn't use complete overview
@@ -503,15 +480,12 @@ class voucher_Helper
      * @global object $PAGE
      * @param moodle_url $redirectUrl
      */
-    public static function forceNoEditingMode($redirectUrl = '')
-    {
+    public static function forceNoEditingMode($redirectUrl = '') {
         global $USER, $PAGE;
-        if (!empty($USER->editing))
-        {
+        if (!empty($USER->editing)) {
             $USER->editing = 0;
 
-            if (empty($redirectUrl))
-            {
+            if (empty($redirectUrl)) {
                 $params = $PAGE->url->params();
                 $redirectUrl = new moodle_url($PAGE->url, $params);
             }
@@ -519,8 +493,7 @@ class voucher_Helper
         }
     }
 
-    public static final function printAutoRedirect(moodle_url $url, $return = false)
-    {
+    public static final function printAutoRedirect(moodle_url $url, $return = false) {
         $str = '';
         $str .= '<div id="redir" style="color: #00aa00; background-color: #ffff80; text-align: center; font-weight: bold; font-family: Verdana, Helvetica, Arial, Sans-serif"></div>';
         $str .= '<script type = "text/javascript">';
@@ -528,38 +501,30 @@ class voucher_Helper
         $str .= 'function autorefresh(){bc--; if (bc>0){ document.getElementById(\'redir\').innerHTML="' . get_string('redirect_in', BLOCK_VOUCHER) . '" + bc + " ' . get_string('seconds', BLOCK_VOUCHER) . '";setTimeout("autorefresh()",1000); }else {window.location="' . $url->out(true) . '";}}';
         $str .= '</script>';
 
-        if ($return)
-        {
+        if ($return) {
             return $str;
-        }
-        else
-        {
+        } else {
             echo $str;
         }
     }
 
-    public static final function createBlockUrl($relUrl, $params = array())
-    {
+    public static final function createBlockUrl($relUrl, $params = array()) {
         return new moodle_url(BLOCK_VOUCHER_WWWROOT . $relUrl, $params);
     }
 
-    public static final function createBlockLink($relUrl, $params, $linktext, $linktitle = '')
-    {
+    public static final function createBlockLink($relUrl, $params, $linktext, $linktitle = '') {
         $uri = new moodle_url(BLOCK_VOUCHER_WWWROOT . $relUrl, $params);
         $aparams = array('href' => str_replace('&amp;', '&', $uri));
-        if (!empty($linktitle))
-        {
+        if (!empty($linktitle)) {
             $aparams['title'] = $linktitle;
         }
         return html_writer::tag('a', $linktext, $aparams);
     }
 
-    public static final function createBlockButton($relUrl, $params, $buttontext, $title = '')
-    {
+    public static final function createBlockButton($relUrl, $params, $buttontext, $title = '') {
         $uri = new moodle_url(BLOCK_VOUCHER_WWWROOT . $relUrl, $params);
-        $aparams = array('onclick' => 'window.location=\''.str_replace('&amp;', '&', $uri).'\'');
-        if (!empty($title))
-        {
+        $aparams = array('onclick' => 'window.location=\'' . str_replace('&amp;', '&', $uri) . '\'');
+        if (!empty($title)) {
             $aparams['title'] = $title;
         }
         return html_writer::tag('button', $buttontext, $aparams);

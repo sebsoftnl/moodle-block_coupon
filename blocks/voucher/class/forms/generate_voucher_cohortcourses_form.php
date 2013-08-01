@@ -32,6 +32,9 @@ class generate_voucher_cohortcourses_form extends moodleform
 
         $mform = & $this->_form;
 
+        $mform->addElement('header', 'header', get_string('heading:info', BLOCK_VOUCHER));
+        $mform->addElement('static', 'info', '', get_string('info:voucher_cohort_courses', BLOCK_VOUCHER));
+
         // Collect cohort records
         $cohorts = voucher_Helper::get_cohorts_by_ids($SESSION->voucher->cohorts);
 
@@ -41,11 +44,8 @@ class generate_voucher_cohortcourses_form extends moodleform
             // Header for the cohort
             $mform->addElement('header', 'cohortsheader[]', $cohort->name);
             
-            // cohort name
-//            $mform->addElement('static', 'cohort_name', get_string('label:cohort', BLOCK_VOUCHER), $cohort->name);
-            
             // Collect courses connected to cohort
-            $cohort_courses = voucher_Helper::get_courses_by_cohort($cohort->id);
+            $cohort_courses = voucher_Db::GetCoursesByCohort($cohort->id);
             
             // if we have connected courses we'll display them
             if ($cohort_courses) {
@@ -61,18 +61,10 @@ class generate_voucher_cohortcourses_form extends moodleform
             }
             
             // Collect not connected courses
-            $sql_not_connected_courses = "
-                SELECT * FROM {$CFG->prefix}course c
-                WHERE c.id != 1
-                AND c.id NOT IN (
-                    SELECT courseid FROM {$CFG->prefix}enrol e
-                    WHERE e.customint1 = {$cohort->id}
-                    AND e.enrol = 'cohort'
-                )";
-            $not_connected_courses = $DB->get_records_sql($sql_not_connected_courses);
+            $not_connected_courses = voucher_Db::GetUnconnectedCohortCourses($cohort->id);
             
             // If we have not connected courses we'll display them
-            if (count($not_connected_courses) > 0) {
+            if ($not_connected_courses) {
                 
                 $arr_not_connected_courses = array();
                 foreach($not_connected_courses as $not_connected_course) $arr_not_connected_courses[$not_connected_course->id] = $not_connected_course->fullname;

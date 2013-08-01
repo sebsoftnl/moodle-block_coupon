@@ -13,16 +13,14 @@
 
 require_once $CFG->dirroot . '/lib/pdflib.php';
 
-class voucher_PDF extends pdf
-{
+class voucher_PDF extends pdf {
 
-    protected $_JUMBOYELLOW = array(252, 197, 0);
+//    protected $_JUMBOYELLOW = array(252, 197, 0);
     protected $_voucherHeaderText = 'Moodle Voucher Avetica';
     protected $_fontPath = '';
     private $namestring;
     private $generatorDate;
     protected $_vouchers;
-    
     protected $_logo;
 
     /**
@@ -40,8 +38,7 @@ class voucher_PDF extends pdf
      * @return string  value of _voucherPageTemplate
      * @see $_voucherPageTemplate
      */
-    public function getVoucherPageTemplate()
-    {
+    public function getVoucherPageTemplate() {
         return $this->_voucherPageTemplate;
     }
 
@@ -52,8 +49,7 @@ class voucher_PDF extends pdf
      * @param string $voucherPageTemplate  value of _voucherPageTemplate
      * @see $_voucherPageTemplate
      */
-    public function setVoucherPageTemplate($voucherPageTemplate)
-    {
+    public function setVoucherPageTemplate($voucherPageTemplate) {
         $this->_voucherPageTemplate = $voucherPageTemplate;
         return $this;
     }
@@ -67,18 +63,16 @@ class voucher_PDF extends pdf
 //    {
 //        $this->_fontPath = $fontPath;
 //    }
-    
-    public function getLogo()
-    {
+
+    public function getLogo() {
         return $this->_logo;
     }
 
-    public function setLogo($logo)
-    {
+    public function setLogo($logo) {
         $this->_logo = $logo;
     }
 
-        /**
+    /**
      * $_isRendered
      * 
      * @access protected
@@ -86,8 +80,7 @@ class voucher_PDF extends pdf
      */
     protected $_isRendered = false;
 
-    public function __construct($titlestring)
-    {
+    public function __construct($titlestring) {
         global $CFG;
 
         $this->namestring = $titlestring;
@@ -110,8 +103,13 @@ class voucher_PDF extends pdf
 
         //$this->setFontPath($CFG->dirroot . '/blocks/jumbobase/fonts/');
         //$this->_loadFonts();
-        
-        //$this->_logo = $CFG->dirroot . '/blocks/jumbobase/pix/JUMBO_FC_C.svg';
+        $fn = BLOCK_VOUCHER_LOGOFILE;
+        if (!file_exists($fn)) {
+            $fn = BLOCK_VOUCHER_DIRROOT . 'pix/Logo.png';
+        }
+        if (file_exists($fn)) {
+            $this->_logo = $fn;
+        }
     }
 
 //    function _loadFonts()
@@ -135,19 +133,21 @@ class voucher_PDF extends pdf
 //        }
 //    }
 
-    public function setGeneratorDate($string)
-    {
+    public function setGeneratorDate($string) {
         $this->generatorDate = $string;
     }
 
-    function header()
-    {
+    function header() {
+
+        // this is just guessing about SVG placement (i hope this will work everywhere)
+        //$this->Image($this->_logo, $ml - 18, $this->h - 32, 80, 0, '', 'L', '', '');
+        $this->Image($this->_logo, 0, 0, 0, 0, '', '', 'L', '', '');
         // omlijning
         //$rw = $this->w - 10;
         //$rh = $this->h - 10;
         //$this->Rect(5, 5, $rw, $rh);
         // gele balk boven
-        $this->Rect(0, 0, $this->w, 25, 'F', array(), $this->_JUMBOYELLOW);
+//        $this->Rect(0, 0, $this->w, 25, 'F', array(), $this->_JUMBOYELLOW);
 
         // header text
         $this->SetXY(0, 5);
@@ -155,8 +155,7 @@ class voucher_PDF extends pdf
         $this->Cell(0, 0, $this->_voucherHeaderText, 0, 1, 'C');
     }
 
-    function footer()
-    {
+    function footer() {
         // Diplay footer / page number
 //        if (empty($this->pagegroups))
 //        {
@@ -182,22 +181,18 @@ class voucher_PDF extends pdf
 //            $this->SetXY(15, $this->h - 10);
 //            $this->Write(0, $pagenumtxt, '', 0, 'C');
 //        }
-
         //set style for cell border
         $line_width = 0.85 / $this->k;
 
-        $style = $this->SetLineStyle(array('width' => $line_width, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $this->_JUMBOYELLOW));
+        $style = $this->SetLineStyle(array('width' => $line_width, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0,0,0)));
+//        $style = $this->SetLineStyle(array('width' => $line_width, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $this->_JUMBOYELLOW));
 
         $ml = $this->lMargin;
         $w = $this->w - $ml;
         $this->Line($ml, $this->h - 20, $w, $this->h - 20, $style);
-        
-        // this is just guessing about SVG placement (i hope this will work everywhere)
-//        $this->ImageSVG($this->_logo, $ml - 18, $this->h - 32, 80, 0, '', 'L', '', '');
     }
 
-    function FrontPage()
-    {
+    function FrontPage() {
         return false;
     }
 
@@ -207,15 +202,12 @@ class voucher_PDF extends pdf
      * @access public
      * @return bool
      */
-    public function generate($vouchers)
-    {
-        if (!is_array($vouchers))
-        {
+    public function generate($vouchers) {
+        if (!is_array($vouchers)) {
             $vouchers = array($vouchers);
         }
         $this->_vouchers = $vouchers;
-        if ($this->_isRendered)
-        {
+        if ($this->_isRendered) {
             return true;
         }
         $this->FrontPage();
@@ -224,10 +216,8 @@ class voucher_PDF extends pdf
         return true;
     }
 
-    protected function _writeVoucherPages()
-    {
-        foreach ($this->_vouchers as $voucher)
-        {
+    protected function _writeVoucherPages() {
+        foreach ($this->_vouchers as $voucher) {
             $html = $this->_compileTemplate($voucher);
             $this->startPage();
             $this->SetFont('helvetica', '', 12);
@@ -236,10 +226,9 @@ class voucher_PDF extends pdf
         }
     }
 
-    protected function _compileTemplate($voucher)
-    {
-        global $CFG;
-        
+    protected function _compileTemplate($voucher) {
+        global $CFG, $SITE;
+
         $find = array(
             '{vouchercode}',
             '{site_url}',
@@ -248,11 +237,11 @@ class voucher_PDF extends pdf
         $replace = array(
             $voucher->submission_code,
             $CFG->wwwroot,
-            'moodle.avetica.nl'
+            $SITE->fullname
         );
         $html = $this->_voucherPageTemplate;
         $html = str_replace($find, $replace, $html);
-        
+
         return $html;
     }
 
@@ -262,8 +251,7 @@ class voucher_PDF extends pdf
      * @access public
      * @return string
      */
-    public function getPDFString()
-    {
+    public function getPDFString() {
         // output as string
         return $this->Output('ignore', 'S');
     }

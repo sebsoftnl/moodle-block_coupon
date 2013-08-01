@@ -32,13 +32,13 @@ class generate_voucher_course_form extends moodleform
 
         $mform = & $this->_form;
         
+        $mform->addElement('header', 'header', get_string('heading:info', BLOCK_VOUCHER));
+        $mform->addElement('static', 'info', '', get_string('info:voucher_course', BLOCK_VOUCHER));
+
         $mform->addElement('header', 'header', get_string('heading:input_course', BLOCK_VOUCHER));
         
         // First we'll get some useful info
-        $courses_sql = "
-            SELECT * FROM {$CFG->prefix}course
-            WHERE id != 1";
-        $courses = $DB->get_records_sql($courses_sql);
+        $courses = voucher_Db::GetVisibleCourses();
         
         // And create data for multiselect
         $arr_courses_select = array();

@@ -32,16 +32,20 @@ class generate_voucher_groups_form extends moodleform
 
         $mform = & $this->_form;
         
-        $mform->addElement('static', 'header', get_string('header:label_instructions', BLOCK_VOUCHER), get_string('header:instructions_txt', BLOCK_VOUCHER));
+        $mform->addElement('header', 'header', get_string('heading:info', BLOCK_VOUCHER));
+        $mform->addElement('static', 'info', '', get_string('info:voucher_course_groups', BLOCK_VOUCHER));
+
+        $mform->addElement('header', 'groupsheader', get_string('heading:input_groups', BLOCK_VOUCHER));
         
         // Display which course we selected
-        $course = $DB->get_record('course', array('id'=>$SESSION->voucher->course));
+        $course = voucher_Db::GetCourseById($SESSION->voucher->course);
+        
         $mform->addElement('static', 'selected_course', get_string('label:selected_course', BLOCK_VOUCHER), $course->fullname);
         
         // Collect connected groups
-        $groups = $DB->get_records('groups', array('courseid'=>$SESSION->voucher->course));
+        $groups = voucher_Db::GetGroupsByCourseId($course->id);
         
-        if (count($groups) > 0) {
+        if ($groups) {
             $arr_groups_select = array();
             foreach($groups as $group) $arr_groups_select[$group->id] = $group->name;
 
