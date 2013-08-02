@@ -99,7 +99,7 @@ class voucher_Db
     static public final function GetGroupsByCourseId($courseid) {
         global $DB;
         
-        $groups = $DB->get_records('groups', array('courseid'=>$courseid));
+        $groups = $DB->get_records('groups', array('courseid'=>$courseid), null, 'id, name');
         
         return (!empty($groups)) ? $groups : false;
     }
@@ -113,7 +113,7 @@ class voucher_Db
     static public final function GetCohorts() {
         global $DB;
         
-        $cohorts = $DB->get_records('cohort');
+        $cohorts = $DB->get_records('cohort', null, null, 'id, name');
         
         return (!empty($cohorts)) ? $cohorts : false;
     }
@@ -144,11 +144,8 @@ class voucher_Db
     static public final function GetVisibleCourses() {
         global $DB;
         
-        $courses_sql = "
-            SELECT * FROM {course}
-            WHERE id != 1
-            AND visible = 1";
-        $courses = $DB->get_records_sql($courses_sql);
+        $courses_select = "id != 1 AND visible = 1";
+        $courses = $DB->get_records_select('course', $courses_select);
         
         return (!empty($courses)) ? $courses : false;
     }

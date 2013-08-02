@@ -83,6 +83,7 @@ $string['error:alternative_email_invalid'] = 'If you have checked \'use alternat
 
 $string['error:moodledata_not_writable'] = 'U heeft geen schrijf rechten op moodledata/voucher_logos. Pas uw rechten aan.';
 $string['error:wrong_image_size'] = 'De afbeelding heeft niet de juiste afmetingen. Probeer het opnieuw met een afbeelding met een verhouding van 210 mm bij 297 mm.';
+$string['error:wrong_doc_page'] = 'U probeerd een pagina te bereiken die niet bestaat.';
 
 // Success strings
 $string['success:voucher_used'] = 'Voucher gebruikt - U kunt nu uw nieuwe cursus(en) in';
@@ -90,6 +91,7 @@ $string['success:uploadimage'] = 'Uw nieuwe voucher afbeelding is geupload.';
 
 // URL texts
 $string['url:generate_vouchers'] = 'Genereer Voucher';
+$string['url:api_docs'] = 'API Documentatie';
 $string['url:uploadimage'] = 'Wijzig voucher logo';
 $string['url:input_voucher'] = 'Voucher invoeren';
 $string['url:view_reports'] = 'Bekijk rapporten';

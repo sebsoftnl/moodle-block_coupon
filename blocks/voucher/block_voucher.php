@@ -48,31 +48,36 @@ class block_voucher extends block_base
         $arrParam['id'] = $this->instance->id;
         $arrParam['courseid'] = $this->course->id;
 
+        // We'll fill the array of menu items with everything the logged in user has permission to
+        $menu_items = array();
+        
         // Generate Voucher
         if ($permissions['generatevouchers'])
         {
+            $url_generate_vouchers = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/generate_voucher.php', array('id' => $this->instance->id));
+            $url_uploadimage = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/uploadimage.php', array('id' => $this->instance->id));
+            $url_api_docs = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/api_docs.php', array('id' => $this->instance->id, 'page'=>'index'));
             
-            $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/generate_voucher.php', array('id' => $this->instance->id));
-            $this->content->footer .= "<p>" . html_writer::link($url, get_string('url:generate_vouchers', BLOCK_VOUCHER)) . "</p>";
-
-            $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/uploadimage.php', array('id' => $this->instance->id));
-            $this->content->footer .= "<p>" . html_writer::link($url, get_string('url:uploadimage', BLOCK_VOUCHER)) . "</p>";
-
+            $menu_items[] = html_writer::link($url_generate_vouchers, get_string('url:generate_vouchers', BLOCK_VOUCHER));
+            $menu_items[] = html_writer::link($url_uploadimage, get_string('url:uploadimage', BLOCK_VOUCHER));
+            $menu_items[] = html_writer::link($url_api_docs, get_string('url:api_docs', BLOCK_VOUCHER));
+            
         }
         
         // View Reports
         if ($permissions['viewreports'])
         {
-            $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/reports.php', array('id' => $this->instance->id));
-            $this->content->footer .= "<p>" . html_writer::link($url, get_string('url:view_reports', BLOCK_VOUCHER)) . "</p>";
+            $url_reports = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/reports.php', array('id' => $this->instance->id));
+            
+            $menu_items[] = "<p>" . html_writer::link($url_reports, get_string('url:view_reports', BLOCK_VOUCHER)) . "</p>";
         }
 
         // Input Voucher
         if ($permissions['inputvouchers']) {
-            $url = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/input_voucher.php', array('id' => $this->instance->id));
+            $url_input_voucher = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/input_voucher.php', array('id' => $this->instance->id));
 
             $voucher_form = "
-                <form action='$url' method='POST'>
+                <form action='$url_input_voucher' method='POST'>
                     <table>
                         <tr>
                             <td>" . get_string('label:enter_voucher_code', BLOCK_VOUCHER) . ":</td>
@@ -89,8 +94,16 @@ class block_voucher extends block_base
                     <input type='hidden' name='sesskey' value='" . sesskey() . "' />
                 </form>";
 
-            $this->content->footer .= $voucher_form;
+            $menu_items[] = $voucher_form;
         }
+        
+        // Now print the menu blocks
+        foreach($menu_items as $item) {
+            
+            $this->content->footer .= $item . "<br />";
+            
+        }
+        
     }
 
     function applicable_formats()

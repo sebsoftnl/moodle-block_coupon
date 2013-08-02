@@ -79,6 +79,8 @@ $string['error:wrong_image_size'] = 'The uploaded logo does not have the require
 
 $string['error:moodledata_not_writable'] = 'Your moodledata/voucher_logos folder is not writable. Please fix your permissions.';
 
+$string['error:wrong_doc_page'] = 'You are trying to access a page that does not exist.';
+
 // Success strings
 $string['success:voucher_used'] = 'Voucher used - You can now access the course(s)';
 $string['success:uploadimage'] = 'Your new voucher image has been uploaded.';
@@ -86,6 +88,7 @@ $string['success:uploadimage'] = 'Your new voucher image has been uploaded.';
 
 // URL texts
 $string['url:generate_vouchers'] = 'Generate Voucher';
+$string['url:api_docs'] = 'API Documentation';
 $string['url:uploadimage'] = 'Change voucher image';
 $string['url:input_voucher'] = 'Input Voucher';
 $string['url:view_reports'] = 'View reports';
