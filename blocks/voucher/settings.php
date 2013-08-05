@@ -77,4 +77,48 @@ if ($ADMIN->fulltree)
             ''
         ));
 
+    // Information fields, to be displayed above each form
+    $settings->add(new admin_setting_configtext(
+            'voucher/info_voucher_type',
+            get_string('label:info_voucher_type', BLOCK_VOUCHER),
+            get_string('label:info_desc', BLOCK_VOUCHER),
+            ''
+        ));
+    $settings->add(new admin_setting_configtext(
+            'voucher/info_voucher_course',
+            get_string('label:info_voucher_course', BLOCK_VOUCHER),
+            get_string('label:info_desc', BLOCK_VOUCHER),
+            ''
+        ));
+    $settings->add(new admin_setting_configtext(
+            'voucher/info_voucher_course_groups',
+            get_string('label:info_voucher_course_groups', BLOCK_VOUCHER),
+            get_string('label:info_desc', BLOCK_VOUCHER),
+            ''
+        ));
+    $settings->add(new admin_setting_configtext(
+            'voucher/info_voucher_cohorts',
+            get_string('label:info_voucher_cohorts', BLOCK_VOUCHER),
+            get_string('label:info_desc', BLOCK_VOUCHER),
+            ''
+        ));
+    $settings->add(new admin_setting_configtext(
+            'voucher/info_voucher_cohort_courses',
+            get_string('label:info_voucher_cohort_courses', BLOCK_VOUCHER),
+            get_string('label:info_desc', BLOCK_VOUCHER),
+            ''
+        ));
+    $settings->add(new admin_setting_configtext(
+            'voucher/info_voucher_confirm',
+            get_string('label:info_voucher_confirm', BLOCK_VOUCHER),
+            get_string('label:info_desc', BLOCK_VOUCHER),
+            ''
+        ));
+    $settings->add(new admin_setting_configtext(
+            'voucher/info_imageupload',
+            get_string('label:info_imageupload', BLOCK_VOUCHER),
+            get_string('label:info_desc', BLOCK_VOUCHER),
+            ''
+        ));
+
 }

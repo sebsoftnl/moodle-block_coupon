@@ -106,7 +106,7 @@ class voucher_Helper {
      * @param bool $generate_single_pdfs Whether each voucher gets a PDF or 1 PDF for all vouchers
      * */
     public static final function MailVouchers($vouchers, $email, $generate_single_pdfs) {
-        global $DB, $CFG, $USER;
+        global $DB, $CFG;
 
         // include pdf generator
         require_once BLOCK_VOUCHER_CLASSROOT . "VoucherPDFGenerator.php";
@@ -156,39 +156,31 @@ class voucher_Helper {
     }
 
     protected static final function _GenerateVoucherMail($email) {
-        global $CFG;
+        global $CFG, $USER;
 
         require_once $CFG->libdir . '/phpmailer/class.phpmailer.php';
 
+        $sentbyapi = !isloggedin();
         $supportuser = generate_email_supportuser();
 
-        $mail_content = get_string('voucher_mail_content', BLOCK_VOUCHER);
+        $obj_mailinfo = new stdClass();
+        $obj_mailinfo->to_name = ($sentbyapi) ? '' : ' ' . trim($USER->firstname . ' ' . $USER->lastname);
+        $obj_mailinfo->from_name = ($sentbyapi) ? trim($supportuser->firstname . ' ' . $supportuser->lastname) : trim($USER->firstname . ' ' . $USER->lastname);
+        $obj_mailinfo->from_email = ($sentbyapi) ? $supportuser->email : $USER->email;
+        $obj_mailinfo->replyto = ($sentbyapi) ? $CFG->noreplyaddress : $USER->email;
+        
+        $mail_content = get_string('voucher_mail_content', BLOCK_VOUCHER, $obj_mailinfo);
 
         $phpmailer = new PHPMailer();
         $phpmailer->Body = $mail_content;
         $phpmailer->AltBody = strip_tags($mail_content);
-        $phpmailer->From = $supportuser->email;
-        $phpmailer->FromName = $supportuser->firstname . ' ' . $supportuser->lastname;
+        $phpmailer->From = $obj_mailinfo->from_email;
+        $phpmailer->FromName = $obj_mailinfo->from_name;
         $phpmailer->IsHTML(true);
         $phpmailer->Subject = get_string('voucher_mail_subject', BLOCK_VOUCHER);
-        $phpmailer->AddReplyTo($CFG->noreplyaddress);
-
-//        $phpmailer->AddBcc('sebastian@sebsoft.nl');
-//        $phpmailer->AddBcc('rogier@sebsoft.nl');
-//        if (strstr($this->siteemail, ':') !== false)
-//        {
-//            $mailaddrs = explode(':', $this->siteemail);
-//            foreach ($mailaddrs as $mailaddr)
-//            {
-//                $phpmailer->AddBcc($mailaddr);
-//            }
-//        }
-//        elseif (!empty($this->siteemail))
-//        {
-//            $phpmailer->AddBcc($this->siteemail);
-//        }
         $phpmailer->AddCustomHeader("X-VOUCHER-Send: " . time());
         $phpmailer->AddAddress($email);
+        $phpmailer->AddReplyTo($obj_mailinfo->replyto);
 
         return $phpmailer;
     }

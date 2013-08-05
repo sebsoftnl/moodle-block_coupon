@@ -33,7 +33,8 @@ class generate_voucher_course_form extends moodleform
         $mform = & $this->_form;
         
         $mform->addElement('header', 'header', get_string('heading:info', BLOCK_VOUCHER));
-        $mform->addElement('static', 'info', '', get_string('info:voucher_course', BLOCK_VOUCHER));
+        if (!$str_info = get_config('voucher', 'info_voucher_course')) $str_info = get_string('missing_config_info', BLOCK_VOUCHER);
+        $mform->addElement('static', 'info', '', $str_info);
 
         $mform->addElement('header', 'header', get_string('heading:input_course', BLOCK_VOUCHER));
         

@@ -33,7 +33,8 @@ class generate_confirm_cohorts_form extends moodleform
         $mform = & $this->_form;
 
         $mform->addElement('header', 'header', get_string('heading:info', BLOCK_VOUCHER));
-        $mform->addElement('static', 'info', '', get_string('info:voucher_confirm', BLOCK_VOUCHER));
+        if (!$str_info = get_config('voucher', 'info_voucher_confirm')) $str_info = get_string('missing_config_info', BLOCK_VOUCHER);
+        $mform->addElement('static', 'info', '', $str_info);
 
         // Set email_to variable
         $use_alternative_email = get_config('voucher', 'use_alternative_email');

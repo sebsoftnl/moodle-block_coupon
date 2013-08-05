@@ -33,7 +33,8 @@ class generate_voucher_groups_form extends moodleform
         $mform = & $this->_form;
         
         $mform->addElement('header', 'header', get_string('heading:info', BLOCK_VOUCHER));
-        $mform->addElement('static', 'info', '', get_string('info:voucher_course_groups', BLOCK_VOUCHER));
+        if (!$str_info = get_config('voucher', 'info_voucher_course_groups')) $str_info = get_string('missing_config_info', BLOCK_VOUCHER);
+        $mform->addElement('static', 'info', '', $str_info);
 
         $mform->addElement('header', 'groupsheader', get_string('heading:input_groups', BLOCK_VOUCHER));
         

@@ -26,7 +26,7 @@ $capabilities = array(
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
             'manager' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW
+            'coursecreator' => CAP_ALLOW
         )
     ),
     'block/voucher:viewallreports' => array(
@@ -41,6 +41,7 @@ $capabilities = array(
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
             'manager' => CAP_ALLOW,
+            'coursecreator' => CAP_ALLOW
         )
     ),
     'block/voucher:inputvouchers' => array(
@@ -55,8 +56,7 @@ $capabilities = array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
-            'manager' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW
+            'manager' => CAP_ALLOW
         )
     ),
     'block/voucher:myaddinstance' => array(

@@ -107,7 +107,7 @@ if (voucher_Helper::getPermission('inputvouchers'))
             if (!is_enrolled($context, $USER->id)) {
                 
                 // Now we can enrol
-                if (!enrol_try_internal_enrol($voucher->courseid, $USER->id, $role->id)) {
+                if (!enrol_try_internal_enrol($voucher->courseid, $USER->id, $role->id, time())) {
                     print_error(get_string('error:unable_to_enrol', BLOCK_VOUCHER));
                 }
                 
@@ -115,7 +115,7 @@ if (voucher_Helper::getPermission('inputvouchers'))
             
             // And add user to groups
             $voucher_groups = $DB->get_records('voucher_groups', array('voucherid'=>$voucher->id));
-            if (count($voucher_groups) > 0) {
+            if (!empty($voucher_groups)) {
                 foreach($voucher_groups as $voucher_group) {
                     
                     // Check if the group exists

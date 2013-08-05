@@ -33,7 +33,8 @@ class generate_voucher_cohortcourses_form extends moodleform
         $mform = & $this->_form;
 
         $mform->addElement('header', 'header', get_string('heading:info', BLOCK_VOUCHER));
-        $mform->addElement('static', 'info', '', get_string('info:voucher_cohort_courses', BLOCK_VOUCHER));
+        if (!$str_info = get_config('voucher', 'info_voucher_cohort_courses')) $str_info = get_string('missing_config_info', BLOCK_VOUCHER);
+        $mform->addElement('static', 'info', '', $str_info);
 
         // Collect cohort records
         $cohorts = voucher_Helper::get_cohorts_by_ids($SESSION->voucher->cohorts);

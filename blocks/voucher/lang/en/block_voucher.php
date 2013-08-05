@@ -46,15 +46,6 @@ $string['heading:imageupload'] = 'Upload image';
 
 $string['heading:info'] = 'Info';
 
-// Info
-$string['info:voucher_type'] = 'Select which type of voucher you wish to create.';
-$string['info:voucher_course'] = 'Select the course you are creating your voucher(s) for.';
-$string['info:voucher_cohorts'] = 'Select the cohort(s) you are creating your voucher(s) for.';
-$string['info:voucher_course_groups'] = 'Select which groups you wish your users to be enrolled in when they use a voucher.';
-$string['info:voucher_cohort_courses'] = 'You can now connect courses to the cohorts.';
-$string['info:voucher_confirm'] = 'Please fill out the last information to confirm your voucher.';
-$string['info:imageupload'] = 'Please select an image of the type .png to be used in the Voucher PDF files.';
-
 // Errors
 $string['error:nopermission'] = 'You have no permission to do this';
 $string['error:required'] = 'This field is required.';
@@ -75,7 +66,7 @@ $string['error:alternative_email_invalid'] = 'If you have checked \'use alternat
 $string['error:wrong_code_length'] = 'Please enter a number between 6 and 32.';
 $string['error:no_vouchers_submitted'] = 'None of your vouchers have been used yet.';
 
-$string['error:wrong_image_size'] = 'The uploaded logo does not have the required size. Please upload an image with a ratio of 210 mm by 297 mm.';
+$string['error:wrong_image_size'] = 'The uploaded background does not have the required size. Please upload an image with a ratio of 210 mm by 297 mm.';
 
 $string['error:moodledata_not_writable'] = 'Your moodledata/voucher_logos folder is not writable. Please fix your permissions.';
 
@@ -142,26 +133,30 @@ $string['label:api_user'] = 'API User';
 $string['label:api_user_desc'] = 'The username that can be used to generate a voucher using the API.';
 $string['label:api_password'] = 'API Password';
 $string['label:api_password_desc'] = 'The password that can be used to generate a voucher using the API.';
+$string['label:generate_pdfs'] = 'Generate seperate PDF\'s';
+
+// info labels
+$string['label:info_desc'] = 'The information shown above the form.';
+$string['label:info_voucher_type'] = 'Information on page: Select voucher type';
+$string['label:info_voucher_course'] = 'Information on page: Select course';
+$string['label:info_voucher_cohorts'] = 'Information on page: Select cohorts';
+$string['label:info_voucher_course_groups'] = 'Information on page: Select course groups';
+$string['label:info_voucher_cohort_courses'] = 'Information on page: Cohort courses';
+$string['label:info_voucher_confirm'] = 'Information on page: Confirm voucher';
+$string['label:info_imageupload'] = 'Information on page: Upload image';
 
 // help texts
 $string['label:voucher_type_help'] = 'The Vouchers will be generated based on either the course or one or more cohorts.';
 $string['label:voucher_email_help'] = 'This is the email address the generated vouchers will be send to.';
 $string['label:voucher_amount_help'] = 'This is the the amount of vouchers that will be generated.';
-
 $string['label:voucher_cohorts_help'] = 'Select the one or more cohorts your users will be enrolled in.';
 $string['label:voucher_course_help'] = 'Select the course your users will be enrolled in.';
-
 $string['label:voucher_groups'] = 'Add group(s)';
 $string['label:voucher_groups_help'] = 'Select the groups you wish your users to be enrolled in upon enrolment in the course.';
 $string['label:no_groups_selected'] = 'There are no groups connected to this course yet.';
-
-$string['label:image'] = 'Voucher logo';
-$string['label:image_desc'] = 'Logo to be placed in the generated vouchers';
-
-$string['label:current_image'] = 'Current Voucher logo';
-
-// generate pdfs
-$string['label:generate_pdfs'] = 'Generate seperate PDF\'s';
+$string['label:image'] = 'Voucher background';
+$string['label:image_desc'] = 'Background to be placed in the generated vouchers';
+$string['label:current_image'] = 'Current Voucher background';
 $string['label:generate_pdfs_help'] = 'You can select here if you want to receive your vouchers in either a single file or each voucher in a saperate PDF file.';
 
 // buttons
@@ -182,14 +177,15 @@ $string['view:input_voucher:heading'] = 'Input Voucher';
 $string['course'] = 'course';
 $string['cohort'] = 'cohort';
 
+$string['missing_config_info'] = 'Put your extra information here - to be set up in the global configuration of the block.';
 $string['pdf_generated'] = 'The vouchers have been attached to this email in PDF files.<br /><br />';
 
 
 $string['voucher_mail_content'] = '
-    Hello,<br /><br />
+    Hello{$a->to_name},<br /><br />
     You receive this email because new vouchers have recently been generated. The vouchers are added to the attachments of this e-mail.<br /><br />
     With kind regards,<br /><br />
-    Your friendly neighbourhood Moodle Site';
+    {$a->from_name}';
 $string['voucher_mail_subject'] = 'Moodle Voucher generated';
 
 $string['vouchers_sent'] = 'Your voucher(s) has/have been generated. Within several minutes you will receive an email with the voucher(s) in the attachment.';
@@ -202,7 +198,7 @@ $string['default-voucher-page-template'] = '
 <p>Please follow the instructions below:</p><br/>
 <ol>
 <li>Open an internet browser</li>
-<li>Go to the following website: <a href="{site_url}">{site_name}</a></li>
+<li>Go to the following website: <a href="{site_url}">{site_url}</a></li>
 <li>Click - in the Voucher block - on the url "Input Voucher"</li>
 <li>Enter the voucher code provided in this document (please note: This code is case-sensitive)</li>
 <li>You are now subscribed and can enter your course(s).</li>
