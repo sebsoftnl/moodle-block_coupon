@@ -16,7 +16,7 @@ require_once $CFG->dirroot . '/lib/pdflib.php';
 class voucher_PDF extends pdf {
 
 //    protected $_JUMBOYELLOW = array(252, 197, 0);
-    protected $_voucherHeaderText = 'Moodle Voucher Avetica';
+//    protected $_voucherHeaderText = 'Moodle Voucher Avetica';
     protected $_fontPath = '';
     private $namestring;
     private $generatorDate;
@@ -29,30 +29,79 @@ class voucher_PDF extends pdf {
      * @access protected
      * @var string
      */
-    protected $_voucherPageTemplate = '';
+    protected $_voucherPageTemplateMain = '';
+    protected $_voucherPageTemplateBotLeft = '';
+    protected $_voucherPageTemplateBotRight = '';
 
     /**
-     * getVoucherPageTemplate() gets _voucherPageTemplate
+     * getVoucherPageTemplateMain() gets _voucherPageTemplateMain
      * 
      * @access public
-     * @return string  value of _voucherPageTemplate
-     * @see $_voucherPageTemplate
+     * @return string  value of _voucherPageTemplateMain
+     * @see $_voucherPageTemplateMain
      */
-    public function getVoucherPageTemplate() {
-        return $this->_voucherPageTemplate;
+    public function getVoucherPageTemplateMain() {
+        return $this->_voucherPageTemplateMain;
     }
 
     /**
-     * setVoucherPageTemplate(string) sets _voucherPageTemplate
+     * getVoucherPageTemplateBotRight() gets _voucherPageTemplateBotRight
      * 
      * @access public
-     * @param string $voucherPageTemplate  value of _voucherPageTemplate
-     * @see $_voucherPageTemplate
+     * @return string  value of _voucherPageTemplateBotRight
+     * @see $_voucherPageTemplateBotRight
      */
-    public function setVoucherPageTemplate($voucherPageTemplate) {
-        $this->_voucherPageTemplate = $voucherPageTemplate;
+    public function getVoucherPageTemplateBotRight() {
+        return $this->_voucherPageTemplateBotRight;
+    }
+    
+    /**
+     * getVoucherPageTemplateMainBotLeft() gets _voucherPageTemplateBotLeft
+     * 
+     * @access public
+     * @return string  value of _voucherPageTemplateBotLeft
+     * @see $_voucherPageTemplateBotLeft
+     */
+    public function getVoucherPageTemplateBotLeft() {
+        return $this->_voucherPageTemplateBotLeft;
+    }
+
+    /**
+     * setVoucherPageTemplateMain(string) sets _voucherPageTemplateMain
+     * 
+     * @access public
+     * @param string $voucherPageTemplateMain  value of _voucherPageTemplateMain
+     * @see $_voucherPageTemplateMain
+     */
+    public function setVoucherPageTemplateMain($voucherPageTemplate) {
+        $this->_voucherPageTemplateMain = $voucherPageTemplate;
         return $this;
     }
+    
+    /**
+     * setVoucherPageTemplateBotRight(string) sets _voucherPageTemplateBotRight
+     * 
+     * @access public
+     * @param string $voucherPageTemplateBotRight  value of _voucherPageTemplateBotRight
+     * @see $_voucherPageTemplateBotRight
+     */
+    public function setVoucherPageTemplateBotRight($voucherPageTemplate) {
+        $this->_voucherPageTemplateBotRight = $voucherPageTemplate;
+        return $this;
+    }
+
+    /**
+     * setVoucherPageTemplateBotLeft(string) sets _voucherPageTemplateBotLeft
+     * 
+     * @access public
+     * @param string $voucherPageTemplateBotLeft  value of _voucherPageTemplateBotLeft
+     * @see $_voucherPageTemplateBotLeft
+     */
+    public function setVoucherPageTemplateBotLeft($voucherPageTemplate) {
+        $this->_voucherPageTemplateBotLeft = $voucherPageTemplate;
+        return $this;
+    }
+
 
 //    public function getFontPath()
 //    {
@@ -140,19 +189,11 @@ class voucher_PDF extends pdf {
     function header() {
 
         // this is just guessing about SVG placement (i hope this will work everywhere)
-        //$this->Image($this->_logo, $ml - 18, $this->h - 32, 80, 0, '', 'L', '', '');
-        $this->Image($this->_logo, 0, 0, 0, 0, '', '', 'L', '', '');
-        // omlijning
-        //$rw = $this->w - 10;
-        //$rh = $this->h - 10;
-        //$this->Rect(5, 5, $rw, $rh);
-        // gele balk boven
-//        $this->Rect(0, 0, $this->w, 25, 'F', array(), $this->_JUMBOYELLOW);
-
+        $this->Image($this->_logo, 0, 0, 850, 1000, 'png', '', 'C', false, 300, '', false, false, 0, false, false, false);
+        
         // header text
         $this->SetXY(0, 5);
         $this->SetFont('helvetica', '', 24);
-        $this->Cell(0, 0, $this->_voucherHeaderText, 0, 1, 'C');
     }
 
     function footer() {
@@ -218,31 +259,69 @@ class voucher_PDF extends pdf {
 
     protected function _writeVoucherPages() {
         foreach ($this->_vouchers as $voucher) {
-            $html = $this->_compileTemplate($voucher);
+            $txt_main = $this->_compileTemplateMain($voucher);
+            $txt_botleft = $this->_compileTemplateBotLeft();
+            $txt_botright = $this->_compileTemplateBotRight();
+            
             $this->startPage();
-            $this->SetFont('helvetica', '', 12);
-            $this->writeHTML($html);
+            $this->SetFont('helvetica', '', 10);
+            
+//            $this->MultiCell($w, $h, $txt_main, null, 'J', false, 1, $x, $y);
+            
+            $this->MultiCell(150, 150, $txt_main, null, 'L', false, 1, 22, 78);
+            $this->MultiCell(70, 100, $txt_botleft, null, 'L', false, 2, 22, 168);
+            $this->MultiCell(70, 100, $txt_botright, null, 'L', false, 2, 115, 168);
+            
+            //$this->writeHTML($html);
             $this->endPage();
         }
     }
 
-    protected function _compileTemplate($voucher) {
-        global $CFG, $SITE;
+    protected function _compileTemplateMain($voucher) {
 
         $find = array(
-            '{vouchercode}',
-            '{site_url}',
-            '{site_name}'
+            '{voucher_code}'
         );
         $replace = array(
             $voucher->submission_code,
-            $CFG->wwwroot,
-            $SITE->fullname
         );
-        $html = $this->_voucherPageTemplate;
-        $html = str_replace($find, $replace, $html);
 
-        return $html;
+        $txt_main = $this->_voucherPageTemplateMain;
+        $txt_main = str_replace($find, $replace, $txt_main);
+
+        return $txt_main;
+    }
+
+    protected function _compileTemplateBotLeft() {
+        global $CFG;
+
+        $find = array(
+            '{site_url}'
+        );
+        $replace = array(
+            $CFG->wwwroot
+        );
+
+        $txt_botleft = $this->_voucherPageTemplateBotLeft;
+        $txt_botleft = str_replace($find, $replace, $txt_botleft);
+
+        return $txt_botleft;
+    }
+
+    protected function _compileTemplateBotRight() {
+        global $CFG;
+
+        $find = array(
+            '{site_url}'
+        );
+        $replace = array(
+            $CFG->wwwroot
+        );
+
+        $txt_botright = $this->_voucherPageTemplateBotRight;
+        $txt_botright = str_replace($find, $replace, $txt_botright);
+
+        return $txt_botright;
     }
 
     /**

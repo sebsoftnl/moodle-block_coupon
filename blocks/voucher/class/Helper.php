@@ -128,7 +128,11 @@ class voucher_Helper {
             foreach ($vouchers as $voucher) {
                 // Generate the PDF
                 $pdfgen = new voucher_PDF(get_string('pdf:titlename', BLOCK_VOUCHER));
-                $pdfgen->setVoucherPageTemplate(get_string('default-voucher-page-template', BLOCK_VOUCHER));
+                // Fill the voucher with text
+                $pdfgen->setVoucherPageTemplateMain(get_string('default-voucher-page-template-main', BLOCK_VOUCHER));
+                $pdfgen->setVoucherPageTemplateBotLeft(get_string('default-voucher-page-template-botleft', BLOCK_VOUCHER));
+                $pdfgen->setVoucherPageTemplateBotRight(get_string('default-voucher-page-template-botright', BLOCK_VOUCHER));
+                // Generate it
                 $pdfgen->generate($voucher);
                 $pdfstr = $pdfgen->Output('voucher_' . $increment . '.pdf', 'S'); //'FI' enables storing on local system, this could be nice to have?
                 // Add PDF to the zip

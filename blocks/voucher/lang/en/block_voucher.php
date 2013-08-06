@@ -190,20 +190,34 @@ $string['voucher_mail_subject'] = 'Moodle Voucher generated';
 
 $string['vouchers_sent'] = 'Your voucher(s) has/have been generated. Within several minutes you will receive an email with the voucher(s) in the attachment.';
 
-$string['default-voucher-page-template'] = '
-<p style="font-weight: bold;">Moodle Voucher</p><br/><br/>
-<p>Hereby you receive the voucher with which you can subscribe for your course(s) in the digital learning environment.</p><br/><br/>
-<p><table style="width:100%"><tr><td style="border:1px solid #000000; font-weight: bold; vertical-align: middle; text-align: center;">This is your voucher code: {vouchercode}</td></tr></table></p>
-<p></p>
-<p>Please follow the instructions below:</p><br/>
-<ol>
-<li>Open an internet browser</li>
-<li>Go to the following website: <a href="{site_url}">{site_url}</a></li>
-<li>Click - in the Voucher block - on the url "Input Voucher"</li>
-<li>Enter the voucher code provided in this document (please note: This code is case-sensitive)</li>
-<li>You are now subscribed and can enter your course(s).</li>
-</ol><br/><br/>
-<p>Happy learning!</p>';
+$string['default-voucher-page-template-main'] = 'With this voucher you can activate access to the e-learning module. You have 90 days of access to this module.
+
+Please use the following voucher code to activate access.
+
+{voucher_code}';
+$string['default-voucher-page-template-botleft'] = '1. Sign up at {site_url}
+2. You will receive an email with the confirmation url. Click on the url to activate your account.
+3. Enter your voucher code in the Moodle Voucher block
+4. Happy learning!';
+$string['default-voucher-page-template-botright'] = '1. Log in at {site_url}
+2. Enter your voucher code in the Moodle Voucher block
+3. Happy learning!';
+
+//$string['default-voucher-page-template-main'] = '
+//<p style="font-weight: bold;">Moodle Voucher</p><br/><br/>
+//<p>Hereby you receive the voucher with which you can subscribe for your course(s) in the digital learning environment.</p><br/><br/>
+//<p><table style="width:100%"><tr><td style="border:1px solid #000000; font-weight: bold; vertical-align: middle; text-align: center;">This is your voucher code: {vouchercode}</td></tr></table></p>
+//<p></p>
+//<p>Please follow the instructions below:</p><br/>
+//<ol>
+//<li>Open an internet browser</li>
+//<li>Go to the following website: <a href="{site_url}">{site_url}</a></li>
+//<li>Click - in the Voucher block - on the url "Input Voucher"</li>
+//<li>Enter the voucher code provided in this document (please note: This code is case-sensitive)</li>
+//<li>You are now subscribed and can enter your course(s).</li>
+//</ol><br/><br/>
+//<p>Happy learning!</p>';
+
 
 $string['pdf:titlename'] = 'Moodle Voucher';
 $string['pdf-meta:title'] = 'Moodle Voucher';

@@ -190,21 +190,35 @@ $string['vouchers_sent'] = 'Uw vouchers zijn gegenereerd. Binnen enkele minuten 
 
 $string['pdf_generated'] = 'De Vouchers zijn aan dit email bericht toegevoegd als PDF bestanden.<br /><br />';
 
-$string['default-voucher-page-template'] = '
-<p style="font-weight: bold;">Moodle Voucher</p><br/><br/>
-<p>Middels onderstaande voucher kunt u zich in te schrijven voor de cursus(sen) op Moodle.</p><br/><br/>
-<p><table style="width:100%"><tr><td style="border:1px solid #000000; font-weight: bold; vertical-align: middle; text-align: center;">Dit is uw vouchercode: {vouchercode}</td></tr></table></p>
-<p></p>
-<p>Volg de volgende stappen:</p><br/>
-<ol>
-<li>Open een browser</li>
-<li>Ga naar de website: <a href="{site_url}">{site_url}</a></li>
-<li>Log in met uw gebruikelijke gegevens</li>
-<li>Klik in het blok Voucher op de link "Voucher invoeren"</li>
-<li>Vul het voucher code in (let op deze is hoofdlettergevoelig)</li>
-<li>Je bent nu ingeschreven op de cursussen die bij deze voucher horen.</li>
-</ol><br/><br/>
-<p>Veel leerplezier gewenst!</p>';
+//$string['default-voucher-page-template'] = '
+//<p style="font-weight: bold;">Moodle Voucher</p><br/><br/>
+//<p>Middels onderstaande voucher kunt u zich in te schrijven voor de cursus(sen) op Moodle.</p><br/><br/>
+//<p><table style="width:100%"><tr><td style="border:1px solid #000000; font-weight: bold; vertical-align: middle; text-align: center;">Dit is uw vouchercode: {vouchercode}</td></tr></table></p>
+//<p></p>
+//<p>Volg de volgende stappen:</p><br/>
+//<ol>
+//<li>Open een browser</li>
+//<li>Ga naar de website: <a href="{site_url}">{site_url}</a></li>
+//<li>Log in met uw gebruikelijke gegevens</li>
+//<li>Klik in het blok Voucher op de link "Voucher invoeren"</li>
+//<li>Vul het voucher code in (let op deze is hoofdlettergevoelig)</li>
+//<li>Je bent nu ingeschreven op de cursussen die bij deze voucher horen.</li>
+//</ol><br/><br/>
+//<p>Veel leerplezier gewenst!</p>';
+
+$string['default-voucher-page-template-main'] = 'Met deze e-learning voucher activeert u de toegang tot een e-learningmodule. U heeft 90 dagen toegang tot uw module.
+
+Gebruik onderstaande toegangscode om uw voucher te activeren.
+
+Toegangscode: {voucher_code}';
+$string['default-voucher-page-template-botleft'] = '1. Meldt u aan bij {site_url}
+2. U ontvangt direct een e-mail met de bevestigingslink. Klik op deze link om uw account te activeren.
+3. Vul uw toegangscode in het Moodle Voucher blok.
+4. Veel leerplezier!';
+$string['default-voucher-page-template-botright'] = '1. Log in bij {site_url}
+2. Vul uw toegangscode in het Moodle Voucher blok.
+3. Veel leerplezier!';
+
 
 $string['voucher_mail_content'] = '
     Hallo{$a->to_name},<br /><br />
