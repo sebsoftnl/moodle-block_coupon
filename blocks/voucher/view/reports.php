@@ -90,7 +90,7 @@ if (voucher_Helper::getPermission('viewreports'))
             foreach($voucher_cohorts as $voucher_cohort) {
                 
                 // Get the courses by cohort
-                $cohort_courses = voucher_Helper::get_courses_by_cohort($voucher_cohort->cohortid);
+                $cohort_courses = voucher_Db::GetCoursesByCohort($voucher_cohort->cohortid);
                 // And add a course id for each cohort_course we've found
                 foreach($cohort_courses as $cohort_course) {
                     
@@ -115,39 +115,12 @@ if (voucher_Helper::getPermission('viewreports'))
         $reportdata->userdata[$uid] = array();
         foreach ($voucher_user->courses as $cid=>$course)
         {
-            $reportdata->userdata[$uid][$cid] = voucher_Helper::_LoadCourseCompletionInfo($user, $course);
+            $reportdata->userdata[$uid][$cid] = voucher_Helper::_LoadCourseCompletionInfo($voucher_user, $course);
         }
     }
     
-//    foreach($reportdata as $report) {
-//        exit("<pre>" . print_r($report, true) . "</pre>");
-//    }
     $reports_table = voucher_Helper::_render_html($reportdata);
     
-    
-//    $reportdata = new stdClass();
-//    $reportdata->courses = $DB->get_records_sql("SELECT * FROM {$CFG->prefix}course");
-//    $reportdata->users = $DB->get_records_sql("SELECT * FROM {$CFG->prefix}user");
-//    $reportdata->userdata = array();
-//
-//    foreach($reportdata->users as $uid=>$user) {
-//        $user_courseids = array(1, 2, 3, 4);
-//        $reportdata->users[$uid]->courseids = $user_courseids;
-//    }
-//
-//    foreach ($reportdata->users as $uid=>$user)
-//    {
-//        $reportdata->userdata[$uid] = array();
-//        foreach ($user->courseids as $courseid)
-//        {
-//            $reportdata->userdata[$uid][$courseid] = voucher_Helper::_LoadCourseCompletionInfo($user, $reportdata->courses[$courseid]);
-//        }
-//    }
-
-    
-
-
-//    redirect($CFG->wwwroot . '/my', get_string('success:voucher_used', BLOCK_VOUCHER));
     echo $OUTPUT->header();
     echo html_writer::table($reports_table);
     echo $OUTPUT->footer();

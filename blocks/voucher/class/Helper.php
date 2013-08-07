@@ -151,7 +151,9 @@ class voucher_Helper {
             $phpmailer = self::_GenerateVoucherMail($email);
 
             $pdfgen = new voucher_PDF(get_string('pdf:titlename', BLOCK_VOUCHER));
-            $pdfgen->setVoucherPageTemplate(get_string('default-voucher-page-template', BLOCK_VOUCHER));
+            $pdfgen->setVoucherPageTemplateMain(get_string('default-voucher-page-template-main', BLOCK_VOUCHER));
+            $pdfgen->setVoucherPageTemplateBotLeft(get_string('default-voucher-page-template-botleft', BLOCK_VOUCHER));
+            $pdfgen->setVoucherPageTemplateBotRight(get_string('default-voucher-page-template-botright', BLOCK_VOUCHER));
             $pdfgen->generate($vouchers);
             $pdfstr = $pdfgen->Output('vouchers.pdf', 'S'); //'FI' enables storing on local system, this could be nice to have?
             $phpmailer->AddStringAttachment($pdfstr, 'vouchers.pdf');
@@ -227,11 +229,6 @@ class voucher_Helper {
         if (!isset($completion_info[$cinfo->id])) {
             $completion_info[$cinfo->id] = new completion_info($cinfo);
         }
-        // cache instance of certificate module record (speed up, lass!)
-        //if ($cert_mod === null)
-        //{
-        //    $cert_mod = $DB->get_record('modules', array('name' => 'certificate'));
-        //}
 
         $ci = new stdClass();
         $ci->complete = false;
@@ -241,19 +238,22 @@ class voucher_Helper {
         $ci->str_grade = '-';
         $ci->gradeinfo = null;
 
-        //$ci->certificates = array();
         // ok, fill out real data according to completion status/info
         $com = $completion_info[$cinfo->id];
         if ($com->is_tracked_user($user->id)) {
             // do we have an enrolment for the course for this user
-            $sql = 'SELECT ue.* FROM {user_enrolments} ue JOIN {enrol} e ON ue.enrolid=e.id WHERE ue.userid=' . $user->id . ' ORDER BY timestart ASC, timecreated ASC';
+            $sql = 'SELECT ue.* FROM {user_enrolments} ue JOIN {enrol} e ON ue.enrolid=e.id WHERE ue.userid=' . $user->id . ' AND e.courseid='.$cinfo->id.' ORDER BY timestart ASC, timecreated ASC';
             $records = $DB->get_records_sql($sql);
+            if ($user->id == 28) echo("<pre>" . print_r($records, true) . "</pre>");
+
             if (count($records) === 1) {
                 $record = array_shift($records);
-                $ci->date_started = ($record->timestart > 0) ? $record->timestart : $record->timecreated;
+                $ci->time_started = (($record->timestart > 0) ? $record->timestart : $record->timecreated);
+                $ci->date_started = date('d-m-Y H:i:s', $ci->time_started);
             } else {
                 $started = 0;
                 $created = 0;
+
                 foreach ($records as $record) {
                     if ($record->timestart > 0) {
                         $started = ($started == 0) ? $record->timestart : min($record->timestart, $started);
@@ -261,6 +261,7 @@ class voucher_Helper {
                     $created = ($created == 0) ? $record->timecreated : min($record->timecreated, $created);
                 }
 
+                $ci->time_started = (($started > 0) ? $started : $created);
                 $ci->date_started = date('d-m-Y H:i:s', ($started > 0) ? $started : $created);
             }
 
@@ -281,7 +282,6 @@ class voucher_Helper {
                 // grrr... we need some complete info percentage... :(
                 $ci->str_status = $cstatus['started'];
                 // now append get completion percentage
-                //$ci->str_status .= get_string('status:progress', BLOCK_MANAGERREPORTS, self::_loadCompletionProgress($com, $user));
             }
         }
 
@@ -340,8 +340,6 @@ class voucher_Helper {
             get_string('report:status_not_started', BLOCK_VOUCHER) => '<span style="background-color: red; font-weight: bold">' . get_string('report:status_not_started', BLOCK_VOUCHER) . '</span>',
             get_string('report:status_completed', BLOCK_VOUCHER) => '<span style="background-color: lime; font-weight: bold">' . get_string('report:status_completed', BLOCK_VOUCHER) . '</span>',
         );
-        //echo "<pre>";
-        //print_r($reportdata);
         // add data
         $table->data = array();
         foreach ($reportdata->userdata as $uid => $cdata) {
