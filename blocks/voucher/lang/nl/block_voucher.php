@@ -211,7 +211,7 @@ $string['default-voucher-page-template-main'] = 'Met deze e-learning voucher act
 Gebruik onderstaande toegangscode om uw voucher te activeren.
 
 Toegangscode: {voucher_code}';
-$string['default-voucher-page-template-botleft'] = '1. Meldt u aan bij {site_url}
+$string['default-voucher-page-template-botleft'] = '1. Meld u aan bij {site_url}
 2. U ontvangt direct een e-mail met de bevestigingslink. Klik op deze link om uw account te activeren.
 3. Vul uw toegangscode in het Moodle Voucher blok.
 4. Veel leerplezier!';
