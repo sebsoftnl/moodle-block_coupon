@@ -10,6 +10,7 @@
  * @copyright Sebsoft.nl
  * @author Menno de Ridder <menno@sebsoft.nl>
  */
+if (!defined('BLOCK_VOUCHER_CLASSROOT')) require($CFG->dirroot . '/blocks/voucher/class/settings.php');
 require_once(BLOCK_VOUCHER_CLASSROOT . 'admin_setting_customConfigTextInt.php');
 
 defined('MOODLE_INTERNAL') || die('moodle_internal not defined');
