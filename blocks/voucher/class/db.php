@@ -73,7 +73,8 @@ class voucher_Db
             WHERE customint1 = {$cohortid}
             AND e.enrol = 'cohort'
             AND c.visible = 1
-            AND c.id != 1";
+            AND c.id != 1
+            ORDER BY c.fullname ASC";
         $cohort_courses = $DB->get_records_sql($sql_cohort_courses);
 
         return (count($cohort_courses) > 0) ? $cohort_courses : false;
@@ -90,7 +91,8 @@ class voucher_Db
                 SELECT courseid FROM {enrol} e
                 WHERE e.customint1 = {$cohortid}
                 AND e.enrol = 'cohort'
-            )";
+            )
+            ORDER BY c.fullname ASC";
         $unconnected_courses = $DB->get_records_sql($sql_unconnected_courses);
         
         return (!empty($unconnected_courses)) ? $unconnected_courses : false;
@@ -145,7 +147,7 @@ class voucher_Db
         global $DB;
         
         $courses_select = "id != 1 AND visible = 1";
-        $courses = $DB->get_records_select('course', $courses_select);
+        $courses = $DB->get_records_select('course', $courses_select, null, 'fullname ASC');
         
         return (!empty($courses)) ? $courses : false;
     }
