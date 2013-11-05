@@ -83,7 +83,7 @@ $string['url:api_docs'] = 'API Documentation';
 $string['url:uploadimage'] = 'Change voucher image';
 $string['url:input_voucher'] = 'Input Voucher';
 $string['url:view_reports'] = 'View reports';
-
+$string['url:view_unused_vouchers'] = 'View unused vouchers';
 
 // Form Labels
 $string['label:voucher_type'] = 'Generate based on';
@@ -148,7 +148,7 @@ $string['label:info_imageupload'] = 'Information on page: Upload image';
 // help texts
 $string['label:voucher_type_help'] = 'The Vouchers will be generated based on either the course or one or more cohorts.';
 $string['label:voucher_email_help'] = 'This is the email address the generated vouchers will be send to.';
-$string['label:voucher_amount_help'] = 'This is the the amount of vouchers that will be generated.';
+$string['label:voucher_amount_help'] = 'This is the the amount of vouchers that will be generated. Please use this field OR the field recipients, not both.';
 $string['label:voucher_cohorts_help'] = 'Select the one or more cohorts your users will be enrolled in.';
 $string['label:voucher_course_help'] = 'Select the course your users will be enrolled in.';
 $string['label:voucher_groups'] = 'Add group(s)';
@@ -239,5 +239,34 @@ $string['report:heading:datestart'] = 'Startdate';
 $string['report:heading:datecomplete'] = 'Date completed';
 $string['report:heading:grade'] = 'Grade';
 
+$string['report:owner'] = 'Owner';
+$string['report:senddate'] = 'Send date';
+$string['report:enrolperiod'] = 'Owner';
+$string['report:voucher_code'] = 'Subscription code';
+$string['report:cohorts'] = 'Cohort';
+$string['report:issend'] = 'Is send';
+$string['report:immediately'] = 'Immediately';
+$string['report:for_user'] = 'Planned user';
+
 $string['str:mandatory'] = 'Mandatory or smthing';
 $string['str:optional'] = 'Optional or smthing';
+
+$string['label:voucher_recipients'] = 'Recipients';
+$string['error:recipients-extension'] = 'You can only upload .csv files.';
+$string['error:voucher_amount-recipients-both-set'] = 'Please specify a number of vouchers to generate OR a csv list of recipients.';
+
+$string['label:voucher_recipients_help'] = 'With this field you can upload a csv file with users. Please use this field OR the field voucher amount, not both.';
+$string['error:voucher_amount-recipients-both-unset'] = 'Either this field or the field Recipients must be set.';
+
+$string['download-sample-csv'] = 'Download sample CSV file';
+
+$string['label:email_body'] = 'Email message';
+$string['label:email_body_help'] = 'The email message that will be send to the recipients of the vouchers.';
+$string['label:redirect_url'] = 'Redirect URL';
+$string['label:redirect_url_help'] = 'The destination users will be send to after entering their voucher code.';
+
+$string['label:enrolment_period'] = 'Enrolment period';
+$string['label:enrolment_period_help'] = 'Period (in days) the user will be enrolled in the courses. If set to 0 no end will be issued.';
+
+$string['label:date_send_vouchers'] = 'Send date';
+$string['label:date_send_vouchers_help'] = 'Date the vouchers will be send to the recipient(s).';

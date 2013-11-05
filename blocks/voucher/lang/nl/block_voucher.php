@@ -95,6 +95,7 @@ $string['url:api_docs'] = 'API Documentatie';
 $string['url:uploadimage'] = 'Wijzig voucher achtergrond';
 $string['url:input_voucher'] = 'Voucher invoeren';
 $string['url:view_reports'] = 'Bekijk rapporten';
+$string['url:view_unused_vouchers'] = 'Bekijk ongebruikte vouchers';
 
 // Form Labels
 $string['label:voucher_type'] = 'Genereer gebaseerd op';
@@ -157,7 +158,7 @@ $string['label:info_imageupload'] = 'Informatie op pagina: Upload afbeelding';
 // help texts
 $string['label:voucher_type_help'] = 'De vouchers worden gebaseerd op een cursus of een of meer cohorts.';
 $string['label:voucher_email_help'] = 'Dit is het e-mail adres waar de gegenereerde vouchers naar toe gestuurd worden.';
-$string['label:voucher_amount_help'] = 'Het aantal vouchers dat gegenereerd zal worden.';
+$string['label:voucher_amount_help'] = 'Het aantal vouchers dat gegenereerd zal worden. U kunt dit veld OF het Ontvangers veld gebruiken, niet beiden.';
 
 $string['label:api_enabled'] = 'Activeer API';
 $string['label:api_enabled_desc'] = 'Met de Voucher API kan men een voucher genereren van een extern systeem.';
@@ -242,5 +243,35 @@ $string['report:heading:datestart'] = 'Start datum';
 $string['report:heading:datecomplete'] = 'Datum afgerond';
 $string['report:heading:grade'] = 'Cijfer';
 
+$string['report:owner'] = 'Eigenaar';
+$string['report:senddate'] = 'Verstuurdatum';
+$string['report:enrolperiod'] = 'Inschrijf periode';
+$string['report:voucher_code'] = 'Inschrijf code';
+$string['report:cohorts'] = 'Cohort';
+$string['report:issend'] = 'Is verstuurd';
+$string['report:immediately'] = 'Onmiddelijk';
+$string['report:for_user'] = 'Ingeplande gebruiker';
+
 $string['str:mandatory'] = 'Mandatory or smthing';
 $string['str:optional'] = 'Optional or smthing';
+
+$string['label:voucher_recipients'] = 'Ontvangers';
+$string['error:recipients-extension'] = 'U kunt alleen .csv bestanden uploaden.';
+$string['error:voucher_amount-recipients-both-set'] = 'Maak alstublieft een keuze uit aantal te genereren vouchers OF een csv van ontvangers.';
+
+$string['label:voucher_recipients_help'] = 'Met dit veld kunt u een csv lijst met gebruikers als ontvangers van de vouchers uploaden.
+    U kunt dit veld OF het Aantal vouchers veld gebruiken, niet beiden.';
+$string['error:voucher_amount-recipients-both-unset'] = 'Dit veld of het veld Ontvangers moet gevuld zijn.';
+
+$string['download-sample-csv'] = 'Download voorbeeld csv';
+
+$string['label:email_body'] = 'Email bericht';
+$string['label:email_body_help'] = 'Het email bericht dat wordt verstuurd naar de ontvangers van de vouchers.';
+$string['label:redirect_url'] = 'Doorstuur adres';
+$string['label:redirect_url_help'] = 'De locatie waar gebruikers naar toe worden gestuurd na het invullen van hun voucher code.';
+
+$string['label:enrolment_period'] = 'Inschrijvingsperiode';
+$string['label:enrolment_period_help'] = 'Inschrijvingsperiode (in dagen). Indien 0 ingevuld wordt er geen uitschrijvingsdatum geregistreerd.';
+
+$string['label:date_send_vouchers'] = 'Verzenddatum';
+$string['label:date_send_vouchers_help'] = 'Datum dat de vouchers naar de ontvanger(s) verstuurd worden.';

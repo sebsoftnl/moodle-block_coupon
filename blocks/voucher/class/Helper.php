@@ -203,6 +203,19 @@ class voucher_Helper {
         return $vouchers;
         
     }
+    
+    public static final function GetUnusedVouchers() {
+        global $USER;
+
+        if (self::getPermission('viewallreports')) {
+            $vouchers = voucher_Db::GetUnusedVouchers();
+        } else {
+            $vouchers = voucher_Db::GetUnusedVouchersByOwner($USER->id);
+        }
+        
+        return $vouchers;
+        
+    }
 
     /**
      * Load the course completion info

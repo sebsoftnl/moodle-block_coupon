@@ -80,6 +80,30 @@ class voucher_Db
         return (count($cohort_courses) > 0) ? $cohort_courses : false;
     }
     
+    final static public function GetVoucherGroups($voucherid) {
+        global $DB;
+        
+        $sql_groups = "
+            SELECT vg.id, g.name FROM {voucher_groups} vg
+            LEFT JOIN {groups} g ON vg.groupid = g.id
+            WHERE vg.voucherid = $voucherid";
+        $voucherGroups = $DB->get_records_sql($sql_groups);
+        
+        return (!empty($voucherGroups)) ? $voucherGroups : false;
+    }
+    
+    final static public function GetVoucherCohorts($voucherid) {
+        global $DB;
+        
+        $sql_cohorts = "
+            SELECT * FROM {voucher_cohorts} vc
+            LEFT JOIN {cohort} c ON vc.cohortid = c.id
+            WHERE vc.voucherid = $voucherid";
+        $voucherCohorts = $DB->get_records_sql($sql_cohorts);
+        
+        return (!empty($voucherCohorts)) ? $voucherCohorts : false;
+    }
+    
     final static public function GetUnconnectedCohortCourses($cohortid) {
         global $DB;
         
@@ -138,6 +162,34 @@ class voucher_Db
             SELECT * FROM {vouchers}
             WHERE userid IS NOT NULL
             AND ownerid = $ownerid";
+        $vouchers = $DB->get_records_sql($sql_vouchers);
+
+        return (!empty($vouchers)) ? $vouchers : false;
+    }
+    
+    static public final function GetUnusedVouchers() {
+        global $DB;
+        
+        $sql_vouchers = "
+            SELECT v.*, u.firstname, u.lastname, u.username FROM {vouchers} v
+            LEFT JOIN {user} u ON v.ownerid = u.id
+            WHERE v.userid IS NULL
+            ORDER BY v.senddate DESC";
+        $vouchers = $DB->get_records_sql($sql_vouchers);
+        
+        return (!empty($vouchers)) ? $vouchers : false;
+    }
+    
+    static public final function GetUnusedVouchersByOwner($ownerid) {
+        global $DB;
+        
+        $sql_vouchers = "
+            SELECT v.*, u.firstname, u.lastname, u.username
+            FROM {vouchers} v
+            LEFT JOIN {user} u ON v.ownerid = u.id
+            WHERE userid IS NULL
+            AND ownerid = $ownerid
+            ORDER BY v.senddate DESC";
         $vouchers = $DB->get_records_sql($sql_vouchers);
 
         return (!empty($vouchers)) ? $vouchers : false;

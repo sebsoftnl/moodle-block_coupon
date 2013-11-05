@@ -68,8 +68,10 @@ class block_voucher extends block_base
         if ($permissions['viewreports'])
         {
             $url_reports = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/reports.php', array('id' => $this->instance->id));
+            $url_unused_reports = new moodle_url(BLOCK_VOUCHER_WWWROOT . 'view/unused_vouchers.php', array('id' => $this->instance->id));
             
-            $menu_items[] = "<p>" . html_writer::link($url_reports, get_string('url:view_reports', BLOCK_VOUCHER)) . "</p>";
+            $menu_items[] = html_writer::link($url_reports, get_string('url:view_reports', BLOCK_VOUCHER));
+            $menu_items[] = html_writer::link($url_unused_reports, get_string('url:view_unused_vouchers', BLOCK_VOUCHER));
         }
 
         // Input Voucher
