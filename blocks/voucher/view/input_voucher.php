@@ -106,8 +106,13 @@ if (voucher_Helper::getPermission('inputvouchers'))
             $context = get_context_instance(CONTEXT_COURSE, $voucher->courseid);
             if (!is_enrolled($context, $USER->id)) {
                 
+                $end_enrolment = 0;
+                
+                if (!is_null($voucher->enrolperiod)) {
+                    $end_enrolment = strtotime("+ {$voucher->enrolperiod} days");
+                }
                 // Now we can enrol
-                if (!enrol_try_internal_enrol($voucher->courseid, $USER->id, $role->id, time())) {
+                if (!enrol_try_internal_enrol($voucher->courseid, $USER->id, $role->id, time(), $end_enrolment)) {
                     print_error(get_string('error:unable_to_enrol', BLOCK_VOUCHER));
                 }
                 
@@ -138,7 +143,9 @@ if (voucher_Helper::getPermission('inputvouchers'))
         
         // Redirect to my directly
 //        redirect(voucher_Helper::createBlockUrl('view/input_voucher_finish.php', array('id' => $id)));
-        redirect($CFG->wwwroot . '/my', get_string('success:voucher_used', BLOCK_VOUCHER));
+        $redirect_url = (empty($voucher->redirect_url)) ? $CFG->wwwroot . "/my" : $voucher->redirect_url;
+        
+        redirect($redirect_url, get_string('success:voucher_used', BLOCK_VOUCHER));
     }
     else
     {

@@ -97,6 +97,37 @@ class voucher_Helper {
         return (count($errors) > 0) ? $errors : true;
     }
 
+    public static final function GetRecipientsFromCsv($recipients_str) {
+        
+        $recipients = array();
+        $count = 0;
+
+        // Split up in rows
+        if (!$csvData = str_getcsv($recipients_str, "\n")) return false;
+        // Split up in columns
+        foreach($csvData as &$row) {
+            
+            $row = str_getcsv($row, ",");
+            if ($count == 0) {
+                if ($row[0] != 'username' || $row[1] != 'firstname' || $row[2] != 'lastname' || $row[3] != 'email') return false;
+                $count++;
+                continue;
+            } else {
+                if (!isset($row[0]) || !isset($row[1]) || !isset($row[2]) || !isset($row[3])) return false;
+            }
+
+            $recipient = new stdClass();
+            $recipient->username = $row[0];
+            $recipient->firstname = $row[1];
+            $recipient->lastname = $row[2];
+            $recipient->email = $row[3];
+            
+            $recipients[] = $recipient;
+        }
+        
+        return $recipients;
+    }
+    
     /**
      * MailVouchers
      * This function will mail the generated vouchers.
@@ -535,6 +566,24 @@ class voucher_Helper {
             $aparams['title'] = $title;
         }
         return html_writer::tag('button', $buttontext, $aparams);
+    }
+    
+    public static final function getVoucherRecipientsColumns() {
+        $columns = array(
+            'username',
+            'firstname',
+            'lastname',
+            'email'
+        );
+    }
+    
+    public static final function validateVoucherRecipients($data) {
+//        
+//        $columns = self::getVoucherRecipientsColumns();
+//        
+//        var_dump($data);
+//        exit();
+//        
     }
 
 }

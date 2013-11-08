@@ -80,6 +80,12 @@ class voucher_Db
         return (count($cohort_courses) > 0) ? $cohort_courses : false;
     }
     
+    public static final function GetUser($conditions) {
+        global $DB;
+        
+        return $DB->get_record('user', $conditions);
+    }
+    
     final static public function GetVoucherGroups($voucherid) {
         global $DB;
         
@@ -285,6 +291,22 @@ class voucher_Db
                 $DB->update_record('user_info_data', $data);
             }
         }
+    }
+    
+    
+    public static final function GetVouchersToSend() {
+        global $DB;
+        $timeend = strtotime("+1");
+        $query = "
+            SELECT * FROM {vouchers} v
+            LEFT JOIN {user} u ON u.id = v.for_user
+            WHERE senddate < $timeend
+            AND userid IS NULL
+            AND issend = 0
+        ";
+        $vouchers = $DB->get_records_sql($query);
+        
+        return (!empty($vouchers)) ? $vouchers : false;
     }
 
 }

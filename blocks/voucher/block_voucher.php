@@ -144,7 +144,7 @@ class block_voucher extends block_base
         mtrace(' ');
         mtrace('---------------------------------------------------------------------------------');
         mtrace('-- RUN CRON FOR ' . strtoupper(BLOCK_VOUCHER));
-        require_once BLOCK_VOUCHER_CLASSROOT . 'core/Cron.php';
+        require_once BLOCK_VOUCHER_CLASSROOT . 'Cron.php';
         $c = new voucher_Cron();
         return $c->run();
         mtrace('---------------------------------------------------------------------------------');

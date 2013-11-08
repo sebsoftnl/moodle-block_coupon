@@ -1,12 +1,12 @@
 <?php
 
 /*
- * File: generate_voucher_step_four.php
+ * File: generate_voucher_step_five.php
  * Encoding: UTF-8
  * @package voucher
  * 
  * @Version 1.0.0
- * @Since 12-jul-2013
+ * @Since 11-jul-2013
  * @copyright Sebsoft.nl
  * @author Menno de Ridder <menno@sebsoft.nl>
  */
@@ -36,10 +36,7 @@ if ($id)    //DEFAULT CHECKS
     $PAGE->navbar->add(ucfirst($course->fullname), new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
-// Make sure the voucher object is set in cache
-if (!isset($SESSION->voucher)) print_error(get_string('error:nopermission', BLOCK_VOUCHER));
-
-$url = new moodle_url('/blocks/voucher/view/generate_voucher_step_four.php', array('id' => $id));
+$url = new moodle_url('/blocks/voucher/view/generate_voucher_step_five.php', array('id' => $id));
 $PAGE->set_url($url);
 
 $PAGE->set_title(get_string('view:generate_voucher:title', BLOCK_VOUCHER));
@@ -58,18 +55,8 @@ if (voucher_Helper::getPermission('generatevouchers'))
         print_error("error:sessions-expired", BLOCK_VOUCHER);
     }
     
-    // Depending on our data we'll get the right form
-    if ($SESSION->voucher->type == 'course') {
-        
-        require_once BLOCK_VOUCHER_CLASSROOT.'forms/generate_confirm_course_form.php';
-        $mform = new generate_confirm_course_form($url);
-
-    } else {
-
-        require_once BLOCK_VOUCHER_CLASSROOT.'forms/generate_confirm_cohorts_form.php';
-        $mform = new generate_confirm_cohorts_form($url);
-        
-    }
+    require_once BLOCK_VOUCHER_CLASSROOT.'forms/generate_voucher_extra_form.php';
+    $mform = new generate_voucher_extra_form($url);
     
     if ($mform->is_cancelled())
     {
@@ -78,38 +65,21 @@ if (voucher_Helper::getPermission('generatevouchers'))
     }
     elseif ($data = $mform->get_data())
     {
-        
-        $SESSION->voucher->redirect_url = $data->redirect_url;
-        $SESSION->voucher->enrolment_period = $data->enrolment_period;
-        $SESSION->voucher->date_send_vouchers = $data->date_send_vouchers;
-        
-        if ($data->showform == 'csv') {
-            
-            $SESSION->voucher->csv_content = $mform->get_file_content('voucher_recipients');
-            $SESSION->voucher->email_body = $data->email_body;
-            
-            redirect(voucher_Helper::createBlockUrl('view/generate_voucher_step_five.php', array('id'=>$id)));
-        }
-        
         // Include the voucher generator
         require_once(BLOCK_VOUCHER_CLASSROOT . 'VoucherGenerator.php');
-        
-        // Save last settings in sessions
-        $SESSION->voucher->amount = $data->voucher_amount;
-        $SESSION->voucher->email = (isset($data->use_alternative_email) && $data->use_alternative_email) ? $data->alternative_email : $USER->email;
-        $SESSION->voucher->generate_single_pdfs = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
+        // Get recipients
+        $recipients = voucher_Helper::GetRecipientsFromCsv($data->voucher_recipients);
         
         // Get max length for the voucher code
         if (!$voucher_code_length = get_config('voucher', 'voucher_code_length')) $voucher_code_length = 16;
-        
+
         // Now that we've got all information we'll create the voucher objects
         $vouchers = array();
-        for($i = 0; $i < $SESSION->voucher->amount; $i++) {
+        foreach($recipients as $recipient) {
             
             $voucher = new stdClass();
             $voucher->ownerid = $USER->id;
             $voucher->courseid = ($SESSION->voucher->type == 'course') ? $SESSION->voucher->course : null;
-            $voucher->amount = $SESSION->voucher->amount;
             $voucher->submission_code = VoucherGenerator::GenerateUniqueCode($voucher_code_length);
             
             if ($SESSION->voucher->type == 'cohorts') {
@@ -135,8 +105,9 @@ if (voucher_Helper::getPermission('generatevouchers'))
             $vouchers[] = $voucher;
         }
 
+        exit("<pre>" . print_r($vouchers, true) . "</pre>");
         // Now that we've got all the vouchers
-        $result = voucher_Helper::GenerateVouchers($vouchers);
+//        $result = voucher_Helper::GenerateVouchers($vouchers);
         if ($result !== true) {
             // Means we've got an error
             // Don't know yet what we're gonne do in this situation. Maybe mail to supportuser?
@@ -144,13 +115,10 @@ if (voucher_Helper::getPermission('generatevouchers'))
             echo "<pre>" . print_r($result, true) . "</pre>";
             die();
         }
-        voucher_Helper::MailVouchers($vouchers, $SESSION->voucher->email, $SESSION->voucher->generate_single_pdfs);
         
+        // Finish screen
         redirect(voucher_Helper::createBlockUrl('view/generate_voucher_finish.php', array('id'=>$id)));
-    }
-    else
-    {
-        
+    } else {
         echo $OUTPUT->header();
         $mform->display();
         echo $OUTPUT->footer();

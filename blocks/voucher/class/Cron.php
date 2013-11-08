@@ -21,7 +21,24 @@ class voucher_Cron
      */
     public function run()
     {
-        // run the cron job(s)
+        
+        // Call vouchers
+        $vouchers = voucher_Db::GetVouchersToSend();
+        if (!$vouchers) return true;
+        
+        foreach($vouchers as $voucher) {
+            
+            // Send to user 
+            if (!is_null($voucher->for_user)) {
+                
+            }
+            // else send to config?
+            
+            // Send to a certain email address
+            
+            
+        }
+        
         return true;
     }
 

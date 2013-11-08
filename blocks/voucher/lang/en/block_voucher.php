@@ -46,6 +46,9 @@ $string['heading:imageupload'] = 'Upload image';
 
 $string['heading:info'] = 'Info';
 
+$string['heading:csvForm'] = 'CSV settings';
+$string['heading:amountForm'] = 'Amount settings';
+
 // Errors
 $string['error:nopermission'] = 'You have no permission to do this';
 $string['error:required'] = 'This field is required.';
@@ -224,6 +227,8 @@ $string['pdf-meta:title'] = 'Moodle Voucher';
 $string['pdf-meta:subject'] = 'Moodle Voucher';
 $string['pdf-meta:keywords'] = 'Moodle Voucher';
 
+$string['error:sessions-expired'] = 'Your session has been expired. Please try again.';
+
 $string['report:status_not_started'] = 'Course not started yet';
 $string['report:status_started'] = 'Course started';
 $string['report:status_completed'] = 'Course completed';
@@ -256,6 +261,8 @@ $string['error:recipients-extension'] = 'You can only upload .csv files.';
 $string['error:voucher_amount-recipients-both-set'] = 'Please specify a number of vouchers to generate OR a csv list of recipients.';
 
 $string['label:voucher_recipients_help'] = 'With this field you can upload a csv file with users. Please use this field OR the field voucher amount, not both.';
+$string['label:voucher_recipients_txt'] = 'Recipients';
+$string['label:voucher_recipients_txt_help'] = 'In this field you can make your final changes to the uploaded csv file.';
 $string['error:voucher_amount-recipients-both-unset'] = 'Either this field or the field Recipients must be set.';
 
 $string['download-sample-csv'] = 'Download sample CSV file';
@@ -270,3 +277,12 @@ $string['label:enrolment_period_help'] = 'Period (in days) the user will be enro
 
 $string['label:date_send_vouchers'] = 'Send date';
 $string['label:date_send_vouchers_help'] = 'Date the vouchers will be send to the recipient(s).';
+
+$string['label:showform'] = 'Generate using';
+$string['showform-csv'] = 'csv';
+$string['showform-amount'] = 'amount';
+
+$string['error:recipients-unknown-user'] = 'One of the users is not a Moodle User. Please correct this.';
+$string['error:recipients-max-exceeded'] = 'Your csv file has exceeded the maximum of 10.000 voucher users. Please limit it.';
+$string['error:recipients-invalid'] = 'The users could not be validated. Are you sure you entered the right columns and seperator?';
+$string['error:recipients-empty'] = 'Please enter at least one user.';

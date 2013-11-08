@@ -36,25 +36,46 @@ class generate_confirm_course_form extends moodleform
         if (!$str_info = get_config('voucher', 'info_voucher_confirm')) $str_info = get_string('missing_config_info', BLOCK_VOUCHER);
         $mform->addElement('static', 'info', '', $str_info);
 
-        $mform->addElement('header', 'confirmheader', get_string('heading:general_settings', BLOCK_VOUCHER));
+        // determine which type of settings we'll use
+        $radioarray=array();
+        $radioarray[] =& $mform->createElement('radio', 'showform', '', get_string('showform-csv', BLOCK_VOUCHER), 'csv', array('onchange'=>'showHide(this.value)'));
+        $radioarray[] =& $mform->createElement('radio', 'showform', '', get_string('showform-amount', BLOCK_VOUCHER), 'amount', array('onchange'=>'showHide(this.value)'));
+        $mform->addGroup($radioarray, 'radioar', get_string('label:showform', BLOCK_VOUCHER), array(' '), false);
+        $mform->setDefault('showform', 'csv');
+
+        
+        // Send vouchers based on CSV upload
+        $mform->addElement('header', 'csvForm', get_string('heading:csvForm', BLOCK_VOUCHER));
+
+        // Filepicker
+        $urlDownloadCsv = '<a href="' . $CFG->wwwroot . '/blocks/voucher/sample.csv" target="_blank">' . get_string('download-sample-csv', BLOCK_VOUCHER) . '</a>';
+        $mform->addElement('filepicker', 'voucher_recipients', get_string('label:voucher_recipients', BLOCK_VOUCHER), null, array('accepted_types' => 'csv'));
+        $mform->addRule('voucher_recipients', get_string('required'), 'required', null, 'client');
+        $mform->addHelpButton('voucher_recipients', 'label:voucher_recipients', BLOCK_VOUCHER);
+        $mform->addElement('static', 'sample_csv', '', $urlDownloadCsv);
+
+        // Editable email message
+        $mform->addElement('editor', 'email_body', get_string('label:email_body', BLOCK_VOUCHER));
+        $mform->setType('email_body', PARAM_RAW);
+        $mform->setDefault('email_body', array('text'=>get_string('voucher_mail_content', BLOCK_VOUCHER)));
+        $mform->addRule('email_body', get_string('required'), 'required');
+        $mform->addHelpButton('email_body', 'label:email_body', BLOCK_VOUCHER);
+
+        
+        // Send vouchers based on Amount field
+        $mform->addElement('header', 'amountForm', get_string('heading:amountForm', BLOCK_VOUCHER));
 
         // Set email_to variable
         $use_alternative_email = get_config('voucher', 'use_alternative_email');
         $alternative_email = get_config('voucher', 'alternative_email');
-        
+
         // Amount of vouchers
         $mform->addElement('text', 'voucher_amount', get_string('label:voucher_amount', BLOCK_VOUCHER));
         $mform->setType('voucher_amount', PARAM_INT);
-        $mform->addRule('voucher_amount', get_string('error:numeric_only', BLOCK_VOUCHER), 'numeric', null, 'client');
+        $mform->addRule('voucher_amount', get_string('error:numeric_only', BLOCK_VOUCHER), 'numeric');
+        $mform->addRule('voucher_amount', get_string('required'), 'required');
         $mform->addHelpButton('voucher_amount', 'label:voucher_amount', BLOCK_VOUCHER);
 
-        // Upload users csv
-        $mform->addElement('filepicker', 'voucher_recipients', get_string('label:voucher_recipients', BLOCK_VOUCHER), null, array('accepted_types' => 'csv'));
-        $mform->addHelpButton('voucher_recipients', 'label:voucher_recipients', BLOCK_VOUCHER);
-        // Download sample of csv
-        $url = '<a href="' . $CFG->wwwroot . '/blocks/voucher/sample.csv" target="_blank">' . get_string('download-sample-csv', BLOCK_VOUCHER) . '</a>';
-        $mform->addElement('static', 'sample_csv', '', $url);
-        
         // Use alternative email address
         $mform->addElement('checkbox', 'use_alternative_email', get_string('label:use_alternative_email', BLOCK_VOUCHER));
         $mform->setType('use_alternative_email', PARAM_BOOL);
@@ -71,14 +92,11 @@ class generate_confirm_course_form extends moodleform
         // Generate_pdf checkbox
         $mform->addElement('checkbox', 'generate_pdf', get_string('label:generate_pdfs', BLOCK_VOUCHER));
         $mform->addHelpButton('generate_pdf', 'label:generate_pdfs', BLOCK_VOUCHER);
-        
-        // Editable email message
-        $mform->addElement('editor', 'email_body', get_string('label:email_body', BLOCK_VOUCHER));
-        $mform->setType('email_body', PARAM_RAW);
-        $mform->setDefault('email_body', array('text'=>get_string('voucher_mail_content', BLOCK_VOUCHER)));
-        $mform->addRule('email_body', get_string('required'), 'required');
-        $mform->addHelpButton('email_body', 'label:email_body', BLOCK_VOUCHER);
 
+
+        // Settings that apply for both csv and amount
+        $mform->addElement('header', 'lastSettings', get_string('heading:general_settings', BLOCK_VOUCHER));
+        
         // Configurable redirect url
         $mform->addElement('text', 'redirect_url', get_string('label:redirect_url', BLOCK_VOUCHER));
         $mform->setType('redirect_url', PARAM_RAW);
@@ -96,10 +114,8 @@ class generate_confirm_course_form extends moodleform
         // Configurable enrolment time
         $mform->addElement('date_selector', 'date_send_vouchers', get_string('label:date_send_vouchers', BLOCK_VOUCHER));
         $mform->addRule('date_send_vouchers', get_string('required'), 'required');
-//        $mform->setType('date_send_vouchers', PARAM_RAW);
-//        $mform->setDefault('date_send_vouchers', date('d-m-Y'));
         $mform->addHelpButton('date_send_vouchers', 'label:date_send_vouchers', BLOCK_VOUCHER);
-        
+
         // Course fullname
         $course = $DB->get_record('course', array('id'=>$SESSION->voucher->course));
         $mform->addElement('static', 'voucher_course', get_string('label:selected_course', BLOCK_VOUCHER), $course->fullname);
@@ -114,43 +130,65 @@ class generate_confirm_course_form extends moodleform
                 $mform->addElement('static', 'voucher_groups', '', $group->name);
             }
         }
+
         
-        // Submit button
+        // All elements added, add the custom js function and submit buttons
+        $mform->addElement('html', "
+            <script type='text/javascript'>
+            window.onload=showHide('csv');
+            
+            function showHide(fieldValue) {
+                if (fieldValue == 'csv') {
+                    document.getElementById('id_amountForm').style.display='none';
+                } else {
+                    document.getElementById('id_csvForm').style.display='none';
+                }
+                document.getElementById('id_' + fieldValue + 'Form').style.display='block';
+            }
+            </script>
+        ");
         $this->add_action_buttons(true, get_string('button:save', BLOCK_VOUCHER));
-        
+
     }
     
     public function validation($data, $files) {
         
-        $errors = parent::validation($data, $files);
-        
-        $max_vouchers_amount = get_config('voucher', 'max_vouchers');
-        if ($data['voucher_amount'] > $max_vouchers_amount) {
-            $errors['voucher_amount'] = get_string('error:voucher_amount_too_high', BLOCK_VOUCHER, array('max_vouchers'=>$max_vouchers_amount));
+        // Set which fields to validate, depending on form used
+        if ($data['showform'] == 'csv') {
+            $data2validate = array(
+                'email_body' => $data['email_body']
+            );
+        } else {
+            $data2validate = array(
+                'voucher_amount' => $data['voucher_amount'],
+                'alternative_email' => $data['alternative_email']
+            );
         }
+        $data2validate['redirect_url'] = $data['redirect_url'];
+        $data2validate['enrolment_period'] = $data['enrolment_period'];
+        $data2validate['date_send_vouchers'] = $data['date_send_vouchers'];
         
-        // If we want to use alternative email we'd best be sure its a proper email address
-        if (isset($data['use_alternative_email']) && $data['use_alternative_email']) {
+        // Validate
+        $errors = parent::validation($data2validate, $files);
+        
+        // Custom validate
+        if ($data['showform'] == 'csv') {
             
-            if (empty($data['alternative_email'])) {
-                
-                $error['alternative_email'] = get_string('error:alternative_email_required', BLOCK_VOUCHER);
-                
-            } elseif (!filter_var($data['alternative_email'], FILTER_VALIDATE_EMAIL)) {
+            // Unfortunately we've gotte validate csv after saving it, so we'll do it in the view
             
-                $error['alternative_email'] = get_string('error:alternative_email_invalid', BLOCK_VOUCHER);
-                
+        } else {
+
+            // Max amount of vouchers
+            $max_vouchers_amount = get_config('voucher', 'max_vouchers');
+            if ($data['voucher_amount'] > $max_vouchers_amount) {
+                $errors['voucher_amount'] = get_string('error:voucher_amount_too_high', BLOCK_VOUCHER, array('max_vouchers'=>$max_vouchers_amount));
             }
-        }
-        
-        // if an amount of vouchers AND the csv upload are set
-        if ((!empty($files) && isset($files['recipients'])) && isset($data['voucher_amount']) && !empty($data['voucher_amount'])) {
-            
-            $errors['voucher_amount'] = get_string('error:voucher_amount-recipients-both-set', BLOCK_VOUCHER);
-            
-        }elseif((empty($files) || !isset($files['recipients'])) && !isset($data['voucher_amount']) || empty($data['voucher_amount'])) {
-            
-            $errors['voucher_amount'] = get_string('error:voucher_amount-recipients-both-unset', BLOCK_VOUCHER);
+            // Alternative email required if use_alternative_email is checked
+            if ($data['use_alternative_email'] && empty($data['alternative_email'])) {
+
+                $errors['alternative_email'] = get_string('error:alternative_email_required', BLOCK_VOUCHER);
+
+            }
             
         }
         

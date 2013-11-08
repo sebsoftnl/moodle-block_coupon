@@ -18,6 +18,8 @@ $string['voucher:generatevouchers'] = 'Genereer een nieuwe Moodle Voucher';
 $string['voucher:inputvouchers'] = 'Gebruik een Voucher';
 $string['voucher:myaddinstance'] = 'Voeg een nieuw Voucher blok toe aan de Mijn Moodle pagina';
 
+$string['error:sessions-expired'] = 'Uw sessie is verlopen.';
+
 //DEFAULT
 $string['blockname'] = 'Voucher';
 $string['pluginname'] = 'Voucher';
@@ -261,6 +263,8 @@ $string['error:voucher_amount-recipients-both-set'] = 'Maak alstublieft een keuz
 
 $string['label:voucher_recipients_help'] = 'Met dit veld kunt u een csv lijst met gebruikers als ontvangers van de vouchers uploaden.
     U kunt dit veld OF het Aantal vouchers veld gebruiken, niet beiden.';
+$string['label:voucher_recipients_txt'] = 'Ontvangers';
+$string['label:voucher_recipients_txt_help'] = 'In dit veld kunt u de laatste aanpassingen aan het csv bestand doen.';
 $string['error:voucher_amount-recipients-both-unset'] = 'Dit veld of het veld Ontvangers moet gevuld zijn.';
 
 $string['download-sample-csv'] = 'Download voorbeeld csv';
@@ -275,3 +279,12 @@ $string['label:enrolment_period_help'] = 'Inschrijvingsperiode (in dagen). Indie
 
 $string['label:date_send_vouchers'] = 'Verzenddatum';
 $string['label:date_send_vouchers_help'] = 'Datum dat de vouchers naar de ontvanger(s) verstuurd worden.';
+
+$string['label:showform'] = 'Genereer m.b.v.';
+$string['showform-csv'] = 'csv';
+$string['showform-amount'] = 'aantal';
+
+$string['error:recipients-unknown-user'] = 'Een van de ingevulde gebruikers is geen Moodle user. Corrigeer dit eerst svp.';
+$string['error:recipients-max-exceeded'] = 'Uw bestand is over de maximum aantal regels van 10.000. Limiteer het aantal gebruikers svp.';
+$string['error:recipients-invalid'] = 'Uw bestand kon niet gevalideerd worden. Controleer svp of de juiste kolommen en scheidingsteken gebruikt is.';
+$string['error:recipients-empty'] = 'Vul minstens 1 gebruiker in svp.';
