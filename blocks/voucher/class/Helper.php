@@ -34,7 +34,7 @@ class voucher_Helper {
      * @return True or an array of errors
      * */
     public static final function GenerateVouchers($vouchers) {
-        global $SESSION, $DB;
+        global $DB;
 
         $errors = array();
 
@@ -44,12 +44,21 @@ class voucher_Helper {
             // An object for the voucher itself
             $obj_voucher = new stdClass();
             $obj_voucher->ownerid = $voucher->ownerid;
-            $obj_voucher->amount = $voucher->amount;
             $obj_voucher->submission_code = $voucher->submission_code;
             $obj_voucher->timecreated = time();
-            $obj_voucher->userid = null;
             $obj_voucher->timeexpired = null;
+            $obj_voucher->userid = null;
             $obj_voucher->courseid = (!isset($voucher->courseid) || $voucher->courseid === null) ? null : $voucher->courseid;
+            
+            // Extra columns
+            $obj_voucher->for_user = (isset($voucher->for_user) && !empty($voucher->for_user)) ? $voucher->for_user : null;
+            $obj_voucher->redirect_url = $voucher->redirect_url;
+            $obj_voucher->issend = 0;
+            $obj_voucher->senddate = $voucher->senddate;
+            $obj_voucher->enrolperiod = $voucher->enrolperiod;
+            $obj_voucher->single_pdf = (isset($voucher->single_pdf)) ? $voucher->single_pdf : null;
+            
+            $obj_voucher->email_to = (isset($voucher->email_to) && !empty($voucher->email_to)) ? $voucher->email_to : null; // email address to send the vouchers to
 
             // insert voucher in db so we've got an id
             if (!$voucher_id = $DB->insert_record('vouchers', $obj_voucher)) {
@@ -70,7 +79,7 @@ class voucher_Helper {
 
                     // And insert in db
                     if (!$DB->insert_record('voucher_cohorts', $obj_cohort)) {
-                        $errors[] = 'Failed to create cohort ' . $cohort->cohortid . ' for voucher id ' . $voucher_id . '.';
+                        $errors[] = 'Failed to create cohort ' . $cohort->cohortid . ' record for voucher id ' . $voucher_id . '.';
                         continue;
                     }
                 }
@@ -87,7 +96,7 @@ class voucher_Helper {
 
                     // And insert in db
                     if (!$DB->insert_record('voucher_groups', $obj_group)) {
-                        $errors[] = 'Failed to create group ' . $group->groupid . ' for voucher id ' . $voucher_id . '.';
+                        $errors[] = 'Failed to create group ' . $group->groupid . ' record for voucher id ' . $voucher_id . '.';
                         continue;
                     }
                 }

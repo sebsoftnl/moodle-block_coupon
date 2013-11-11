@@ -96,7 +96,7 @@ if (voucher_Helper::getPermission('generatevouchers'))
         
         // Save last settings in sessions
         $SESSION->voucher->amount = $data->voucher_amount;
-        $SESSION->voucher->email = (isset($data->use_alternative_email) && $data->use_alternative_email) ? $data->alternative_email : $USER->email;
+        $SESSION->voucher->email_to = (isset($data->use_alternative_email) && $data->use_alternative_email) ? $data->alternative_email : $USER->email;
         $SESSION->voucher->generate_single_pdfs = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
         
         // Get max length for the voucher code
@@ -110,6 +110,8 @@ if (voucher_Helper::getPermission('generatevouchers'))
             $voucher->ownerid = $USER->id;
             $voucher->courseid = ($SESSION->voucher->type == 'course') ? $SESSION->voucher->course : null;
             $voucher->amount = $SESSION->voucher->amount;
+            $voucher->email_to = $SESSION->voucher->email_to;
+            $voucher->single_pdf = $SESSION->voucher->generate_single_pdfs;
             $voucher->submission_code = VoucherGenerator::GenerateUniqueCode($voucher_code_length);
             
             if ($SESSION->voucher->type == 'cohorts') {
@@ -144,7 +146,7 @@ if (voucher_Helper::getPermission('generatevouchers'))
             echo "<pre>" . print_r($result, true) . "</pre>";
             die();
         }
-        voucher_Helper::MailVouchers($vouchers, $SESSION->voucher->email, $SESSION->voucher->generate_single_pdfs);
+//        voucher_Helper::MailVouchers($vouchers, $SESSION->voucher->email, $SESSION->voucher->generate_single_pdfs);
         
         redirect(voucher_Helper::createBlockUrl('view/generate_voucher_finish.php', array('id'=>$id)));
     }

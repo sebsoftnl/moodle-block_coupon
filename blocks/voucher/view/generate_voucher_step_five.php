@@ -105,9 +105,8 @@ if (voucher_Helper::getPermission('generatevouchers'))
             $vouchers[] = $voucher;
         }
 
-        exit("<pre>" . print_r($vouchers, true) . "</pre>");
         // Now that we've got all the vouchers
-//        $result = voucher_Helper::GenerateVouchers($vouchers);
+        $result = voucher_Helper::GenerateVouchers($vouchers);
         if ($result !== true) {
             // Means we've got an error
             // Don't know yet what we're gonne do in this situation. Maybe mail to supportuser?

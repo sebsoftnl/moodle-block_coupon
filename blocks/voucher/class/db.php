@@ -296,11 +296,12 @@ class voucher_Db
     
     public static final function GetVouchersToSend() {
         global $DB;
-        $timeend = strtotime("+1");
+        
+        $senddate = time();
         $query = "
             SELECT * FROM {vouchers} v
             LEFT JOIN {user} u ON u.id = v.for_user
-            WHERE senddate < $timeend
+            WHERE senddate < $senddate
             AND userid IS NULL
             AND issend = 0
         ";
