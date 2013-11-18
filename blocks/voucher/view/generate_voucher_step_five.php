@@ -77,10 +77,19 @@ if (voucher_Helper::getPermission('generatevouchers'))
         $vouchers = array();
         foreach($recipients as $recipient) {
             
+            $moodle_user = voucher_Db::GetUser((array)$recipient);
+            
             $voucher = new stdClass();
             $voucher->ownerid = $USER->id;
             $voucher->courseid = ($SESSION->voucher->type == 'course') ? $SESSION->voucher->course : null;
             $voucher->submission_code = VoucherGenerator::GenerateUniqueCode($voucher_code_length);
+            
+            // Extra fields
+            $voucher->senddate = $SESSION->voucher->date_send_vouchers;
+            $voucher->for_user = $moodle_user->id;
+            $voucher->redirect_url = $SESSION->voucher->redirect_url;
+            $voucher->enrolperiod = $SESSION->voucher->enrolperiod;
+            $voucher->email_body = $SESSION->voucher->email_body;
             
             if ($SESSION->voucher->type == 'cohorts') {
                 
@@ -107,6 +116,7 @@ if (voucher_Helper::getPermission('generatevouchers'))
 
         // Now that we've got all the vouchers
         $result = voucher_Helper::GenerateVouchers($vouchers);
+
         if ($result !== true) {
             // Means we've got an error
             // Don't know yet what we're gonne do in this situation. Maybe mail to supportuser?

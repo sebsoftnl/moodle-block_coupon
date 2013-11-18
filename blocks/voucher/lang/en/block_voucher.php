@@ -56,13 +56,14 @@ $string['error:numeric_only'] = 'This field must be numeric.';
 $string['error:invalid_email'] = 'Please enter a valid email adress.';
 $string['error:invalid_voucher_code'] = 'You have entered an invalid voucher code.';
 $string['error:voucher_already_used'] = 'The voucher with this code has already been used.';
+$string['error:voucher_reserved'] = 'The voucher with this code has been reserved for an other user.';
 $string['error:unable_to_enrol'] = 'An error occured while trying to enrol you in the new course. Please contact support.';
 $string['error:missing_course'] = 'The course linked to this voucher does not exist anymore. Please contact support.';
 $string['error:cohort_sync'] = 'An error occured while trying to synchronize the cohorts. Please contact support.';
 $string['error:plugin_disabled'] = 'The cohort_sync plugin has been disabled. Please contact support.';
 $string['error:missing_cohort'] = 'The cohort(s) linked to this voucher does not exist anymore. Please contact support.';
 $string['error:missing_group'] = 'The group(s) linked to this voucher does not exist anymore. Please contact support.';
-$string['error:voucher_amount_too_high'] = 'You are only allowed to generate {$a->max_vouchers} at one given time.';
+$string['error:voucher_amount_too_high'] = 'Please enter an amonut between {$a->min} and {$a->max}.';
 $string['error:alternative_email_required'] = 'If you have checked \'use alternative email\' this field is required.';
 $string['error:alternative_email_invalid'] = 'If you have checked \'use alternative email\' this field should contain a valid email address.';
 
@@ -185,13 +186,32 @@ $string['pdf_generated'] = 'The vouchers have been attached to this email in PDF
 
 
 $string['voucher_mail_content'] = '
-    Hello{$a->to_name},<br /><br />
+    Hello {$a->to_name},<br /><br />
     You receive this email because new vouchers have recently been generated. The vouchers are added to the attachments of this e-mail.<br /><br />
     With kind regards,<br /><br />
     {$a->from_name}';
+$string['voucher_mail_csv_content'] = '
+Beste ##to_name##,<br /><br />
+
+Onlangs heeft u zich ingeschreven voor onze opleiding ##course_fullname##, tijdens de opleiding heeft u toegang tot onze Online Leeromgeving: ##site_name##.<br /><br />
+
+In deze omgeving vindt u naast de lesmateriaal ook de mogelijkheid tot netwerken met uw medecursisten. Deze opleiding start met een aantal voorbereidingsopdrachten, wij willen u vriendelijk verzoeken deze uiterlijk 3 (werk)dagen voor aanvang te bekijken. Zowel u, als de docent, kan zich dan goed voorbereiden op de opleiding.<br /><br />
+
+De lesstof zelf zal uiterlijk 4 werkdagen voor aanvang van de lesdag voor u toegankelijk zijn. Het kan zijn dat op verzoek van de docent eventuele stukken pas ná of op de lesdag beschikbaar gesteld wordt. U ziet dit in de leeromgeving. Tijdens de bijeenkomsten ontvangt u geen gedrukt lesmateriaal, wij adviseren u daarom om een laptop en/of tablet mee te nemen.<br /><br />
+
+Bijgaand treft u de toegangvoucher. Deze voucher is persoonlijk en uniek, en zorgt ervoor dat u toegang krijgt tot uw omgeving van uw opleiding. Lees de instructies op de voucher goed.<br /><br />
+
+Indien u vragen heeft over het aanmaken van een account of problemen ondervindt, kunt u via de site contact zoeken met de helpdesk. Is er geen medewerker direct beschikbaar, laat dan uw naam, mailadres en telefoonnummer achter dan nemen zij z.s.m. contact met u op.<br /><br />
+
+Wij wensen u een leerzame opleiding toe.<br /><br />
+
+Met vriendelijke groet,<br /><br />
+
+##site_root##';
+
 $string['voucher_mail_subject'] = 'Moodle Voucher generated';
 
-$string['vouchers_sent'] = 'Your voucher(s) has/have been generated. Within several minutes you will receive an email with the voucher(s) in the attachment.';
+$string['vouchers_sent'] = 'Your voucher(s) has/have been generated. Within several minutes you will receive an email with a confirmation to the vouchers.';
 
 $string['default-voucher-page-template-main'] = 'With this voucher you can activate access to the e-learning module. You have 90 days of access to this module.
 
@@ -286,3 +306,13 @@ $string['error:recipients-unknown-user'] = 'One of the users is not a Moodle Use
 $string['error:recipients-max-exceeded'] = 'Your csv file has exceeded the maximum of 10.000 voucher users. Please limit it.';
 $string['error:recipients-invalid'] = 'The users could not be validated. Are you sure you entered the right columns and seperator?';
 $string['error:recipients-empty'] = 'Please enter at least one user.';
+
+$string['confirm_vouchers_sent_subject'] = 'All Vouchers have been sent';
+$string['confirm_vouchers_sent_body'] = '
+Hello,<br /><br />
+
+We\'d like to inform you that all the vouchers created by you on {$a->timecreated} have been sent.<br /><br />
+
+With kind regards,<br /><Br />
+
+Your friendly neighborhood Moodle Site';

@@ -298,16 +298,44 @@ class voucher_Db
         global $DB;
         
         $senddate = time();
+        
         $query = "
             SELECT * FROM {vouchers} v
-            LEFT JOIN {user} u ON u.id = v.for_user
             WHERE senddate < $senddate
-            AND userid IS NULL
             AND issend = 0
+            AND for_user IS NOT NULL
         ";
         $vouchers = $DB->get_records_sql($query);
         
-        return (!empty($vouchers)) ? $vouchers : false;
+        return $vouchers;
+    }
+    
+    /* HasSendAllVouchers
+     * 
+     * Checks if the cron has send all the vouchers generated
+     * at specific time by specific owner.
+     */
+    public static final function HasSendAllVouchers($ownerid, $timecreated) {
+        global $DB;
+        
+        $conditions = array(
+            'issend'=>0,
+            'ownerid'=>$ownerid,
+            'timecreated'=>$timecreated
+        );
+        
+        return ($DB->count_records('vouchers', $conditions) === 0);
+    }
+    
+    /*
+     * UpdateVoucher
+     * 
+     * Updates the voucher record
+     */
+    public static final function UpdateVoucher($voucher) {
+        global $DB;
+        
+        return ($DB->update_record('vouchers', $voucher));
     }
 
 }

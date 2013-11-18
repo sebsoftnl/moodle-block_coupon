@@ -46,14 +46,16 @@ class input_voucher_form extends moodleform
     }
     
     public function validation($data, $files) {
-        global $DB;
+        global $DB, $USER;
         
         $errors = parent::validation($data, $files);
 
         if (!$voucher = $DB->get_record('vouchers', array('submission_code'=>$data['voucher_code']))) {
             $errors['voucher_code'] = get_string('error:invalid_voucher_code', BLOCK_VOUCHER);
-        } elseif ($voucher->userid != null) {
+        } elseif (!is_null($voucher->userid)) {
             $errors['voucher_code'] = get_string('error:voucher_already_used', BLOCK_VOUCHER);
+        } elseif (!is_null($voucher->for_user) || $voucher->for_user != $USER->id) {
+            $errors['voucher_code'] = get_string('error:voucher_reserved', BLOCK_VOUCHER);
         }
 
         return $errors;

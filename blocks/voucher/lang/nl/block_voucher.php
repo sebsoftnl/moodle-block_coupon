@@ -70,6 +70,7 @@ $string['error:numeric_only'] = 'Dit veld is een verplicht numeriek veld.';
 $string['error:invalid_email'] = 'Dit e-mail adres is ongeldig.';
 $string['error:invalid_voucher_code'] = 'U heeft een ongeldige vouchercode ingevuld.';
 $string['error:voucher_already_used'] = 'Deze voucher is al gebruikt.';
+$string['error:voucher_reserved'] = 'Deze voucher is gereserveerd voor een andere gebruiker.';
 $string['error:unable_to_enrol'] = 'Een error is opgetreden tijdens het inschrijven in een nieuwe cursus. Neem contact op met support.';
 $string['error:missing_course'] = 'De cursus die aan de Voucher is gelinkt bestaat niet meer. Neem contact op met support.';
 $string['error:cohort_sync'] = 'Een error is opgetreden tijdens het synchroniseren van de cohortes. Neem contact op met support.';
@@ -79,9 +80,9 @@ $string['error:missing_group'] = 'De groep(en) die aan deze Voucher gelinkt is b
 
 $string['error:wrong_code_length'] = 'Vul een getal tussen 6 en 32 in.';
 $string['error:no_vouchers_submitted'] = 'Er zijn nog geen vouchers ingediend.';
-$string['error:voucher_amount_too_high'] = 'U kunt slechts {$a->max_vouchers} vouchers tegelijk genereren.';
-$string['error:alternative_email_required'] = 'If you have checked \'use alternative email\' this field is required.';
-$string['error:alternative_email_invalid'] = 'If you have checked \'use alternative email\' this field should contain a valid email address.';
+$string['error:voucher_amount_too_high'] = 'Vul een aantal in tussen de {$a->min} en {$a->max}.';
+$string['error:alternative_email_required'] = 'Als \'Gebruik alternatief e-mail adres\' is geselecteerd is dit veld verplicht.';
+$string['error:alternative_email_invalid'] = 'Als \'Gebruik alternatief e-mail adres\' is geselecteerd moet hier een valide email adres worden ingevuld.';
 
 $string['error:moodledata_not_writable'] = 'U heeft geen schrijfrechten op moodledata/voucher_logos. Pas uw rechten aan.';
 $string['error:wrong_image_size'] = 'De afbeelding heeft niet de juiste afmetingen. Probeer het opnieuw met een afbeelding met een verhouding van 210 mm bij 297 mm.';
@@ -189,7 +190,7 @@ $string['cohort'] = 'cohort';
 
 $string['missing_config_info'] = 'Plaats hier uw extra informatie - in te stellen in de globale configuratie van het blok.';
 
-$string['vouchers_sent'] = 'Uw vouchers zijn gegenereerd. Binnen enkele minuten ontvangt u een email bericht met de voucher(s) in de bijlage.';
+$string['vouchers_sent'] = 'Uw vouchers zijn gegenereerd. Binnen enkele minuten ontvangt u een bevestiging van uw vouchers.';
 
 $string['pdf_generated'] = 'De Vouchers zijn aan dit email bericht toegevoegd als PDF bestanden.<br /><br />';
 
@@ -224,10 +225,29 @@ $string['default-voucher-page-template-botright'] = '1. Log in bij {site_url}
 
 
 $string['voucher_mail_content'] = '
-    Hallo{$a->to_name},<br /><br />
+    Beste {$a->to_name},<br /><br />
     U ontvangt dit bericht omdat er zojuist nieuwe Moodle Vouchers aangemaakt zijn. De Vouchers zijn in de bijlage van dit bericht toegevoegd.<br /><br />
     Met vriendelijke groet,<br /><br />
     {$a->from_name}';
+$string['voucher_mail_csv_content'] = '
+Beste ##to_name##,<br /><br />
+
+Onlangs heeft u zich ingeschreven voor onze opleiding ##course_fullname##, tijdens de opleiding heeft u toegang tot onze Online Leeromgeving: ##site_name##.<br /><br />
+
+In deze omgeving vindt u naast de lesmateriaal ook de mogelijkheid tot netwerken met uw medecursisten. Deze opleiding start met een aantal voorbereidingsopdrachten, wij willen u vriendelijk verzoeken deze uiterlijk 3 (werk)dagen voor aanvang te bekijken. Zowel u, als de docent, kan zich dan goed voorbereiden op de opleiding.<br /><br />
+
+De lesstof zelf zal uiterlijk 4 werkdagen voor aanvang van de lesdag voor u toegankelijk zijn. Het kan zijn dat op verzoek van de docent eventuele stukken pas ná of op de lesdag beschikbaar gesteld wordt. U ziet dit in de leeromgeving. Tijdens de bijeenkomsten ontvangt u geen gedrukt lesmateriaal, wij adviseren u daarom om een laptop en/of tablet mee te nemen.<br /><br />
+
+Bijgaand treft u de toegangvoucher. Deze voucher is persoonlijk en uniek, en zorgt ervoor dat u toegang krijgt tot uw omgeving van uw opleiding. Lees de instructies op de voucher goed.<br /><br />
+
+Indien u vragen heeft over het aanmaken van een account of problemen ondervindt, kunt u via de site contact zoeken met de helpdesk. Is er geen medewerker direct beschikbaar, laat dan uw naam, mailadres en telefoonnummer achter dan nemen zij z.s.m. contact met u op.<br /><br />
+
+Wij wensen u een leerzame opleiding toe.<br /><br />
+
+Met vriendelijke groet,<br /><br />
+
+##site_name##';
+
 $string['voucher_mail_subject'] = 'Moodle Voucher generated';
 
 $string['report:status_not_started'] = 'Cursus nog niet gestart';

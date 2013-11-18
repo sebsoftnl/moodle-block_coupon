@@ -34,7 +34,7 @@ class voucher_Helper {
      * @return True or an array of errors
      * */
     public static final function GenerateVouchers($vouchers) {
-        global $DB;
+        global $DB, $SITE;
 
         $errors = array();
 
@@ -54,18 +54,34 @@ class voucher_Helper {
             $obj_voucher->for_user = (isset($voucher->for_user) && !empty($voucher->for_user)) ? $voucher->for_user : null;
             $obj_voucher->redirect_url = $voucher->redirect_url;
             $obj_voucher->issend = 0;
-            $obj_voucher->senddate = $voucher->senddate;
+            $obj_voucher->senddate = (isset($voucher->senddate) && !empty($voucher->senddate)) ? $voucher->senddate : null;
             $obj_voucher->enrolperiod = $voucher->enrolperiod;
             $obj_voucher->single_pdf = (isset($voucher->single_pdf)) ? $voucher->single_pdf : null;
             
-            $obj_voucher->email_to = (isset($voucher->email_to) && !empty($voucher->email_to)) ? $voucher->email_to : null; // email address to send the vouchers to
-
+            if (isset($voucher->email_body) && !empty($voucher->email_body)) {
+                $for_user = voucher_Db::GetUser(array('id'=>$obj_voucher->for_user));
+                $course = $DB->get_record('course', array('id'=>$obj_voucher->courseid));
+                $arr_replace = array(
+                    '##to_name##',
+                    '##site_name##',
+                    '##course_fullname##'
+                );
+                $arr_with = array(
+                    (!empty($for_user->firstname) || !empty($for_user->lastname)) ? $for_user->firstname . " " . $for_user->lastname : $for_user->username,
+                    $SITE->fullname,
+                    $course->fullname
+                );
+                $obj_voucher->email_body = str_replace($arr_replace, $arr_with, $voucher->email_body);
+            } else {
+                $obj_voucher->email_body = null;
+            }
+            
             // insert voucher in db so we've got an id
             if (!$voucher_id = $DB->insert_record('vouchers', $obj_voucher)) {
                 $errors[] = 'Failed to create general voucher object in database.';
                 continue;
             }
-
+            
             // Cohort voucher
             if (!isset($voucher->courseid) || $voucher->courseid === null) {
 
@@ -102,7 +118,7 @@ class voucher_Helper {
                 }
             }
         }
-
+        
         return (count($errors) > 0) ? $errors : true;
     }
 
@@ -126,10 +142,10 @@ class voucher_Helper {
             }
 
             $recipient = new stdClass();
-            $recipient->username = $row[0];
-            $recipient->firstname = $row[1];
-            $recipient->lastname = $row[2];
-            $recipient->email = $row[3];
+            $recipient->username = trim($row[0]);
+            $recipient->firstname = trim($row[1]);
+            $recipient->lastname = trim($row[2]);
+            $recipient->email = trim($row[3]);
             
             $recipients[] = $recipient;
         }
@@ -145,7 +161,7 @@ class voucher_Helper {
      * @param string $email The email address the vouchers are to be send to
      * @param bool $generate_single_pdfs Whether each voucher gets a PDF or 1 PDF for all vouchers
      * */
-    public static final function MailVouchers($vouchers, $email, $generate_single_pdfs) {
+    public static final function MailVouchers($vouchers, $email, $generate_single_pdfs = false, $email_body = false) {
         global $DB, $CFG;
 
         // include pdf generator
@@ -155,7 +171,7 @@ class voucher_Helper {
         if ($generate_single_pdfs) {
 
             // Initiate the mailer
-            $phpmailer = self::_GenerateVoucherMail($email);
+            $phpmailer = self::_GenerateVoucherMail($email, $email_body);
             $zip = new ZipArchive();
 
             $filename = "{$CFG->dataroot}/vouchers.zip";
@@ -188,7 +204,7 @@ class voucher_Helper {
             // All vouchers in 1 PDF
         } else {
 
-            $phpmailer = self::_GenerateVoucherMail($email);
+            $phpmailer = self::_GenerateVoucherMail($email, $email_body);
 
             $pdfgen = new voucher_PDF(get_string('pdf:titlename', BLOCK_VOUCHER));
             $pdfgen->setVoucherPageTemplateMain(get_string('default-voucher-page-template-main', BLOCK_VOUCHER));
@@ -201,7 +217,7 @@ class voucher_Helper {
         $res = $phpmailer->Send();
     }
 
-    protected static final function _GenerateVoucherMail($email) {
+    protected static final function _GenerateVoucherMail($email, $body = false) {
         global $CFG, $USER;
 
         require_once $CFG->libdir . '/phpmailer/class.phpmailer.php';
@@ -210,12 +226,12 @@ class voucher_Helper {
         $supportuser = generate_email_supportuser();
 
         $obj_mailinfo = new stdClass();
-        $obj_mailinfo->to_name = ($sentbyapi) ? '' : ' ' . trim($USER->firstname . ' ' . $USER->lastname);
-        $obj_mailinfo->from_name = ($sentbyapi) ? trim($supportuser->firstname . ' ' . $supportuser->lastname) : trim($USER->firstname . ' ' . $USER->lastname);
+        $obj_mailinfo->to_name = ($sentbyapi) ? '' : fullname($USER);
+        $obj_mailinfo->from_name = ($sentbyapi) ? trim($supportuser->firstname . ' ' . $supportuser->lastname) : fullname($USER);
         $obj_mailinfo->from_email = ($sentbyapi) ? $supportuser->email : $USER->email;
         $obj_mailinfo->replyto = ($sentbyapi) ? $CFG->noreplyaddress : $USER->email;
         
-        $mail_content = get_string('voucher_mail_content', BLOCK_VOUCHER, $obj_mailinfo);
+        $mail_content = ($body === false) ? get_string('voucher_mail_content', BLOCK_VOUCHER, $obj_mailinfo) : $body;
 
         $phpmailer = new PHPMailer();
         $phpmailer->Body = $mail_content;
@@ -229,6 +245,36 @@ class voucher_Helper {
         $phpmailer->AddReplyTo($obj_mailinfo->replyto);
 
         return $phpmailer;
+    }
+    
+    /* ConfirmVouchersSent
+     * 
+     * Send confirmation email when the cron has send all the vouchers
+     */
+    public static final function ConfirmVouchersSent($ownerid, $timecreated) {
+        global $CFG;
+        
+        require_once $CFG->libdir . '/phpmailer/class.phpmailer.php';
+        
+        $owner = voucher_Db::GetUser(array('id'=>$ownerid));
+        
+        $supportuser = generate_email_supportuser();
+        $mail_content = get_string("confirm_vouchers_sent_body", BLOCK_VOUCHER, array('timecreated'=>date('Y-m-d', $timecreated)));
+
+        $phpmailer = new PHPMailer();
+        $phpmailer->Body = $mail_content;
+        $phpmailer->AltBody = strip_tags($mail_content);
+        $phpmailer->From = $supportuser->email;
+        $phpmailer->FromName = trim($supportuser->firstname . ' ' . $supportuser->lastname);
+        $phpmailer->IsHTML(true);
+        $phpmailer->Subject = get_string('confirm_vouchers_sent_subject', BLOCK_VOUCHER);
+//        $phpmailer->AddCustomHeader("X-VOUCHER-Send: " . time());
+        $phpmailer->AddAddress($owner->email);
+//        $phpmailer->AddReplyTo($obj_mailinfo->replyto);
+
+        $res = $phpmailer->Send();
+        
+        return ($res);
     }
     
     public static final function GetVouchers() {

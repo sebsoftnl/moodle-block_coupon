@@ -69,9 +69,9 @@ class generate_voucher_extra_form extends moodleform
 
             if (!empty($recipient->firstname) || !empty($recipient->lastname) || !empty($recipient->email)) {
 
-                $conditions['firstname'] = $recipient->firstname;
-                $conditions['lastname'] = $recipient->lastname;
-                $conditions['email'] = $recipient->email;
+                $conditions['firstname'] = trim($recipient->firstname);
+                $conditions['lastname'] = trim($recipient->lastname);
+                $conditions['email'] = trim($recipient->email);
 
             }
 

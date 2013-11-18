@@ -21,24 +21,60 @@ class voucher_Cron
      */
     public function run()
     {
+//        return true;
         
         // Call vouchers
         $vouchers = voucher_Db::GetVouchersToSend();
-        if (!$vouchers) return true;
+//        exit("<pre>" . print_r($vouchers, true) . "</pre>");
+        
+        if (!$vouchers || empty($vouchers)) return true; // return true to keep other crons running
+        
+        // Omdat we geen koppeltabel hebben...
+        $sentVouchers = array();
         
         foreach($vouchers as $voucher) {
             
-            // Send to user 
-            if (!is_null($voucher->for_user)) {
+            // Check if we have an owner
+            if (!is_null($voucher->ownerid)) {
+                
+                // And add to sentVouchers so we can check if all of them have been sent
+                if (!isset($sentVouchers[$voucher->ownerid])) {
+                    $sentVouchers[$voucher->ownerid] = array();
+                }
+                
+                if (!in_array($voucher->timecreated, $sentVouchers[$voucher->ownerid])) {
+                    $sentVouchers[$voucher->ownerid][] = $voucher->timecreated;
+                }
                 
             }
-            // else send to config?
             
-            // Send to a certain email address
+            $for_user = voucher_Db::GetUser(array('id'=>$voucher->for_user));
             
+            voucher_Helper::MailVouchers(array($voucher), $for_user->email, null, $voucher->email_body);
             
+            $voucher->issend = true;
+            $voucher->timemodified = time();
+            voucher_Db::UpdateVoucher($voucher);
         }
         
+        // Check if all vouchers have been send
+        if (!empty($sentVouchers)) {
+            
+            foreach($sentVouchers as $ownerid=>$vouchers) {
+                
+                foreach($vouchers as $voucherTimeCreated) {
+                    
+                    if (voucher_Db::HasSendAllVouchers($ownerid, $voucherTimeCreated)) {
+
+                        // Mail confirmation
+                        voucher_Helper::ConfirmVouchersSent($ownerid, $voucherTimeCreated);
+
+                    }
+                
+                }
+            }
+        }
+//        
         return true;
     }
 

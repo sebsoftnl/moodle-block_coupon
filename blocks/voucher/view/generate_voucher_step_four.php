@@ -70,7 +70,7 @@ if (voucher_Helper::getPermission('generatevouchers'))
         $mform = new generate_confirm_cohorts_form($url);
         
     }
-    
+//    exit("<pre>" . print_r($mform, true) . "</pre>");
     if ($mform->is_cancelled())
     {
         unset($SESSION->voucher);
@@ -79,14 +79,15 @@ if (voucher_Helper::getPermission('generatevouchers'))
     elseif ($data = $mform->get_data())
     {
         
-        $SESSION->voucher->redirect_url = $data->redirect_url;
-        $SESSION->voucher->enrolment_period = $data->enrolment_period;
-        $SESSION->voucher->date_send_vouchers = $data->date_send_vouchers;
+        $SESSION->voucher->redirect_url = (isset($data->redirect_url) && !empty($data->redirect_url)) ? $data->redirect_url : null;
+        $SESSION->voucher->enrolperiod = (isset($data->enrolment_period) && !empty($data->enrolment_period)) ? $data->enrolment_period : null;
+        $SESSION->voucher->showform = $data->showform;
         
         if ($data->showform == 'csv') {
             
+            $SESSION->voucher->date_send_vouchers = $data->date_send_vouchers;
             $SESSION->voucher->csv_content = $mform->get_file_content('voucher_recipients');
-            $SESSION->voucher->email_body = $data->email_body;
+            $SESSION->voucher->email_body = $data->email_body['text'];
             
             redirect(voucher_Helper::createBlockUrl('view/generate_voucher_step_five.php', array('id'=>$id)));
         }
@@ -110,7 +111,10 @@ if (voucher_Helper::getPermission('generatevouchers'))
             $voucher->ownerid = $USER->id;
             $voucher->courseid = ($SESSION->voucher->type == 'course') ? $SESSION->voucher->course : null;
             $voucher->amount = $SESSION->voucher->amount;
-            $voucher->email_to = $SESSION->voucher->email_to;
+//            $voucher->email_to = $SESSION->voucher->email_to;
+            $voucher->redirect_url = $SESSION->voucher->redirect_url;
+            $voucher->enrolperiod = $SESSION->voucher->enrolperiod;
+            $voucher->issend = 1; // We'll send directly
             $voucher->single_pdf = $SESSION->voucher->generate_single_pdfs;
             $voucher->submission_code = VoucherGenerator::GenerateUniqueCode($voucher_code_length);
             
@@ -146,7 +150,8 @@ if (voucher_Helper::getPermission('generatevouchers'))
             echo "<pre>" . print_r($result, true) . "</pre>";
             die();
         }
-//        voucher_Helper::MailVouchers($vouchers, $SESSION->voucher->email, $SESSION->voucher->generate_single_pdfs);
+        // Stuur maar gewoon gelijk...
+        voucher_Helper::MailVouchers($vouchers, $SESSION->voucher->email_to, $SESSION->voucher->generate_single_pdfs);
         
         redirect(voucher_Helper::createBlockUrl('view/generate_voucher_finish.php', array('id'=>$id)));
     }
