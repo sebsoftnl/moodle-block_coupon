@@ -69,6 +69,7 @@ if (voucher_Helper::getPermission('viewreports'))
         $voucherReport->course = '';
         $voucherReport->cohorts = '';
         $voucherReport->groups = '';
+        $voucherReport->issend = '';
 //        $voucherReport->issend = ($voucher->issend) ? get_string('yes') : get_string('no');
         
         if (!is_null($voucher->ownerid)) {
@@ -104,11 +105,19 @@ if (voucher_Helper::getPermission('viewreports'))
 
         }
         
+        if (!is_null($voucher->for_user)) {
+            $for_user = voucher_Db::GetUser(array('id'=>$voucher->for_user));
+        }
+        
         // Last, some other useful info
         $voucherReport->code = $voucher->submission_code;
         $voucherReport->senddate = (!is_null($voucher->senddate)) ? date("d-m-Y", $voucher->senddate) : get_string('report:immediately', BLOCK_VOUCHER);
         $voucherReport->enrolperiod = (!is_null($voucher->enrolperiod)) ? $voucher->enrolperiod : '';
-        if (!is_null($voucher->for_user)) $voucherReport->for_user;
+        if (!is_null($voucher->for_user)) $voucherReport->for_user = fullname($for_user);
+        
+        if (!is_null($voucher->issend)) {
+            $voucherReport->issend = ($voucher->issend) ? get_string('yes') : get_string('no');
+        }
         
         // And add record to the report
         $reportData[] = $voucherReport;
@@ -125,7 +134,8 @@ if (voucher_Helper::getPermission('viewreports'))
         get_string('report:voucher_code', BLOCK_VOUCHER),
         get_string('course'),
         get_string('report:cohorts', BLOCK_VOUCHER),
-        get_string('groups')
+        get_string('groups'),
+        get_string('report:issend', BLOCK_VOUCHER)
 //        get_string('report:issend', BLOCK_VOUCHER)
     );
     

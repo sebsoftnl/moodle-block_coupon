@@ -54,9 +54,10 @@ class input_voucher_form extends moodleform
             $errors['voucher_code'] = get_string('error:invalid_voucher_code', BLOCK_VOUCHER);
         } elseif (!is_null($voucher->userid)) {
             $errors['voucher_code'] = get_string('error:voucher_already_used', BLOCK_VOUCHER);
-        } elseif (!is_null($voucher->for_user) || $voucher->for_user != $USER->id) {
-            $errors['voucher_code'] = get_string('error:voucher_reserved', BLOCK_VOUCHER);
         }
+//        } elseif (!is_null($voucher->for_user) || $voucher->for_user != $USER->id) {
+//            $errors['voucher_code'] = get_string('error:voucher_reserved', BLOCK_VOUCHER);
+//        }
 
         return $errors;
     }

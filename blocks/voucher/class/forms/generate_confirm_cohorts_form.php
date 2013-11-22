@@ -43,25 +43,19 @@ class generate_confirm_cohorts_form extends moodleform
         $mform->addGroup($radioarray, 'radioar', get_string('label:showform', BLOCK_VOUCHER), array(' '), false);
         $mform->setDefault('showform', 'csv');
 
-// Set email_to variable
-//        $use_alternative_email = get_config('voucher', 'use_alternative_email');
-//        $alternative_email = get_config('voucher', 'alternative_email');
-//        $max_vouchers_amount = get_config('voucher', 'max_vouchers');
-        
         // Send vouchers based on CSV upload
         $mform->addElement('header', 'csvForm', get_string('heading:csvForm', BLOCK_VOUCHER));
 
         // Filepicker
         $urlDownloadCsv = '<a href="' . $CFG->wwwroot . '/blocks/voucher/sample.csv" target="_blank">' . get_string('download-sample-csv', BLOCK_VOUCHER) . '</a>';
         $mform->addElement('filepicker', 'voucher_recipients', get_string('label:voucher_recipients', BLOCK_VOUCHER), null, array('accepted_types' => 'csv'));
-//        $mform->addRule('voucher_recipients', get_string('required'), 'required', null, 'server');
         $mform->addHelpButton('voucher_recipients', 'label:voucher_recipients', BLOCK_VOUCHER);
         $mform->addElement('static', 'sample_csv', '', $urlDownloadCsv);
 
         // Editable email message
         $mform->addElement('editor', 'email_body', get_string('label:email_body', BLOCK_VOUCHER), array('noclean'=>1));
         $mform->setType('email_body', PARAM_RAW);
-        $mform->setDefault('email_body', array('text'=>get_string('voucher_mail_csv_content', BLOCK_VOUCHER)));
+        $mform->setDefault('email_body', array('text'=>get_string('voucher_mail_csv_content_cohorts', BLOCK_VOUCHER)));
         $mform->addRule('email_body', get_string('required'), 'required');
         $mform->addHelpButton('email_body', 'label:email_body', BLOCK_VOUCHER);
 

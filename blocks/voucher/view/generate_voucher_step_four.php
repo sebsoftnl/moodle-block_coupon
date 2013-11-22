@@ -153,7 +153,8 @@ if (voucher_Helper::getPermission('generatevouchers'))
         // Stuur maar gewoon gelijk...
         voucher_Helper::MailVouchers($vouchers, $SESSION->voucher->email_to, $SESSION->voucher->generate_single_pdfs);
         
-        redirect(voucher_Helper::createBlockUrl('view/generate_voucher_finish.php', array('id'=>$id)));
+        unset($SESSION->voucher);
+        redirect($CFG->wwwroot . '/my', get_string('vouchers_sent', BLOCK_VOUCHER));
     }
     else
     {

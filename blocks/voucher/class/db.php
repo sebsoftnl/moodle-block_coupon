@@ -304,6 +304,7 @@ class voucher_Db
             WHERE senddate < $senddate
             AND issend = 0
             AND for_user IS NOT NULL
+            LIMIT 500
         ";
         $vouchers = $DB->get_records_sql($query);
         

@@ -125,8 +125,9 @@ if (voucher_Helper::getPermission('generatevouchers'))
             die();
         }
         
-        // Finish screen
-        redirect(voucher_Helper::createBlockUrl('view/generate_voucher_finish.php', array('id'=>$id)));
+        // Finish
+        unset($SESSION->voucher);
+        redirect($CFG->wwwroot . '/my', get_string('vouchers_ready_to_send', BLOCK_VOUCHER));
     } else {
         echo $OUTPUT->header();
         $mform->display();

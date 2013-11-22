@@ -184,13 +184,36 @@ $string['cohort'] = 'cohort';
 $string['missing_config_info'] = 'Put your extra information here - to be set up in the global configuration of the block.';
 $string['pdf_generated'] = 'The vouchers have been attached to this email in PDF files.<br /><br />';
 
-
+// Mails
 $string['voucher_mail_content'] = '
-    Hello {$a->to_name},<br /><br />
-    You receive this email because new vouchers have recently been generated. The vouchers are added to the attachments of this e-mail.<br /><br />
-    With kind regards,<br /><br />
-    {$a->from_name}';
+Beste {$a->to_name},<br /><br />
+
+U ontvangt dit bericht omdat er zojuist nieuwe Vouchers zijn gegenereered. De vouchers zijn toegevoegd in de bijlage van dit email bericht.<br /><br />
+
+Met vriendelijke groet,<br /><br />
+
+{$a->from_name}';
+
 $string['voucher_mail_csv_content'] = '
+Beste ##to_name##,<br /><br />
+
+Onlangs heeft u zich ingeschreven voor onze opleiding ##course_fullname##, tijdens de opleiding heeft u toegang tot onze Online Leeromgeving: ##site_name##.<br /><br />
+
+In deze omgeving vindt u naast de lesmateriaal ook de mogelijkheid tot netwerken met uw medecursisten. Deze opleiding start met een aantal voorbereidingsopdrachten, wij willen u vriendelijk verzoeken deze uiterlijk 3 (werk)dagen voor aanvang te bekijken. Zowel u, als de docent, kan zich dan goed voorbereiden op de opleiding.<br /><br />
+
+De lesstof zelf zal uiterlijk 4 werkdagen voor aanvang van de lesdag voor u toegankelijk zijn. Het kan zijn dat op verzoek van de docent eventuele stukken pas ná of op de lesdag beschikbaar gesteld wordt. U ziet dit in de leeromgeving. Tijdens de bijeenkomsten ontvangt u geen gedrukt lesmateriaal, wij adviseren u daarom om een laptop en/of tablet mee te nemen.<br /><br />
+
+Bijgaand treft u de toegangvoucher. Deze voucher is persoonlijk en uniek, en zorgt ervoor dat u toegang krijgt tot uw omgeving van uw opleiding. Lees de instructies op de voucher goed.<br /><br />
+
+Indien u vragen heeft over het aanmaken van een account of problemen ondervindt, kunt u via de site contact zoeken met de helpdesk. Is er geen medewerker direct beschikbaar, laat dan uw naam, mailadres en telefoonnummer achter dan nemen zij z.s.m. contact met u op.<br /><br />
+
+Wij wensen u een leerzame opleiding toe.<br /><br />
+
+Met vriendelijke groet,<br /><br />
+
+##site_root##';
+
+$string['voucher_mail_csv_content_cohorts'] = '
 Beste ##to_name##,<br /><br />
 
 Onlangs heeft u zich ingeschreven voor onze opleiding ##course_fullname##, tijdens de opleiding heeft u toegang tot onze Online Leeromgeving: ##site_name##.<br /><br />
@@ -211,7 +234,9 @@ Met vriendelijke groet,<br /><br />
 
 $string['voucher_mail_subject'] = 'Moodle Voucher generated';
 
-$string['vouchers_sent'] = 'Your voucher(s) has/have been generated. Within several minutes you will receive an email with a confirmation to the vouchers.';
+$string['vouchers_sent'] = 'Your voucher(s) have been generated. Within several minutes you will receive an email with the Vouchers in the attachments.';
+$string['vouchers_ready_to_send'] = 'Your voucher(s) has/have been generated and will be send at the entered date.<br />
+    You will receive a confirmation email message when all the vouchers have been sent.';
 
 $string['default-voucher-page-template-main'] = 'With this voucher you can activate access to the e-learning module. You have 90 days of access to this module.
 

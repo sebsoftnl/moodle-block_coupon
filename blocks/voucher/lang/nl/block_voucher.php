@@ -190,8 +190,6 @@ $string['cohort'] = 'cohort';
 
 $string['missing_config_info'] = 'Plaats hier uw extra informatie - in te stellen in de globale configuratie van het blok.';
 
-$string['vouchers_sent'] = 'Uw vouchers zijn gegenereerd. Binnen enkele minuten ontvangt u een bevestiging van uw vouchers.';
-
 $string['pdf_generated'] = 'De Vouchers zijn aan dit email bericht toegevoegd als PDF bestanden.<br /><br />';
 
 //$string['default-voucher-page-template'] = '
@@ -229,6 +227,16 @@ $string['voucher_mail_content'] = '
     U ontvangt dit bericht omdat er zojuist nieuwe Moodle Vouchers aangemaakt zijn. De Vouchers zijn in de bijlage van dit bericht toegevoegd.<br /><br />
     Met vriendelijke groet,<br /><br />
     {$a->from_name}';
+// Mails
+$string['voucher_mail_content'] = '
+Beste {$a->to_name},<br /><br />
+
+U ontvangt dit bericht omdat er zojuist nieuwe Vouchers zijn gegenereered. De vouchers zijn toegevoegd in de bijlage van dit email bericht.<br /><br />
+
+Met vriendelijke groet,<br /><br />
+
+{$a->from_name}';
+
 $string['voucher_mail_csv_content'] = '
 Beste ##to_name##,<br /><br />
 
@@ -246,9 +254,32 @@ Wij wensen u een leerzame opleiding toe.<br /><br />
 
 Met vriendelijke groet,<br /><br />
 
-##site_name##';
+##site_root##';
 
-$string['voucher_mail_subject'] = 'Moodle Voucher generated';
+$string['voucher_mail_csv_content_cohorts'] = '
+Beste ##to_name##,<br /><br />
+
+Onlangs heeft u zich ingeschreven voor onze opleiding ##course_fullname##, tijdens de opleiding heeft u toegang tot onze Online Leeromgeving: ##site_name##.<br /><br />
+
+In deze omgeving vindt u naast de lesmateriaal ook de mogelijkheid tot netwerken met uw medecursisten. Deze opleiding start met een aantal voorbereidingsopdrachten, wij willen u vriendelijk verzoeken deze uiterlijk 3 (werk)dagen voor aanvang te bekijken. Zowel u, als de docent, kan zich dan goed voorbereiden op de opleiding.<br /><br />
+
+De lesstof zelf zal uiterlijk 4 werkdagen voor aanvang van de lesdag voor u toegankelijk zijn. Het kan zijn dat op verzoek van de docent eventuele stukken pas ná of op de lesdag beschikbaar gesteld wordt. U ziet dit in de leeromgeving. Tijdens de bijeenkomsten ontvangt u geen gedrukt lesmateriaal, wij adviseren u daarom om een laptop en/of tablet mee te nemen.<br /><br />
+
+Bijgaand treft u de toegangvoucher. Deze voucher is persoonlijk en uniek, en zorgt ervoor dat u toegang krijgt tot uw omgeving van uw opleiding. Lees de instructies op de voucher goed.<br /><br />
+
+Indien u vragen heeft over het aanmaken van een account of problemen ondervindt, kunt u via de site contact zoeken met de helpdesk. Is er geen medewerker direct beschikbaar, laat dan uw naam, mailadres en telefoonnummer achter dan nemen zij z.s.m. contact met u op.<br /><br />
+
+Wij wensen u een leerzame opleiding toe.<br /><br />
+
+Met vriendelijke groet,<br /><br />
+
+##site_root##';
+
+$string['voucher_mail_subject'] = 'Moodle Voucher aangemaakt';
+
+$string['vouchers_sent'] = 'Uw vouchers zijn aangemaakt. Binnen enkele minuten ontvangt u een email bericht met de vouchers in de bijlage.';
+$string['vouchers_ready_to_send'] = 'Uw vouchers zijn aangemaakt en zullen worden verstuurd op het door u opgegeven moment.<br />
+    U ontvangt een e-mail bevestiging zodra alle vouchers verstuurd zijn.';
 
 $string['report:status_not_started'] = 'Cursus nog niet gestart';
 $string['report:status_started'] = 'Cursus gestart';
@@ -268,10 +299,10 @@ $string['report:heading:grade'] = 'Cijfer';
 $string['report:owner'] = 'Eigenaar';
 $string['report:senddate'] = 'Verstuurdatum';
 $string['report:enrolperiod'] = 'Inschrijf periode';
-$string['report:voucher_code'] = 'Inschrijf code';
+$string['report:voucher_code'] = 'Voucher code';
 $string['report:cohorts'] = 'Cohort';
 $string['report:issend'] = 'Is verstuurd';
-$string['report:immediately'] = 'Onmiddelijk';
+$string['report:immediately'] = 'Onmiddellijk';
 $string['report:for_user'] = 'Ingeplande gebruiker';
 
 $string['str:mandatory'] = 'Mandatory or smthing';

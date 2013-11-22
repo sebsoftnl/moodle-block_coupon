@@ -52,11 +52,10 @@ class voucher_Helper {
             
             // Extra columns
             $obj_voucher->for_user = (isset($voucher->for_user) && !empty($voucher->for_user)) ? $voucher->for_user : null;
-            $obj_voucher->redirect_url = $voucher->redirect_url;
+            $obj_voucher->redirect_url = (isset($voucher->redirect_url) && !empty($voucher->redirect_url)) ? $voucher->redirect_url : null;
             $obj_voucher->issend = 0;
             $obj_voucher->senddate = (isset($voucher->senddate) && !empty($voucher->senddate)) ? $voucher->senddate : null;
-            $obj_voucher->enrolperiod = $voucher->enrolperiod;
-            $obj_voucher->single_pdf = (isset($voucher->single_pdf)) ? $voucher->single_pdf : null;
+            $obj_voucher->enrolperiod = (isset($voucher->enrolperiod) && !empty($voucher->enrolperiod)) ? $voucher->enrolperiod : 0;
             
             if (isset($voucher->email_body) && !empty($voucher->email_body)) {
                 $for_user = voucher_Db::GetUser(array('id'=>$obj_voucher->for_user));
