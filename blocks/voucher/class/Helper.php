@@ -51,22 +51,23 @@ class voucher_Helper {
             $obj_voucher->courseid = (!isset($voucher->courseid) || $voucher->courseid === null) ? null : $voucher->courseid;
             
             // Extra columns
-            $obj_voucher->for_user = (isset($voucher->for_user) && !empty($voucher->for_user)) ? $voucher->for_user : null;
+            $obj_voucher->for_user_email = (isset($voucher->for_user_email) && !empty($voucher->for_user_email)) ? $voucher->for_user_email : null;
+            $obj_voucher->for_user_name = (isset($voucher->for_user_name) && !empty($voucher->for_user_name)) ? $voucher->for_user_name : null;
             $obj_voucher->redirect_url = (isset($voucher->redirect_url) && !empty($voucher->redirect_url)) ? $voucher->redirect_url : null;
             $obj_voucher->issend = 0;
             $obj_voucher->senddate = (isset($voucher->senddate) && !empty($voucher->senddate)) ? $voucher->senddate : null;
             $obj_voucher->enrolperiod = (isset($voucher->enrolperiod) && !empty($voucher->enrolperiod)) ? $voucher->enrolperiod : 0;
             
             if (isset($voucher->email_body) && !empty($voucher->email_body)) {
-                $for_user = voucher_Db::GetUser(array('id'=>$obj_voucher->for_user));
+                
                 $course = $DB->get_record('course', array('id'=>$obj_voucher->courseid));
                 $arr_replace = array(
                     '##to_name##',
-                    '##site_name##',
+                    '##site_root##',
                     '##course_fullname##'
                 );
                 $arr_with = array(
-                    (!empty($for_user->firstname) || !empty($for_user->lastname)) ? $for_user->firstname . " " . $for_user->lastname : $for_user->username,
+                    $voucher->for_user_name,
                     $SITE->fullname,
                     $course->fullname
                 );
@@ -120,31 +121,53 @@ class voucher_Helper {
         
         return (count($errors) > 0) ? $errors : true;
     }
-
+    
     public static final function GetRecipientsFromCsv($recipients_str) {
         
         $recipients = array();
         $count = 0;
 
         // Split up in rows
+        $expectedColumns = array('e-mail', 'gender', 'name');
         if (!$csvData = str_getcsv($recipients_str, "\n")) return false;
         // Split up in columns
         foreach($csvData as &$row) {
             
+            // Get the next row
             $row = str_getcsv($row, ",");
+            
+            // Check if we're looking at the first row
             if ($count == 0) {
-                if ($row[0] != 'username' || $row[1] != 'firstname' || $row[2] != 'lastname' || $row[3] != 'email') return false;
+                
+                $expectedRow = array();
+                // Set the columns we'll need
+                foreach($row as $key=>&$column) {
+                    
+                    $column = trim(strtolower($column));
+                    if (!in_array($column, $expectedColumns)) {
+                        continue;
+                    }
+                    
+                    $expectedRow[$key] = $column;
+                }
+                // if we're missing columns
+                if (count($expectedColumns) != count($expectedRow)) {
+                    return false;
+                }
+                
+                // Now set which columns we'll need to use when extracting the information
+                $nameKey = array_search('name', $expectedRow);
+                $emailKey = array_search('e-mail', $expectedRow);
+                $genderKey = array_search('gender', $expectedRow);
+                
                 $count++;
                 continue;
-            } else {
-                if (!isset($row[0]) || !isset($row[1]) || !isset($row[2]) || !isset($row[3])) return false;
             }
 
             $recipient = new stdClass();
-            $recipient->username = trim($row[0]);
-            $recipient->firstname = trim($row[1]);
-            $recipient->lastname = trim($row[2]);
-            $recipient->email = trim($row[3]);
+            $recipient->name = trim($row[$nameKey]);
+            $recipient->email = trim($row[$emailKey]);
+            $recipient->gender = trim($row[$genderKey]);
             
             $recipients[] = $recipient;
         }
@@ -631,13 +654,39 @@ class voucher_Helper {
         );
     }
     
-    public static final function validateVoucherRecipients($data) {
-//        
-//        $columns = self::getVoucherRecipientsColumns();
-//        
-//        var_dump($data);
-//        exit();
-//        
-    }
+    public static final function ValidateVoucherRecipients($csvdata) {
+        
+        $error = false;
+        
+        if (!$recipients = voucher_Helper::GetRecipientsFromCsv($csvdata)) {
+            
+            // Required columns aren't found in the csv
+            $error = get_string('error:recipients-columns-missing', BLOCK_VOUCHER);
+            
+        } else {
+            
+            // No recipient rows were added to the csv
+            if (empty($recipients)) {
+                
+                $error = get_string('error:recipients-empty', BLOCK_VOUCHER);
+                
+            // Check max of the file
+            } elseif (count($recipients) > 10000) {
+                
+                $error = get_string('error:recipients-max-exceeded', BLOCK_VOUCHER);
+                
+            } else {
+                // Lets run through the file to check on email addresses
+                foreach($recipients as $recipient) {
+                    if (!filter_var($recipient->email, FILTER_VALIDATE_EMAIL)) {
+                        $error = get_string('error:recipients-email-invalid', BLOCK_VOUCHER, $recipient);
+                    }
+                }
+            }
+            
+        }
 
+        return ($error === false) ? true : $error;
+    }
+    
 }

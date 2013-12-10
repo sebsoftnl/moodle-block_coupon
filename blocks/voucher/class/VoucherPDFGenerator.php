@@ -266,11 +266,9 @@ class voucher_PDF extends pdf {
             $this->startPage();
             $this->SetFont('helvetica', '', 10);
             
-//            $this->MultiCell($w, $h, $txt_main, null, 'J', false, 1, $x, $y);
-            
-            $this->MultiCell(150, 150, $txt_main, null, 'L', false, 1, 22, 78);
-            $this->MultiCell(70, 100, $txt_botleft, null, 'L', false, 2, 22, 168);
-            $this->MultiCell(70, 100, $txt_botright, null, 'L', false, 2, 115, 168);
+            $this->MultiCell(150, 150, $txt_main, null, 'L', false, 1, 22, 78, true, 0, true);
+            $this->MultiCell(70, 100, $txt_botleft, null, 'L', false, 2, 22, 168, true, 0, true);
+            $this->MultiCell(70, 100, $txt_botright, null, 'L', false, 2, 115, 168, true, 0, true);
             
             //$this->writeHTML($html);
             $this->endPage();

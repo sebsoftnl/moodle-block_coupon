@@ -52,7 +52,6 @@ voucher_Helper::forceNoEditingMode();
 
 if (voucher_Helper::getPermission('generatevouchers'))
 {
-    
     // Make sure sessions are still alive
     if (!isset($SESSION->voucher)) {
         print_error("error:sessions-expired", BLOCK_VOUCHER);

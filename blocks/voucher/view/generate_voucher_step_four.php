@@ -79,44 +79,71 @@ if (voucher_Helper::getPermission('generatevouchers'))
     elseif ($data = $mform->get_data())
     {
         
-        $SESSION->voucher->redirect_url = (isset($data->redirect_url) && !empty($data->redirect_url)) ? $data->redirect_url : null;
-        $SESSION->voucher->enrolperiod = (isset($data->enrolment_period) && !empty($data->enrolment_period)) ? $data->enrolment_period : null;
+        // These settings are always the same
         $SESSION->voucher->showform = $data->showform;
-        
+        $SESSION->voucher->redirect_url = (empty($data->redirect_url)) ? null : $data->redirect_url;
+        $SESSION->voucher->enrolperiod = (empty($data->enrolment_period)) ? null : $data->enrolment_period;
+
+        // If we're generating based on csv we'll redirect first to confirm the csv input
         if ($data->showform == 'csv') {
             
             $SESSION->voucher->date_send_vouchers = $data->date_send_vouchers;
             $SESSION->voucher->csv_content = $mform->get_file_content('voucher_recipients');
             $SESSION->voucher->email_body = $data->email_body['text'];
-            
+            // To the extra step
             redirect(voucher_Helper::createBlockUrl('view/generate_voucher_step_five.php', array('id'=>$id)));
         }
         
-        // Include the voucher generator
+        // Otherwise we'll be generating vouchers right away
         require_once(BLOCK_VOUCHER_CLASSROOT . 'VoucherGenerator.php');
+        $voucher_code_length = get_config('voucher', 'voucher_code_length');
+        if (!$voucher_code_length) {
+             $voucher_code_length = 16;
+        }
         
-        // Save last settings in sessions
-        $SESSION->voucher->amount = $data->voucher_amount;
-        $SESSION->voucher->email_to = (isset($data->use_alternative_email) && $data->use_alternative_email) ? $data->alternative_email : $USER->email;
-        $SESSION->voucher->generate_single_pdfs = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
-        
-        // Get max length for the voucher code
-        if (!$voucher_code_length = get_config('voucher', 'voucher_code_length')) $voucher_code_length = 16;
+        // If we're generating based on manual csv input
+        if ($data->showform == 'manual') {
+            $SESSION->voucher->date_send_vouchers = $data->date_send_vouchers_manual;
+            $SESSION->voucher->email_body = $data->email_body_manual['text'];
+            // We'll get users right away
+            $recipients = voucher_Helper::GetRecipientsFromCsv($data->voucher_recipients_manual);
+            
+            $amountOfVouchers = count($recipients);
+        }
+            
+        // If we're generating based on 'amount' of vouchers
+        if ($data->showform == 'amount') {
+            // Save last settings in sessions
+            $amountOfVouchers = $data->voucher_amount;
+            $SESSION->voucher->email_to = (isset($data->use_alternative_email) && $data->use_alternative_email) ? $data->alternative_email : $USER->email;
+            $SESSION->voucher->generate_single_pdfs = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
+        }
         
         // Now that we've got all information we'll create the voucher objects
         $vouchers = array();
-        for($i = 0; $i < $SESSION->voucher->amount; $i++) {
+        for($i = 0; $i < $amountOfVouchers; $i++) {
             
             $voucher = new stdClass();
             $voucher->ownerid = $USER->id;
             $voucher->courseid = ($SESSION->voucher->type == 'course') ? $SESSION->voucher->course : null;
-            $voucher->amount = $SESSION->voucher->amount;
-//            $voucher->email_to = $SESSION->voucher->email_to;
             $voucher->redirect_url = $SESSION->voucher->redirect_url;
             $voucher->enrolperiod = $SESSION->voucher->enrolperiod;
-            $voucher->issend = 1; // We'll send directly
-            $voucher->single_pdf = $SESSION->voucher->generate_single_pdfs;
+            $voucher->issend = ($data->showform == 'amount') ? 1 : 0;
+            $voucher->single_pdf = ($data->showform == 'amount') ? $SESSION->voucher->generate_single_pdfs : null;
             $voucher->submission_code = VoucherGenerator::GenerateUniqueCode($voucher_code_length);
+            
+            if ($data->showform == 'manual') {
+                
+                $recipient = $recipients[$i];
+                
+                $voucher->senddate = $SESSION->voucher->date_send_vouchers;
+                $voucher->for_user_email = $recipient->email;
+                $voucher->for_user_name = $recipient->name;
+                $voucher->redirect_url = $SESSION->voucher->redirect_url;
+                $voucher->enrolperiod = $SESSION->voucher->enrolperiod;
+                $voucher->email_body = $SESSION->voucher->email_body;
+            }
+
             
             if ($SESSION->voucher->type == 'cohorts') {
                 
@@ -150,11 +177,16 @@ if (voucher_Helper::getPermission('generatevouchers'))
             echo "<pre>" . print_r($result, true) . "</pre>";
             die();
         }
-        // Stuur maar gewoon gelijk...
-        voucher_Helper::MailVouchers($vouchers, $SESSION->voucher->email_to, $SESSION->voucher->generate_single_pdfs);
         
-        unset($SESSION->voucher);
-        redirect($CFG->wwwroot . '/my', get_string('vouchers_sent', BLOCK_VOUCHER));
+        if ($data->showform == 'amount') {
+            // Stuur maar gewoon gelijk...
+            voucher_Helper::MailVouchers($vouchers, $SESSION->voucher->email_to, $SESSION->voucher->generate_single_pdfs);
+            unset($SESSION->voucher);
+            redirect($CFG->wwwroot . '/my', get_string('vouchers_sent', BLOCK_VOUCHER));
+        } else {
+            redirect($CFG->wwwroot . '/my', get_string('vouchers_ready_to_send', BLOCK_VOUCHER));
+        }
+        
     }
     else
     {

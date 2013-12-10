@@ -77,7 +77,7 @@ if (voucher_Helper::getPermission('generatevouchers'))
         $vouchers = array();
         foreach($recipients as $recipient) {
             
-            $moodle_user = voucher_Db::GetUser((array)$recipient);
+//            $moodle_user = voucher_Db::GetUser((array)$recipient);
             
             $voucher = new stdClass();
             $voucher->ownerid = $USER->id;
@@ -86,7 +86,8 @@ if (voucher_Helper::getPermission('generatevouchers'))
             
             // Extra fields
             $voucher->senddate = $SESSION->voucher->date_send_vouchers;
-            $voucher->for_user = $moodle_user->id;
+            $voucher->for_user_email = $recipient->email;
+            $voucher->for_user_name = $recipient->name;
             $voucher->redirect_url = $SESSION->voucher->redirect_url;
             $voucher->enrolperiod = $SESSION->voucher->enrolperiod;
             $voucher->email_body = $SESSION->voucher->email_body;
@@ -113,7 +114,7 @@ if (voucher_Helper::getPermission('generatevouchers'))
             }
             $vouchers[] = $voucher;
         }
-
+        
         // Now that we've got all the vouchers
         $result = voucher_Helper::GenerateVouchers($vouchers);
 

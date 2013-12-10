@@ -213,10 +213,12 @@ $string['default-voucher-page-template-main'] = 'Met deze e-learning voucher act
 Gebruik onderstaande toegangscode om uw voucher te activeren.
 
 Toegangscode: {voucher_code}';
-$string['default-voucher-page-template-botleft'] = '1. Meld u aan bij {site_url}
-2. U ontvangt direct een e-mail met de bevestigingslink. Klik op deze link om uw account te activeren.
-3. Vul uw toegangscode in het Moodle Voucher blok.
-4. Veel leerplezier!';
+$string['default-voucher-page-template-botleft'] = '<ol>
+<li>Meld u aan bij {site_url}</li>
+<li>U ontvangt direct een e-mail met de bevestigingslink. Klik op deze link om uw account te activeren.</li>
+<li>Vul uw toegangscode in het Moodle Voucher blok.</li>
+<li>Veel leerplezier!</li>
+</ol>';
 $string['default-voucher-page-template-botright'] = '1. Log in bij {site_url}
 2. Vul uw toegangscode in het Moodle Voucher blok.
 3. Veel leerplezier!';
@@ -303,7 +305,7 @@ $string['report:voucher_code'] = 'Voucher code';
 $string['report:cohorts'] = 'Cohort';
 $string['report:issend'] = 'Is verstuurd';
 $string['report:immediately'] = 'Onmiddellijk';
-$string['report:for_user'] = 'Ingeplande gebruiker';
+$string['report:for_user_email'] = 'Voor e-mail ingepland';
 
 $string['str:mandatory'] = 'Mandatory or smthing';
 $string['str:optional'] = 'Optional or smthing';
@@ -312,8 +314,7 @@ $string['label:voucher_recipients'] = 'Ontvangers';
 $string['error:recipients-extension'] = 'U kunt alleen .csv bestanden uploaden.';
 $string['error:voucher_amount-recipients-both-set'] = 'Maak alstublieft een keuze uit aantal te genereren vouchers OF een csv van ontvangers.';
 
-$string['label:voucher_recipients_help'] = 'Met dit veld kunt u een csv lijst met gebruikers als ontvangers van de vouchers uploaden.
-    U kunt dit veld OF het Aantal vouchers veld gebruiken, niet beiden.';
+$string['label:voucher_recipients_help'] = 'Met dit veld kunt u een csv lijst met gebruikers als ontvangers van de vouchers uploaden.';
 $string['label:voucher_recipients_txt'] = 'Ontvangers';
 $string['label:voucher_recipients_txt_help'] = 'In dit veld kunt u de laatste aanpassingen aan het csv bestand doen.';
 $string['error:voucher_amount-recipients-both-unset'] = 'Dit veld of het veld Ontvangers moet gevuld zijn.';
@@ -333,9 +334,10 @@ $string['label:date_send_vouchers_help'] = 'Datum dat de vouchers naar de ontvan
 
 $string['label:showform'] = 'Genereer m.b.v.';
 $string['showform-csv'] = 'csv';
+$string['showform-manual'] = 'handmatig';
 $string['showform-amount'] = 'aantal';
 
-$string['error:recipients-unknown-user'] = 'Een van de ingevulde gebruikers is geen Moodle user. Corrigeer dit eerst svp.';
 $string['error:recipients-max-exceeded'] = 'Uw bestand is over de maximum aantal regels van 10.000. Limiteer het aantal gebruikers svp.';
-$string['error:recipients-invalid'] = 'Uw bestand kon niet gevalideerd worden. Controleer svp of de juiste kolommen en scheidingsteken gebruikt is.';
+$string['error:recipients-invalid'] = 'Uw bestand kon niet gevalideerd worden. Controleer svp of de juiste kolommen en scheidingsteken gebruikt zijn.';
 $string['error:recipients-empty'] = 'Vul minstens 1 gebruiker in svp.';
+$string['error:recipients-email-invalid'] = 'Het e-mailadres {$a->email} is geen correct e-mailadres. Corrigeer dit eerst in het csv bestand.';

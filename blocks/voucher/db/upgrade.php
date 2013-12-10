@@ -12,7 +12,8 @@ function xmldb_block_voucher_upgrade($oldversion) {
         $fieldsToUpdate = array();
         
         // Define fields to update/add
-        $fieldsToUpdate[] = new xmldb_field('enrolperiod', XMLDB_TYPE_INTEGER, '8', null, null, null, null, 'for_user');
+        $fieldsToUpdate[] = new xmldb_field('for_user_email', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'courseid');
+        $fieldsToUpdate[] = new xmldb_field('enrolperiod', XMLDB_TYPE_INTEGER, '8', null, null, null, null, 'for_user_email');
         $fieldsToUpdate[] = new xmldb_field('senddate', XMLDB_TYPE_INTEGER, '18', null, null, null, null, 'enrolperiod');
         $fieldsToUpdate[] = new xmldb_field('issend', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'senddate');
         $fieldsToUpdate[] = new xmldb_field('redirect_url', XMLDB_TYPE_CHAR, '256', null, null, null, null, 'issend');

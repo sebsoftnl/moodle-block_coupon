@@ -40,6 +40,7 @@ class generate_confirm_course_form extends moodleform
         $radioarray=array();
         $radioarray[] =& $mform->createElement('radio', 'showform', '', get_string('showform-csv', BLOCK_VOUCHER), 'csv', array('onchange'=>'showHide(this.value)'));
         $radioarray[] =& $mform->createElement('radio', 'showform', '', get_string('showform-amount', BLOCK_VOUCHER), 'amount', array('onchange'=>'showHide(this.value)'));
+        $radioarray[] =& $mform->createElement('radio', 'showform', '', get_string('showform-manual', BLOCK_VOUCHER), 'manual', array('onchange'=>'showHide(this.value)'));
         $mform->addGroup($radioarray, 'radioar', get_string('label:showform', BLOCK_VOUCHER), array(' '), false);
         $mform->setDefault('showform', 'csv');
 
@@ -50,7 +51,6 @@ class generate_confirm_course_form extends moodleform
         // Filepicker
         $urlDownloadCsv = '<a href="' . $CFG->wwwroot . '/blocks/voucher/sample.csv" target="_blank">' . get_string('download-sample-csv', BLOCK_VOUCHER) . '</a>';
         $mform->addElement('filepicker', 'voucher_recipients', get_string('label:voucher_recipients', BLOCK_VOUCHER), null, array('accepted_types' => 'csv'));
-//        $mform->addRule('voucher_recipients', get_string('required'), 'required', null, 'server');
         $mform->addHelpButton('voucher_recipients', 'label:voucher_recipients', BLOCK_VOUCHER);
         $mform->addElement('static', 'sample_csv', '', $urlDownloadCsv);
 
@@ -66,6 +66,27 @@ class generate_confirm_course_form extends moodleform
         $mform->addRule('date_send_vouchers', get_string('required'), 'required');
         $mform->addHelpButton('date_send_vouchers', 'label:date_send_vouchers', BLOCK_VOUCHER);
         
+        // Send vouchers based on CSV upload
+        $mform->addElement('header', 'manualForm', get_string('heading:manualForm', BLOCK_VOUCHER));
+        
+        // textarea recipients
+        $mform->addElement('textarea', 'voucher_recipients_manual', get_string("label:voucher_recipients", BLOCK_VOUCHER), 'rows="20" cols="50"');
+        $mform->addRule('voucher_recipients_manual', get_string('required'), 'required', null);
+        $mform->addHelpButton('voucher_recipients_manual', 'label:voucher_recipients_txt', BLOCK_VOUCHER);
+        $mform->setDefault('voucher_recipients_manual', 'E-mail,Gender,Name');
+        
+        // Editable email message
+        $mform->addElement('editor', 'email_body_manual', get_string('label:email_body', BLOCK_VOUCHER), array('noclean'=>1));
+        $mform->setType('email_body_manual', PARAM_RAW);
+        $mform->setDefault('email_body_manual', array('text'=>get_string('voucher_mail_csv_content', BLOCK_VOUCHER)));
+        $mform->addRule('email_body_manual', get_string('required'), 'required');
+        $mform->addHelpButton('email_body_manual', 'label:email_body', BLOCK_VOUCHER);
+
+        // Configurable enrolment time
+        $mform->addElement('date_selector', 'date_send_vouchers_manual', get_string('label:date_send_vouchers', BLOCK_VOUCHER));
+        $mform->addRule('date_send_vouchers_manual', get_string('required'), 'required');
+        $mform->addHelpButton('date_send_vouchers_manual', 'label:date_send_vouchers', BLOCK_VOUCHER);
+
 
         // Send vouchers based on Amount field
         $mform->addElement('header', 'amountForm', get_string('heading:amountForm', BLOCK_VOUCHER));
@@ -137,18 +158,31 @@ class generate_confirm_course_form extends moodleform
             window.onload=function(){
                 if (document.getElementById('id_showform_csv').checked == true) {
                     showHide('csv');
-                } else {
+                } else if (document.getElementById('id_showform_amount').checked == true) {
                     showHide('amount');
+                } else {
+                    showHide('manual');
                 }
             }
             
             function showHide(fieldValue) {
                 
-                if (fieldValue == 'csv') {
-                    document.getElementById('id_amountForm').style.display='none';
-                } else {
-                    document.getElementById('id_csvForm').style.display='none';
+                switch(fieldValue) {
+                    
+                    case 'csv':
+                        document.getElementById('id_amountForm').style.display='none';
+                        document.getElementById('id_manualForm').style.display='none';
+                        break;
+                    case 'amount':
+                        document.getElementById('id_csvForm').style.display='none';
+                        document.getElementById('id_manualForm').style.display='none';
+                        break;
+                    case 'manual':
+                        document.getElementById('id_csvForm').style.display='none';
+                        document.getElementById('id_amountForm').style.display='none';
+                        break;
                 }
+                
                 document.getElementById('id_' + fieldValue + 'Form').style.display='block';
             }
             </script>
@@ -160,13 +194,13 @@ class generate_confirm_course_form extends moodleform
     public function validation($data, $files) {
         
         // Set which fields to validate, depending on form used
-        if ($data['showform'] == 'csv') {
+        if ($data['showform'] == 'csv' || $data['showform'] == 'manual') {
             
             $data2validate = array(
                 'email_body' => $data['email_body'],
                 'date_send_vouchers' => $data['date_send_vouchers']
             );
-        } else {
+        } else {            
             $data2validate = array(
                 'voucher_amount' => $data['voucher_amount'],
                 'alternative_email' => $data['alternative_email']
@@ -193,12 +227,18 @@ class generate_confirm_course_form extends moodleform
 
             }
             
-        } else {
+        } elseif ($data['showform'] == 'csv') {
             
-            // Lol!
             $csvContent = $this->get_file_content('voucher_recipients');
             if (!$csvContent || empty($csvContent)) $errors['voucher_recipients'] = get_string('required');
             
+        } else {
+            
+            $validationResult = voucher_Helper::ValidateVoucherRecipients($data['voucher_recipients_manual']);
+            if ($validationResult !== true) {
+                $errors['voucher_recipients_manual'] = $validationResult;
+            }
+
         }
         
         return $errors;

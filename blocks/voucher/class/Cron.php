@@ -48,9 +48,7 @@ class voucher_Cron
                 
             }
             
-            $for_user = voucher_Db::GetUser(array('id'=>$voucher->for_user));
-            
-            voucher_Helper::MailVouchers(array($voucher), $for_user->email, null, $voucher->email_body);
+            voucher_Helper::MailVouchers(array($voucher), $voucher->for_user_email, null, $voucher->email_body);
             
             $voucher->issend = true;
             $voucher->timemodified = time();

@@ -62,7 +62,7 @@ if (voucher_Helper::getPermission('viewreports'))
         
         // Fix order of columns
         $voucherReport->showname = '';
-        $voucherReport->for_user = '';
+        $voucherReport->for_user_email = '';
         $voucherReport->senddate = '';
         $voucherReport->enrolperiod = '';
         $voucherReport->code = '';
@@ -105,15 +105,11 @@ if (voucher_Helper::getPermission('viewreports'))
 
         }
         
-        if (!is_null($voucher->for_user)) {
-            $for_user = voucher_Db::GetUser(array('id'=>$voucher->for_user));
-        }
-        
         // Last, some other useful info
         $voucherReport->code = $voucher->submission_code;
         $voucherReport->senddate = (!is_null($voucher->senddate)) ? date("d-m-Y", $voucher->senddate) : get_string('report:immediately', BLOCK_VOUCHER);
         $voucherReport->enrolperiod = (!is_null($voucher->enrolperiod)) ? $voucher->enrolperiod : '';
-        if (!is_null($voucher->for_user)) $voucherReport->for_user = fullname($for_user);
+        if (!is_null($voucher->for_user_email)) $voucherReport->for_user_email = $voucher->for_user_email;
         
         if (!is_null($voucher->issend)) {
             $voucherReport->issend = ($voucher->issend) ? get_string('yes') : get_string('no');
@@ -128,7 +124,7 @@ if (voucher_Helper::getPermission('viewreports'))
     $table = new html_table();
     $table->head = array(
         get_string('report:owner', BLOCK_VOUCHER),
-        get_string('report:for_user', BLOCK_VOUCHER),
+        get_string('report:for_user_email', BLOCK_VOUCHER),
         get_string('report:senddate', BLOCK_VOUCHER),
         get_string('report:enrolperiod', BLOCK_VOUCHER),
         get_string('report:voucher_code', BLOCK_VOUCHER),
