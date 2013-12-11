@@ -60,17 +60,23 @@ class voucher_Helper {
             
             if (isset($voucher->email_body) && !empty($voucher->email_body)) {
                 
-                $course = $DB->get_record('course', array('id'=>$obj_voucher->courseid));
+                // Replace some strings in the email body
                 $arr_replace = array(
                     '##to_name##',
-                    '##site_root##',
-                    '##course_fullname##'
+                    '##site_name##',
                 );
                 $arr_with = array(
                     $voucher->for_user_name,
                     $SITE->fullname,
-                    $course->fullname
                 );
+                
+                // Check if we're generating based on course, in which case we enter the course name too.
+                if (!is_null($obj_voucher->courseid)) {
+                    $course = $DB->get_record('course', array('id'=>$obj_voucher->courseid));
+                    $arr_replace[] = '##course_fullname##';
+                    $arr_with[] = $course->fullname;
+                }
+
                 $obj_voucher->email_body = str_replace($arr_replace, $arr_with, $voucher->email_body);
             } else {
                 $obj_voucher->email_body = null;

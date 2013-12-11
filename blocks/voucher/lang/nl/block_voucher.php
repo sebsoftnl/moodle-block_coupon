@@ -256,12 +256,12 @@ Wij wensen u een leerzame opleiding toe.<br /><br />
 
 Met vriendelijke groet,<br /><br />
 
-##site_root##';
+##site_name##';
 
 $string['voucher_mail_csv_content_cohorts'] = '
 Beste ##to_name##,<br /><br />
 
-Onlangs heeft u zich ingeschreven voor onze opleiding ##course_fullname##, tijdens de opleiding heeft u toegang tot onze Online Leeromgeving: ##site_name##.<br /><br />
+Onlangs heeft u zich ingeschreven voor **HANDMATIG INVULLEN**, tijdens de opleiding heeft u toegang tot onze Online Leeromgeving: ##site_name##.<br /><br />
 
 In deze omgeving vindt u naast de lesmateriaal ook de mogelijkheid tot netwerken met uw medecursisten. Deze opleiding start met een aantal voorbereidingsopdrachten, wij willen u vriendelijk verzoeken deze uiterlijk 3 (werk)dagen voor aanvang te bekijken. Zowel u, als de docent, kan zich dan goed voorbereiden op de opleiding.<br /><br />
 
@@ -275,7 +275,7 @@ Wij wensen u een leerzame opleiding toe.<br /><br />
 
 Met vriendelijke groet,<br /><br />
 
-##site_root##';
+##site_name##';
 
 $string['voucher_mail_subject'] = 'Moodle Voucher aangemaakt';
 
@@ -305,7 +305,7 @@ $string['report:voucher_code'] = 'Voucher code';
 $string['report:cohorts'] = 'Cohort';
 $string['report:issend'] = 'Is verstuurd';
 $string['report:immediately'] = 'Onmiddellijk';
-$string['report:for_user_email'] = 'Voor e-mail ingepland';
+$string['report:for_user_email'] = 'Ingepland voor';
 
 $string['str:mandatory'] = 'Mandatory or smthing';
 $string['str:optional'] = 'Optional or smthing';
@@ -341,3 +341,16 @@ $string['error:recipients-max-exceeded'] = 'Uw bestand is over de maximum aantal
 $string['error:recipients-invalid'] = 'Uw bestand kon niet gevalideerd worden. Controleer svp of de juiste kolommen en scheidingsteken gebruikt zijn.';
 $string['error:recipients-empty'] = 'Vul minstens 1 gebruiker in svp.';
 $string['error:recipients-email-invalid'] = 'Het e-mailadres {$a->email} is geen correct e-mailadres. Corrigeer dit eerst in het csv bestand.';
+
+$string['voucher_recipients_desc'] = 'De volgende kolommen dienen aanwezig te zijn ongeacht volgorde: E-mail, Gender, Name';
+$string['voucher_recipients_manual_desc'] = 'De volgende kolommen dienen aanwezig te zijn ongeacht volgorde: E-mail, Gender, Name';
+
+$string['confirm_vouchers_sent_subject'] = 'Alle vouchers zijn verzonden';
+$string['confirm_vouchers_sent_body'] = '
+Hallo,<br /><br />
+
+Bij dezen informeren wij u graag dat de vouchers die u op {$a->timecreated} heeft gemaakt verzonden zijn.<br /><br />
+
+Met vriendelijke groet,<br /><Br />
+
+Moodle administrator';

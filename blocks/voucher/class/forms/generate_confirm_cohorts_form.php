@@ -52,12 +52,13 @@ class generate_confirm_cohorts_form extends moodleform
         $urlDownloadCsv = '<a href="' . $CFG->wwwroot . '/blocks/voucher/sample.csv" target="_blank">' . get_string('download-sample-csv', BLOCK_VOUCHER) . '</a>';
         $mform->addElement('filepicker', 'voucher_recipients', get_string('label:voucher_recipients', BLOCK_VOUCHER), null, array('accepted_types' => 'csv'));
         $mform->addHelpButton('voucher_recipients', 'label:voucher_recipients', BLOCK_VOUCHER);
+        $mform->addElement('static', 'voucher_recipients_desc', '', get_string('voucher_recipients_desc', BLOCK_VOUCHER));
         $mform->addElement('static', 'sample_csv', '', $urlDownloadCsv);
 
         // Editable email message
         $mform->addElement('editor', 'email_body', get_string('label:email_body', BLOCK_VOUCHER), array('noclean'=>1));
         $mform->setType('email_body', PARAM_RAW);
-        $mform->setDefault('email_body', array('text'=>get_string('voucher_mail_csv_content', BLOCK_VOUCHER)));
+        $mform->setDefault('email_body', array('text'=>get_string('voucher_mail_csv_content_cohorts', BLOCK_VOUCHER)));
         $mform->addRule('email_body', get_string('required'), 'required');
         $mform->addHelpButton('email_body', 'label:email_body', BLOCK_VOUCHER);
 
@@ -70,15 +71,18 @@ class generate_confirm_cohorts_form extends moodleform
         $mform->addElement('header', 'manualForm', get_string('heading:manualForm', BLOCK_VOUCHER));
         
         // textarea recipients
-        $mform->addElement('textarea', 'voucher_recipients_manual', get_string("label:voucher_recipients", BLOCK_VOUCHER), 'rows="20" cols="50"');
-        $mform->addRule('voucher_recipients_manual', get_string('required'), 'required', null);
-        $mform->addHelpButton('voucher_recipients_manual', 'label:voucher_recipients_txt', BLOCK_VOUCHER);
+        $arrElements = array();
+        $arrElements[] = $mform->createElement('textarea', 'voucher_recipients_manual', get_string("label:voucher_recipients", BLOCK_VOUCHER), 'rows="20" cols="50"');
+        $arrElements[] = $mform->createElement('static', 'voucher_recipients_manual_desc', '', get_string('voucher_recipients_manual_desc', BLOCK_VOUCHER));
+        $mform->addGroup($arrElements, 'group_voucher_recipients_manual', get_string("label:voucher_recipients", BLOCK_VOUCHER), ' ', false);
+        $mform->addGroupRule('group_voucher_recipients_manual', array('voucher_recipients_manual' => array(array(get_string('required'), 'required'))));
+        $mform->addHelpButton('group_voucher_recipients_manual', 'label:voucher_recipients_txt', BLOCK_VOUCHER);
         $mform->setDefault('voucher_recipients_manual', 'E-mail,Gender,Name');
         
         // Editable email message
         $mform->addElement('editor', 'email_body_manual', get_string('label:email_body', BLOCK_VOUCHER), array('noclean'=>1));
         $mform->setType('email_body_manual', PARAM_RAW);
-        $mform->setDefault('email_body_manual', array('text'=>get_string('voucher_mail_csv_content', BLOCK_VOUCHER)));
+        $mform->setDefault('email_body_manual', array('text'=>get_string('voucher_mail_csv_content_cohorts', BLOCK_VOUCHER)));
         $mform->addRule('email_body_manual', get_string('required'), 'required');
         $mform->addHelpButton('email_body_manual', 'label:email_body', BLOCK_VOUCHER);
 

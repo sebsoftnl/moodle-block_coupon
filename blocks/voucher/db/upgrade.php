@@ -4,7 +4,7 @@ function xmldb_block_voucher_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2013112001) {
+    if ($oldversion < 2013121101) {
     
         // Define table to edit
         $table = new xmldb_table('vouchers');
@@ -13,7 +13,8 @@ function xmldb_block_voucher_upgrade($oldversion) {
         
         // Define fields to update/add
         $fieldsToUpdate[] = new xmldb_field('for_user_email', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'courseid');
-        $fieldsToUpdate[] = new xmldb_field('enrolperiod', XMLDB_TYPE_INTEGER, '8', null, null, null, null, 'for_user_email');
+        $fieldsToUpdate[] = new xmldb_field('for_user_name', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'for_user_email');
+        $fieldsToUpdate[] = new xmldb_field('enrolperiod', XMLDB_TYPE_INTEGER, '8', null, null, null, null, 'for_user_name');
         $fieldsToUpdate[] = new xmldb_field('senddate', XMLDB_TYPE_INTEGER, '18', null, null, null, null, 'enrolperiod');
         $fieldsToUpdate[] = new xmldb_field('issend', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'senddate');
         $fieldsToUpdate[] = new xmldb_field('redirect_url', XMLDB_TYPE_CHAR, '256', null, null, null, null, 'issend');
@@ -28,7 +29,7 @@ function xmldb_block_voucher_upgrade($oldversion) {
         }
 
         // Voucher savepoint reached.
-        upgrade_block_savepoint(true, 2013112001, 'voucher');
+        upgrade_block_savepoint(true, 2013121101, 'voucher');
 
         return true;
     }

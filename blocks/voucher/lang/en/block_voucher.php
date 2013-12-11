@@ -212,12 +212,12 @@ Wij wensen u een leerzame opleiding toe.<br /><br />
 
 Met vriendelijke groet,<br /><br />
 
-##site_root##';
+##site_name##';
 
 $string['voucher_mail_csv_content_cohorts'] = '
 Beste ##to_name##,<br /><br />
 
-Onlangs heeft u zich ingeschreven voor onze opleiding ##course_fullname##, tijdens de opleiding heeft u toegang tot onze Online Leeromgeving: ##site_name##.<br /><br />
+Onlangs heeft u zich ingeschreven voor **HANDMATIG INVULLEN**, tijdens de opleiding heeft u toegang tot onze Online Leeromgeving: ##site_name##.<br /><br />
 
 In deze omgeving vindt u naast de lesmateriaal ook de mogelijkheid tot netwerken met uw medecursisten. Deze opleiding start met een aantal voorbereidingsopdrachten, wij willen u vriendelijk verzoeken deze uiterlijk 3 (werk)dagen voor aanvang te bekijken. Zowel u, als de docent, kan zich dan goed voorbereiden op de opleiding.<br /><br />
 
@@ -231,7 +231,7 @@ Wij wensen u een leerzame opleiding toe.<br /><br />
 
 Met vriendelijke groet,<br /><br />
 
-##site_root##';
+##site_name##';
 
 $string['voucher_mail_subject'] = 'Moodle Voucher generated';
 
@@ -297,7 +297,7 @@ $string['report:voucher_code'] = 'Subscription code';
 $string['report:cohorts'] = 'Cohort';
 $string['report:issend'] = 'Is send';
 $string['report:immediately'] = 'Immediately';
-$string['report:for_user_email'] = 'Planned for email';
+$string['report:for_user_email'] = 'Planned for';
 
 $string['str:mandatory'] = 'Mandatory or smthing';
 $string['str:optional'] = 'Optional or smthing';
@@ -342,4 +342,7 @@ We\'d like to inform you that all the vouchers created by you on {$a->timecreate
 
 With kind regards,<br /><Br />
 
-Your friendly neighborhood Moodle Site';
+Moodle administrator';
+
+$string['voucher_recipients_desc'] = 'The following columns are required to be present, regardless of order: E-mail, Gender, Name';
+$string['voucher_recipients_manual_desc'] = 'The following columns are required, regardless of order: E-mail, Gender, Name';
