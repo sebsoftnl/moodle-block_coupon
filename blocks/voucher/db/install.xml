@@ -10,7 +10,7 @@
         <FIELD NAME="userid" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="ownerid"/>
         <FIELD NAME="ownerid" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="userid" NEXT="courseid"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="ownerid" NEXT="for_user"/>
-        <FIELD NAME="for_user_email" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="courseid" NEXT="for_user_name"/>
+        <FIELD NAME="for_user_email" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" PREVIOUS="courseid" NEXT="for_user_name"/>
         <FIELD NAME="for_user_name" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" PREVIOUS="for_user_email" NEXT="enrolperiod"/>
         <FIELD NAME="enrolperiod" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="for_user_email" NEXT="senddate"/>
         <FIELD NAME="senddate" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="enrolperiod" NEXT="issend"/>
