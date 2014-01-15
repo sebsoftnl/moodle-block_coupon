@@ -219,9 +219,20 @@ $string['default-voucher-page-template-botleft'] = '<ol>
 <li>Vul uw toegangscode in het Moodle Voucher blok.</li>
 <li>Veel leerplezier!</li>
 </ol>';
-$string['default-voucher-page-template-botright'] = '1. Log in bij {site_url}
-2. Vul uw toegangscode in het Moodle Voucher blok.
-3. Veel leerplezier!';
+$string['default-voucher-page-template-botright'] = '<ol>
+<li>Log in bij {site_url}</li>
+<li>Vul uw toegangscode in het Moodle Voucher blok.</li>
+<li>Veel leerplezier!</li>
+</ol>';
+//$string['default-voucher-page-template-botleft'] = '
+//1. Meld u aan bij {site_url}<br />
+//2. U ontvangt direct een e-mail met de bevestigingslink. Klik op deze link om uw account te activeren.<br />
+//3. Vul uw toegangscode in het Moodle Voucher blok.<br />
+//4. Veel leerplezier!<br />';
+//$string['default-voucher-page-template-botright'] = '
+//1. Log in bij {site_url}<br />
+//2. Vul uw toegangscode in het Moodle Voucher blok.<br />
+//3. Veel leerplezier!<br />';
 
 
 $string['voucher_mail_content'] = '

@@ -21,6 +21,7 @@ class voucher_Cron
      */
     public function run()
     {
+        global $USER;
 //        return true;
         
         // Call vouchers
@@ -48,7 +49,7 @@ class voucher_Cron
                 
             }
             
-            voucher_Helper::MailVouchers(array($voucher), $voucher->for_user_email, null, $voucher->email_body);
+            voucher_Helper::MailVouchers(array($voucher), $voucher->for_user_email, null, $voucher->email_body, true);
             
             $voucher->issend = true;
             $voucher->timemodified = time();

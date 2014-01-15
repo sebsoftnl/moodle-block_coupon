@@ -244,13 +244,17 @@ $string['default-voucher-page-template-main'] = 'With this voucher you can activ
 Please use the following voucher code to activate access.
 
 {voucher_code}';
-$string['default-voucher-page-template-botleft'] = '1. Sign up at {site_url}
-2. You will receive an email with the confirmation url. Click on the url to activate your account.
-3. Enter your voucher code in the Moodle Voucher block
-4. Happy learning!';
-$string['default-voucher-page-template-botright'] = '1. Log in at {site_url}
-2. Enter your voucher code in the Moodle Voucher block
-3. Happy learning!';
+$string['default-voucher-page-template-botleft'] = '<ol>
+<li>1. Sign up at {site_url}</li>
+<li>2. You will receive an email with the confirmation url. Click on the url to activate your account.</li>
+<li>3. Enter your voucher code in the Moodle Voucher block</li>
+<li>4. Happy learning!</li>
+</ol>';
+$string['default-voucher-page-template-botright'] = '<ol>
+<li>1. Log in at {site_url}</li>
+<li>2. Enter your voucher code in the Moodle Voucher block</li>
+<li>3. Happy learning!</li>
+</ol>';
 
 //$string['default-voucher-page-template-main'] = '
 //<p style="font-weight: bold;">Moodle Voucher</p><br/><br/>

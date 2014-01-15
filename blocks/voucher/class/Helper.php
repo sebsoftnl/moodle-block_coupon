@@ -189,7 +189,7 @@ class voucher_Helper {
      * @param string $email The email address the vouchers are to be send to
      * @param bool $generate_single_pdfs Whether each voucher gets a PDF or 1 PDF for all vouchers
      * */
-    public static final function MailVouchers($vouchers, $email, $generate_single_pdfs = false, $email_body = false) {
+    public static final function MailVouchers($vouchers, $emailTo, $generate_single_pdfs = false, $emailBody = false, $initiatedByCron = false) {
         global $DB, $CFG;
 
         // include pdf generator
@@ -199,7 +199,7 @@ class voucher_Helper {
         if ($generate_single_pdfs) {
 
             // Initiate the mailer
-            $phpmailer = self::_GenerateVoucherMail($email, $email_body);
+            $phpmailer = self::_GenerateVoucherMail($emailTo, $emailBody, $initiatedByCron);
             $zip = new ZipArchive();
 
             $filename = "{$CFG->dataroot}/vouchers.zip";
@@ -232,7 +232,7 @@ class voucher_Helper {
             // All vouchers in 1 PDF
         } else {
 
-            $phpmailer = self::_GenerateVoucherMail($email, $email_body);
+            $phpmailer = self::_GenerateVoucherMail($emailTo, $emailBody, $initiatedByCron);
 
             $pdfgen = new voucher_PDF(get_string('pdf:titlename', BLOCK_VOUCHER));
             $pdfgen->setVoucherPageTemplateMain(get_string('default-voucher-page-template-main', BLOCK_VOUCHER));
@@ -245,34 +245,52 @@ class voucher_Helper {
         $res = $phpmailer->Send();
     }
 
-    protected static final function _GenerateVoucherMail($email, $body = false) {
+    protected static final function _GenerateVoucherMail($emailTo, $emailBody = false, $initiatedByCron = false) {
         global $CFG, $USER;
 
         require_once $CFG->libdir . '/phpmailer/class.phpmailer.php';
 
-        $sentbyapi = !isloggedin();
-        $supportuser = generate_email_supportuser();
-
-        $obj_mailinfo = new stdClass();
-        $obj_mailinfo->to_name = ($sentbyapi) ? '' : fullname($USER);
-        $obj_mailinfo->from_name = ($sentbyapi) ? trim($supportuser->firstname . ' ' . $supportuser->lastname) : fullname($USER);
-        $obj_mailinfo->from_email = ($sentbyapi) ? $supportuser->email : $USER->email;
-        $obj_mailinfo->replyto = ($sentbyapi) ? $CFG->noreplyaddress : $USER->email;
+        // instantiate mailer
+        $phpMailer = new PHPMailer();
         
-        $mail_content = ($body === false) ? get_string('voucher_mail_content', BLOCK_VOUCHER, $obj_mailinfo) : $body;
-
-        $phpmailer = new PHPMailer();
-        $phpmailer->Body = $mail_content;
-        $phpmailer->AltBody = strip_tags($mail_content);
-        $phpmailer->From = $obj_mailinfo->from_email;
-        $phpmailer->FromName = $obj_mailinfo->from_name;
-        $phpmailer->IsHTML(true);
-        $phpmailer->Subject = get_string('voucher_mail_subject', BLOCK_VOUCHER);
-        $phpmailer->AddCustomHeader("X-VOUCHER-Send: " . time());
-        $phpmailer->AddAddress($email);
-        $phpmailer->AddReplyTo($obj_mailinfo->replyto);
-
-        return $phpmailer;
+        // set email from
+        if ($initiatedByCron) {
+            // get supportuser
+            $supportuser = generate_email_supportuser();
+            $phpMailer->FromName = fullname($supportuser);
+            $phpMailer->From = $supportuser->email;
+            
+        } else {
+            
+            $phpMailer->FromName = fullname($USER);
+            $phpMailer->From = $USER->email;
+            
+        }
+        
+        // set email body
+        if ($emailBody !== false) {
+            
+            $phpMailer->Body = $emailBody;
+            
+        } else {
+            
+            $bodyParams = array(
+                'to_name'=>'',
+                'from_name'=>''
+            );
+            $phpMailer->body = get_string('voucher_mail_content', BLOCK_VOUCHER, $bodyParams);
+            
+        }
+        
+        // set last phpMailer params
+        $phpMailer->AltBody = strip_tags($phpMailer->Body);
+        $phpMailer->Subject = get_string('voucher_mail_subject', BLOCK_VOUCHER);
+        $phpMailer->IsHTML(true);
+        $phpMailer->AddAddress($emailTo);// might not have a name cause the voucher recipients aren't neccesarily Moodle users
+        $phpMailer->AddReplyTo($phpMailer->From, $phpMailer->FromName);
+        $phpMailer->AddCustomHeader("X-VOUCHER-Send: " . time());
+        
+        return $phpMailer;
     }
     
     /* ConfirmVouchersSent
