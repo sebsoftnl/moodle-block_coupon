@@ -31,7 +31,8 @@ function xmldb_block_voucher_upgrade($oldversion) {
         // Voucher savepoint reached.
         upgrade_block_savepoint(true, 2013121101, 'voucher');
 
-        return true;
     }
+    
+    return true;
 }
 ?>
