@@ -33,6 +33,26 @@ function xmldb_block_voucher_upgrade($oldversion) {
 
     }
     
+    if ($oldversion < 2014012101) {
+        global $DB;
+        
+        $dbman = $DB->get_manager();
+    
+        // Define table to edit
+        $table = new xmldb_table('vouchers');
+        
+        // Define fields to update/add
+        $field = new xmldb_field('for_user_gender', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'for_user_name');
+        
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Voucher savepoint reached.
+        upgrade_block_savepoint(true, 2014012101, 'voucher');
+
+    }
+    
     return true;
 }
 ?>

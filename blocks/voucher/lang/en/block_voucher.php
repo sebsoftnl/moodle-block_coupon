@@ -196,7 +196,7 @@ Met vriendelijke groet,<br /><br />
 {$a->from_name}';
 
 $string['voucher_mail_csv_content'] = '
-Beste ##to_name##,<br /><br />
+Beste ##to_gender## ##to_name##,<br /><br />
 
 Onlangs heeft u zich ingeschreven voor onze opleiding ##course_fullname##, tijdens de opleiding heeft u toegang tot onze Online Leeromgeving: ##site_name##.<br /><br />
 
@@ -215,7 +215,7 @@ Met vriendelijke groet,<br /><br />
 ##site_name##';
 
 $string['voucher_mail_csv_content_cohorts'] = '
-Beste ##to_name##,<br /><br />
+Beste ##to_gender## ##to_name##,<br /><br />
 
 Onlangs heeft u zich ingeschreven voor **HANDMATIG INVULLEN**, tijdens de opleiding heeft u toegang tot onze Online Leeromgeving: ##site_name##.<br /><br />
 

@@ -139,6 +139,7 @@ if (voucher_Helper::getPermission('generatevouchers'))
                 $voucher->senddate = $SESSION->voucher->date_send_vouchers;
                 $voucher->for_user_email = $recipient->email;
                 $voucher->for_user_name = $recipient->name;
+                $voucher->for_user_gender = $recipient->gender;
                 $voucher->redirect_url = $SESSION->voucher->redirect_url;
                 $voucher->enrolperiod = $SESSION->voucher->enrolperiod;
                 $voucher->email_body = $SESSION->voucher->email_body;

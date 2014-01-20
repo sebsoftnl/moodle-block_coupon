@@ -53,6 +53,7 @@ class voucher_Helper {
             // Extra columns
             $obj_voucher->for_user_email = (isset($voucher->for_user_email) && !empty($voucher->for_user_email)) ? $voucher->for_user_email : null;
             $obj_voucher->for_user_name = (isset($voucher->for_user_name) && !empty($voucher->for_user_name)) ? $voucher->for_user_name : null;
+            $obj_voucher->for_user_gender = (isset($voucher->for_user_gender) && !empty($voucher->for_user_gender)) ? $voucher->for_user_gender : null;
             $obj_voucher->redirect_url = (isset($voucher->redirect_url) && !empty($voucher->redirect_url)) ? $voucher->redirect_url : null;
             $obj_voucher->issend = 0;
             $obj_voucher->senddate = (isset($voucher->senddate) && !empty($voucher->senddate)) ? $voucher->senddate : null;
@@ -64,10 +65,12 @@ class voucher_Helper {
                 $arr_replace = array(
                     '##to_name##',
                     '##site_name##',
+                    '##to_gender##'
                 );
                 $arr_with = array(
                     $voucher->for_user_name,
                     $SITE->fullname,
+                    $genderTxt
                 );
                 
                 // Check if we're generating based on course, in which case we enter the course name too.
@@ -275,10 +278,10 @@ class voucher_Helper {
         } else {
             
             $bodyParams = array(
-                'to_name'=>'',
-                'from_name'=>''
+                'to_name'=>fullname($USER),
+                'from_name'=>fullname($USER)
             );
-            $phpMailer->body = get_string('voucher_mail_content', BLOCK_VOUCHER, $bodyParams);
+            $phpMailer->Body = get_string('voucher_mail_content', BLOCK_VOUCHER, $bodyParams);
             
         }
         
