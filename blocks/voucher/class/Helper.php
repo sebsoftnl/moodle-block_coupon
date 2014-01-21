@@ -61,6 +61,8 @@ class voucher_Helper {
             
             if (isset($voucher->email_body) && !empty($voucher->email_body)) {
                 
+                $genderTxt = (!is_null($obj_voucher->for_user_gender)) ? $obj_voucher->for_user_gender : '';
+                
                 // Replace some strings in the email body
                 $arr_replace = array(
                     '##to_name##',
