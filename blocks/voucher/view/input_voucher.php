@@ -108,7 +108,7 @@ if (voucher_Helper::getPermission('inputvouchers'))
                 
                 $end_enrolment = 0;
                 
-                if (!is_null($voucher->enrolperiod)) {
+                if (!is_null($voucher->enrolperiod) && $voucher->enrolperiod > 0) {
                     $end_enrolment = strtotime("+ {$voucher->enrolperiod} days");
                 }
                 // Now we can enrol
