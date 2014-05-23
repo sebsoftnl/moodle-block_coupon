@@ -173,8 +173,11 @@ $string['button:submit_voucher_code'] = 'Submit Voucher';
 $string['view:generate_voucher:title'] = 'Generate Voucher';
 $string['view:generate_voucher:heading'] = 'Generate Voucher';
 
-$string['view:reports:heading'] = 'Voucher Reports';
-$string['view:reports:title'] = 'Voucher Reports';
+$string['view:reports:heading'] = 'Report - Vouchers';
+$string['view:reports:title'] = 'Report - Vouchers';
+
+$string['view:reports-unused:title'] = 'Report - Unused Vouchers';
+$string['view:reports-unused:heading'] = 'Report - Unused Vouchers';
 
 $string['view:input_voucher:title'] = 'Input Voucher';
 $string['view:input_voucher:heading'] = 'Input Voucher';
@@ -350,3 +353,5 @@ Moodle administrator';
 
 $string['voucher_recipients_desc'] = 'The following columns are required to be present, regardless of order: E-mail, Gender, Name';
 $string['voucher_recipients_manual_desc'] = 'The following columns are required, regardless of order: E-mail, Gender, Name';
+
+$string['report:download-excel'] = 'Download unused vouchers';

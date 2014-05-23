@@ -179,8 +179,11 @@ $string['button:submit_voucher_code'] = 'Invoeren';
 $string['view:generate_voucher:title'] = 'Genereer Voucher';
 $string['view:generate_voucher:heading'] = 'Genereer Voucher';
 
-$string['view:reports:heading'] = 'Voucher Rapporten';
-$string['view:reports:title'] = 'Voucher Rapporten';
+$string['view:reports:heading'] = 'Rapportage - Vouchers';
+$string['view:reports:title'] = 'Rapportage - Vouchers';
+
+$string['view:reports-unused:title'] = 'Rapportage - Ongebruikte vouchers';
+$string['view:reports-unused:heading'] = 'Rapportage - Ongebruikte vouchers';
 
 $string['view:input_voucher:title'] = 'Voucher invoeren';
 $string['view:input_voucher:heading'] = 'Voucher invoeren';
@@ -365,3 +368,5 @@ Bij dezen informeren wij u graag dat de vouchers die u op {$a->timecreated} heef
 Met vriendelijke groet,<br /><Br />
 
 Moodle administrator';
+
+$string['report:download-excel'] = 'Download ongebruikte vouchers';

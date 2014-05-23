@@ -718,4 +718,40 @@ class voucher_Helper {
         return ($error === false) ? true : $error;
     }
     
+    public static final function exportUnusedVouchers($reportColumns, $reportRows) {
+        global $CFG;
+        
+        require_once("$CFG->libdir/excellib.class.php");
+
+        $filename = 'unused-vouchers';
+
+        $workbook = new MoodleExcelWorkbook($filename, 'Excel2007');
+
+        $worksheet = array();
+
+        $worksheet[0] = $workbook->add_worksheet('sheet1');
+        $colNum = 0;
+        foreach ($reportColumns as $column) {
+            $worksheet[0]->write(0, $colNum, $column);
+            $colNum++;
+        }
+        
+        $rowNum = 1;
+        foreach($reportRows as $reportRow) {
+           
+            $colNum = 0;
+            foreach($reportRow as $value) {
+                $worksheet[0]->write($rowNum, $colNum, $value);
+                $colNum ++;
+            }
+            $rowNum ++;
+           
+        }
+        
+        $workbook->close();
+        
+        // Must die to avoid mismatching content length
+        exit();
+    }
+    
 }
