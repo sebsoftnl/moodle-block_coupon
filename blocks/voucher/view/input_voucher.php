@@ -116,6 +116,9 @@ if (voucher_Helper::getPermission('inputvouchers'))
                     print_error(get_string('error:unable_to_enrol', BLOCK_VOUCHER));
                 }
                 
+                $context->mark_dirty();
+                remove_temp_course_roles($context);
+                
             }
             
             // And add user to groups
