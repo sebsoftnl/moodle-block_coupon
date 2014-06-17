@@ -35,7 +35,7 @@ if (voucher_Helper::getPermission('viewreports'))
         get_string('report:senddate', BLOCK_VOUCHER),
         get_string('report:enrolperiod', BLOCK_VOUCHER),
         get_string('report:voucher_code', BLOCK_VOUCHER),
-        get_string('course'),
+        get_string('courses'),
         get_string('report:cohorts', BLOCK_VOUCHER),
         get_string('groups'),
         get_string('report:issend', BLOCK_VOUCHER)
@@ -44,29 +44,36 @@ if (voucher_Helper::getPermission('viewreports'))
     // Build up voucher report array
     foreach($vouchers as $voucher) {
        
+        $voucherCourses = $DB->get_records('voucher_courses', array('voucherid'=>$voucher->id));
+        
         $voucherReport = new stdClass();
-       
-        // Fix order of columns
         $voucherReport->showname = '';
         $voucherReport->for_user_email = '';
         $voucherReport->senddate = '';
         $voucherReport->enrolperiod = '';
         $voucherReport->code = '';
-        $voucherReport->course = '';
+        $voucherReport->courses = '';
         $voucherReport->cohorts = '';
         $voucherReport->groups = '';
         $voucherReport->issend = '';
-       
+        
         if (!is_null($voucher->ownerid)) {
             $voucherReport->showname = trim($voucher->firstname . " " . $voucher->lastname);
             if (empty($voucherReport->showname)) $voucherReport->showname = $voucher->username;
         }
-       
+        
         // Voucher based on course
-        if (!is_null($voucher->courseid)) {
-            // Set course name
-            $course = voucher_Db::GetCourseById($voucher->courseid);
-            $voucherReport->course = $course->shortname;
+        if (!empty($voucherCourses)) {
+            
+            foreach($voucherCourses as $voucherCourse) {
+                
+                $course = voucher_Db::GetCourseById($voucherCourse->courseid);
+                
+                $voucherReport->courses .= $course->fullname;
+                if ($course->id != end($voucherCourses)->courseid) {
+                    $voucherReport->courses .= ', ';
+                }
+            }
 
         // Voucher based on cohort
         } else {
@@ -99,7 +106,7 @@ if (voucher_Helper::getPermission('viewreports'))
         if (!is_null($voucher->issend)) {
             $voucherReport->issend = ($voucher->issend) ? get_string('yes') : get_string('no');
         }
-       
+        
         // And add record to the report
         $reportData[] = $voucherReport;
        

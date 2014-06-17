@@ -64,22 +64,29 @@ if (voucher_Helper::getPermission('viewreports'))
     // For each user we'll get a list of courses that apply for them
     foreach($vouchers as $vid=>$voucher) {
         
-        // Now we get the user
+        // Now we get the data
         $user = $DB->get_record('user', array('id'=>$voucher->userid));
+        $voucherCourses = $DB->get_records('voucher_courses', array('voucherid'=>$voucher->id));
+        
         if (!isset($reportdata->users[$user->id])) $reportdata->users[$user->id] = $user;
         
         $voucher_users[$voucher->userid] = $user;
         $voucher_users[$voucher->userid]->courses = array();
         
         // If its a course voucher its simple
-        if ($voucher->courseid !== NULL) {
+        if (!empty($voucherCourses)) {
             
-            // Skip if its already added, could happen with multiple vouchers on 1 course
-            if (in_array($voucher->courseid, $voucher_users[$voucher->userid]->courses)) continue;
-            $voucher_users[$voucher->userid]->courses[$voucher->courseid] = $DB->get_record('course', array('id'=>$voucher->courseid));
-            
-            if (!isset($reportdata->courses[$voucher->courseid])) {
-                $reportdata->courses[$voucher->courseid] = $voucher_users[$voucher->userid]->courses[$voucher->courseid];
+            foreach($voucherCourses as $voucherCourse) {
+                
+                // Skip if its already added, could happen with multiple vouchers on 1 course
+                if (in_array($voucherCourse->courseid, $voucher_users[$voucher->userid]->courses)) {
+                    continue;
+                }
+                $voucher_users[$voucher->userid]->courses[$voucherCourse->courseid] = $DB->get_record('course', array('id'=>$voucherCourse->courseid));
+                
+                if (!isset($reportdata->courses[$voucherCourse->courseid])) {
+                    $reportdata->courses[$voucherCourse->courseid] = $voucher_users[$voucher->userid]->courses[$voucherCourse->courseid];
+                }
             }
             
         } else {

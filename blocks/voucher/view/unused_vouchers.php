@@ -58,6 +58,7 @@ if (voucher_Helper::getPermission('viewreports'))
     // Build up voucher report array
     foreach($vouchers as $voucher) {
         
+        $voucherCourses = $DB->get_records('voucher_courses', array('voucherid'=>$voucher->id));
         $voucherReport = new stdClass();
         
         // Fix order of columns
@@ -66,7 +67,7 @@ if (voucher_Helper::getPermission('viewreports'))
         $voucherReport->senddate = '';
         $voucherReport->enrolperiod = '';
         $voucherReport->code = '';
-        $voucherReport->course = '';
+        $voucherReport->courses = '';
         $voucherReport->cohorts = '';
         $voucherReport->groups = '';
         $voucherReport->issend = '';
@@ -76,11 +77,18 @@ if (voucher_Helper::getPermission('viewreports'))
             if (empty($voucherReport->showname)) $voucherReport->showname = $voucher->username;
         }
         
-        // Voucher based on course
-        if (!is_null($voucher->courseid)) {
-            // Set course name
-            $course = voucher_Db::GetCourseById($voucher->courseid);
-            $voucherReport->course = $course->shortname;
+        // Vouchers based on course
+        if (!empty($voucherCourses)) {
+            
+            foreach($voucherCourses as $voucherCourse) {
+                
+                $course = voucher_Db::GetCourseById($voucherCourse->courseid);
+                
+                $voucherReport->courses .= $course->fullname;
+                if ($course->id != end($voucherCourses)->courseid) {
+                    $voucherReport->courses .= ', ';
+                }
+            }
 
         // Voucher based on cohort
         } else {

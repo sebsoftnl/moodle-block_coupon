@@ -2,10 +2,11 @@
 
 function xmldb_block_voucher_upgrade($oldversion) {
     global $DB;
+    
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2013121101) {
-    
+        
         // Define table to edit
         $table = new xmldb_table('vouchers');
 
@@ -34,10 +35,7 @@ function xmldb_block_voucher_upgrade($oldversion) {
     }
     
     if ($oldversion < 2014012101) {
-        global $DB;
-        
-        $dbman = $DB->get_manager();
-    
+
         // Define table to edit
         $table = new xmldb_table('vouchers');
         
@@ -51,6 +49,44 @@ function xmldb_block_voucher_upgrade($oldversion) {
         // Voucher savepoint reached.
         upgrade_block_savepoint(true, 2014012101, 'voucher');
 
+    }
+    
+    /**
+     * @global moodle_database $DB
+     */
+    if ($oldversion < 2014052301) {
+        
+        // First create a new table for voucher_courses
+        $table = new xmldb_table('voucher_courses');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('voucherid', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null);
+        $table->add_key('id', XMLDB_KEY_PRIMARY, array('id'));
+        
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        
+        // Now fill it with data
+        $vouchers = $DB->get_records_select('vouchers', 'courseid IS NOT NULL');
+        foreach($vouchers as $voucher) {
+            
+            // Take courseid out and put new record in voucher_courses
+            $voucherCourse = new stdClass();
+            $voucherCourse->courseid = $voucher->courseid;
+            $voucherCourse->voucherid = $voucher->id;
+            
+            $DB->insert_record('voucher_courses', $voucherCourse);
+            
+        }
+        
+        // And drop the old field
+        $table = new xmldb_table('vouchers');
+        $field = new xmldb_field('courseid', XMLDB_TYPE_INT, '18', null, null, null, null, 'ownerid');
+        $dbman->drop_field($table, $field);
+        
+        // Voucher savepoint reached.
+        upgrade_block_savepoint(true, 2014052301, 'voucher');
     }
     
     return true;

@@ -78,13 +78,15 @@ if (voucher_Helper::getPermission('generatevouchers'))
     }
     elseif ($data = $mform->get_data())
     {
-
+        
         // Save param, its only about course or cohorts
-//        $SESSION->voucher->{$SESSION->voucher->type} = $data->{$SESSION->voucher->type};
         if ($SESSION->voucher->type == 'course') {
             
             // Add selected groups to session
-            if (isset($data->voucher_groups)) $SESSION->voucher->groups = $data->voucher_groups;
+            if (isset($data->voucher_groups)) {
+                $SESSION->voucher->groups = $data->voucher_groups;
+            }
+            
         } else {
             
             // Check if a course is selected

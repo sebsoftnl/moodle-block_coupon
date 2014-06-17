@@ -61,27 +61,23 @@ if (voucher_Helper::getPermission('inputvouchers'))
     elseif ($data = $mform->get_data())
     {
         
-//        exit("<pre>" . print_r($CFG->version, true) . "</pre>");
-        
         // Because we're outside course context we've got to include groups library manually
         require_once($CFG->dirroot . '/group/lib.php');
         require_once($CFG->dirroot . '/cohort/lib.php');
-//        require_once($CFG->dirroot . '/enrol/cohort/locallib.php');
-        
-//        exit("About to input the voucher and enrol the user 'n stuff..");
         
         $role = $DB->get_record('role', array('shortname'=>'student'));
         $voucher = $DB->get_record('vouchers', array('submission_code'=>$data->voucher_code));
+        $voucherCourses = $DB->get_records('voucher_courses', array('voucherid'=>$voucher->id));
         
         // We'll handle voucher_cohorts
-        if ($voucher->courseid === null) {
+        if (empty($voucherCourses)) {
             
             $voucher_cohorts = $DB->get_records('voucher_cohorts', array('voucherid'=>$voucher->id));
             if (count($voucher_cohorts) == 0) print_error(get_string('error:missing_cohort', BLOCK_VOUCHER));
             
             // Add user to cohort
             foreach($voucher_cohorts as $voucher_cohort) {
-
+                
                 if (!$DB->get_record('cohort', array('id'=>$voucher_cohort->cohortid))) print_error(get_string('error:missing_cohort', BLOCK_VOUCHER));
                 
                 cohort_add_member($voucher_cohort->cohortid, $USER->id);
@@ -99,23 +95,29 @@ if (voucher_Helper::getPermission('inputvouchers'))
         // Otherwise we'll handle based on courses
         } else {
             
-            // Important checks
-            if (!$DB->get_record('course', array('id'=>$voucher->courseid))) print_error(get_string('error:missing_course', BLOCK_VOUCHER));
+            // Set enrolment period
+            $end_enrolment = 0;
+            if (!is_null($voucher->enrolperiod) && $voucher->enrolperiod > 0) {
+                $end_enrolment = strtotime("+ {$voucher->enrolperiod} days");
+            }
             
-            // Make sure we only enrol if its not enrolled yet
-            $context = get_context_instance(CONTEXT_COURSE, $voucher->courseid);
-            if (!is_enrolled($context, $USER->id)) {
+            foreach($voucherCourses as $voucherCourse) {
                 
-                $end_enrolment = 0;
-                
-                if (!is_null($voucher->enrolperiod) && $voucher->enrolperiod > 0) {
-                    $end_enrolment = strtotime("+ {$voucher->enrolperiod} days");
+                // Make sure we only enrol if its not enrolled yet
+                $context = get_context_instance(CONTEXT_COURSE, $voucherCourse->courseid);
+                if (is_null($context) || $context === false) {
+                    print_error('error:course-not-found', BLOCK_VOUCHER);
                 }
+                
+                if (is_enrolled($context, $USER->id)) {
+                    continue;
+                }
+                
                 // Now we can enrol
-                if (!enrol_try_internal_enrol($voucher->courseid, $USER->id, $role->id, time(), $end_enrolment)) {
+                if (!enrol_try_internal_enrol($voucherCourse->courseid, $USER->id, $role->id, time(), $end_enrolment)) {
                     print_error(get_string('error:unable_to_enrol', BLOCK_VOUCHER));
                 }
-                
+                // mark the context for cache refresh
                 $context->mark_dirty();
                 remove_temp_course_roles($context);
                 
@@ -145,7 +147,6 @@ if (voucher_Helper::getPermission('inputvouchers'))
         $DB->update_record('vouchers', $voucher);
         
         // Redirect to my directly
-//        redirect(voucher_Helper::createBlockUrl('view/input_voucher_finish.php', array('id' => $id)));
         $redirect_url = (empty($voucher->redirect_url)) ? $CFG->wwwroot . "/my" : $voucher->redirect_url;
         
         redirect($redirect_url, get_string('success:voucher_used', BLOCK_VOUCHER));

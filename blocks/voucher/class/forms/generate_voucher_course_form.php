@@ -46,10 +46,10 @@ class generate_voucher_course_form extends moodleform
         foreach($courses as $course) $arr_courses_select[$course->id] = $course->fullname;
 
         // Course id
-        $select_course = &$mform->addElement('select', 'voucher_course', get_string('label:voucher_course', BLOCK_VOUCHER), $arr_courses_select);
-        $select_course->setMultiple(false);
-        $mform->addRule('voucher_course', get_string('error:required', BLOCK_VOUCHER), 'required', null, 'client');
-        $mform->addHelpButton('voucher_course', 'label:voucher_course', BLOCK_VOUCHER);
+        $select_course = &$mform->addElement('select', 'voucher_courses', get_string('label:voucher_courses', BLOCK_VOUCHER), $arr_courses_select);
+        $select_course->setMultiple(true);
+        $mform->addRule('voucher_courses', get_string('error:required', BLOCK_VOUCHER), 'required', null, 'client');
+        $mform->addHelpButton('voucher_courses', 'label:voucher_courses', BLOCK_VOUCHER);
 
         $this->add_action_buttons(true, get_string('button:next', BLOCK_VOUCHER));
         

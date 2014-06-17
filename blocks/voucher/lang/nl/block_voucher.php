@@ -77,6 +77,7 @@ $string['error:cohort_sync'] = 'Een error is opgetreden tijdens het synchroniser
 $string['error:plugin_disabled'] = 'De cohort_sync plugin staat uit. Neem contact op met support.';
 $string['error:missing_cohort'] = 'De cohort(en) die aan deze Voucher gelinkt is bestaat niet meer. Neem contact op met support.';
 $string['error:missing_group'] = 'De groep(en) die aan deze Voucher gelinkt is bestaat niet meer. Neem contact op met support.';
+$string['error:course-not-found'] = 'De cursus kon niet gevonden worden.';
 
 $string['error:wrong_code_length'] = 'Vul een getal tussen 6 en 32 in.';
 $string['error:no_vouchers_submitted'] = 'Er zijn nog geen vouchers ingediend.';
@@ -107,6 +108,8 @@ $string['label:voucher_amount'] = 'Aantal vouchers';
 $string['label:type_course'] = 'Cursus';
 $string['label:type_cohorts'] = 'Cohort(s)';
 
+$string['label:voucher_courses'] = 'Cursussen';
+$string['label:voucher_courses_help'] = 'Selecteer hier de cursussen waar uw studenten op ingeschreven dienen te worden.';
 $string['label:voucher_connect_course'] = 'Cursus(sen) toevoegen';
 $string['label:voucher_connect_course_help'] = 'Selecteer de cursussen die aan de cohort moeten worden toegevoegd.
     <br /><b><i>Let op: </i></b>Als er al deelnemers aan die cohort toegevoegd zijn worden deze ook in de cursussen ingeschreven!';
@@ -114,7 +117,7 @@ $string['label:connected_courses'] = 'Toegevoegde cursus(sen)';
 $string['label:no_courses_connected'] = 'Er zijn nog geen cursussen toegevoegd aan deze cohort.';
 
 $string['label:voucher_groups'] = 'Groep(en) toevoegen';
-$string['label:voucher_groups_help'] = 'Selecteer hier de groepen waar uw gebruikers in toegevoegd moeten worden zodra ze worden ingeschreven bij de cursus.';
+$string['label:voucher_groups_help'] = 'Selecteer hier de groepen waar uw gebruikers in toegevoegd moeten worden zodra ze worden ingeschreven bij de cursussen.';
 $string['label:no_groups_selected'] = 'Er zijn nog geen groepen aan deze cursus toegevoegd.';
 
 $string['label:generate_pdfs'] = 'Genereer losse PDF\'s';
@@ -127,7 +130,7 @@ $string['label:enter_voucher_code'] = 'Vul hier uw Voucher code in';
 
 // Labels for already selected stuffz
 $string['label:selected_groups'] = 'Geselecteerde groep(en)';
-$string['label:selected_course'] = 'Geselecteerde cursus';
+$string['label:selected_courses'] = 'Geselecteerde cursussen';
 $string['label:selected_cohort'] = 'Geselecteerde cohort(en)';
 
 
@@ -227,16 +230,6 @@ $string['default-voucher-page-template-botright'] = '<ol>
 <li>Vul uw toegangscode in het Moodle Voucher blok.</li>
 <li>Veel leerplezier!</li>
 </ol>';
-//$string['default-voucher-page-template-botleft'] = '
-//1. Meld u aan bij {site_url}<br />
-//2. U ontvangt direct een e-mail met de bevestigingslink. Klik op deze link om uw account te activeren.<br />
-//3. Vul uw toegangscode in het Moodle Voucher blok.<br />
-//4. Veel leerplezier!<br />';
-//$string['default-voucher-page-template-botright'] = '
-//1. Log in bij {site_url}<br />
-//2. Vul uw toegangscode in het Moodle Voucher blok.<br />
-//3. Veel leerplezier!<br />';
-
 
 $string['voucher_mail_content'] = '
     Beste {$a->to_name},<br /><br />
@@ -256,7 +249,7 @@ Met vriendelijke groet,<br /><br />
 $string['voucher_mail_csv_content'] = '
 Beste ##to_gender## ##to_name##,<br /><br />
 
-Onlangs heeft u zich ingeschreven voor onze opleiding ##course_fullname##, tijdens de opleiding heeft u toegang tot onze Online Leeromgeving: ##site_name##.<br /><br />
+Onlangs heeft u zich ingeschreven voor onze opleidingen ##course_fullnames##. Tijdens de opleidingen heeft u toegang tot onze Online Leeromgeving: ##site_name##.<br /><br />
 
 In deze omgeving vindt u naast de lesmateriaal ook de mogelijkheid tot netwerken met uw medecursisten. Deze opleiding start met een aantal voorbereidingsopdrachten, wij willen u vriendelijk verzoeken deze uiterlijk 3 (werk)dagen voor aanvang te bekijken. Zowel u, als de docent, kan zich dan goed voorbereiden op de opleiding.<br /><br />
 
@@ -370,3 +363,5 @@ Met vriendelijke groet,<br /><Br />
 Moodle administrator';
 
 $string['report:download-excel'] = 'Download ongebruikte vouchers';
+
+$string['and'] = 'en';

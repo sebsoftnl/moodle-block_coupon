@@ -142,9 +142,16 @@ class generate_confirm_course_form extends moodleform
         $mform->addHelpButton('enrolment_period', 'label:enrolment_period', BLOCK_VOUCHER);
 
         // Course fullname
-        $course = $DB->get_record('course', array('id'=>$SESSION->voucher->course));
-        $mform->addElement('static', 'voucher_course', get_string('label:selected_course', BLOCK_VOUCHER), $course->fullname);
-
+        $mform->addElement('static', 'voucher_courses', get_string('label:selected_courses', BLOCK_VOUCHER), '');
+        foreach($SESSION->voucher->courses as $courseid) {
+            
+            if (!$course = $DB->get_record('course', array('id'=>$courseid))) {
+                print_error('error:course-not-found', BLOCK_VOUCHER);
+            }
+            
+            $mform->addElement('static', 'voucher_courses', '', $course->fullname);
+        }
+        
         // Selected groups
         if (isset($SESSION->voucher->groups)) {
             $mform->addElement('static', 'voucher_groups', get_string('label:selected_groups', BLOCK_VOUCHER), '');

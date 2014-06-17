@@ -30,7 +30,7 @@ if ($id)    //DEFAULT CHECKS
         //print_error("Course is misconfigured");
         $course = get_site();
     }
-
+    
     require_login($course, true);
     //ADD course LINK
     $PAGE->navbar->add(ucfirst($course->fullname), new moodle_url('/course/view.php', array('id' => $course->id)));
@@ -70,7 +70,7 @@ if (voucher_Helper::getPermission('generatevouchers'))
         $mform = new generate_confirm_cohorts_form($url);
         
     }
-//    exit("<pre>" . print_r($mform, true) . "</pre>");
+    
     if ($mform->is_cancelled())
     {
         unset($SESSION->voucher);
@@ -83,7 +83,7 @@ if (voucher_Helper::getPermission('generatevouchers'))
         $SESSION->voucher->showform = $data->showform;
         $SESSION->voucher->redirect_url = (empty($data->redirect_url)) ? null : $data->redirect_url;
         $SESSION->voucher->enrolperiod = (empty($data->enrolment_period)) ? null : $data->enrolment_period;
-
+        
         // If we're generating based on csv we'll redirect first to confirm the csv input
         if ($data->showform == 'csv') {
             
@@ -110,7 +110,7 @@ if (voucher_Helper::getPermission('generatevouchers'))
             
             $amountOfVouchers = count($recipients);
         }
-            
+        
         // If we're generating based on 'amount' of vouchers
         if ($data->showform == 'amount') {
             // Save last settings in sessions
@@ -125,7 +125,7 @@ if (voucher_Helper::getPermission('generatevouchers'))
             
             $voucher = new stdClass();
             $voucher->ownerid = $USER->id;
-            $voucher->courseid = ($SESSION->voucher->type == 'course') ? $SESSION->voucher->course : null;
+            $voucher->courses = ($SESSION->voucher->type == 'course') ? $SESSION->voucher->courses : null;
             $voucher->redirect_url = $SESSION->voucher->redirect_url;
             $voucher->enrolperiod = $SESSION->voucher->enrolperiod;
             $voucher->issend = ($data->showform == 'amount') ? 1 : 0;
@@ -144,7 +144,6 @@ if (voucher_Helper::getPermission('generatevouchers'))
                 $voucher->enrolperiod = $SESSION->voucher->enrolperiod;
                 $voucher->email_body = $SESSION->voucher->email_body;
             }
-
             
             if ($SESSION->voucher->type == 'cohorts') {
                 
@@ -168,7 +167,7 @@ if (voucher_Helper::getPermission('generatevouchers'))
             }
             $vouchers[] = $voucher;
         }
-
+        
         // Now that we've got all the vouchers
         $result = voucher_Helper::GenerateVouchers($vouchers);
         if ($result !== true) {
@@ -181,6 +180,7 @@ if (voucher_Helper::getPermission('generatevouchers'))
         
         if ($data->showform == 'amount') {
             // Stuur maar gewoon gelijk...
+            exit("<pre>" . print_r("Done?", true) . "</pre>");
             voucher_Helper::MailVouchers($vouchers, $SESSION->voucher->email_to, $SESSION->voucher->generate_single_pdfs);
             unset($SESSION->voucher);
             redirect($CFG->wwwroot . '/my', get_string('vouchers_sent', BLOCK_VOUCHER));

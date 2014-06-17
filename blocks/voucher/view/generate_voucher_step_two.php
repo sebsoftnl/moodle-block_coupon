@@ -79,17 +79,26 @@ if (voucher_Helper::getPermission('generatevouchers'))
     {
         
         if ($SESSION->voucher->type == 'course') {
-            $SESSION->voucher->course = $data->voucher_course;
+            $SESSION->voucher->courses = $data->voucher_courses;
             
-            $course_groups = $DB->get_records("groups", array('courseid'=>$data->voucher_course));
-            $next_page = (count($course_groups) > 0) ? 'generate_voucher_step_three' : $next_page = 'generate_voucher_step_four';
+            $hasGroups = false;
+            foreach($data->voucher_courses as $courseid) {
+                $groups = $DB->get_records("groups", array('courseid'=>$courseid));
+                if (count($groups) > 0) {
+                    $hasGroups = true;
+                }
+                
+            }
+            
+            $next_page = ($hasGroups) ? 'generate_voucher_step_three' : $next_page = 'generate_voucher_step_four';
             
         } else {
             $SESSION->voucher->cohorts = $data->voucher_cohorts;
             $next_page = 'generate_voucher_step_three';
         }
 
-        redirect(voucher_Helper::createBlockUrl('view/' . $next_page . '.php', array('id'=>$id)));
+        $url = voucher_Helper::createBlockUrl('view/' . $next_page . '.php', array('id'=>$id));
+        redirect($url);
     }
     else
     {

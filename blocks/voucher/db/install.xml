@@ -41,7 +41,17 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true" NEXT="voucherid"/>
         <FIELD NAME="voucherid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="groupid"/>
-        <FIELD NAME="groupid" TYPE="int" LENGTH="9" NOTNULL="true" SEQUENCE="false" PREVIOUS="voucherid"/>
+        <FIELD NAME="groupid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="voucherid"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="id" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="voucher_courses" COMMENT="voucher_users table retrofitted from MySQL" PREVIOUS="voucher_groups">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true" NEXT="voucherid"/>
+        <FIELD NAME="voucherid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="courseid"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="voucherid"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
