@@ -180,7 +180,6 @@ if (voucher_Helper::getPermission('generatevouchers'))
         
         if ($data->showform == 'amount') {
             // Stuur maar gewoon gelijk...
-            exit("<pre>" . print_r("Done?", true) . "</pre>");
             voucher_Helper::MailVouchers($vouchers, $SESSION->voucher->email_to, $SESSION->voucher->generate_single_pdfs);
             unset($SESSION->voucher);
             redirect($CFG->wwwroot . '/my', get_string('vouchers_sent', BLOCK_VOUCHER));

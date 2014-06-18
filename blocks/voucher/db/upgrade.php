@@ -57,11 +57,11 @@ function xmldb_block_voucher_upgrade($oldversion) {
     if ($oldversion < 2014052301) {
         
         // First create a new table for voucher_courses
-        $table = new xmldb_table('voucher_courses');
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('voucherid', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null);
-        $table->add_key('id', XMLDB_KEY_PRIMARY, array('id'));
+        $coursesTable = new xmldb_table('voucher_courses');
+        $coursesTable->add_field('id', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $coursesTable->add_field('voucherid', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null);
+        $coursesTable->add_field('courseid', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null);
+        $coursesTable->add_key('id', XMLDB_KEY_PRIMARY, array('id'));
         
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -81,9 +81,9 @@ function xmldb_block_voucher_upgrade($oldversion) {
         }
         
         // And drop the old field
-        $table = new xmldb_table('vouchers');
-        $field = new xmldb_field('courseid', XMLDB_TYPE_INT, '18', null, null, null, null, 'ownerid');
-        $dbman->drop_field($table, $field);
+        $vouchersTable = new xmldb_table('vouchers');
+        $courseidField = new xmldb_field('courseid', XMLDB_TYPE_INT, '18', null, null, null, null, 'ownerid');
+        $dbman->drop_field($vouchersTable, $courseidField);
         
         // Voucher savepoint reached.
         upgrade_block_savepoint(true, 2014052301, 'voucher');

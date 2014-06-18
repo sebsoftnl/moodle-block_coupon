@@ -22,42 +22,6 @@ class voucher_Db
         // static's only please!
     }
 
-//    /**
-//     * Might not be neccesary, instead we'll probably use what we've 
-//     * already got stored in the sessions.
-//     */
-//    public final static function GetVouchersByDate($date)
-//    {
-//        if (is_string($date))
-//        {
-//            $date = strtotime($date);
-//        }
-//        global $DB;
-//        $rs = $DB->get_records('vouchergen_vouchers', array('created_on' => $date));
-//        if (!$rs)
-//        {
-//            return null;
-//        }
-//        $v0 = reset($rs);
-//        $store = $DB->get_record('jumbo_franchise_store', array('userid' => $v0->issuer_id), 'establ_name, storenumber, debtor_city');
-//        if (!$store)
-//        {
-//            $store = new stdClass();
-//            $store->store_name = 'UNKNOWN';
-//            $store->store_number = '000';
-//            $store->store_city = 'UNKNOWN';
-//        }
-//        foreach ($rs as &$voucher)
-//        {
-//            $voucher->store_name = $store->establ_name;
-//            $voucher->store_number = $store->storenumber;
-//            $voucher->store_city = $store->debtor_city;
-//        }
-//        return $rs;
-//    }
-    
-    
-
     /**
      * Collect all courses connected to the provided cohort ID
      * 
@@ -337,6 +301,148 @@ class voucher_Db
         global $DB;
         
         return ($DB->update_record('vouchers', $voucher));
+    }
+    
+    public static final function GetFilteredVouchers($ownerid, $fromDate, $tillDate) {
+        global $DB;
+        
+        $params = array(
+            'ownerid'   => is_null($ownerid) ? null : $ownerid,
+            'fromdate'  => is_null($fromDate) ? null : strtotime($fromDate),
+            'tilldate'  => is_null($tillDate) ? null : strtotime($tillDate)
+        );
+        $select = self::GetReportFilters($ownerid, $fromDate, $tillDate);
+        
+        $sql = 'SELECT * FROM {vouchers}';
+        if (!empty($select)) {
+            $sql .= ' WHERE ' . implode(' AND ', $select);
+        }
+        $sql .= ' ORDER BY timecreated';
+        
+        return $DB->get_records_sql($sql, $params);
+    }
+    
+    public static final function GetCourseVouchers($ownerid, $fromDate, $tillDate) {
+        global $DB;
+        
+        $vouchers = self::GetFilteredVouchers($ownerid, $fromDate, $tillDate);
+        $courseVouchers = array();
+        foreach($vouchers as $voucher) {
+            
+            $voucherCourses = $DB->get_records('voucher_courses', array('voucherid'=>$voucher->id));
+            if (empty($voucherCourses)) {
+                continue;
+            } else {
+                $courses = array();
+                foreach($voucherCourses as $voucherCourse) {
+                    $courses[] = $voucherCourse->courseid;
+                }
+            }
+            
+            $voucher->courses = $courses;
+            $courseVouchers[] = $voucher;
+            
+        }
+        
+        return $courseVouchers;
+    }
+    
+    public static final function GetCohortVouchers($ownerid, $fromDate, $tillDate) {
+        global $DB;
+        
+        $vouchers = self::GetFilteredVouchers($ownerid, $fromDate, $tillDate);
+        $cohortVouchers = array();
+        foreach($vouchers as $voucher) {
+            
+            $voucherCohorts = $DB->get_records('voucher_cohorts', array('voucherid'=>$voucher->id));
+            if (empty($voucherCohorts)) {
+                continue;
+            } else {
+                $cohorts = array();
+                foreach($voucherCohorts as $voucherCohort) {
+                    $cohorts[] = $voucherCohort->cohortid;
+                }
+            }
+            
+            $voucher->cohorts = $cohorts;
+            $cohortVouchers[] = $voucher;
+            
+        }
+        
+        return $cohortVouchers;
+    }
+    
+    public static final function GetAllVouchers($ownerid, $fromDate, $tillDate) {
+        global $DB;
+        
+        $vouchers = self::GetFilteredVouchers($ownerid, $fromDate, $tillDate);
+        $allVouchers = array();
+        foreach($vouchers as $voucher) {
+            
+            $voucherCourses = $DB->get_records('voucher_courses', array('voucherid'=>$voucher->id));
+            if (!empty($voucherCourses)) {
+                
+                $courses = array();
+                foreach($voucherCourses as $voucherCourse) {
+                    $courses[] = $voucherCourse->courseid;
+                }
+                $voucher->courses = $courses;
+                
+            } else {
+                
+                $voucherCohorts = $DB->get_records('voucher_cohorts', array('voucherid'=>$voucher->id));
+                if (!empty($voucherCohorts)) {
+                    
+                    $cohorts = array();
+                    foreach($voucherCohorts as $cohort) {
+                        $cohorts[] = $cohort->cohortid;
+                    }
+                    $voucher->cohorts = $cohorts;
+                    
+                } else {
+                    continue;
+                }
+                
+            }
+            
+            $allVouchers[] = $voucher;
+        }
+        
+        return $allVouchers;
+    }
+    
+    public static final function GetCohortById($cohortid) {
+        global $DB;
+        
+        $cohort = $DB->get_record('cohort', array('id'=>$cohortid));
+        return $cohort;
+    }
+    
+    public static final function GetReportFilters($ownerid, $fromDate, $tillDate) {
+        
+        $select = array();
+        if (!is_null($ownerid)) {
+            $select[] = 'ownerid = :ownerid';
+        }
+        
+        if (!is_null($fromDate) || !is_null($tillDate)) {
+            
+            if (!is_null($fromDate) && !is_null($tillDate)) {
+                
+                $select[] = 'timecreated BETWEEN :fromdate AND :tilldate';
+                
+            } elseif (!is_null($fromDate)) {
+                
+                $select[] = 'timecreated > :fromdate';
+                
+            } elseif (!is_null($tillDate)) {
+                
+                $select[] = 'timecreated < :tilldate';
+                
+            }
+        }
+        
+        return $select;
     }
 
 }

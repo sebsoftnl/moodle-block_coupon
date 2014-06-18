@@ -113,7 +113,7 @@ class voucher_Helper {
                 if (isset($voucher->groups) && !empty($voucher->groups)) {
                     foreach ($voucher->groups as $group) {
 
-                        // An object for each added cohort
+                        // An object for each added group
                         $obj_group = new stdClass();
                         $obj_group->groupid = $group->groupid;
                         $obj_group->voucherid = $voucher_id;

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <style type="text/css">
+            th { text-align: left;}
+            div { margin-bottom: 1em; padding-left: 5pt }
+            div.deprecated { border: 1px solid #880000; background-color: #ff8800; font-weight: bold; }
+            div.deprecated p { color: #ff0000; font-weight: bold; }
+            div.block { border: 1px solid #999999; }
+            div.mname { font-size: 20pt; color: #666666; padding-left: 0; }
+            div.heading, p.heading { font-size: 16pt; color: #888888; }
+            th, td { padding-right: 10pt;}
+            p.service { padding-left: 10pt; }
+            th:first-letter { text-transform: uppercase; }
+            table{width:99%}
+            th.pname{width:20%}
+            th.ptype{width:10%}
+            th.popt{width:10%}
+            th.pdesc{width:59%}
+        </style>
+    </head>
+    <body>
+        <div>
+            <div>
+                <a href="?id=<?php echo $id?>&page=index">Home</a>
+            </div>
+            <div class="mname">VoucherAPI - GetVoucherReports</div>
+            <div class="block"><p>Collects reports of all vouchers.</p></div>
+            <p class="heading">Method signature</p><div class="block">GetVoucherReports([string <i>$type</i>], [int <i>ownerid</i>], [string <i>$fromDate</i>], [string <i>$tillDate</i>])</div>
+            <p class="heading">Parameters</p><div class="block"><table><thead><tr><th class="pname" style="font-weight: bold">name</th><th class="ptype">type</th><th class="popt">optional/mandatory</th><th class="pdesc">description</th></tr></thead><tbody><tr nobr="true"><td class="pname">type</td><td class="ptype">string</td><td class="ptop">optional</td><td class="pdesc">Type of vouchers to return reports from ('all', 'courses', 'cohorts').</td></tr><tr nobr="true"><td class="pname">ownerid</td><td class="ptype">int</td><td class="ptop">optional</td><td class="pdesc">Filter to return only vouchers created by user with this ID.</td></tr>
+                <tr nobr="true"><td class="pname">fromDate</td><td class="ptype">string</td><td class="ptop">optional</td><td class="pdesc">Filter to select from which date vouchers are to be returned (in american notation (yyyy-mm-dd)).</td></tr>
+                <tr nobr="true"><td class="pname">tillDate</td><td class="ptype">string</td><td class="ptop">optional</td><td class="pdesc">Filter to select until which date vouchers are to be returned (in american notation (yyyy-mm-dd)).</td></tr>
+                    </tbody></table></div>
+            <p class="heading">Return</p><div class="block"><table><tr><th>type</th><th>description</th></tr><tr><td>array</td><td>$voucher_reports</td><td>Array of generated voucher reports.</td></tr></table></div>
+            <p class="heading">Example code / usage</p><div class="block"><pre> $url = '<?php echo $CFG->wwwroot?>/blocks/voucher/view/api.php<br />?method=GetVoucherReports&type=all&ownerid=2&fromDate=2013-01-01&tillDate=2013-12-31&resultType=xml';<br /> <br /> $params = array(<br /> 'username' => '{API username}',<br /> 'password' => '{API password}'<br /> );<br /> $ch = curl_init($url);<br /> curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);<br /> curl_setopt($ch, CURLOPT_USERPWD, $params['username'].':'.$params['password']);<br /> $result = curl_exec($ch);<br /> <br /> echo htmlspecialchars($result);</pre><br /></div>
+        </div>
+    </body>
+</html>
