@@ -68,6 +68,7 @@ $string['error:voucher_amount_too_high'] = 'Please enter an amonut between {$a->
 $string['error:alternative_email_required'] = 'If you have checked \'use alternative email\' this field is required.';
 $string['error:alternative_email_invalid'] = 'If you have checked \'use alternative email\' this field should contain a valid email address.';
 $string['error:course-not-found'] = 'The course could not be found.';
+$string['error:course-vouchers-not-copied'] = 'An error occured while trying to copy voucher-courses to the new voucher_courses table. Please contact support.';
 
 $string['error:wrong_code_length'] = 'Please enter a number between 6 and 32.';
 $string['error:no_vouchers_submitted'] = 'None of your vouchers have been used yet.';
@@ -180,6 +181,9 @@ $string['view:reports:title'] = 'Report - Vouchers';
 $string['view:reports-unused:title'] = 'Report - Unused Vouchers';
 $string['view:reports-unused:heading'] = 'Report - Unused Vouchers';
 
+$string['view:api:heading'] = 'Voucher API';
+$string['view:api:title'] = 'Voucher API';
+
 $string['view:input_voucher:title'] = 'Input Voucher';
 $string['view:input_voucher:heading'] = 'Input Voucher';
 
@@ -259,22 +263,6 @@ $string['default-voucher-page-template-botright'] = '<ol>
 <li>2. Enter your voucher code in the Moodle Voucher block</li>
 <li>3. Happy learning!</li>
 </ol>';
-
-//$string['default-voucher-page-template-main'] = '
-//<p style="font-weight: bold;">Moodle Voucher</p><br/><br/>
-//<p>Hereby you receive the voucher with which you can subscribe for your course(s) in the digital learning environment.</p><br/><br/>
-//<p><table style="width:100%"><tr><td style="border:1px solid #000000; font-weight: bold; vertical-align: middle; text-align: center;">This is your voucher code: {vouchercode}</td></tr></table></p>
-//<p></p>
-//<p>Please follow the instructions below:</p><br/>
-//<ol>
-//<li>Open an internet browser</li>
-//<li>Go to the following website: <a href="{site_url}">{site_url}</a></li>
-//<li>Click - in the Voucher block - on the url "Input Voucher"</li>
-//<li>Enter the voucher code provided in this document (please note: This code is case-sensitive)</li>
-//<li>You are now subscribed and can enter your course(s).</li>
-//</ol><br/><br/>
-//<p>Happy learning!</p>';
-
 
 $string['pdf:titlename'] = 'Moodle Voucher';
 $string['pdf-meta:title'] = 'Moodle Voucher';

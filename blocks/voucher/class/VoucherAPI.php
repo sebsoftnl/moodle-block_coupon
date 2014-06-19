@@ -227,7 +227,7 @@ final class VoucherAPI
      * Builds the vouchers for the given course and returns the voucher codes.
      * 
      * @param int $amount Amount of vouchers to be generated.
-     * @param int $courseid ID of the course the vouchers will be generated for.
+     * @param int $courses Array of IDs of the courses the vouchers will be generated for.
      * @param array $groups Array of IDs of all groups the users will be added to after using a Voucher.
      * @return array $voucher_codes Array of voucher codes.
      * 
@@ -246,7 +246,7 @@ final class VoucherAPI
      * <br />
      * echo htmlspecialchars($result);</pre><br />
      */
-    static final public function RequestVoucherCodesForCourse($amount, $courseid, $groups = false){
+    static final public function RequestVoucherCodesForCourse($amount, $courses, $groups = false){
         global $CFG;
         
         require_once($CFG->dirroot . '/blocks/voucher/class/VoucherGenerator.php');
@@ -261,10 +261,14 @@ final class VoucherAPI
             
             $voucher = new stdClass();
             $voucher->ownerid = null;
-            $voucher->courseid = $courseid;
             $voucher->amount = $amount;
             $voucher->submission_code = VoucherGenerator::GenerateUniqueCode($voucher_code_length);
             $voucher_codes[] = $voucher->submission_code;
+            
+            $voucher->courses = array();
+            foreach($courses as $course) {
+                $voucher->courses[] = $course;
+            }
             
             if ($groups) {
                 

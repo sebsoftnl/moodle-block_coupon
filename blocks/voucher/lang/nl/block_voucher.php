@@ -78,6 +78,7 @@ $string['error:plugin_disabled'] = 'De cohort_sync plugin staat uit. Neem contac
 $string['error:missing_cohort'] = 'De cohort(en) die aan deze Voucher gelinkt is bestaat niet meer. Neem contact op met support.';
 $string['error:missing_group'] = 'De groep(en) die aan deze Voucher gelinkt is bestaat niet meer. Neem contact op met support.';
 $string['error:course-not-found'] = 'De cursus kon niet gevonden worden.';
+$string['error:course-vouchers-not-copied'] = 'De voucher cursussen zijn niet correct overgekopieerd naar de nieuwe voucher_courses tabel. Neem contact op met support.';
 
 $string['error:wrong_code_length'] = 'Vul een getal tussen 6 en 32 in.';
 $string['error:no_vouchers_submitted'] = 'Er zijn nog geen vouchers ingediend.';
@@ -190,6 +191,9 @@ $string['view:reports-unused:heading'] = 'Rapportage - Ongebruikte vouchers';
 
 $string['view:input_voucher:title'] = 'Voucher invoeren';
 $string['view:input_voucher:heading'] = 'Voucher invoeren';
+
+$string['view:api:heading'] = 'Voucher API';
+$string['view:api:title'] = 'Voucher API';
 
 $string['course'] = 'cursus';
 $string['cohort'] = 'cohort';

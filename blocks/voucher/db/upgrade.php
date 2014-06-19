@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @global moodle_database $DB
+ */
 function xmldb_block_voucher_upgrade($oldversion) {
     global $DB;
     
@@ -51,10 +54,7 @@ function xmldb_block_voucher_upgrade($oldversion) {
 
     }
     
-    /**
-     * @global moodle_database $DB
-     */
-    if ($oldversion < 2014052301) {
+    if ($oldversion < 2014061801) {
         
         // First create a new table for voucher_courses
         $coursesTable = new xmldb_table('voucher_courses');
@@ -63,8 +63,8 @@ function xmldb_block_voucher_upgrade($oldversion) {
         $coursesTable->add_field('courseid', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null);
         $coursesTable->add_key('id', XMLDB_KEY_PRIMARY, array('id'));
         
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
+        if (!$dbman->table_exists($coursesTable)) {
+            $dbman->create_table($coursesTable);
         }
         
         // Now fill it with data
@@ -77,16 +77,20 @@ function xmldb_block_voucher_upgrade($oldversion) {
             $voucherCourse->voucherid = $voucher->id;
             
             $DB->insert_record('voucher_courses', $voucherCourse);
-            
+        }
+        
+        $courseVouchers = $DB->get_records('voucher_courses');
+        if (count($vouchers) != count($courseVouchers)) {
+            print_error('error:course-vouchers-not-copied', BLOCK_VOUCHER);
         }
         
         // And drop the old field
         $vouchersTable = new xmldb_table('vouchers');
-        $courseidField = new xmldb_field('courseid', XMLDB_TYPE_INT, '18', null, null, null, null, 'ownerid');
+        $courseidField = new xmldb_field('courseid', XMLDB_TYPE_INTEGER, '18', null, null, null, null, 'ownerid');
         $dbman->drop_field($vouchersTable, $courseidField);
         
         // Voucher savepoint reached.
-        upgrade_block_savepoint(true, 2014052301, 'voucher');
+        upgrade_block_savepoint(true, 2014061801, 'voucher');
     }
     
     return true;
