@@ -15,8 +15,6 @@ require_once $CFG->dirroot . '/lib/pdflib.php';
 
 class voucher_PDF extends pdf {
 
-//    protected $_JUMBOYELLOW = array(252, 197, 0);
-//    protected $_voucherHeaderText = 'Moodle Voucher Avetica';
     protected $_fontPath = '';
     private $namestring;
     private $generatorDate;
@@ -102,17 +100,6 @@ class voucher_PDF extends pdf {
         return $this;
     }
 
-
-//    public function getFontPath()
-//    {
-//        return $this->_fontPath;
-//    }
-//
-//    public function setFontPath($fontPath)
-//    {
-//        $this->_fontPath = $fontPath;
-//    }
-
     public function getLogo() {
         return $this->_logo;
     }
@@ -144,14 +131,12 @@ class voucher_PDF extends pdf {
         $this->SetSubject(get_string('pdf-meta:subject', BLOCK_VOUCHER));
         $this->SetKeywords(get_string('pdf-meta:keywords', BLOCK_VOUCHER));
 
-        $this->SetHeaderMargin(50);
-        $this->SetFooterMargin(20);
-        $this->SetMargins(10, 40, 10, true); //L-T-R
+        $this->SetHeaderMargin(0);
+        $this->SetFooterMargin(0);
+        $this->SetMargins(0,0,0, true); //L-T-R
 
-        $this->SetAutoPageBreak(TRUE, 15);
+        $this->SetAutoPageBreak(false, 0);
 
-        //$this->setFontPath($CFG->dirroot . '/blocks/jumbobase/fonts/');
-        //$this->_loadFonts();
         $fn = BLOCK_VOUCHER_LOGOFILE;
         if (!file_exists($fn)) {
             $fn = BLOCK_VOUCHER_DIRROOT . 'pix/Logo.png';
@@ -161,76 +146,19 @@ class voucher_PDF extends pdf {
         }
     }
 
-//    function _loadFonts()
-//    {
-//        $fonts = array(
-//            'trebuchetms' => array('', 'trebuchetms.php'),
-//            'trebuchetmsB' => array('B', 'trebuchetmsb.php'),
-//            'trebuchetmsBI' => array('BI', 'trebuchetmsbi.php'),
-//            'trebuchetmsI' => array('I', 'trebuchetmsi.php'),
-//            'jumbosans5' => array('', 'jthsab5_.php'),
-//            'jumbosans5I' => array('I', 'jthsab5i.php'),
-//            'jumbosans7' => array('', 'jthsab7_.php'),
-//            'jumbosans7I' => array('I', 'jthsab7i.php'),
-//            'jumbosans9' => array('', 'jthsab9_.php'),
-//            'jumbosans9I' => array('I', 'jthsab9i.php'),
-//        );
-//
-//        foreach ($fonts as $family => $font)
-//        {
-//            $this->addFont($family, $font[0], $this->_fontPath . $font[1]);
-//        }
-//    }
-
     public function setGeneratorDate($string) {
         $this->generatorDate = $string;
     }
 
     function header() {
 
-        // this is just guessing about SVG placement (i hope this will work everywhere)
-        $this->Image($this->_logo, 0, 0, 850, 1000, 'png', '', 'C', false, 300, '', false, false, 0, false, false, false);
-        
-        // header text
-        $this->SetXY(0, 5);
-        $this->SetFont('helvetica', '', 24);
+        $this->Image($this->_logo, 0, 0, 0, 0, 'png', '', '', 2, 96, '', false, false, 1, true, false, true);
     }
 
     function footer() {
-        // Diplay footer / page number
-//        if (empty($this->pagegroups))
-//        {
-//            $pagenumtxt = $this->l['w_page'] . ' ' . $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages();
-//        }
-//        else
-//        {
-//            $pagenumtxt = $this->l['w_page'] . ' ' . $this->getPageNumGroupAlias() . ' / ' . $this->getPageGroupAlias();
-//        }
-//        $this->SetFont('helvetica', '', 8);
-//        $cur_y = $this->y;
-//        $this->SetTextColor(0, 0, 0);
-//
-//        $this->SetY($cur_y);
-//        //Print page number
-//        if ($this->getRTL())
-//        {
-//            $this->SetX($this->original_rMargin);
-//            $this->Write(0, 0, $pagenumtxt, 'T', 0, 'L');
-//        }
-//        else
-//        {
-//            $this->SetXY(15, $this->h - 10);
-//            $this->Write(0, $pagenumtxt, '', 0, 'C');
-//        }
-        //set style for cell border
-        $line_width = 0.85 / $this->k;
 
-        $style = $this->SetLineStyle(array('width' => $line_width, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0,0,0)));
-//        $style = $this->SetLineStyle(array('width' => $line_width, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $this->_JUMBOYELLOW));
+        return false;
 
-        $ml = $this->lMargin;
-        $w = $this->w - $ml;
-        $this->Line($ml, $this->h - 20, $w, $this->h - 20, $style);
     }
 
     function FrontPage() {
@@ -254,11 +182,14 @@ class voucher_PDF extends pdf {
         $this->FrontPage();
         $this->_writeVoucherPages();
         $this->_isRendered = true;
+        
         return true;
     }
 
     protected function _writeVoucherPages() {
+        
         foreach ($this->_vouchers as $voucher) {
+            
             $txt_main = $this->_compileTemplateMain($voucher);
             $txt_botleft = $this->_compileTemplateBotLeft();
             $txt_botright = $this->_compileTemplateBotRight();
@@ -266,11 +197,10 @@ class voucher_PDF extends pdf {
             $this->startPage();
             $this->SetFont('helvetica', '', 10);
             
-            $this->MultiCell(150, 150, $txt_main, null, 'L', false, 1, 22, 78, true, 0, true);
-            $this->MultiCell(80, 100, $txt_botleft, null, 'L', false, 2, 15, 168, true, 0, true);
-            $this->MultiCell(80, 100, $txt_botright, null, 'L', false, 2, 107, 168, true, 0, true);
+            $this->MultiCell(150, 150, $txt_main, false, 'L', false, 1, 22, 100, true, 0, true);
+            $this->MultiCell(80, 100, $txt_botleft, false, 'L', false, 2, 15, 210, true, 0, true);
+            $this->MultiCell(80, 100, $txt_botright, false, 'L', false, 2, 109, 210, true, 0, true);
             
-            //$this->writeHTML($html);
             $this->endPage();
         }
     }
