@@ -1,0 +1,83 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Form implementation to let a user input a coupon code.
+ *
+ * File         validator.php
+ * Encoding     UTF-8
+ *
+ * @package     block_coupon
+ *
+ * @copyright   Sebsoft.nl
+ * @author      Menno de Ridder <menno@sebsoft.nl>
+ * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace block_coupon\forms\coupon;
+require_once($CFG->libdir . '/formslib.php');
+
+/**
+ * block_coupon\forms\coupon\validator
+ *
+ * @package     block_coupon
+ *
+ * @copyright   Sebsoft.nl
+ * @author      Menno de Ridder <menno@sebsoft.nl>
+ * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class validator extends \moodleform {
+
+    /**
+     * form definition
+     */
+    public function definition() {
+        $mform = & $this->_form;
+        $mform->addElement('header', 'header', get_string('heading:input_coupon', 'block_coupon'));
+        // All we need is the coupon code.
+        $mform->addElement('text', 'coupon_code', get_string('label:coupon_code', 'block_coupon'));
+        $mform->addRule('coupon_code', get_string('error:required', 'block_coupon'), 'required', null, 'client');
+        $mform->addRule('coupon_code', get_string('error:required', 'block_coupon'), 'required', null, 'server');
+        $mform->setType('coupon_code', PARAM_RAW);
+        $mform->addHelpButton('coupon_code', 'label:coupon_code', 'block_coupon');
+
+        $this->add_action_buttons(false, get_string('button:submit_coupon_code', 'block_coupon'));
+    }
+
+    /**
+     * Perform validation.
+     *
+     * @param array $data array of ("fieldname"=>value) of submitted data
+     * @param array $files array of uploaded files "element_name"=>tmp_file_path
+     * @return array of "element_name"=>"error_description" if there are errors,
+     *         or an empty array if everything is OK (true allowed for backwards compatibility too).
+     */
+    public function validation($data, $files) {
+        global $DB;
+        $errors = parent::validation($data, $files);
+
+        if (!$coupon = $DB->get_record('block_coupon', array('submission_code' => $data['coupon_code']))) {
+            $errors['coupon_code'] = get_string('error:invalid_coupon_code', 'block_coupon');
+        } else if (!is_null($coupon->userid)) {
+            $errors['coupon_code'] = get_string('error:coupon_already_used', 'block_coupon');
+        }
+
+        return $errors;
+    }
+
+}
