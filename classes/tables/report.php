@@ -15,11 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * this file contains the tle to display coupons
+ * this file contains the tle to display coupon reports
  *
- * File: logtable.php
- * Encoding: UTF-8
+ * File         report.php
+ * Encoding     UTF-8
+ *
+ * @package     block_coupon
+ *
  * @copyright   Sebsoft.nl
+ * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
