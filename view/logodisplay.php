@@ -35,7 +35,7 @@ $PAGE->set_url($url);
 
 require_login(null, false);
 
-_imgdisplay(helper::get_coupon_logo());
+_imgdisplay(block_coupon\helper::get_coupon_logo());
 
 /**
  * display image
