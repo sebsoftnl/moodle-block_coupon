@@ -164,8 +164,10 @@ $string['button:submit_coupon_code'] = 'Submit Coupon';
 // View strings.
 $string['view:generate_coupon:title'] = 'Generate Coupon';
 $string['view:generate_coupon:heading'] = 'Generate Coupon';
-$string['view:reports:heading'] = 'Report - Coupons';
-$string['view:reports:title'] = 'Report - Coupons';
+$string['view:reports:heading'] = 'Report - Coupon based progress';
+$string['view:reports:title'] = 'Report - Coupon based progress';
+$string['view:reports-used:title'] = 'Report - Used Coupons';
+$string['view:reports-used:heading'] = 'Report - Used Coupons';
 $string['view:reports-unused:title'] = 'Report - Unused Coupons';
 $string['view:reports-unused:heading'] = 'Report - Unused Coupons';
 $string['view:api:heading'] = 'Coupon API';
@@ -231,17 +233,19 @@ $string['label:enrolment_period'] = 'Enrolment period';
 $string['label:enrolment_period_help'] = 'Period (in days) the user will be enrolled in the courses. If set to 0 no end will be issued.';
 $string['label:date_send_coupons'] = 'Send date';
 $string['label:date_send_coupons_help'] = 'Date the coupons will be send to the recipient(s).';
-$string['label:showform'] = 'Generate using';
-$string['showform-csv'] = 'csv';
-$string['showform-manual'] = 'manual';
-$string['showform-amount'] = 'amount';
+$string['label:showform'] = 'Generator options';
+$string['showform-csv'] = 'I want to create coupons using a CSV with recipients';
+$string['showform-manual'] = 'I want to manually configure the recipients';
+$string['showform-amount'] = 'I want to create an arbitrary amount of coupons';
 $string['error:recipients-max-exceeded'] = 'Your csv file has exceeded the maximum of 10.000 coupon users. Please limit it.';
 $string['error:recipients-columns-missing'] = 'Uw bestand kon niet gevalideerd worden. Controleer svp of de juiste kolommen en scheidingsteken gebruikt zijn.';
 $string['error:recipients-invalid'] = 'Uw bestand kon niet gevalideerd worden. Controleer svp of de juiste kolommen en scheidingsteken gebruikt zijn.';
 $string['error:recipients-empty'] = 'Please enter at least one user.';
 $string['error:recipients-email-invalid'] = 'The email address {$a->email} is invalid. Please fix it in the csv file.';
-$string['coupon_recipients_desc'] = 'The following columns are required to be present, regardless of order: E-mail, Gender, Name';
-$string['coupon_recipients_manual_desc'] = 'The following columns are required, regardless of order: E-mail, Gender, Name';
+$string['coupon_recipients_desc'] = 'The following columns are required to be present in the uploaded CSV, regardless of order: E-mail, Gender, Name.<br/>
+For every given person in the CSV, a coupon is generated and emailed to the user.<br/>
+Please take note these coupons will be created a-synchronous by a background task; <i>not</i> instantly.
+This is because the process of generating coupons may be quite lengthy, especially for a large amount of users.';
 $string['report:download-excel'] = 'Download unused coupons';
 
 $string['page:generate_coupon.php:title'] = 'Generate coupons';
@@ -264,8 +268,10 @@ $string['th:for_user_email'] = 'Planned for';
 $string['tab:wzcoupons'] = 'Generate coupon(s)';
 $string['tab:wzcouponimage'] = 'Template image';
 $string['tab:apidocs'] = 'API Docs';
-$string['tab:report'] = 'Report';
+$string['tab:report'] = 'Progress report';
 $string['tab:unused'] = 'Unused coupons';
+$string['tab:used'] = 'Used coupons';
+$string['task:sendcoupons'] = 'Send scheduled coupons';
 
 // Mails.
 $string['confirm_coupons_sent_subject'] = 'All Coupons have been sent';

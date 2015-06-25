@@ -1,0 +1,11 @@
+Version 2015010102 (Release 2.7.0 (build 2015010102))
+* Added missing db/tasks.php
+* Limited applicable_formats: block can only be used on main site page and "my" dashboard view
+* Improved renderer (more use of html_writer)
+* Fixed default setting when starting coupon generator
+* Included settings file in /classes/task/sendcoupons.php (gave NOTICE)
+* Fixed a few small (non critical) bugs
+* Added generatoroptions and generator for cleaner code to generate coupons.
+
+* Thanks to, a.o., David Mudrák for raising issues leading to this version.
+-----

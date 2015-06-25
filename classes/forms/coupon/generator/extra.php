@@ -48,14 +48,13 @@ class extra extends \moodleform {
      * form definition
      */
     public function definition() {
-        global $CFG, $DB, $SESSION;
-
+        global $SESSION;
         $mform = & $this->_form;
         $mform->addElement('textarea', 'coupon_recipients',
                 get_string("label:coupon_recipients", 'block_coupon'), 'rows="20" cols="50"');
         $mform->addRule('coupon_recipients', get_string('required'), 'required', null, 'client');
         $mform->addHelpButton('coupon_recipients', 'label:coupon_recipients_txt', 'block_coupon');
-        $mform->setDefault('coupon_recipients', $SESSION->coupon->csv_content);
+        $mform->setDefault('coupon_recipients', $SESSION->generatoroptions->csvrecipients);
 
         $this->add_action_buttons(true, get_string('button:save', 'block_coupon'));
     }

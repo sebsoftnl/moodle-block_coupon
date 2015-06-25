@@ -61,13 +61,13 @@ class confirmcourse extends \moodleform {
         // Determine which type of settings we'll use.
         $radioarray = array();
         $radioarray[] = & $mform->createElement('radio', 'showform', '',
-                get_string('showform-csv', 'block_coupon'), 'csv', array('onchange' => 'showHide(this.value)'));
-        $radioarray[] = & $mform->createElement('radio', 'showform', '',
                 get_string('showform-amount', 'block_coupon'), 'amount', array('onchange' => 'showHide(this.value)'));
         $radioarray[] = & $mform->createElement('radio', 'showform', '',
+                get_string('showform-csv', 'block_coupon'), 'csv', array('onchange' => 'showHide(this.value)'));
+        $radioarray[] = & $mform->createElement('radio', 'showform', '',
                 get_string('showform-manual', 'block_coupon'), 'manual', array('onchange' => 'showHide(this.value)'));
-        $mform->addGroup($radioarray, 'radioar', get_string('label:showform', 'block_coupon'), array(' '), false);
-        $mform->setDefault('showform', 'csv');
+        $mform->addGroup($radioarray, 'radioar', get_string('label:showform', 'block_coupon'), array('<br/>'), false);
+        $mform->setDefault('showform', 'amount');
 
         // Send coupons based on CSV upload.
         $mform->addElement('header', 'csvForm', get_string('heading:csvForm', 'block_coupon'));
@@ -76,9 +76,8 @@ class confirmcourse extends \moodleform {
         $urldownloadcsv = new \moodle_url('/blocks/coupon/sample.csv');
         $mform->addElement('filepicker', 'coupon_recipients',
                 get_string('label:coupon_recipients', 'block_coupon'), null, array('accepted_types' => 'csv'));
-        $mform->addElement('static', 'coupon_recipients_desc', '',
-                get_string('coupon_recipients_desc', 'block_coupon'));
         $mform->addHelpButton('coupon_recipients', 'label:coupon_recipients', 'block_coupon');
+        $mform->addElement('static', 'coupon_recipients_desc', '', get_string('coupon_recipients_desc', 'block_coupon'));
         $mform->addElement('static', 'sample_csv', '', '<a href="' . $urldownloadcsv
                 . '" target="_blank">' . get_string('download-sample-csv', 'block_coupon') . '</a>');
 
@@ -97,18 +96,14 @@ class confirmcourse extends \moodleform {
         // Send coupons based on CSV upload.
         $mform->addElement('header', 'manualForm', get_string('heading:manualForm', 'block_coupon'));
 
-        // Rextarea recipients.
-        $arrelements = array();
-        $arrelements[] = $mform->createElement('textarea', 'coupon_recipients_manual',
-                get_string("label:coupon_recipients", 'block_coupon'), 'rows="20" cols="50"');
-        $arrelements[] = $mform->createElement('static', 'coupon_recipients_manual_desc', '',
-                get_string('coupon_recipients_manual_desc', 'block_coupon'));
-        $mform->addGroup($arrelements, 'group_coupon_recipients_manual',
-                get_string("label:coupon_recipients", 'block_coupon'), ' ', false);
-        $mform->addGroupRule('group_coupon_recipients_manual',
-                array('coupon_recipients_manual' => array(array(get_string('required'), 'required'))));
-        $mform->addHelpButton('group_coupon_recipients_manual', 'label:coupon_recipients_txt', 'block_coupon');
+        // Textarea recipients.
+        $mform->addElement('textarea', 'coupon_recipients_manual',
+                get_string("label:coupon_recipients", 'block_coupon'), 'rows="10" cols="100"');
+        $mform->addRule('coupon_recipients_manual', get_string('required'), 'required', null, 'client');
+        $mform->addHelpButton('coupon_recipients_manual', 'label:coupon_recipients_txt', 'block_coupon');
         $mform->setDefault('coupon_recipients_manual', 'E-mail,Gender,Name');
+
+        $mform->addElement('static', 'coupon_recipients_desc', '', get_string('coupon_recipients_desc', 'block_coupon'));
 
         // Editable email message.
         $mform->addElement('editor', 'email_body_manual', get_string('label:email_body', 'block_coupon'), array('noclean' => 1));
@@ -172,7 +167,7 @@ class confirmcourse extends \moodleform {
 
         // Course fullname.
         $headingstr = array();
-        foreach ($SESSION->coupon->courses as $courseid) {
+        foreach ($SESSION->generatoroptions->courses as $courseid) {
             if (!$course = $DB->get_record('course', array('id' => $courseid))) {
                 print_error('error:course-not-found', 'block_coupon');
             }
@@ -182,9 +177,9 @@ class confirmcourse extends \moodleform {
                 get_string('label:selected_courses', 'block_coupon'), implode('<br/>', $headingstr));
 
         // Selected groups.
-        if (isset($SESSION->coupon->groups)) {
+        if (isset($SESSION->generatoroptions->groups)) {
             $mform->addElement('static', 'coupon_groups', get_string('label:selected_groups', 'block_coupon'), '');
-            $groups = $DB->get_records_list('groups', 'id', $SESSION->coupon->cohorts);
+            $groups = $DB->get_records_list('groups', 'id', $SESSION->generatoroptions->cohorts);
             foreach ($groups as $group) {
                 $mform->addElement('static', 'coupon_groups', '', $group->name);
             }
@@ -225,6 +220,8 @@ class confirmcourse extends \moodleform {
             }
             </script>
         ");
+
+        // Submit button.
         $this->add_action_buttons(true, get_string('button:save', 'block_coupon'));
     }
 
@@ -293,15 +290,14 @@ class confirmcourse extends \moodleform {
         global $USER;
 
         $element = $this->_form->getElement($elname);
-
-        if ($element instanceof MoodleQuickForm_filepicker || $element instanceof MoodleQuickForm_filemanager) {
+        if ($element instanceof \MoodleQuickForm_filepicker || $element instanceof \MoodleQuickForm_filemanager) {
             $values = $this->_form->exportValues($elname);
             if (empty($values[$elname])) {
                 return false;
             }
             $draftid = $values[$elname];
             $fs = get_file_storage();
-            $context = context_user::instance($USER->id);
+            $context = \context_user::instance($USER->id);
             if (!$files = $fs->get_area_files($context->id, 'user', 'draft', $draftid, 'id DESC', false)) {
                 return false;
             }

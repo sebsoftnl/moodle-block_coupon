@@ -47,7 +47,6 @@ class imageupload extends \moodleform {
      * form definition
      */
     public function definition() {
-        global $CFG;
         $mform = & $this->_form;
 
         $mform->addElement('header', 'header', get_string('heading:info', 'block_coupon'));
@@ -58,27 +57,13 @@ class imageupload extends \moodleform {
 
         $mform->addElement('header', 'header', get_string('heading:imageupload', 'block_coupon'));
 
-        $htmlimage = '
-        <div class="fitem">
-            <div class="fitemtitle">
-                <div class="fstaticlabel">
-                    <label>' . get_string('label:current_image', 'block_coupon') . '</label>
-                </div>
-            </div>
-            <div class="felement fstatic">
-                <img src="' . $CFG->wwwroot . '/blocks/coupon/view/logodisplay.php' . '" width="210" height="297" title="' .
-                get_string('label:current_image', 'block_coupon') . '" />
-            </div>
-        </div>';
-
-        $mform->addElement('html', $htmlimage);
-
-        // Add elements.
-        $attributes = array(
-            'accepted_types' => array('.png', '.jpg')
-        );
+        $url = new \moodle_url('/blocks/coupon/view/logodisplay.php');
+        $display = '<img src="' . $url . '" width="210" height="297" title="' .
+                get_string('label:current_image', 'block_coupon') . '" />';
+        $mform->addElement('static', 'logodisplay', get_string('label:current_image', 'block_coupon'), $display);
 
         // Add IMAGE uploader.
+        $attributes = array('accepted_types' => array('.png', '.jpg'));
         $mform->addElement('filepicker', 'userfile', get_string('file'), null, $attributes);
         $mform->addRule('userfile', 'required', 'required', null, 'client');
 

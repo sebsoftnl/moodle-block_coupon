@@ -42,6 +42,18 @@ require_once($CFG->libdir . '/tablelib.php');
 class coupons extends \table_sql {
 
     /**
+     * Filter to display used coupons only
+     */
+    const USED = 1;
+    /**
+     * Filter to display unused coupons only
+     */
+    const UNUSED = 2;
+    /**
+     * Filter to display all coupons
+     */
+    const ALL = 3;
+    /**
      * Do we render the history or the current status?
      *
      * @var int
@@ -49,14 +61,23 @@ class coupons extends \table_sql {
     protected $ownerid;
 
     /**
+     * Filter for coupon display
+     *
+     * @var int
+     */
+    protected $filter;
+
+    /**
      * Create a new instance of the logtable
      *
      * @param int $ownerid if set, display only coupons from given owner
+     * @param int $filter table filter
      */
-    public function __construct($ownerid = null) {
+    public function __construct($ownerid = null, $filter = 3) {
         global $USER;
         parent::__construct(__CLASS__. '-' . $USER->id . '-' . ((int)$ownerid));
         $this->ownerid = (int)$ownerid;
+        $this->filter = (int)$filter;
         $this->sortable(true, 'c.senddate', 'DESC');
     }
 
@@ -88,13 +109,24 @@ class coupons extends \table_sql {
         // Generate SQL.
         $fields = 'c.*, ' . get_all_user_name_fields(true, 'u');
         $from = '{block_coupon} c LEFT JOIN {user} u ON c.ownerid=u.id';
-        $where = 'c.userid IS NULL';
+        $where = array();
         $params = array();
         if ($this->ownerid > 0) {
-            $where .= ' AND c.ownerid = ?';
+            $where[] = 'c.ownerid = ?';
             $params[] = $this->ownerid;
         }
-        parent::set_sql($fields, $from, $where, $params);
+        switch ($this->filter) {
+            case self::USED:
+                $where[] = 'c.userid IS NOT NULL AND c.userid <> 0';
+                break;
+            case self::UNUSED:
+                $where[] = 'c.userid IS NULL';
+                break;
+            case self::ALL:
+                // Has no extra where clause.
+                break;
+        }
+        parent::set_sql($fields, $from, implode(' AND ', $where), $params);
         $this->out($pagesize, $useinitialsbar);
     }
 

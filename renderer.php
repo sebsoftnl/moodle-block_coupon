@@ -28,6 +28,7 @@
  */
 
 use block_coupon\helper;
+use block_coupon\coupon\generatoroptions;
 use block_coupon\coupon\generator;
 use block_coupon\exception;
 
@@ -49,7 +50,6 @@ class block_coupon_renderer extends plugin_renderer_base {
      * @return string
      */
     public function page_uploadimage($id) {
-        global $CFG;
         $out = '';
         // Make sure the moodle editmode is off.
         helper::force_no_editing_mode();
@@ -79,12 +79,12 @@ class block_coupon_renderer extends plugin_renderer_base {
                     get_string('success:uploadimage', 'block_coupon'));
         } else {
             $out .= $this->header();
-            $out .= '<div class="block-coupon-container">';
-            $out .= '<div>';
+            $out .= html_writer::start_div('block-coupon-container');
+            $out .= html_writer::start_div();
             $out .= $this->get_tabs($this->page->context, 'wzcouponimage', array('id' => $id));
-            $out .= '</div>';
+            $out .= html_writer::end_div();
             $out .= $mform->render();
-            $out .= '</div>';
+            $out .= html_writer::end_div();
             $out .= $this->footer();
         }
         return $out;
@@ -98,8 +98,33 @@ class block_coupon_renderer extends plugin_renderer_base {
      * @return string
      */
     public function page_unused_coupons($id, $ownerid = null) {
+        $filter = \block_coupon\tables\coupons::UNUSED;
+        return $this->page_coupons($id, $filter, $ownerid);
+    }
+
+    /**
+     * Render used coupon page (including header / footer).
+     *
+     * @param int $id block instance id
+     * @param int $ownerid the owner id of the coupons. Set 0 or NULL to see all.
+     * @return string
+     */
+    public function page_used_coupons($id, $ownerid = null) {
+        $filter = \block_coupon\tables\coupons::USED;
+        return $this->page_coupons($id, $filter, $ownerid);
+    }
+
+    /**
+     * Render coupon page (including header / footer).
+     *
+     * @param int $id block instance id
+     * @param int $filter table filter
+     * @param int $ownerid the owner id of the coupons. Set 0 or NULL to see all.
+     * @return string
+     */
+    protected function page_coupons($id, $filter, $ownerid = null) {
         // Table instance.
-        $table = new \block_coupon\tables\coupons($ownerid);
+        $table = new \block_coupon\tables\coupons($ownerid, $filter);
         $table->baseurl = $this->page->url;
         $table->is_downloadable(true);
         $table->show_download_buttons_at(array(TABLE_P_BOTTOM, TABLE_P_TOP));
@@ -110,16 +135,26 @@ class block_coupon_renderer extends plugin_renderer_base {
             exit;
         }
 
+        $selectedtab = '';
+        switch ($filter) {
+            case \block_coupon\tables\coupons::UNUSED:
+                $selectedtab = 'cpunused';
+                break;
+            case \block_coupon\tables\coupons::USED:
+                $selectedtab = 'cpused';
+                break;
+        }
+
         $out = '';
         $out .= $this->header();
-        $out .= '<div class="block-coupon-container">';
-        $out .= '<div>';
-        $out .= $this->get_tabs($this->page->context, 'cpunused', array('id' => $id));
-        $out .= '</div>';
+        $out .= html_writer::start_div('block-coupon-container');
+        $out .= html_writer::start_div();
+        $out .= $this->get_tabs($this->page->context, $selectedtab, array('id' => $id));
+        $out .= html_writer::end_div();
         ob_start();
         $table->render(25);
         $out .= ob_get_clean();
-        $out .= '</div>';
+        $out .= html_writer::end_div();
         $out .= $this->footer();
         return $out;
     }
@@ -146,14 +181,14 @@ class block_coupon_renderer extends plugin_renderer_base {
 
         $out = '';
         $out .= $this->header();
-        $out .= '<div class="block-coupon-container">';
-        $out .= '<div>';
+        $out .= html_writer::start_div('block-coupon-container');
+        $out .= html_writer::start_div();
         $out .= $this->get_tabs($this->page->context, 'cpreport', array('id' => $id));
-        $out .= '</div>';
+        $out .= html_writer::end_div();
         ob_start();
         $table->render(25);
         $out .= ob_get_clean();
-        $out .= '</div>';
+        $out .= html_writer::end_div();
         $out .= $this->footer();
         return $out;
     }
@@ -164,37 +199,29 @@ class block_coupon_renderer extends plugin_renderer_base {
      * @return string
      */
     public function page_coupon_generator() {
-        global $SESSION;
+        global $USER;
         // Create form.
         $mform = new block_coupon\forms\coupon\generator($this->page->url);
-        $out = '';
 
         if ($mform->is_cancelled()) {
-            unset($SESSION->coupon);
+            generatoroptions::clean_session();
             redirect(new moodle_url('/course/view.php', array('id' => $this->page->course->id)));
         } else if ($data = $mform->get_data()) {
-            // Cache form input.
-            $SESSION->coupon = new stdClass();
-            $SESSION->coupon->type = ($data->coupon_type['type'] == 0) ? 'course' : 'cohorts';
-
+            // Load generator options.
+            $generatoroptions = generatoroptions::from_session();
+            $generatoroptions->ownerid = $USER->id;
+            $generatoroptions->type = ($data->coupon_type['type'] == 0) ? 'course' : 'cohorts';
+            // Serialize generatoroptions to session.
+            $generatoroptions->to_session();
             // And redirect user to next page.
             $params = array('id' => $this->page->url->param('id'));
             $redirect = new moodle_url('/blocks/coupon/view/generate_coupon_step_two.php', $params);
             redirect($redirect);
-        } else {
-            if (isset($SESSION->coupon)) {
-                unset($SESSION->coupon);
-            }
-
-            $out .= $this->header();
-            $out .= '<div class="block-coupon-container">';
-            $out .= '<div>';
-            $out .= $this->get_tabs($this->page->context, 'wzcoupons', array('id' => $this->page->url->param('id')));
-            $out .= '</div>';
-            $out .= $mform->render();
-            $out .= '</div>';
-            $out .= $this->footer();
         }
+
+        generatoroptions::clean_session();
+        $out = '';
+        $out .= $this->get_coupon_form_page($mform);
         return $out;
     }
 
@@ -204,26 +231,25 @@ class block_coupon_renderer extends plugin_renderer_base {
      * @return string
      */
     public function page_coupon_generator_step2() {
-        global $SESSION, $DB;
+        global $DB;
         // Make sure sessions are still alive.
-        if (!isset($SESSION->coupon)) {
-            print_error("error:sessions-expired", 'block_coupon');
-        }
+        generatoroptions::validate_session();
+        // Load options.
+        $generatoroptions = generatoroptions::from_session();
 
         // Depending on our data we'll get the right form.
-        if ($SESSION->coupon->type == 'course') {
+        if ($generatoroptions->type == generatoroptions::COURSE) {
             $mform = new \block_coupon\forms\coupon\generator\selectcourse($this->page->url);
         } else {
             $mform = new \block_coupon\forms\coupon\generator\selectcohorts($this->page->url);
         }
-        $out = '';
 
         if ($mform->is_cancelled()) {
-            unset($SESSION->coupon);
+            generatoroptions::clean_session();
             redirect(new moodle_url('/course/view.php', array('id' => $this->page->course->id)));
         } else if ($data = $mform->get_data()) {
-            if ($SESSION->coupon->type == 'course') {
-                $SESSION->coupon->courses = $data->coupon_courses;
+            if ($generatoroptions->type == generatoroptions::COURSE) {
+                $generatoroptions->courses = $data->coupon_courses;
 
                 $hasgroups = false;
                 foreach ($data->coupon_courses as $courseid) {
@@ -235,23 +261,20 @@ class block_coupon_renderer extends plugin_renderer_base {
 
                 $nextpage = ($hasgroups) ? 'generate_coupon_step_three' : $nextpage = 'generate_coupon_step_four';
             } else {
-                $SESSION->coupon->cohorts = $data->coupon_cohorts;
+                $generatoroptions->cohorts = $data->coupon_cohorts;
                 $nextpage = 'generate_coupon_step_three';
             }
+
+            // Serialize generatoroptions to session.
+            $generatoroptions->to_session();
 
             $params = array('id' => $this->page->url->param('id'));
             $url = new moodle_url('/blocks/coupon/view/' . $nextpage . '.php', $params);
             redirect($url);
-        } else {
-            $out .= $this->header();
-            $out .= '<div class="block-coupon-container">';
-            $out .= '<div>';
-            $out .= $this->get_tabs($this->page->context, 'wzcoupons', array('id' => $this->page->url->param('id')));
-            $out .= '</div>';
-            $out .= $mform->render();
-            $out .= '</div>';
-            $out .= $this->footer();
         }
+
+        $out = '';
+        $out .= $this->get_coupon_form_page($mform);
         return $out;
     }
 
@@ -261,29 +284,28 @@ class block_coupon_renderer extends plugin_renderer_base {
      * @return string
      */
     public function page_coupon_generator_step3() {
-        global $SESSION, $DB;
+        global $DB;
         // Make sure sessions are still alive.
-        if (!isset($SESSION->coupon)) {
-            print_error("error:sessions-expired", 'block_coupon');
-        }
+        generatoroptions::validate_session();
+        // Load options.
+        $generatoroptions = generatoroptions::from_session();
 
         // Depending on our data we'll get the right form.
-        if ($SESSION->coupon->type == 'course') {
+        if ($generatoroptions->type == generatoroptions::COURSE) {
             $mform = new \block_coupon\forms\coupon\generator\selectgroups($this->page->url);
         } else {
             $mform = new block_coupon\forms\coupon\generator\selectcohortcourses($this->page->url);
         }
-        $out = '';
 
         if ($mform->is_cancelled()) {
-            unset($SESSION->coupon);
+            generatoroptions::clean_session();
             redirect(new moodle_url('/course/view.php', array('id' => $this->page->course->id)));
         } else if ($data = $mform->get_data()) {
             // Save param, its only about course or cohorts.
-            if ($SESSION->coupon->type == 'course') {
+            if ($generatoroptions->type == generatoroptions::COURSE) {
                 // Add selected groups to session.
                 if (isset($data->coupon_groups)) {
-                    $SESSION->coupon->groups = $data->coupon_groups;
+                    $generatoroptions->groups = $data->coupon_groups;
                 }
             } else {
                 // Check if a course is selected.
@@ -302,19 +324,17 @@ class block_coupon_renderer extends plugin_renderer_base {
                     }
                 }
             }
+
+            // Serialize generatoroptions to session.
+            $generatoroptions->to_session();
+
             $params = array('id' => $this->page->url->param('id'));
             $url = new moodle_url('/blocks/coupon/view/generate_coupon_step_four.php', $params);
             redirect($url);
-        } else {
-            $out .= $this->header();
-            $out .= '<div class="block-coupon-container">';
-            $out .= '<div>';
-            $out .= $this->get_tabs($this->page->context, 'wzcoupons', array('id' => $this->page->url->param('id')));
-            $out .= '</div>';
-            $out .= $mform->render();
-            $out .= '</div>';
-            $out .= $this->footer();
         }
+
+        $out = '';
+        $out .= $this->get_coupon_form_page($mform);
         return $out;
     }
 
@@ -324,114 +344,62 @@ class block_coupon_renderer extends plugin_renderer_base {
      * @return string
      */
     public function page_coupon_generator_step4() {
-        global $SESSION, $DB, $CFG, $USER;
+        global $DB, $USER;
         // Make sure sessions are still alive.
-        if (!isset($SESSION->coupon)) {
-            print_error("error:sessions-expired", 'block_coupon');
-        }
+        generatoroptions::validate_session();
+        // Load options.
+        $generatoroptions = generatoroptions::from_session();
 
         // Depending on our data we'll get the right form.
-        if ($SESSION->coupon->type == 'course') {
+        if ($generatoroptions->type == generatoroptions::COURSE) {
             $mform = new \block_coupon\forms\coupon\generator\confirmcourse($this->page->url);
         } else {
             $mform = new \block_coupon\forms\coupon\generator\confirmcohorts($this->page->url);
         }
-        $out = '';
 
         if ($mform->is_cancelled()) {
-            unset($SESSION->coupon);
+            generatoroptions::clean_session();
             redirect(new moodle_url('/course/view.php', array('id' => $this->page->course->id)));
         } else if ($data = $mform->get_data()) {
             // These settings are always the same.
-            $SESSION->coupon->showform = $data->showform;
-            $SESSION->coupon->redirect_url = (empty($data->redirect_url)) ? null : $data->redirect_url;
-            $SESSION->coupon->enrolperiod = (empty($data->enrolment_period)) ? null : $data->enrolment_period;
+            $generatoroptions->redirecturl = (empty($data->redirect_url)) ? null : $data->redirect_url;
+            $generatoroptions->enrolperiod = (empty($data->enrolment_period)) ? null : $data->enrolment_period;
 
             // If we're generating based on csv we'll redirect first to confirm the csv input.
             if ($data->showform == 'csv') {
 
-                $SESSION->coupon->date_send_coupons = $data->date_send_coupons;
-                $SESSION->coupon->csv_content = $mform->get_file_content('coupon_recipients');
-                $SESSION->coupon->email_body = $data->email_body['text'];
+                $generatoroptions->senddate = $data->date_send_coupons;
+                $generatoroptions->csvrecipients = $mform->get_file_content('coupon_recipients');
+                $generatoroptions->emailbody = $data->email_body['text'];
+
+                // Serialize generatoroptions to session.
+                $generatoroptions->to_session();
+
                 // To the extra step.
                 $params = array('id' => $this->page->url->param('id'));
                 $url = new moodle_url('/blocks/coupon/view/generate_coupon_step_five.php', $params);
                 redirect($url);
             }
 
-            // Otherwise we'll be generating coupons right away.
-            $couponcodelength = get_config('block_coupon', 'coupon_code_length');
-            if (!$couponcodelength) {
-                $couponcodelength = 16;
-            }
-
             // If we're generating based on manual csv input.
             if ($data->showform == 'manual') {
-                $SESSION->coupon->date_send_coupons = $data->date_send_coupons_manual;
-                $SESSION->coupon->email_body = $data->email_body_manual['text'];
+                $generatoroptions->senddate = $data->date_send_coupons_manual;
+                $generatoroptions->emailbody = $data->email_body_manual['text'];
                 // We'll get users right away.
-                $recipients = helper::get_recipients_from_csv($data->coupon_recipients_manual);
-
-                $amountofcoupons = count($recipients);
+                $generatoroptions->recipients = helper::get_recipients_from_csv($data->coupon_recipients_manual);
             }
 
             // If we're generating based on 'amount' of coupons.
             if ($data->showform == 'amount') {
                 // Save last settings in sessions.
-                $amountofcoupons = $data->coupon_amount;
-                $SESSION->coupon->email_to = (!empty($data->use_alternative_email)) ? $data->alternative_email : $USER->email;
-                $SESSION->coupon->generate_single_pdfs = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
-            }
-
-            // Now that we've got all information we'll create the coupon objects.
-            $coupons = array();
-            for ($i = 0; $i < $amountofcoupons; $i++) {
-
-                $coupon = new stdClass();
-                $coupon->ownerid = $USER->id;
-                $coupon->courses = ($SESSION->coupon->type == 'course') ? $SESSION->coupon->courses : null;
-                $coupon->redirect_url = $SESSION->coupon->redirect_url;
-                $coupon->enrolperiod = $SESSION->coupon->enrolperiod;
-                $coupon->issend = ($data->showform == 'amount') ? 1 : 0;
-                $coupon->single_pdf = ($data->showform == 'amount') ? $SESSION->coupon->generate_single_pdfs : null;
-                $coupon->submission_code = generator::generate_unique_code($couponcodelength);
-
-                if ($data->showform == 'manual') {
-
-                    $recipient = $recipients[$i];
-
-                    $coupon->senddate = $SESSION->coupon->date_send_coupons;
-                    $coupon->for_user_email = $recipient->email;
-                    $coupon->for_user_name = $recipient->name;
-                    $coupon->for_user_gender = $recipient->gender;
-                    $coupon->redirect_url = $SESSION->coupon->redirect_url;
-                    $coupon->enrolperiod = $SESSION->coupon->enrolperiod;
-                    $coupon->email_body = $SESSION->coupon->email_body;
-                }
-
-                if ($SESSION->coupon->type == 'cohorts') {
-                    $coupon->cohorts = array();
-                    foreach ($SESSION->coupon->cohorts as $cohortid) {
-                        // Build cohort object.
-                        $couponcohort = new stdClass();
-                        $couponcohort->cohortid = $cohortid;
-                        $coupon->cohorts[] = $couponcohort;
-                    }
-                    // Otherwise we'll add groups if they are selected.
-                } else if (isset($SESSION->coupon->groups)) {
-                    $coupon->groups = array();
-                    foreach ($SESSION->coupon->groups as $groupid) {
-                        // Build groups object.
-                        $coupongroup = new stdClass();
-                        $coupongroup->groupid = $groupid;
-                        $coupon->groups[] = $coupongroup;
-                    }
-                }
-                $coupons[] = $coupon;
+                $generatoroptions->amount = $data->coupon_amount;
+                $generatoroptions->emailto = (!empty($data->use_alternative_email)) ? $data->alternative_email : $USER->email;
+                $generatoroptions->generatesinglepdfs = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
             }
 
             // Now that we've got all the coupons.
-            $result = helper::generate_coupons($coupons);
+            $generator = new generator();
+            $result = $generator->generate_coupons($generatoroptions);
             if ($result !== true) {
                 // Means we've got an error.
                 // Don't know yet what we're gonne do in this situation. Maybe mail to supportuser?
@@ -441,23 +409,18 @@ class block_coupon_renderer extends plugin_renderer_base {
             }
 
             if ($data->showform == 'amount') {
-                // Stuur maar gewoon gelijk...
-                helper::mail_coupons($coupons, $SESSION->coupon->email_to, $SESSION->coupon->generate_single_pdfs);
-                unset($SESSION->coupon);
-                redirect($CFG->wwwroot . '/my', get_string('coupons_sent', 'block_coupon'));
+                // Generate and send off.
+                $coupons = $DB->get_records_list('block_coupon', 'id', $generator->get_generated_couponids());
+                helper::mail_coupons($coupons, $generatoroptions->emailto, $generatoroptions->generatesinglepdfs);
+                generatoroptions::clean_session();
+                redirect(new moodle_url('/my'), get_string('coupons_sent', 'block_coupon'));
             } else {
-                redirect($CFG->wwwroot . '/my', get_string('coupons_ready_to_send', 'block_coupon'));
+                redirect(new moodle_url('/my'), get_string('coupons_ready_to_send', 'block_coupon'));
             }
-        } else {
-            $out .= $this->header();
-            $out .= '<div class="block-coupon-container">';
-            $out .= '<div>';
-            $out .= $this->get_tabs($this->page->context, 'wzcoupons', array('id' => $this->page->url->param('id')));
-            $out .= '</div>';
-            $out .= $mform->render();
-            $out .= '</div>';
-            $out .= $this->footer();
         }
+
+        $out = '';
+        $out .= $this->get_coupon_form_page($mform);
         return $out;
     }
 
@@ -467,68 +430,24 @@ class block_coupon_renderer extends plugin_renderer_base {
      * @return string
      */
     public function page_coupon_generator_step5() {
-        global $SESSION, $CFG, $USER;
         // Make sure sessions are still alive.
-        if (!isset($SESSION->coupon)) {
-            print_error("error:sessions-expired", 'block_coupon');
-        }
+        generatoroptions::validate_session();
+        // Load options.
+        $generatoroptions = generatoroptions::from_session();
 
         // Create form.
         $mform = new \block_coupon\forms\coupon\generator\extra($this->page->url);
-        $out = '';
 
         if ($mform->is_cancelled()) {
-            unset($SESSION->coupon);
+            generatoroptions::clean_session();
             redirect(new moodle_url('/course/view.php', array('id' => $this->page->course->id)));
         } else if ($data = $mform->get_data()) {
             // Get recipients.
-            $recipients = helper::get_recipients_from_csv($data->coupon_recipients);
-
-            // Get max length for the coupon code.
-            if (!$couponcodelength = get_config('block_coupon', 'coupon_code_length')) {
-                $couponcodelength = 16;
-            }
+            $generatoroptions->recipients = helper::get_recipients_from_csv($data->coupon_recipients);
 
             // Now that we've got all information we'll create the coupon objects.
-            $coupons = array();
-            foreach ($recipients as $recipient) {
-                $coupon = new stdClass();
-                $coupon->ownerid = $USER->id;
-                $coupon->courses = ($SESSION->coupon->type == 'course') ? $SESSION->coupon->courses : null;
-                $coupon->submission_code = generator::generate_unique_code($couponcodelength);
-
-                // Extra fields.
-                $coupon->senddate = $SESSION->coupon->date_send_coupons;
-                $coupon->for_user_email = $recipient->email;
-                $coupon->for_user_name = $recipient->name;
-                $coupon->for_user_gender = $recipient->gender;
-                $coupon->redirect_url = $SESSION->coupon->redirect_url;
-                $coupon->enrolperiod = $SESSION->coupon->enrolperiod;
-                $coupon->email_body = $SESSION->coupon->email_body;
-
-                if ($SESSION->coupon->type == 'cohorts') {
-                    $coupon->cohorts = array();
-                    foreach ($SESSION->coupon->cohorts as $cohortid) {
-                        // Build cohort object.
-                        $couponcohort = new stdClass();
-                        $couponcohort->cohortid = $cohortid;
-                        $coupon->cohorts[] = $couponcohort;
-                    }
-                    // Otherwise we'll add groups if they are selected.
-                } else if (isset($SESSION->coupon->groups)) {
-                    $coupon->groups = array();
-                    foreach ($SESSION->coupon->groups as $groupid) {
-                        // Build groups object.
-                        $coupongroup = new stdClass();
-                        $coupongroup->groupid = $groupid;
-                        $coupon->groups[] = $coupongroup;
-                    }
-                }
-                $coupons[] = $coupon;
-            }
-
-            // Now that we've got all the coupons.
-            $result = helper::generate_coupons($coupons);
+            $generator = new generator();
+            $result = $generator->generate_coupons($generatoroptions);
 
             if ($result !== true) {
                 // Means we've got an error.
@@ -539,18 +458,30 @@ class block_coupon_renderer extends plugin_renderer_base {
             }
 
             // Finish.
-            unset($SESSION->coupon);
-            redirect($CFG->wwwroot . '/my', get_string('coupons_ready_to_send', 'block_coupon'));
-        } else {
-            $out .= $this->header();
-            $out .= '<div class="block-coupon-container">';
-            $out .= '<div>';
-            $out .= $this->get_tabs($this->page->context, 'wzcoupons', array('id' => $this->page->url->param('id')));
-            $out .= '</div>';
-            $out .= $mform->render();
-            $out .= '</div>';
-            $out .= $this->footer();
+            generatoroptions::clean_session();
+            redirect(new moodle_url('/my'), get_string('coupons_ready_to_send', 'block_coupon'));
         }
+
+        $out = '';
+        $out .= $this->get_coupon_form_page($mform);
+        return $out;
+    }
+
+    /**
+     * Get form page output (includes header/footer).
+     *
+     * @param \moodleform $mform
+     */
+    protected function get_coupon_form_page($mform) {
+        $out = '';
+        $out .= $this->header();
+        $out .= html_writer::start_div('block-coupon-container');
+        $out .= html_writer::start_div();
+        $out .= $this->get_tabs($this->page->context, 'wzcoupons', array('id' => $this->page->url->param('id')));
+        $out .= html_writer::end_div();
+        $out .= $mform->render();
+        $out .= html_writer::end_div();
+        $out .= $this->footer();
         return $out;
     }
 
@@ -600,8 +531,13 @@ class block_coupon_renderer extends plugin_renderer_base {
                 new \moodle_url('/blocks/coupon/view/reports.php', $params),
                 get_string('tab:report', 'block_coupon'));
         $tabs[] = $this->create_pictab('cpunused', 'unused', 'block_coupon',
-                new \moodle_url('/blocks/coupon/view/unused_coupons.php', $params),
+                new \moodle_url('/blocks/coupon/view/coupon_view.php',
+                array_merge($params, array('tab' => 'unused'))),
                 get_string('tab:unused', 'block_coupon'));
+        $tabs[] = $this->create_pictab('cpused', 'used', 'block_coupon',
+                new \moodle_url('/blocks/coupon/view/coupon_view.php',
+                array_merge($params, array('tab' => 'used'))),
+                get_string('tab:used', 'block_coupon'));
         return $this->tabtree($tabs, $selected);
     }
 

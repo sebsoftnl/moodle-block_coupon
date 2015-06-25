@@ -129,12 +129,7 @@ class block_coupon extends block_base {
      * @return array page-type prefix => true/false.
      */
     public function applicable_formats() {
-        return array('my' => true,
-            'site-index' => true,
-            'course-view' => true,
-            'course-view-social' => true,
-            'mod' => true,
-            'mod-quiz' => true);
+        return array('site-index' => true, 'my' => true);
     }
 
     /**

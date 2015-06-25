@@ -35,12 +35,7 @@ $PAGE->set_url($url);
 
 require_login(null, false);
 
-$fn = BLOCK_COUPON_LOGOFILE;
-if (!file_exists($fn)) {
-    $fn = $CFG->dirroot . '/blocks/coupon/pix/couponlogo.png';
-}
-
-_imgdisplay($fn);
+_imgdisplay(helper::get_coupon_logo());
 
 /**
  * display image

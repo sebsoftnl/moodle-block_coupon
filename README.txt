@@ -31,8 +31,29 @@ Furthermore, coupons can be generated on two "access" levels:
 - Bulk: The base of this is simple: you generate a certain amount of access coupons, which will then
   be emailed to the pre-configured recipient or (if allowed) to an emailaddress that can be freely entered.
 
+- WARNING:
+  Wherever possible, please use PNG images.
+  Also, whenever possible, do NOT use images that have an alpha channel.
+  This will MASSIVELY slow down processing time, due to internal conversion of images by TCPDF.
+  On our tests, for a 300 DPI image on A4 format (2480 x 3508 pixels) with an alpha channel,
+  rendering a single PDF took around 25 seconds. Taking the alpha channel out of the image,
+  rendering a single PDF was reduced to around 3 seconds.
+  Furthermore, whenever possible, have the coupon generator create a single PDF with all
+  coupons (this is only applicable when generating coupons in "bulk" mode). The process of
+  generating coupons has been optimized to only "use" the image 1 time when creating any amount
+  of coupons in a single PDF. If you choose the option to create a seperate PDF for every coupon,
+  the image will have to be rendered for each and every PDF.
+  This has 2 major downfalls:
+  1. Every PDF will roughly have a slightly bigger size than the image size (in our tests, 350 - 400 kB per PDF)
+  2. Every PDF takes the full amount of time to render.
+  Effectively, this means the following (using fictitious sizes):
+  10 coupons, single PDF -> result is around 400 kB, rendering takes around 3-4 seconds.
+  10 coupons, seperate PDFs -> result is around 4 MB, rendering takes around 35-40 seconds.
+
 INSTALLATION
 
 - Copy the coupon folder to your blocks directory.
 - Configure your plugin.
+- Place the plugin on the main homepage or the My of your site. Thare are the only allowed
+  locations, but also the only logical places the plugin makes sense.
 - We're ready to run!

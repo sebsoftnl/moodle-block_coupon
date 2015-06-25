@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * display used coupons
+ * display unused coupons
  *
- * File         used_coupons.php
+ * File         unused_coupons.php
  * Encoding     UTF-8
  *
  * @package     block_coupon
@@ -33,6 +33,7 @@ require_once($CFG->dirroot . '/blocks/coupon/classes/settings.php');
 use block_coupon\helper;
 
 $id = required_param('id', PARAM_INT);
+$tab = required_param('tab', PARAM_ALPHA);
 
 $instance = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
 $context       = \context_block::instance($instance->id);
@@ -47,13 +48,16 @@ if ($course === false) {
 
 require_login($course, true);
 
-$PAGE->navbar->add(get_string('view:reports-used:title', 'block_coupon'));
+$title = 'view:reports-' . $tab . ':title';
+$heading = 'view:reports-' . $tab . ':heading';
 
-$url = new moodle_url('/blocks/coupon/view/used_coupons.php', array('id' => $id));
+$PAGE->navbar->add(get_string($title, 'block_coupon'));
+
+$url = new moodle_url('/blocks/coupon/view/coupon_view.php', array('id' => $id));
 $PAGE->set_url($url);
 
-$PAGE->set_title(get_string('view:reports-used:title', 'block_coupon'));
-$PAGE->set_heading(get_string('view:reports-used:heading', 'block_coupon'));
+$PAGE->set_title(get_string($title, 'block_coupon'));
+$PAGE->set_heading(get_string($heading, 'block_coupon'));
 $PAGE->set_context($context);
 $PAGE->set_course($course);
 $PAGE->set_pagelayout('standard');
@@ -64,4 +68,11 @@ require_capability('block/coupon:viewreports', $context);
 $renderer = $PAGE->get_renderer('block_coupon');
 
 $owner = (has_capability('block/coupon:viewallreports', $context) ? 0 : $USER->id);
-echo $renderer->page_used_coupons($id, $owner);
+switch ($tab) {
+    case 'used':
+        echo $renderer->page_used_coupons($id, $owner);
+        break;
+    case 'unused':
+        echo $renderer->page_unused_coupons($id, $owner);
+        break;
+}

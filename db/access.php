@@ -32,14 +32,14 @@ defined('MOODLE_INTERNAL') || die;
 $capabilities = array(
     'block/coupon:administration' => array(
         'captype' => 'view',
-        'contextlevel' => CONTEXT_SYSTEM,
+        'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
             'manager' => CAP_ALLOW
         )
     ),
     'block/coupon:viewreports' => array(
         'captype' => 'view',
-        'contextlevel' => CONTEXT_SYSTEM,
+        'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
             'manager' => CAP_ALLOW,
             'coursecreator' => CAP_ALLOW
@@ -47,14 +47,14 @@ $capabilities = array(
     ),
     'block/coupon:viewallreports' => array(
         'captype' => 'view',
-        'contextlevel' => CONTEXT_SYSTEM,
+        'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
             'manager' => CAP_ALLOW
         )
     ),
     'block/coupon:generatecoupons' => array(
         'captype' => 'view',
-        'contextlevel' => CONTEXT_SYSTEM,
+        'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
             'manager' => CAP_ALLOW,
             'coursecreator' => CAP_ALLOW
@@ -62,7 +62,7 @@ $capabilities = array(
     ),
     'block/coupon:inputcoupons' => array(
         'captype' => 'view',
-        'contextlevel' => CONTEXT_SYSTEM,
+        'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
             'user' => CAP_ALLOW,
             'guest' => CAP_PREVENT
@@ -70,18 +70,17 @@ $capabilities = array(
     ),
     'block/coupon:addinstance' => array(
         'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
+        'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
             'manager' => CAP_ALLOW
         )
     ),
     'block/coupon:myaddinstance' => array(
         'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
+        'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(
             'user' => CAP_ALLOW,
             'guest' => CAP_PREVENT
         )
     )
-
 );

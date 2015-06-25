@@ -175,300 +175,6 @@ class helper {
     }
 
     /**
-     * Gather a filtered list of coupons
-     *
-     * @param int $ownerid
-     * @param int $fromdate
-     * @param int $todate
-     * @return array
-     */
-    public static final function get_filtered_coupons($ownerid, $fromdate, $todate) {
-        global $DB;
-
-        $params = array(
-            'ownerid' => is_null($ownerid) ? null : $ownerid,
-            'fromdate' => is_null($fromdate) ? null : strtotime($fromdate),
-            'tilldate' => is_null($todate) ? null : strtotime($todate)
-        );
-        $select = self::get_report_filters($ownerid, $fromdate, $todate);
-
-        $sql = 'SELECT * FROM {block_coupon}';
-        if (!empty($select)) {
-            $sql .= ' WHERE ' . implode(' AND ', $select);
-        }
-        $sql .= ' ORDER BY timecreated';
-
-        return $DB->get_records_sql($sql, $params);
-    }
-
-    /**
-     * Gather a filtered list of course coupons
-     *
-     * @param int $ownerid
-     * @param int $fromdate
-     * @param int $todate
-     * @return array
-     */
-    public static final function get_course_coupons($ownerid, $fromdate, $todate) {
-        global $DB;
-
-        $coupons = self::get_filtered_coupons($ownerid, $fromdate, $todate);
-        $coursecoupons = array();
-        foreach ($coupons as $coupon) {
-            $couponcourses = $DB->get_records('block_coupon_courses', array('couponid' => $coupon->id));
-            if (empty($couponcourses)) {
-                continue;
-            } else {
-                $courses = array();
-                foreach ($couponcourses as $couponcourse) {
-                    $courses[] = $couponcourse->courseid;
-                }
-            }
-            $coupon->courses = $courses;
-            $coursecoupons[] = $coupon;
-        }
-
-        return $coursecoupons;
-    }
-
-    /**
-     * Gather a filtered list of cohort coupons
-     *
-     * @param int $ownerid
-     * @param int $fromdate
-     * @param int $todate
-     * @return array
-     */
-    public static final function get_cohort_coupons($ownerid, $fromdate, $todate) {
-        global $DB;
-
-        $coupons = self::get_filtered_coupons($ownerid, $fromdate, $todate);
-        $cohortcoupons = array();
-        foreach ($coupons as $coupon) {
-            $couponcohorts = $DB->get_records('block_coupon_cohorts', array('couponid' => $coupon->id));
-            if (empty($couponcohorts)) {
-                continue;
-            } else {
-                $cohorts = array();
-                foreach ($couponcohorts as $couponcohort) {
-                    $cohorts[] = $couponcohort->cohortid;
-                }
-            }
-            $coupon->cohorts = $cohorts;
-            $cohortcoupons[] = $coupon;
-        }
-
-        return $cohortcoupons;
-    }
-
-    /**
-     * Gather a list of all coupons
-     *
-     * @param int $ownerid
-     * @param int $fromdate
-     * @param int $todate
-     * @return array
-     */
-    public static final function get_all_coupons($ownerid, $fromdate, $todate) {
-        global $DB;
-
-        $coupons = self::get_filtered_coupons($ownerid, $fromdate, $todate);
-        $allcoupons = array();
-        foreach ($coupons as $coupon) {
-            $couponcourses = $DB->get_records('block_coupon_courses', array('couponid' => $coupon->id));
-            if (!empty($couponcourses)) {
-                $courses = array();
-                foreach ($couponcourses as $couponcourse) {
-                    $courses[] = $couponcourse->courseid;
-                }
-                $coupon->courses = $courses;
-            } else {
-                $couponcohorts = $DB->get_records('block_coupon_cohorts', array('couponid' => $coupon->id));
-                if (!empty($couponcohorts)) {
-                    $cohorts = array();
-                    foreach ($couponcohorts as $cohort) {
-                        $cohorts[] = $cohort->cohortid;
-                    }
-                    $coupon->cohorts = $cohorts;
-                } else {
-                    continue;
-                }
-            }
-            $allcoupons[] = $coupon;
-        }
-
-        return $allcoupons;
-    }
-
-    /**
-     * Create SELECT filter statement part to gather a list of coupons
-     *
-     * @param int $ownerid
-     * @param int $fromdate
-     * @param int $todate
-     * @return array
-     */
-    public static final function get_report_filters($ownerid, $fromdate, $todate) {
-        $select = array();
-        if (!is_null($ownerid)) {
-            $select[] = 'ownerid = :ownerid';
-        }
-
-        if (!is_null($fromdate) || !is_null($todate)) {
-            if (!is_null($fromdate) && !is_null($todate)) {
-                $select[] = 'timecreated BETWEEN :fromdate AND :tilldate';
-            } else if (!is_null($fromdate)) {
-                $select[] = 'timecreated > :fromdate';
-            } else if (!is_null($todate)) {
-                $select[] = 'timecreated < :tilldate';
-            }
-        }
-
-        return $select;
-    }
-
-    /**
-     * GenerateCoupons
-     * This function will generate the coupons.
-     * Basically all it does is insert the records in the database,
-     * as all checks have been done in the view.
-     *
-     * @param array $coupons An array of coupon objects
-     * @return True or an array of errors
-     * */
-    public static final function generate_coupons($coupons) {
-        global $DB, $SITE, $SESSION;
-
-        $errors = array();
-
-        // Lets loop through the coupons.
-        foreach ($coupons as $coupon) {
-
-            // An object for the coupon itself.
-            $objcoupon = new \stdClass();
-            $objcoupon->ownerid = $coupon->ownerid;
-            $objcoupon->submission_code = $coupon->submission_code;
-            $objcoupon->timecreated = time();
-            $objcoupon->timeexpired = null;
-            $objcoupon->userid = null;
-
-            // Extra columns.
-            $objcoupon->for_user_email = (!empty($coupon->for_user_email)) ? $coupon->for_user_email : null;
-            $objcoupon->for_user_name = (!empty($coupon->for_user_name)) ? $coupon->for_user_name : null;
-            $objcoupon->for_user_gender = (!empty($coupon->for_user_gender)) ? $coupon->for_user_gender : null;
-            $objcoupon->redirect_url = (!empty($coupon->redirect_url)) ? $coupon->redirect_url : null;
-            $objcoupon->issend = 0;
-            $objcoupon->senddate = (!empty($coupon->senddate)) ? $coupon->senddate : null;
-            $objcoupon->enrolperiod = (!empty($coupon->enrolperiod)) ? $coupon->enrolperiod : 0;
-
-            if (isset($coupon->email_body) && !empty($coupon->email_body)) {
-
-                $gendertxt = (!is_null($objcoupon->for_user_gender)) ? $objcoupon->for_user_gender : '';
-
-                // Replace some strings in the email body.
-                $arrreplace = array(
-                    '##to_name##',
-                    '##site_name##',
-                    '##to_gender##'
-                );
-                $arrwith = array(
-                    $coupon->for_user_name,
-                    $SITE->fullname,
-                    $gendertxt
-                );
-
-                // Check if we're generating based on course, in which case we enter the course name too.
-                if (isset($coupon->courses) && !empty($coupon->courses)) {
-
-                    $strcoursefullnames = '';
-                    foreach ($coupon->courses as $courseid) {
-
-                        if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-                            print_error('error:course-not-found', 'block_coupon');
-                        }
-
-                        if ($courseid != end($coupon->courses)) {
-                            $strcoursefullnames .= $course->fullname . ', ';
-                        } else if ($courseid) {
-                            $strcoursefullnames .= get_string('and', 'block_coupon') . ' ' . $course->fullname;
-                        }
-                    }
-
-                    $arrreplace[] = '##course_fullnames##';
-                    $arrwith[] = $strcoursefullnames;
-                }
-
-                $objcoupon->email_body = str_replace($arrreplace, $arrwith, $coupon->email_body);
-            } else {
-                $objcoupon->email_body = null;
-            }
-
-            // Insert coupon in db so we've got an id.
-            if (!$couponid = $DB->insert_record('block_coupon', $objcoupon)) {
-                $errors[] = 'Failed to create general coupon object in database.';
-                continue;
-            }
-
-            // Course coupon.
-            if (isset($coupon->courses)) {
-
-                // Create group records for this coupon.
-                if (isset($coupon->groups) && !empty($coupon->groups)) {
-                    foreach ($coupon->groups as $group) {
-
-                        // An object for each added group.
-                        $objgroup = new \stdClass();
-                        $objgroup->groupid = $group->groupid;
-                        $objgroup->couponid = $couponid;
-
-                        // And insert in db.
-                        if (!$DB->insert_record('block_coupon_groups', $objgroup)) {
-                            $errors[] = 'Failed to create group ' . $group->groupid . ' record for coupon id ' . $couponid . '.';
-                            continue;
-                        }
-                    }
-                }
-
-                // Create course records for this coupon id.
-                if (!empty($coupon->courses)) { // Can't be empty right..?
-                    foreach ($coupon->courses as $courseid) {
-                        $objcourse = new \stdClass();
-                        $objcourse->courseid = $courseid;
-                        $objcourse->couponid = $couponid;
-
-                        if (!$DB->insert_record('block_coupon_courses', $objcourse)) {
-                            $errors[] = 'Failed to create course (id ' . $courseid . ') for coupon id ' . $couponid . '.';
-                            continue;
-                        }
-                    }
-                }
-
-                // Cohort coupon.
-            } else {
-
-                if (isset($coupon->cohorts) && !empty($coupon->cohorts)) {
-                    // Loop through all cohorts.
-                    foreach ($coupon->cohorts as $cohort) {
-
-                        // An object for each added cohort.
-                        $objcohort = new \stdClass();
-                        $objcohort->couponid = $couponid;
-                        $objcohort->cohortid = $cohort->cohortid;
-
-                        // And insert in db.
-                        if (!$DB->insert_record('block_coupon_cohorts', $objcohort)) {
-                            $errors[] = 'Failed to create cohort ' . $cohort->cohortid . ' record for coupon id ' . $couponid . '.';
-                            continue;
-                        }
-                    }
-                }
-            }
-        }
-
-        return (count($errors) > 0) ? $errors : true;
-    }
-
-    /**
      * Claim a coupon
      *
      * @param string $code coupon submission code
@@ -564,7 +270,7 @@ class helper {
                     'context' => \context_user::instance($USER->id)
                     )
                 );
-        $event->add_record_snapshot('coupon', $coupon);
+        $event->add_record_snapshot('block_coupon', $coupon);
         $event->trigger();
 
         return (empty($coupon->redirect_url)) ? $CFG->wwwroot . "/my" : $coupon->redirect_url;
@@ -698,7 +404,7 @@ class helper {
         require_once($CFG->libdir . '/phpmailer/moodle_phpmailer.php');
 
         $owner = $DB->get_record('user', array('id' => $ownerid));
-        $supportuser = generate_email_supportuser();
+        $supportuser = \core_user::get_support_user();
         $mailcontent = get_string("confirm_coupons_sent_body", 'block_coupon', array('timecreated' => date('Y-m-d', $timecreated)));
 
         // Send.
@@ -931,6 +637,20 @@ class helper {
         }
 
         return ($error === false) ? true : $error;
+    }
+
+    /**
+     * Get the coupon logo, or fall back to internal default file.
+     *
+     * @return string file path
+     */
+    public static final function get_coupon_logo() {
+        global $CFG;
+        $fn = BLOCK_COUPON_LOGOFILE;
+        if (!file_exists($fn)) {
+            $fn = $CFG->dirroot . '/blocks/coupon/pix/couponlogo.png';
+        }
+        return $fn;
     }
 
 }

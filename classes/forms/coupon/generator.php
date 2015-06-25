@@ -47,8 +47,6 @@ class generator extends \moodleform {
      * form definition
      */
     public function definition() {
-        global $CFG, $DB, $USER;
-
         $mform = & $this->_form;
 
         $mform->addElement('header', 'header', get_string('heading:info', 'block_coupon'));
@@ -65,7 +63,7 @@ class generator extends \moodleform {
         $typeoptions[] = & $mform->createElement('radio', 'type', '', get_string('label:type_course', 'block_coupon'), 0);
         $typeoptions[] = & $mform->createElement('radio', 'type', '', get_string('label:type_cohorts', 'block_coupon'), 1);
         $mform->addGroup($typeoptions, 'coupon_type', get_string('label:coupon_type', 'block_coupon'), array(' '));
-        $mform->setDefault('yesno', 0);
+        $mform->setDefault('coupon_type[type]', 0);
         $mform->addRule('coupon_type', get_string('error:required', 'block_coupon'), 'required', null, 'client');
         $mform->addHelpButton('coupon_type', 'label:coupon_type', 'block_coupon');
 

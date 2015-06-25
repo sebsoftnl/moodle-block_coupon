@@ -48,7 +48,7 @@ class confirmcohorts extends \moodleform {
      * form definition
      */
     public function definition() {
-        global $CFG, $DB, $SESSION;
+        global $DB, $SESSION;
 
         $mform = & $this->_form;
 
@@ -61,13 +61,13 @@ class confirmcohorts extends \moodleform {
         // Determine which type of settings we'll use.
         $radioarray = array();
         $radioarray[] = & $mform->createElement('radio', 'showform', '',
-                get_string('showform-csv', 'block_coupon'), 'csv', array('onchange' => 'showHide(this.value)'));
-        $radioarray[] = & $mform->createElement('radio', 'showform', '',
                 get_string('showform-amount', 'block_coupon'), 'amount', array('onchange' => 'showHide(this.value)'));
         $radioarray[] = & $mform->createElement('radio', 'showform', '',
+                get_string('showform-csv', 'block_coupon'), 'csv', array('onchange' => 'showHide(this.value)'));
+        $radioarray[] = & $mform->createElement('radio', 'showform', '',
                 get_string('showform-manual', 'block_coupon'), 'manual', array('onchange' => 'showHide(this.value)'));
-        $mform->addGroup($radioarray, 'radioar', get_string('label:showform', 'block_coupon'), array(' '), false);
-        $mform->setDefault('showform', 'csv');
+        $mform->addGroup($radioarray, 'radioar', get_string('label:showform', 'block_coupon'), array('<br/>'), false);
+        $mform->setDefault('showform', 'amount');
 
         // Send coupons based on CSV upload.
         $mform->addElement('header', 'csvForm', get_string('heading:csvForm', 'block_coupon'));
@@ -97,17 +97,13 @@ class confirmcohorts extends \moodleform {
         $mform->addElement('header', 'manualForm', get_string('heading:manualForm', 'block_coupon'));
 
         // Textarea recipients.
-        $arrelements = array();
-        $arrelements[] = $mform->createElement('textarea', 'coupon_recipients_manual',
+        $mform->addElement('textarea', 'coupon_recipients_manual',
                 get_string("label:coupon_recipients", 'block_coupon'), 'rows="20" cols="50"');
-        $arrelements[] = $mform->createElement('static', 'coupon_recipients_manual_desc', '',
-                get_string('coupon_recipients_manual_desc', 'block_coupon'));
-        $mform->addGroup($arrelements, 'group_coupon_recipients_manual',
-                get_string("label:coupon_recipients", 'block_coupon'), ' ', false);
-        $mform->addGroupRule('group_coupon_recipients_manual',
-                array('coupon_recipients_manual' => array(array(get_string('required'), 'required'))));
-        $mform->addHelpButton('group_coupon_recipients_manual', 'label:coupon_recipients_txt', 'block_coupon');
+        $mform->addRule('coupon_recipients_manual', get_string('required'), 'required', null, 'client');
+        $mform->addHelpButton('coupon_recipients_manual', 'label:coupon_recipients_txt', 'block_coupon');
         $mform->setDefault('coupon_recipients_manual', 'E-mail,Gender,Name');
+
+        $mform->addElement('static', 'coupon_recipients_desc', '', get_string('coupon_recipients_desc', 'block_coupon'));
 
         // Editable email message.
         $mform->addElement('editor', 'email_body_manual', get_string('label:email_body', 'block_coupon'), array('noclean' => 1));
@@ -153,7 +149,7 @@ class confirmcohorts extends \moodleform {
         $mform->addHelpButton('generate_pdf', 'label:generate_pdfs', 'block_coupon');
 
         // Collect cohort records.
-        $cohorts = $DB->get_records_list('cohort', 'id', $SESSION->coupon->cohorts);
+        $cohorts = $DB->get_records_list('cohort', 'id', $SESSION->generatoroptions->cohorts);
 
         // Cohorts to add.
         foreach ($cohorts as $cohort) {
@@ -275,14 +271,14 @@ class confirmcohorts extends \moodleform {
         global $USER;
 
         $element = $this->_form->getElement($elname);
-        if ($element instanceof MoodleQuickForm_filepicker || $element instanceof MoodleQuickForm_filemanager) {
+        if ($element instanceof \MoodleQuickForm_filepicker || $element instanceof \MoodleQuickForm_filemanager) {
             $values = $this->_form->exportValues($elname);
             if (empty($values[$elname])) {
                 return false;
             }
             $draftid = $values[$elname];
             $fs = get_file_storage();
-            $context = context_user::instance($USER->id);
+            $context = \context_user::instance($USER->id);
             if (!$files = $fs->get_area_files($context->id, 'user', 'draft', $draftid, 'id DESC', false)) {
                 return false;
             }

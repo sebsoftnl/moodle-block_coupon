@@ -164,10 +164,12 @@ $string['button:submit_coupon_code'] = 'Invoeren';
 // View strings.
 $string['view:generate_coupon:title'] = 'Genereer Coupon';
 $string['view:generate_coupon:heading'] = 'Genereer Coupon';
-$string['view:reports:heading'] = 'Rapportage - Coupons';
-$string['view:reports:title'] = 'Rapportage - Coupons';
+$string['view:reports:heading'] = 'Rapportage - Voortgang voor coupons';
+$string['view:reports:title'] = 'Rapportage - Voortgang voor coupons';
 $string['view:reports-unused:title'] = 'Rapportage - Ongebruikte coupons';
 $string['view:reports-unused:heading'] = 'Rapportage - Ongebruikte coupons';
+$string['view:reports-used:title'] = 'Rapportage - Gebruikte coupons';
+$string['view:reports-used:heading'] = 'Rapportage - Gebruikte coupons';
 $string['view:api:heading'] = 'Coupon API';
 $string['view:api:title'] = 'Coupon API';
 $string['view:api_docs:heading'] = 'Coupon API Documentatie';
@@ -231,17 +233,19 @@ $string['label:enrolment_period'] = 'Inschrijvingsperiode';
 $string['label:enrolment_period_help'] = 'Inschrijvingsperiode (in dagen). Indien 0 ingevuld wordt er geen uitschrijvingsdatum geregistreerd.';
 $string['label:date_send_coupons'] = 'Verzenddatum';
 $string['label:date_send_coupons_help'] = 'Datum dat de coupons naar de ontvanger(s) verstuurd worden.';
-$string['label:showform'] = 'Genereer m.b.v.';
-$string['showform-csv'] = 'csv';
-$string['showform-manual'] = 'handmatig';
-$string['showform-amount'] = 'aantal';
+$string['label:showform'] = 'Opties';
+$string['showform-csv'] = 'Ik wil coupons aanmaken door een CSV met ontvangers te uploaden';
+$string['showform-manual'] = 'Ik wil coupons aanmaken door manueel de ontvangers op te geven';
+$string['showform-amount'] = 'Ik wil een arbitrair aantal coupons aanmaken';
 $string['error:recipients-max-exceeded'] = 'Uw bestand is over de maximum aantal regels van 10.000. Limiteer het aantal gebruikers svp.';
 $string['error:recipients-columns-missing'] = 'The file could not be validated. Are you sure you entered the right columns and seperator?';
 $string['error:recipients-invalid'] = 'The file could not be validated. Are you sure you entered the right columns and seperator?';
 $string['error:recipients-empty'] = 'Vul minstens 1 gebruiker in svp.';
 $string['error:recipients-email-invalid'] = 'Het e-mailadres {$a->email} is geen correct e-mailadres. Corrigeer dit eerst in het csv bestand.';
-$string['coupon_recipients_desc'] = 'De volgende kolommen dienen aanwezig te zijn ongeacht volgorde: E-mail, Gender, Name';
-$string['coupon_recipients_manual_desc'] = 'De volgende kolommen dienen aanwezig te zijn ongeacht volgorde: E-mail, Gender, Name';
+$string['coupon_recipients_desc'] = 'De volgende kolommen dienen aanwezig te zijn in de CSV, ongeacht volgorde: E-mail, Gender, Name.<br/>
+Voor elke persoon in de CSV zal er een coupon worden gegenereerd en naar zijn/haar e-mailadres worden gestuurd.<br/>
+Houdt er aub rekening mee dat de coupons <i>niet</i> direct worden gegegereerd, maar worden verwerkt door een a-synchroon achtergrondproces (taak).<br/>
+Dit is omdat het process van genereren van coupons behoorlijk intensief kan zijn, met name voor een groter aantal ontvangers.';
 $string['report:download-excel'] = 'Download ongebruikte coupons';
 
 $string['page:generate_coupon.php:title'] = 'Genereer coupons';
@@ -260,6 +264,14 @@ $string['th:course'] = 'Cursus';
 $string['th:issend'] = 'Verzonden?';
 $string['th:immediately'] = 'Direct';
 $string['th:for_user_email'] = 'Ingepland voor';
+
+$string['tab:wzcoupons'] = 'Genereer coupon(s)';
+$string['tab:wzcouponimage'] = 'Template afbeelding';
+$string['tab:apidocs'] = 'API Documentatie';
+$string['tab:report'] = 'Voortgangsrapportage';
+$string['tab:unused'] = 'Ongebruikte coupons';
+$string['tab:used'] = 'Gebruikte coupons';
+$string['task:sendcoupons'] = 'Ingeplande coupons versturen';
 
 // Mails.
 $string['confirm_coupons_sent_subject'] = 'Alle coupons zijn verzonden';

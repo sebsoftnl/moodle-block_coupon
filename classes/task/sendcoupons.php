@@ -49,7 +49,7 @@ class sendcoupons extends \core\task\scheduled_task {
      * @return string task name
      */
     public function get_name() {
-        return get_string('task:sendcoupons', 'sendcoupons');
+        return get_string('task:sendcoupons', 'block_coupon');
     }
 
     /**
@@ -58,7 +58,8 @@ class sendcoupons extends \core\task\scheduled_task {
      * @return void
      */
     public function execute() {
-        global $DB;
+        global $CFG, $DB;
+        require_once($CFG->dirroot . '/blocks/coupon/classes/settings.php');
         // Call coupons.
         $coupons = helper::get_coupons_to_send();
 

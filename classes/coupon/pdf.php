@@ -29,6 +29,7 @@
  * */
 
 namespace block_coupon\coupon;
+use block_coupon\helper;
 
 require_once($CFG->dirroot . '/lib/pdflib.php');
 
@@ -177,6 +178,13 @@ class pdf extends \pdf {
     protected $isrendered = false;
 
     /**
+     * image template ID
+     *
+     * @var string
+     */
+    protected $imagetemplateid = false;
+
+    /**
      * Create a new instance
      *
      * @param string $titlestring
@@ -202,10 +210,7 @@ class pdf extends \pdf {
 
         $this->SetAutoPageBreak(false, 0);
 
-        $fn = BLOCK_COUPON_LOGOFILE;
-        if (!file_exists($fn)) {
-            $fn = $CFG->dirroot . '/blocks/coupon/pix/couponlogo.png';
-        }
+        $fn = helper::get_coupon_logo();
         if (file_exists($fn)) {
             $this->logo = $fn;
         }
@@ -225,7 +230,16 @@ class pdf extends \pdf {
      * @return boolean
      */
     public function header() {
-        $this->Image($this->logo, 0, 0, 0, 0, '', '', '', false, 96, '', false, false, 1, true, false, true);
+        if (!file_exists($this->logo)) {
+            return;
+        }
+        if (empty($this->imagetemplateid)) {
+            $this->imagetemplateid = $this->startTemplate();
+            $this->Image($this->logo, 0, 0, 0, 0, '', '', '', false, 300, '', false, false, 1, true, false, true);
+            //$this->Image($this->logo, 0, 0, 0, 0, '', '', '', true, 96, '', false, false, 1, true, false, true);
+            $this->endTemplate();
+        }
+        $this->printTemplate($this->imagetemplateid);
     }
 
     /**

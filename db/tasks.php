@@ -15,24 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for block_coupon
+ * this file contains the task definitions for this block.
  *
- * File         version.php
+ * File         tasks.php
  * Encoding     UTF-8
  *
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
-$plugin = new stdClass();
-$plugin->version     = 2015010102;
-$plugin->requires    = 2014051200;      // YYYYMMDDHH (This is the release version for Moodle 2.7).
-$plugin->cron        = 0;
-$plugin->component   = 'block_coupon';
-$plugin->maturity    = MATURITY_STABLE;
-$plugin->release     = '2.7.0 (build 2015010102)';
-$plugin->dependencies = array();
+
+$tasks = array(
+    array(
+        'classname' => 'block_coupon\task\sendcoupons',
+        'blocking' => 0,
+        'minute' => '*/5',
+        'hour' => '*',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ),
+);
