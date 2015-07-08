@@ -300,10 +300,17 @@ class pdf extends \pdf {
      */
     protected function compile_main($coupon) {
         $find = array(
-            '{coupon_code}'
+            '{coupon_code}',
+            '{accesstime}'
         );
+        if ((int)$coupon->enrolperiod === 0) {
+            $accesstime = get_string('unlimited_access', 'block_coupon');
+        } else {
+            $accesstime = get_string('days_access', 'block_coupon', $coupon->enrolperiod);
+        }
         $replace = array(
             '<div style="text-align: center; font-size: 200%; font-weight: bold">'.$coupon->submission_code.'</div>',
+            $accesstime
         );
 
         return str_replace($find, $replace, $this->templatemain);

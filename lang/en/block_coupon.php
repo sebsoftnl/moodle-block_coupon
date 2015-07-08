@@ -284,7 +284,9 @@ With kind regards,<br /><br />
 
 Moodle administrator';
 
-$string['default-coupon-page-template-main'] = 'With this coupon you can activate access to the e-learning module. You have 90 days of access to this module.
+$string['days_access'] = '{$a} days of';
+$string['unlimited_access'] = 'unlimited';
+$string['default-coupon-page-template-main'] = 'With this coupon you can activate access to the e-learning module. You have {accesstime} access to this module.
 
 Please use the following coupon code to activate access.
 
