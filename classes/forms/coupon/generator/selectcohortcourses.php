@@ -57,9 +57,8 @@ class selectcohortcourses extends \moodleform {
             $strinfo = get_string('missing_config_info', 'block_coupon');
         }
         $mform->addElement('static', 'info', '', $strinfo);
-
         // Collect cohort records.
-        $cohorts = $DB->get_records_list('cohort', 'id', $SESSION->coupon->cohorts);
+        $cohorts = $DB->get_records_list('cohort', 'id', $SESSION->generatoroptions->cohorts);
 
         // Now we'll show the cohorts one by one.
         foreach ($cohorts as $cohort) {

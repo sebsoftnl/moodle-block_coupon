@@ -61,7 +61,7 @@ class selectgroups extends \moodleform {
 
         // Display which course we selected.
         $groupoptions = array();
-        foreach ($SESSION->coupon->courses as $courseid) {
+        foreach ($SESSION->generatoroptions->courses as $courseid) {
 
             // Collect data.
             if (!$course = $DB->get_record('course', array('id' => $courseid))) {

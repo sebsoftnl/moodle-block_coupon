@@ -210,7 +210,8 @@ class block_coupon_renderer extends plugin_renderer_base {
             // Load generator options.
             $generatoroptions = generatoroptions::from_session();
             $generatoroptions->ownerid = $USER->id;
-            $generatoroptions->type = ($data->coupon_type['type'] == 0) ? 'course' : 'cohorts';
+            $generatoroptions->type = ($data->coupon_type['type'] == 0) ?
+                    generatoroptions::COURSE : generatoroptions::COHORT;
             // Serialize generatoroptions to session.
             $generatoroptions->to_session();
             // And redirect user to next page.
