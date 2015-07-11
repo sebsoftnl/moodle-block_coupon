@@ -226,7 +226,7 @@ class helper {
 
             foreach ($couponcourses as $couponcourse) {
                 // Make sure we only enrol if its not enrolled yet.
-                $context = context_course::instance($couponcourse->courseid);
+                $context = \context_course::instance($couponcourse->courseid);
                 if (is_null($context) || $context === false) {
                     throw new exception('error:course-not-found');
                 }

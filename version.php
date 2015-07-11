@@ -29,10 +29,10 @@
  */
 defined('MOODLE_INTERNAL') || die();
 $plugin = new stdClass();
-$plugin->version     = 2015010103;
+$plugin->version     = 2015010104;
 $plugin->requires    = 2014051200;      // YYYYMMDDHH (This is the release version for Moodle 2.7).
 $plugin->cron        = 0;
 $plugin->component   = 'block_coupon';
 $plugin->maturity    = MATURITY_STABLE;
-$plugin->release     = '2.7.1 (build 2015010103)';
+$plugin->release     = '2.7.1 (build 2015010104)';
 $plugin->dependencies = array();
