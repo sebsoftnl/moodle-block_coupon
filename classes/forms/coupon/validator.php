@@ -80,4 +80,13 @@ class validator extends \moodleform {
         return $errors;
     }
 
+    /**
+     * Override form identifier. This is to fix namespace issues for Moodle < 2.9
+     * @return string
+     */
+    protected function get_form_identifier() {
+        $class = get_class($this);
+        return preg_replace('/[^a-z0-9_]/i', '_', $class);
+    }
+
 }

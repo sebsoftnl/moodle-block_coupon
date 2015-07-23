@@ -430,6 +430,7 @@ class helper {
         global $DB, $CFG;
         static $cstatus, $completioninfo = array();
 
+        require_once($CFG->dirroot . '/lib/gradelib.php');
         require_once($CFG->dirroot . '/grade/querylib.php');
         require_once($CFG->dirroot . '/lib/completionlib.php');
 
@@ -490,9 +491,9 @@ class helper {
                     'course' => $cinfo->id
                 ));
                 $ci->date_complete = date('d-m-Y H:i:s', $comcom->timecompleted);
-                $ci->gradeinfo = grade_get_course_grade($cinfo->id);
+                $ci->gradeinfo = grade_get_course_grade($user->id, $cinfo->id);
                 if ($ci->gradeinfo !== false) {
-                    $ci->str_grade = $ci->grade_info->str_grade;
+                    $ci->str_grade = $ci->gradeinfo->str_grade;
                 }
                 $ci->str_status = $cstatus['complete'];
             } else {
