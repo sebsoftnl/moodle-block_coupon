@@ -53,7 +53,7 @@ $heading = 'view:reports-' . $tab . ':heading';
 
 $PAGE->navbar->add(get_string($title, 'block_coupon'));
 
-$url = new moodle_url('/blocks/coupon/view/coupon_view.php', array('id' => $id));
+$url = new moodle_url('/blocks/coupon/view/coupon_view.php', array('id' => $id, 'tab' => $tab));
 $PAGE->set_url($url);
 
 $PAGE->set_title(get_string($title, 'block_coupon'));
