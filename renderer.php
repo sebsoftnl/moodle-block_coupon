@@ -123,6 +123,18 @@ class block_coupon_renderer extends plugin_renderer_base {
      * @return string
      */
     protected function page_coupons($id, $filter, $ownerid = null) {
+        // Actions anyone?
+        $action = optional_param('action', null, PARAM_ALPHA);
+        if ($action === 'delete' && ($filter === \block_coupon\tables\coupons::UNUSED)) {
+            global $DB;
+            require_sesskey();
+            $id = required_param('itemid', PARAM_INT);
+            $DB->delete_records('block_coupon', array('id' => $id));
+            $DB->delete_records('block_coupon_cohorts', array('couponid' => $id));
+            $DB->delete_records('block_coupon_groups', array('couponid' => $id));
+            $DB->delete_records('block_coupon_courses', array('couponid' => $id));
+            redirect($this->page->url, get_string('coupon:deleted', 'block_coupon'));
+        }
         // Table instance.
         $table = new \block_coupon\tables\coupons($ownerid, $filter);
         $table->baseurl = $this->page->url;

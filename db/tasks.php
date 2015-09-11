@@ -37,4 +37,13 @@ $tasks = array(
         'dayofweek' => '*',
         'month' => '*'
     ),
+    array(
+        'classname' => 'block_coupon\task\cleanup',
+        'blocking' => 0,
+        'minute' => '*',
+        'hour' => '*/12',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ),
 );

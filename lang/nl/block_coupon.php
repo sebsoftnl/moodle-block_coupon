@@ -351,3 +351,17 @@ Met vriendelijke groet,<br /><br />
 ##site_name##';
 
 $string['coupon_mail_subject'] = 'Moodle Coupon aangemaakt';
+$string['th:action'] = 'Actie(s)';
+$string['action:coupon:delete'] = 'Coupon verwijderen';
+$string['action:coupon:delete:confirm'] = 'Weet je zeker dat je deze coupon wilt verwijderen? Dit kan niet ongedaan worden gemaakt!';
+$string['coupon:deleted'] = 'Coupon is verwijderd';
+
+$string['textsettings'] = 'Tekst instellingen';
+$string['textsettings_desc'] = 'Hier kun je teksten ingeven die door diverse pagina\'s binnen de coupon wizard worden gebruikt';
+$string['task:cleanup'] = 'Automatisch verwijderen ongebruikte coupons';
+$string['tasksettings'] = 'Taak instellingen';
+$string['tasksettings_desc'] = '';
+$string['label:enablecleanup'] = 'Automatisch verwijderen ongebruikte coupons?';
+$string['label:enablecleanup_help'] = 'Vink deze optie aan als je automatisch ongebruikte coupons wilt laten verwijderen';
+$string['label:cleanupage'] = 'Maximum leeftijd?';
+$string['label:cleanupage_help'] = 'Voer de maximum leeftijd in van de ongebruikte coupon voordat deze automatisch zal worden verwijderd';

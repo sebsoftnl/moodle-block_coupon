@@ -66,6 +66,16 @@ class coupons extends \table_sql {
      * @var int
      */
     protected $filter;
+    /**
+     * Localised delete string
+     * @var string
+     */
+    protected $strdelete;
+    /**
+     * Localised delete confirmation string
+     * @var string
+     */
+    protected $strdeleteconfirm;
 
     /**
      * Create a new instance of the logtable
@@ -79,6 +89,8 @@ class coupons extends \table_sql {
         $this->ownerid = (int)$ownerid;
         $this->filter = (int)$filter;
         $this->sortable(true, 'c.senddate', 'DESC');
+        $this->strdelete = get_string('action:coupon:delete', 'block_coupon');
+        $this->strdeleteconfirm = get_string('action:coupon:delete:confirm', 'block_coupon');
     }
 
     /**
@@ -103,11 +115,18 @@ class coupons extends \table_sql {
      * @param bool $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
-        $this->define_table_columns(array('owner', 'for_user_email', 'senddate',
-            'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'issend'));
+        $columns = array('owner', 'for_user_email', 'senddate',
+            'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'issend');
+        if ($this->filter === self::UNUSED) {
+            $columns[] = 'action';
+        }
+        $this->define_table_columns($columns);
 
         // Generate SQL.
         $fields = 'c.*, ' . get_all_user_name_fields(true, 'u');
+        if ($this->filter === self::UNUSED) {
+            $fields .= ', NULL as action';
+        }
         $from = '{block_coupon} c LEFT JOIN {user} u ON c.ownerid=u.id';
         $where = array();
         $params = array();
@@ -242,6 +261,7 @@ class coupons extends \table_sql {
      */
     public function col_action($row) {
         $actions = array();
+        $actions[] = $this->get_action($row, 'delete', true);
         return implode('', $actions);
     }
 
@@ -261,12 +281,18 @@ class coupons extends \table_sql {
      *
      * @param \stdClass $row
      * @param string $action
+     * @param bool $confirm true to enable javascript confirmation of this action
      * @return string link representing the action with an image
      */
-    protected function get_action($row, $action) {
+    protected function get_action($row, $action, $confirm = false) {
         $actionstr = 'str' . $action;
-        return '<a href="' . new \moodle_url($this->baseurl,
-                array('action' => $action, 'id' => $row->id)) .
+        $onclick = '';
+        if ($confirm) {
+            $actionconfirmstr = 'str' . $action . 'confirm';
+            $onclick = ' onclick="return confirm(\'' . $this->{$actionconfirmstr} . '\');"';
+        }
+        return '<a ' . $onclick . 'href="' . new \moodle_url($this->baseurl,
+                array('action' => $action, 'itemid' => $row->id, 'sesskey' => sesskey())) .
                 '" alt="' . $this->{$actionstr} .
                 '">' . $this->get_action_image($action) . '</a>';
     }

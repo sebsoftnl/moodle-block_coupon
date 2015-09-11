@@ -373,3 +373,17 @@ With kind regards,<br /><br />
 ##site_name##';
 
 $string['coupon_mail_subject'] = 'Moodle Coupon generated';
+$string['th:action'] = 'Action(s)';
+$string['action:coupon:delete'] = 'Delete coupon';
+$string['action:coupon:delete:confirm'] = 'Are you sure you wish to delete this coupon? This cannot be undone!';
+$string['coupon:deleted'] = 'Coupon has been deleted';
+
+$string['textsettings'] = 'Text settings';
+$string['textsettings_desc'] = 'Here you can configure custom texts to be displayed by various wizard screens for the coupon generator';
+$string['task:cleanup'] = 'Cleaning up unused old coupons';
+$string['tasksettings'] = 'Task settings';
+$string['tasksettings_desc'] = '';
+$string['label:enablecleanup'] = 'Enable cleaning up unused coupons?';
+$string['label:enablecleanup_help'] = 'Check this option to automatically clean (remove) unused coupons';
+$string['label:cleanupage'] = 'Maximum age?';
+$string['label:cleanupage_help'] = 'Enter the maximum age of an unused coupon before it will be removed';

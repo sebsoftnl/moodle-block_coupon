@@ -1,3 +1,11 @@
+Version 2015010107 (Release 2.7.2 (build 2015010107))
+* Changed "max coupons" setting to textual input. No more hardcoded limit of 100 coupons.
+* Added delete option to unused coupons overview
+* Added settings and task to automatically clean up unused/unclaimed coupons
+
+* Thanks to anyone and everyone for their much valued feedback!
+-----
+
 Version 2015010102 (Release 2.7.0 (build 2015010102))
 * Added missing db/tasks.php
 * Limited applicable_formats: block can only be used on main site page and "my" dashboard view

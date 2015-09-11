@@ -616,6 +616,7 @@ class helper {
     public static final function validate_coupon_recipients($csvdata) {
 
         $error = false;
+        $maxcoupons = get_config('block_coupon', 'max_coupons');
 
         if (!$recipients = self::get_recipients_from_csv($csvdata)) {
             // Required columns aren't found in the csv.
@@ -625,7 +626,7 @@ class helper {
             if (empty($recipients)) {
                 $error = get_string('error:recipients-empty', 'block_coupon');
                 // Check max of the file.
-            } else if (count($recipients) > 10000) {
+            } else if (count($recipients) > $maxcoupons) {
                 $error = get_string('error:recipients-max-exceeded', 'block_coupon');
             } else {
                 // Lets run through the file to check on email addresses.

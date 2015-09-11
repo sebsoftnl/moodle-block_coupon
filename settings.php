@@ -62,16 +62,34 @@ if ($ADMIN->fulltree) {
             $maxcodelengthchoices
         ));
 
-    $maxcouponchoices = array(5 => 5, 10 => 10, 25 => 25, 50 => 50, 100 => 100);
-    $settings->add(new admin_setting_configselect(
+    $settings->add(new admin_setting_configtext(
             'block_coupon/max_coupons',
             get_string('label:max_coupons', 'block_coupon'),
             get_string('label:max_coupons_desc', 'block_coupon'),
-            50,
-            $maxcouponchoices
+            50, PARAM_INT
+        ));
+
+    // Task settings.
+    $settings->add(new admin_setting_heading('block_coupon_tasksettings',
+            get_string('tasksettings', 'block_coupon'),
+            get_string('tasksettings_desc', 'block_coupon', $header)));
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/enablecleanup',
+            get_string('label:enablecleanup', 'block_coupon'),
+            get_string('label:enablecleanup_help', 'block_coupon'),
+            0
+        ));
+    $settings->add(new admin_setting_configduration(
+            'block_coupon/cleanupage',
+            get_string('label:cleanupage', 'block_coupon'),
+            get_string('label:cleanupage_help', 'block_coupon'),
+            30 * 86400, 86400
         ));
 
     // Information fields, to be displayed above each form.
+    $settings->add(new admin_setting_heading('block_coupon_textsettings',
+            get_string('textsettings', 'block_coupon'),
+            get_string('textsettings_desc', 'block_coupon', $header)));
     $settings->add(new admin_setting_configtext(
             'block_coupon/info_coupon_type',
             get_string('label:info_coupon_type', 'block_coupon'),
