@@ -109,7 +109,7 @@ class generator {
         if (!empty($options->recipients)) {
             $options->amount = count($options->recipients);
         }
-        // If we have recipients, amount is the number of recipients.
+        // If the owner id hasn't been set, the user id will be the owner
         if (empty($options->ownerid)) {
             $options->ownerid = $USER->id;
         }

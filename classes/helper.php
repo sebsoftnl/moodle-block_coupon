@@ -340,7 +340,19 @@ class helper {
             $phpmailer->AddStringAttachment($pdfstr, 'coupons.pdf');
         }
 
-        return $phpmailer->Send();
+        $mail_status = $phpmailer->Send();
+        if ($mail_status)
+        {
+            // Set the coupons to send state
+            foreach($coupons as $count => $coupon)
+            {
+                $coupon->senddate = time();
+                $coupon->issend = 1;
+                $DB->update_record('block_coupon',$coupon);
+            }
+        }
+
+        return $mail_status;
     }
 
     /**
@@ -352,11 +364,10 @@ class helper {
      * @return \moodle_phpmailer
      */
     protected static final function generate_coupon_mail($emailto, $emailbody = false, $initiatedbycron = false) {
-        global $CFG, $USER;
-        require_once($CFG->libdir . '/phpmailer/moodle_phpmailer.php');
+        global $USER;
 
         // Instantiate mailer.
-        $phpmailer = new \moodle_phpmailer();
+        $phpmailer = get_mailer();
 
         // Set email from.
         if ($initiatedbycron) {
@@ -408,7 +419,7 @@ class helper {
         $mailcontent = get_string("confirm_coupons_sent_body", 'block_coupon', array('timecreated' => date('Y-m-d', $timecreated)));
 
         // Send.
-        $phpmailer = new \moodle_phpmailer();
+        $phpmailer = get_mailer();
         $phpmailer->Body = $mailcontent;
         $phpmailer->AltBody = strip_tags($mailcontent);
         $phpmailer->From = $supportuser->email;
