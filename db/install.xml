@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/coupon/db" VERSION="20130711" COMMENT="XMLDB file for Moodle blocks/coupon"
+<XMLDB PATH="blocks/coupon/db" VERSION="2016011000" COMMENT="XMLDB file for Moodle blocks/coupon"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -35,6 +35,10 @@
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="couponid" UNIQUE="false" FIELDS="couponid"/>
+        <INDEX NAME="cohortid" UNIQUE="false" FIELDS="cohortid"/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="block_coupon_groups" COMMENT="block_coupon_groups table retrofitted from MySQL" PREVIOUS="block_coupon_cohorts" NEXT="block_coupon_courses">
       <FIELDS>
@@ -45,6 +49,10 @@
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="couponid" UNIQUE="false" FIELDS="couponid"/>
+        <INDEX NAME="groupid" UNIQUE="false" FIELDS="groupid"/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="block_coupon_courses" COMMENT="coupon_users table retrofitted from MySQL" PREVIOUS="block_coupon_groups">
       <FIELDS>
@@ -55,6 +63,25 @@
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="couponid" UNIQUE="false" FIELDS="couponid"/>
+        <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="block_coupon_errors" COMMENT="coupon_errors table retrofitted from MySQL" PREVIOUS="block_coupon_groups">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true" NEXT="couponid"/>
+        <FIELD NAME="couponid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="courseid"/>
+        <FIELD NAME="errortype" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" PREVIOUS="couponid" NEXT="errormessage"/>
+        <FIELD NAME="errormessage" TYPE="text" LENGTH="medium" NOTNULL="true" SEQUENCE="false" PREVIOUS="errortype" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="errormessage"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="id" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="couponid" UNIQUE="false" FIELDS="couponid"/>
+      </INDEXES>
     </TABLE>
   </TABLES>
 </XMLDB>

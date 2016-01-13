@@ -83,11 +83,13 @@ class sendcoupons extends \core\task\scheduled_task {
                 }
             }
 
-            helper::mail_coupons(array($coupon), $coupon->for_user_email, null, $coupon->email_body, true);
+            $result = helper::mail_coupons(array($coupon), $coupon->for_user_email, null, $coupon->email_body, true);
 
-            $coupon->issend = true;
-            $coupon->timemodified = time();
-            $DB->update_record('block_coupon', $coupon);
+            if ($result !== false) {
+                $coupon->issend = true;
+                $coupon->timemodified = time();
+                $DB->update_record('block_coupon', $coupon);
+            }
         }
 
         // Check if all coupons have been send.

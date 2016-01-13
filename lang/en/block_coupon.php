@@ -387,3 +387,14 @@ $string['label:enablecleanup'] = 'Enable cleaning up unused coupons?';
 $string['label:enablecleanup_help'] = 'Check this option to automatically clean (remove) unused coupons';
 $string['label:cleanupage'] = 'Maximum age?';
 $string['label:cleanupage_help'] = 'Enter the maximum age of an unused coupon before it will be removed';
+
+$string['coupon:send:fail'] = 'Sending e-mail failed! Reason: {$a}';
+$string['view:errorreport:heading'] = 'Report - Coupon errors';
+$string['view:errorreport:title'] = 'Report - Coupon errors';
+$string['report:heading:coupon'] = 'Coupon';
+$string['report:heading:errortype'] = 'Type';
+$string['report:heading:errormessage'] = 'Error';
+$string['report:heading:timecreated'] = 'Date';
+$string['report:heading:action'] = 'Action(s)';
+$string['action:error:delete'] = 'Delete error';
+$string['tab:errors'] = 'Error reports';

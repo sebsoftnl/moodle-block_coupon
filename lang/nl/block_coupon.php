@@ -365,3 +365,14 @@ $string['label:enablecleanup'] = 'Automatisch verwijderen ongebruikte coupons?';
 $string['label:enablecleanup_help'] = 'Vink deze optie aan als je automatisch ongebruikte coupons wilt laten verwijderen';
 $string['label:cleanupage'] = 'Maximum leeftijd?';
 $string['label:cleanupage_help'] = 'Voer de maximum leeftijd in van de ongebruikte coupon voordat deze automatisch zal worden verwijderd';
+
+$string['coupon:send:fail'] = 'Verzenden van e-mail mislukt! Reden: {$a}';
+$string['view:errorreport:heading'] = 'Rapport - Coupon fouten';
+$string['view:errorreport:title'] = 'Rapport - Coupon fouten';
+$string['report:heading:coupon'] = 'Coupon';
+$string['report:heading:errortype'] = 'Type';
+$string['report:heading:errormessage'] = 'Foutmelding';
+$string['report:heading:timecreated'] = 'Datum';
+$string['report:heading:action'] = 'Actie(s)';
+$string['action:error:delete'] = 'Foutmelding verwijderen';
+$string['tab:errors'] = 'Foutrapportage';

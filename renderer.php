@@ -206,6 +206,32 @@ class block_coupon_renderer extends plugin_renderer_base {
     }
 
     /**
+     * Render error report page (including header / footer).
+     *
+     * @param int $id block instance id
+     * @param int $ownerid the owner id of the coupons. Set 0 or NULL to see all.
+     * @return string
+     */
+    public function page_error_report($id, $ownerid = null) {
+        // Table instance.
+        $table = new \block_coupon\tables\errorreport($ownerid);
+        $table->baseurl = $this->page->url;
+
+        $out = '';
+        $out .= $this->header();
+        $out .= html_writer::start_div('block-coupon-container');
+        $out .= html_writer::start_div();
+        $out .= $this->get_tabs($this->page->context, 'cperrorreport', array('id' => $id));
+        $out .= html_writer::end_div();
+        ob_start();
+        $table->render(25);
+        $out .= ob_get_clean();
+        $out .= html_writer::end_div();
+        $out .= $this->footer();
+        return $out;
+    }
+
+    /**
      * Render coupon generator page 1 (including header / footer).
      *
      * @return string
@@ -551,6 +577,10 @@ class block_coupon_renderer extends plugin_renderer_base {
                 new \moodle_url('/blocks/coupon/view/coupon_view.php',
                 array_merge($params, array('tab' => 'used'))),
                 get_string('tab:used', 'block_coupon'));
+        $tabs[] = $this->create_pictab('cperrorreport', 'error', 'block_coupon',
+                new \moodle_url('/blocks/coupon/view/errorreport.php',
+                array_merge($params, array('tab' => 'cperrorreport'))),
+                get_string('tab:errors', 'block_coupon'));
         return $this->tabtree($tabs, $selected);
     }
 

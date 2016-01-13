@@ -340,19 +340,27 @@ class helper {
             $phpmailer->AddStringAttachment($pdfstr, 'coupons.pdf');
         }
 
-        $mail_status = $phpmailer->Send();
-        if ($mail_status)
-        {
-            // Set the coupons to send state
-            foreach($coupons as $count => $coupon)
-            {
+        $mailstatus = $phpmailer->Send();
+        if ($mailstatus) {
+            // Set the coupons to send state.
+            foreach ($coupons as $count => $coupon) {
                 $coupon->senddate = time();
                 $coupon->issend = 1;
-                $DB->update_record('block_coupon',$coupon);
+                $DB->update_record('block_coupon', $coupon);
+            }
+        } else {
+            // We NEED a notification somehow.
+            foreach ($coupons as $count => $coupon) {
+                $error = new \stdClass();
+                $error->couponid = $coupon->id;
+                $error->errortype = 'email';
+                $error->errormessage = get_string('coupon:send:fail', 'block_coupon', $phpmailer->ErrorInfo);
+                $error->timecreated = time();
+                $DB->insert_record('block_coupon_errors', $error);
             }
         }
 
-        return $mail_status;
+        return $mailstatus;
     }
 
     /**
@@ -411,8 +419,7 @@ class helper {
      * @return bool
      */
     public static final function confirm_coupons_sent($ownerid, $timecreated) {
-        global $CFG, $DB;
-        require_once($CFG->libdir . '/phpmailer/moodle_phpmailer.php');
+        global $DB;
 
         $owner = $DB->get_record('user', array('id' => $ownerid));
         $supportuser = \core_user::get_support_user();
