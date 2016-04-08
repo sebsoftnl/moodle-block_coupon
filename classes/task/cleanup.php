@@ -58,20 +58,25 @@ class cleanup extends \core\task\scheduled_task {
     public function execute() {
         global $DB;
         $config = get_config('block_coupon');
+        $couponids = array();
         if ((bool)$config->enablecleanup) {
             $timecheck = time() - $config->cleanupage;
             // Remove unused coupons older than xxx.
-            $couponids = $DB->get_fieldset_select('block_coupon', 'id',
-                    'c.userid IS NULL AND timecreated < ?', array($timecheck));
-            if (!empty($couponids)) {
-                // Delegated transaction to ensure everything is removed.
-                $transaction = $DB->start_delegated_transaction();
-                $DB->delete_records_list('block_coupon', 'id', $couponids);
-                $DB->delete_records_list('block_coupon_cohorts', 'couponid', $couponids);
-                $DB->delete_records_list('block_coupon_groups', 'couponid', $couponids);
-                $DB->delete_records_list('block_coupon_courses', 'couponid', $couponids);
-                $DB->commit_delegated_transaction($transaction);
-            }
+            $couponids = array_merge($couponids, $DB->get_fieldset_select('block_coupon', 'id',
+                    'userid IS NULL AND timecreated < ? AND (timeexpired IS NULL OR timeexpired = 0)', array($timecheck)));
+        }
+        // Now clean up expired coupons.
+        $couponids = array_merge($couponids, $DB->get_fieldset_select('block_coupon', 'id',
+                'userid IS NULL AND timeexpired IS NOT NULL AND timeexpired < ?', array(time())));
+        if (!empty($couponids)) {
+            // Delegated transaction to ensure everything is removed.
+            $transaction = $DB->start_delegated_transaction();
+            $DB->delete_records_list('block_coupon', 'id', $couponids);
+            $DB->delete_records_list('block_coupon_cohorts', 'couponid', $couponids);
+            $DB->delete_records_list('block_coupon_groups', 'couponid', $couponids);
+            $DB->delete_records_list('block_coupon_courses', 'couponid', $couponids);
+            $DB->delete_records_list('block_coupon_errors', 'couponid', $couponids);
+            $DB->commit_delegated_transaction($transaction);
         }
     }
 

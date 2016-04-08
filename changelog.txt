@@ -1,3 +1,13 @@
+Version 2016040800 (Release 2.7.3 (build 2016040800))
+* raising memory limit and maximum execution time when generating coupons.
+* Fixed cleanup task
+* Fixed last page of wizard not displaying selected groups
+* Updated readme
+* Added ability to delete unused coupons.
+
+* Feedback and general remarks or ideas for improvement are still highly valued.
+-----
+
 Version 2015010107 (Release 2.7.2 (build 2015010107))
 * Changed "max coupons" setting to textual input. No more hardcoded limit of 100 coupons.
 * Added delete option to unused coupons overview

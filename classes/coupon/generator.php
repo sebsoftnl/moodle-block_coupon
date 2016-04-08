@@ -204,6 +204,7 @@ class generator {
      */
     protected function generate(generatoroptions $options) {
         global $DB;
+        raise_memory_limit(MEMORY_HUGE);
         $errors = array();
         for ($i = 0; $i < $options->amount; $i++) {
             // An object for the coupon itself.

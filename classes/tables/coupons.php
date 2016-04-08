@@ -116,17 +116,11 @@ class coupons extends \table_sql {
      */
     public function render($pagesize, $useinitialsbar = true) {
         $columns = array('owner', 'for_user_email', 'senddate',
-            'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'issend');
-        if ($this->filter === self::UNUSED) {
-            $columns[] = 'action';
-        }
+            'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'issend', 'action');
         $this->define_table_columns($columns);
 
         // Generate SQL.
-        $fields = 'c.*, ' . get_all_user_name_fields(true, 'u');
-        if ($this->filter === self::UNUSED) {
-            $fields .= ', NULL as action';
-        }
+        $fields = 'c.*, ' . get_all_user_name_fields(true, 'u') . ', NULL as action';
         $from = '{block_coupon} c LEFT JOIN {user} u ON c.ownerid=u.id';
         $where = array();
         $params = array();
@@ -157,6 +151,18 @@ class coupons extends \table_sql {
      */
     public function col_owner($row) {
         return fullname($row);
+    }
+
+    /**
+     * Render visual representation of the 'enrolperiod' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string enrolperiod string
+     */
+    public function col_enrolperiod($row) {
+        return (($row->enrolperiod <= 0)
+                ? get_string('enrolperiod:indefinite', 'block_coupon')
+                : format_time($row->enrolperiod * 86400));
     }
 
     /**

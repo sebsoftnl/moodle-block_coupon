@@ -398,3 +398,4 @@ $string['report:heading:timecreated'] = 'Date';
 $string['report:heading:action'] = 'Action(s)';
 $string['action:error:delete'] = 'Delete error';
 $string['tab:errors'] = 'Error reports';
+$string['enrolperiod:indefinite'] = '<i>Indefinite</i>';

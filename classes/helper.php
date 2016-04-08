@@ -289,6 +289,7 @@ class helper {
     public static final function mail_coupons($coupons, $emailto, $generatesinglepdfs = false,
             $emailbody = false, $initiatedbycron = false) {
         global $DB, $CFG;
+        raise_memory_limit(MEMORY_HUGE);
         // One PDF for each coupon.
         if ($generatesinglepdfs) {
 

@@ -376,3 +376,4 @@ $string['report:heading:timecreated'] = 'Datum';
 $string['report:heading:action'] = 'Actie(s)';
 $string['action:error:delete'] = 'Foutmelding verwijderen';
 $string['tab:errors'] = 'Foutrapportage';
+$string['enrolperiod:indefinite'] = '<i>Onbeperkt</i>';
