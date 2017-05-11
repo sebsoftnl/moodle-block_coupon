@@ -144,7 +144,7 @@ class coupons extends \table_sql {
      */
     public function render($pagesize, $useinitialsbar = true) {
         $columns = array('owner', 'for_user_email', 'senddate',
-            'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'issend');
+            'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'issend', 'action');
         if ($this->is_downloading() == '') {
             $columns[] = 'action';
         }
