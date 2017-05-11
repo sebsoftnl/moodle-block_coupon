@@ -28,6 +28,9 @@
  */
 
 namespace block_coupon\tables;
+
+defined('MOODLE_INTERNAL') || die();
+
 use block_coupon\helper;
 require_once($CFG->libdir . '/tablelib.php');
 
@@ -50,6 +53,30 @@ class report extends \table_sql {
     protected $ownerid;
 
     /**
+     *
+     * @var \block_coupon\filtering\filtering
+     */
+    protected $filtering;
+
+    /**
+     * Get filtering instance
+     * @return \block_coupon\filtering\filtering
+     */
+    public function get_filtering() {
+        return $this->filtering;
+    }
+
+    /**
+     * Set filtering instance
+     * @param \block_coupon\filtering\filtering $filtering
+     * @return \block_coupon\tables\coupons
+     */
+    public function set_filtering(\block_coupon\filtering\filtering $filtering) {
+        $this->filtering = $filtering;
+        return $this;
+    }
+
+    /**
      * Create a new instance of the logtable
      *
      * @param int $ownerid if set, display only report from given owner
@@ -67,7 +94,7 @@ class report extends \table_sql {
      * @param bool $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
-        $this->define_table_columns(array('user', 'coursename', 'status', 'datestart', 'datecomplete', 'grade'));
+        $this->define_table_columns(array('user', 'coursename', 'cohortname', 'status', 'datestart', 'datecomplete', 'grade'));
         // We won't be able to sort by most columns.
         $this->no_sorting('status');
         $this->no_sorting('datestart');
@@ -81,7 +108,6 @@ class report extends \table_sql {
      * get a useful record count.
      */
     protected function get_count() {
-        /* @var $DB \moodle_database */
         global $DB;
         $queries = $this->get_query(true);
         $total = 0;
@@ -102,32 +128,35 @@ class report extends \table_sql {
         global $DB;
         $q1params = array();
         $q2params = array();
-        $usersql = '';
-        if ($this->ownerid > 0) {
-            $q1params[] = $this->ownerid;
-            $q2params[] = $this->ownerid;
-            $usersql = ' AND bc.ownerid = ?';
-        }
         $fields = $DB->sql_concat('c.id', '\'-\'', 'bc.id') . ' as idx,
                bc.*, c.id as courseid, c.fullname as coursename,
                ' . $DB->sql_fullname() . ' as user, u.firstname, u.lastname';
         $q1 = 'SELECT ' . $fields . '
+               , null as cohortname
                FROM {block_coupon} bc
                JOIN {block_coupon_courses} cc ON cc.couponid=bc.id
                JOIN {user} u ON bc.userid=u.id
                LEFT JOIN {course} c ON cc.courseid=c.id
-               WHERE bc.userid IS NOT NULL
-               ' . $usersql;
+               WHERE bc.userid IS NOT NULL';
+        if ($this->ownerid > 0) {
+            $q1 .= ' AND bc.ownerid = :ownerid1';
+            $q1params['ownerid1'] = $this->ownerid;
+        }
 
         $q2 = 'SELECT ' . $fields . '
+               , coh.name as cohortname
                FROM {block_coupon} bc
                JOIN {block_coupon_cohorts} cc ON cc.couponid=bc.id
+               JOIN {cohort} coh ON cc.cohortid=coh.id
                JOIN {user} u ON bc.userid=u.id
                LEFT JOIN {enrol} e ON cc.cohortid=e.customint1
                LEFT JOIN {course} c ON e.courseid = c.id
                WHERE bc.userid IS NOT NULL
-               AND e.enrol = \'cohort\'
-               ' . $usersql;
+               AND e.enrol = \'cohort\'';
+        if ($this->ownerid > 0) {
+            $q2 .= ' AND bc.ownerid = :ownerid2';
+            $q2params['ownerid2'] = $this->ownerid;
+        }
         return array("$q1 UNION DISTINCT $q2", array_merge($q1params, $q2params));
     }
 
@@ -145,7 +174,7 @@ class report extends \table_sql {
         list($sql, $params) = $this->get_query(false);
 
         if (!$this->is_downloading()) {
-            $total = $DB->count_records_sql('SELECT COUNT(*) FROM ('.$sql.') AS t', $params);
+            $total = $DB->count_records_sql('SELECT COUNT(*) FROM ('.$sql.') AS c', $params);
             $this->pagesize($pagesize, $total);
         }
 
@@ -154,7 +183,21 @@ class report extends \table_sql {
         if ($sort) {
             $sort = "ORDER BY $sort";
         }
-        $sql = 'SELECT * FROM ('.$sql.') AS t ' . $sort;
+
+        // Add filtering rules.
+        $where = array();
+        if (!empty($this->filtering)) {
+            list($fsql, $fparams) = $this->filtering->get_sql_filter();
+            if (!empty($fsql)) {
+                $where[] = $fsql;
+                $params += $fparams;
+            }
+        }
+        $sql = 'SELECT * FROM ('.$sql.') AS c ';
+        if (!empty($where)) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
+        $sql .= $sort;
 
         if (!$this->is_downloading()) {
             $reportdata = $DB->get_records_sql($sql, $params, $this->get_page_start(), $this->get_page_size());

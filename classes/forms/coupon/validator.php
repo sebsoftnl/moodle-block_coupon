@@ -29,6 +29,9 @@
  */
 
 namespace block_coupon\forms\coupon;
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->libdir . '/formslib.php');
 
 /**

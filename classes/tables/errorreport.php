@@ -28,6 +28,9 @@
  */
 
 namespace block_coupon\tables;
+
+defined('MOODLE_INTERNAL') || die();
+
 use block_coupon\helper;
 require_once($CFG->libdir . '/tablelib.php');
 
@@ -85,7 +88,6 @@ class errorreport extends \table_sql {
      * get a useful record count.
      */
     protected function get_count() {
-        /* @var $DB \moodle_database */
         global $DB;
         $queries = $this->get_query(true);
         $total = 0;

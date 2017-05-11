@@ -58,6 +58,7 @@ class block_coupon extends block_base {
      * @return stdClass
      */
     public function get_content() {
+        global $CFG;
         if ($this->content !== null) {
             return $this->content;
         }
@@ -78,18 +79,19 @@ class block_coupon extends block_base {
         $menuitems = array();
 
         // Generate Coupon.
+        $baseparams = array('id' => $this->instance->id);
         if (has_capability('block/coupon:generatecoupons', $this->context)) {
-            $urlgeneratecoupons = new moodle_url('/blocks/coupon/view/generate_coupon.php', array('id' => $this->instance->id));
-            $urluploadimage = new moodle_url('/blocks/coupon/view/uploadimage.php', array('id' => $this->instance->id));
-
+            $urlgeneratecoupons = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generate_coupon.php', $baseparams);
             $menuitems[] = html_writer::link($urlgeneratecoupons, get_string('url:generate_coupons', 'block_coupon'));
-            $menuitems[] = html_writer::link($urluploadimage, get_string('url:uploadimage', 'block_coupon'));
+
+            $urlmanagelogos = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/managelogos.php', $baseparams);
+            $menuitems[] = html_writer::link($urlmanagelogos, get_string('url:managelogos', 'block_coupon'));
         }
 
         // View Reports.
         if (has_capability('block/coupon:viewreports', $this->context)) {
-            $urlreports = new moodle_url('/blocks/coupon/view/reports.php', array('id' => $this->instance->id));
-            $urlunusedreports = new moodle_url('/blocks/coupon/view/coupon_view.php',
+            $urlreports = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/reports.php', $baseparams);
+            $urlunusedreports = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/coupon_view.php',
                     array('id' => $this->instance->id, 'tab' => 'unused'));
 
             $menuitems[] = html_writer::link($urlreports, get_string('url:view_reports', 'block_coupon'));
@@ -98,7 +100,7 @@ class block_coupon extends block_base {
 
         // Input Coupon.
         if (has_capability('block/coupon:inputcoupons', $this->context)) {
-            $urlinputcoupon = new moodle_url('/blocks/coupon/view/input_coupon.php', array('id' => $this->instance->id));
+            $urlinputcoupon = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/input_coupon.php', $baseparams);
 
             $couponform = "
                 <form action='$urlinputcoupon' method='post'>
@@ -115,6 +117,12 @@ class block_coupon extends block_base {
                 </form>";
 
             $menuitems[] = $couponform;
+        }
+
+        // Signup using a coupon.
+        if (!isloggedin()) {
+            $urlsignupcoupon = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/signup.php', $baseparams);
+            $menuitems[] = html_writer::link($urlsignupcoupon, get_string('url:couponsignup', 'block_coupon'));
         }
 
         // Now print the menu blocks.

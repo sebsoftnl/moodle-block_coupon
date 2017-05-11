@@ -17,8 +17,10 @@
         <FIELD NAME="issend" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" PREVIOUS="senddate" NEXT="redirect_url"/>
         <FIELD NAME="redirect_url" TYPE="char" LENGTH="256" NOTNULL="false" SEQUENCE="false" PREVIOUS="issend" NEXT="email_body"/>
         <FIELD NAME="email_body" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="redirect_url" NEXT="submission_code"/>
-        <FIELD NAME="submission_code" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false" PREVIOUS="email_body" NEXT="timecreated"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="submission_code" NEXT="timemodified"/>
+        <FIELD NAME="submission_code" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false" PREVIOUS="email_body" NEXT="logoid"/>
+        <FIELD NAME="logoid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="submission_code" NEXT="typ"/>
+        <FIELD NAME="typ" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="logoid" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="typ" NEXT="timemodified"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="timecreated" NEXT="timeexpired"/>
         <FIELD NAME="timeexpired" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="timemodified"/>
       </FIELDS>

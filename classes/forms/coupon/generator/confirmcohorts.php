@@ -29,6 +29,9 @@
  */
 
 namespace block_coupon\forms\coupon\generator;
+
+defined('MOODLE_INTERNAL') || die();
+
 use block_coupon\helper;
 require_once($CFG->libdir . '/formslib.php');
 
@@ -48,7 +51,7 @@ class confirmcohorts extends \moodleform {
      * form definition
      */
     public function definition() {
-        global $DB, $SESSION;
+        global $DB, $SESSION, $CFG;
 
         $mform = & $this->_form;
 
@@ -73,7 +76,7 @@ class confirmcohorts extends \moodleform {
         $mform->addElement('header', 'csvForm', get_string('heading:csvForm', 'block_coupon'));
 
         // Filepicker.
-        $urldownloadcsv = new \moodle_url('/blocks/coupon/sample.csv');
+        $urldownloadcsv = new \moodle_url($CFG->wwwroot . '/blocks/coupon/sample.csv');
         $mform->addElement('filepicker', 'coupon_recipients',
                 get_string('label:coupon_recipients', 'block_coupon'), null, array('accepted_types' => 'csv'));
         $mform->addHelpButton('coupon_recipients', 'label:coupon_recipients', 'block_coupon');

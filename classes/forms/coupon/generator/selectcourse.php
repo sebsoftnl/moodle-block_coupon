@@ -29,6 +29,9 @@
  */
 
 namespace block_coupon\forms\coupon\generator;
+
+defined('MOODLE_INTERNAL') || die();
+
 use block_coupon\helper;
 require_once($CFG->libdir . '/formslib.php');
 
@@ -50,6 +53,11 @@ class selectcourse extends \moodleform {
     public function definition() {
         $mform = & $this->_form;
 
+        $multiselect = true;
+        if (!empty($this->_customdata['coursemultiselect'])) {
+            $multiselect = (bool)$this->_customdata['coursemultiselect'];
+        }
+
         $mform->addElement('header', 'header', get_string('heading:info', 'block_coupon'));
         if (!$strinfo = get_config('block_coupon', 'info_coupon_course')) {
             $strinfo = get_string('missing_config_info', 'block_coupon');
@@ -70,7 +78,7 @@ class selectcourse extends \moodleform {
         // Course id.
         $selectcourse = &$mform->addElement('select', 'coupon_courses',
                 get_string('label:coupon_courses', 'block_coupon'), $arrcoursesselect, $attributes);
-        $selectcourse->setMultiple(true);
+        $selectcourse->setMultiple($multiselect);
         $mform->addRule('coupon_courses', get_string('error:required', 'block_coupon'), 'required', null, 'client');
         $mform->addHelpButton('coupon_courses', 'label:coupon_courses', 'block_coupon');
 

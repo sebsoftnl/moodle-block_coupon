@@ -196,6 +196,7 @@ $string['report:dateformat'] = '%d-%m-%Y %H:%M:%S';
 $string['report:dateformatymd'] = '%d-%m-%Y';
 $string['report:heading:user'] = 'Gebruiker';
 $string['report:heading:coursename'] = 'Cursus naam';
+$string['report:heading:cohortname'] = 'Sitegroep(en)';
 $string['report:heading:coursetype'] = 'Cursus type';
 $string['report:heading:status'] = 'Status';
 $string['report:heading:datestart'] = 'Start datum';
@@ -209,6 +210,8 @@ $string['report:cohorts'] = 'Cohort';
 $string['report:issend'] = 'Is verstuurd';
 $string['report:immediately'] = 'Onmiddellijk';
 $string['report:for_user_email'] = 'Ingepland voor';
+$string['report:for_user_name'] = 'Naam ontvanger';
+$string['report:timeexpired'] = 'Verloopt';
 $string['str:mandatory'] = 'Mandatory';
 $string['str:optional'] = 'Optional';
 
@@ -376,3 +379,44 @@ $string['report:heading:timecreated'] = 'Datum';
 $string['report:heading:action'] = 'Actie(s)';
 $string['action:error:delete'] = 'Foutmelding verwijderen';
 $string['tab:errors'] = 'Foutrapportage';
+$string['enrolperiod:indefinite'] = '<i>Onbeperkt</i>';
+
+$string['label:defaultrole'] = 'Standaard rol';
+$string['label:defaultrole_help'] = 'Dit is de standaardrol die gebruikers toegewezen zullen krijgen wanneer ze een coupon claimen';
+
+$string['default-coupon-page-template-main'] = 'Met deze e-learning coupon activeert u de toegang tot de volgende e-learningmodule(s):<br/>
+{courses}<br/>
+U heeft {accesstime} toegang tot uw module.<br/><br/>
+Gebruik onderstaande toegangscode om uw coupon te activeren<br/>
+Toegangscode: {coupon_code}';
+
+$string['view:cleanup:title'] = 'Coupons opschonen';
+$string['view:cleanup:heading'] = 'Coupons opschonen';
+$string['coupon:cleanup:heading'] = 'Coupons opschonen';
+$string['coupon:cleanup:info'] = 'Gebruik dit formulier om coupons te verwijderen uit het systeem.<br/>
+<b>Waarschuwing:</b> Dit proces <i>verwijdert</i> coupons uit het systeem, er is geen enkele manier om de verwijderde coupons terug te halen wanneer dit proces afgerond is';
+$string['coupon:timeframe'] = 'Type';
+$string['coupon:used'] = 'Verwijderen';
+$string['coupon:used:all'] = 'Alle coupons';
+$string['coupon:used:yes'] = 'Enkel gebruikte coupons';
+$string['coupon:used:no'] = 'Enkel ongebruikte coupons';
+$string['coupon:type'] = 'Type';
+$string['coupon:type:all'] = 'Alle';
+$string['timebefore'] = 'Gemaakt voor';
+$string['timeafter'] = 'Gemakt na';
+$string['tab:cleaner'] = 'Opschoning';
+$string['logo:none'] = 'Gebruik geen logo';
+$string['logo:default'] = 'Standaard logo';
+$string['url:couponsignup'] = 'Meldt aan met een coupon';
+$string['url:managelogos'] = 'Beheer coupon logos';
+$string['select:logo'] = 'Selecteer template logo';
+$string['select:logo:desc'] = 'Selecteer een template logo.<br/>Deze wordt enkel gebruikt indien er PDFs worden gegenereerd.';
+$string['logomanager:desc'] = 'Gebruik de logomanager hieronder om logos te beheren die gebruikt kunnen worden in uw coupon PDFs.<br/>
+Let op wat voor afbeeldingen je upload!<br/>
+Je <i>zou</i> enkel afbeeldingen van 300 DPI op A4 formaat (2480 x 3508 pixels) moeten uploaden.<br/>
+<i>Elk</i> ander formaat afbeelding zal meer dan waarschijnlijk leiden tot ongewenste resultaten.
+';
+$string['coupon:extendenrol'] = 'Inschrijvingsverlenging coupons';
+$string['signup:login'] = 'Ik heb al een account en wil inloggen';
+$string['signup:success'] = 'Je hebt je ingeschreven en zal nu worden herleid naar de login pagina.<br/>
+Valideer aub dat je meteen toegang hebt tot een of meer curssussen nadat je bent ingelogd.';

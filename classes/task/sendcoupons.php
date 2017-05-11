@@ -29,6 +29,9 @@
  **/
 
 namespace block_coupon\task;
+
+defined('MOODLE_INTERNAL') || die();
+
 use block_coupon\helper;
 
 /**
@@ -58,8 +61,7 @@ class sendcoupons extends \core\task\scheduled_task {
      * @return void
      */
     public function execute() {
-        global $CFG, $DB;
-        require_once($CFG->dirroot . '/blocks/coupon/classes/settings.php');
+        global $DB;
         // Call coupons.
         $coupons = helper::get_coupons_to_send();
 

@@ -27,6 +27,7 @@
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die;
 
 /**
  * Install
@@ -34,10 +35,17 @@
 function xmldb_block_coupon_install() {
     global $DB, $CFG;
 
-    // Perform install tasks.
-    if (!is_dir($CFG->dataroot . '/coupon_logos')) {
-        if (!@mkdir($CFG->dataroot . '/coupon_logos')) {
-            print_error('error:moodledata_not_writable', 'block_coupon');
-        }
+    // IF we have a custom logo, please place into Moodle's Filesystem.
+    // This should NOT happen, but it could (e.g de-installation of a previous version).
+    $logofile = $CFG->dataroot.'/coupon_logos/couponlogo.png';
+    if (file_exists($logofile)) {
+        // Store.
+        $content = file_get_contents($logofile);
+        \block_coupon\logostorage::store_from_content('couponlogo.png', $content);
+        // Delete original.
+        unlink($logofile);
+        // ANd remove dir.
+        remove_dir(dirname($logofile));
     }
+
 }

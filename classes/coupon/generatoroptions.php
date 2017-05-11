@@ -29,6 +29,8 @@
 
 namespace block_coupon\coupon;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * block_coupon\coupon\generatoroptions
  *
@@ -47,6 +49,10 @@ class generatoroptions {
      * COHORT type generator
      */
     const COHORT = 'cohort';
+    /**
+     * ENROLEXTENSION type generator
+     */
+    const ENROLEXTENSION = 'enrolext';
 
     /**
      * generator type
@@ -125,6 +131,12 @@ class generatoroptions {
      * @var string
      */
     public $csvrecipients;
+
+    /**
+     * coupon logo ID (0 indicates default, all other values refer to file IDs)
+     * @var int
+     */
+    public $logoid = 0;
 
     /**
      * create a new instance

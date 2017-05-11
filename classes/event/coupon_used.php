@@ -28,6 +28,8 @@
  **/
 namespace block_coupon\event;
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot . '/user/selector/lib.php');
 
 /**

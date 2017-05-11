@@ -29,6 +29,9 @@
  */
 
 namespace block_coupon\forms\coupon\generator;
+
+defined('MOODLE_INTERNAL') || die();
+
 use block_coupon\helper;
 require_once($CFG->libdir . '/formslib.php');
 
@@ -73,7 +76,7 @@ class confirmcourse extends \moodleform {
         $mform->addElement('header', 'csvForm', get_string('heading:csvForm', 'block_coupon'));
 
         // Filepicker.
-        $urldownloadcsv = new \moodle_url('/blocks/coupon/sample.csv');
+        $urldownloadcsv = new \moodle_url($CFG->wwwroot . '/blocks/coupon/sample.csv');
         $mform->addElement('filepicker', 'coupon_recipients',
                 get_string('label:coupon_recipients', 'block_coupon'), null, array('accepted_types' => 'csv'));
         $mform->addHelpButton('coupon_recipients', 'label:coupon_recipients', 'block_coupon');
@@ -166,23 +169,15 @@ class confirmcourse extends \moodleform {
         $mform->addHelpButton('enrolment_period', 'label:enrolment_period', 'block_coupon');
 
         // Course fullname.
-        $headingstr = array();
-        foreach ($SESSION->generatoroptions->courses as $courseid) {
-            if (!$course = $DB->get_record('course', array('id' => $courseid))) {
-                print_error('error:course-not-found', 'block_coupon');
-            }
-            $headingstr[] = $course->fullname;
-        }
-        $mform->addElement('static', 'coupon_courses',
-                get_string('label:selected_courses', 'block_coupon'), implode('<br/>', $headingstr));
+        list($cinsql, $cparams) = $DB->get_in_or_equal($SESSION->generatoroptions->courses);
+        $courses = implode('<br/>', $DB->get_fieldset_select('course', 'fullname', 'id ' . $cinsql, $cparams));
+        $mform->addElement('static', 'coupon_courses', get_string('label:selected_courses', 'block_coupon'), $courses);
 
         // Selected groups.
-        if (isset($SESSION->generatoroptions->groups)) {
-            $mform->addElement('static', 'coupon_groups', get_string('label:selected_groups', 'block_coupon'), '');
-            $groups = $DB->get_records_list('groups', 'id', $SESSION->generatoroptions->cohorts);
-            foreach ($groups as $group) {
-                $mform->addElement('static', 'coupon_groups', '', $group->name);
-            }
+        if (!empty($SESSION->generatoroptions->groups)) {
+            list($ginsql, $gparams) = $DB->get_in_or_equal($SESSION->generatoroptions->groups);
+            $groups = implode('<br/>', $DB->get_fieldset_select('groups', 'name', 'id ' . $ginsql, $gparams));
+            $mform->addElement('static', 'coupon_groups', get_string('label:selected_groups', 'block_coupon'), $groups);
         }
 
         // All elements added, add the custom js function and submit buttons.

@@ -28,6 +28,7 @@
  * */
 
 namespace block_coupon\coupon;
+defined('MOODLE_INTERNAL') || die();
 
 use block_coupon\coupon\codegenerator;
 
@@ -204,6 +205,7 @@ class generator {
      */
     protected function generate(generatoroptions $options) {
         global $DB;
+        raise_memory_limit(MEMORY_HUGE);
         $errors = array();
         for ($i = 0; $i < $options->amount; $i++) {
             // An object for the coupon itself.
@@ -218,6 +220,8 @@ class generator {
             $objcoupon->senddate = (!empty($options->senddate)) ? $options->senddate : null;
             $objcoupon->enrolperiod = (int)$options->enrolperiod;
             $objcoupon->redirect_url = (!empty($options->redirecturl)) ? $options->redirecturl : null;
+            $objcoupon->logoid = (int)$options->logoid;
+            $objcoupon->typ = $options->type;
 
             // If coupons are personal, set recipient data.
             if (!empty($options->recipients)) {
@@ -311,7 +315,7 @@ class generator {
             );
             // And insert in db.
             if (!$DB->insert_record('block_coupon_courses', $record)) {
-                $errors[] = 'Failed to create cohort link ' . $course->id . ' record for coupon id ' . $coupon->id . '.';
+                $errors[] = 'Failed to create course link ' . $course->id . ' record for coupon id ' . $coupon->id . '.';
             }
         }
         if (!empty($this->groups)) {

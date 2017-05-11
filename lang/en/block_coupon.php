@@ -196,6 +196,7 @@ $string['report:dateformat'] = '%d-%m-%Y %H:%M:%S';
 $string['report:dateformatymd'] = '%d-%m-%Y';
 $string['report:heading:user'] = 'User';
 $string['report:heading:coursename'] = 'Course name';
+$string['report:heading:cohortname'] = 'Cohort(s)';
 $string['report:heading:coursetype'] = 'Course type';
 $string['report:heading:status'] = 'Status';
 $string['report:heading:datestart'] = 'Startdate';
@@ -206,9 +207,11 @@ $string['report:senddate'] = 'Send date';
 $string['report:enrolperiod'] = 'Owner';
 $string['report:coupon_code'] = 'Subscription code';
 $string['report:cohorts'] = 'Cohort';
-$string['report:issend'] = 'Is send';
+$string['report:issend'] = 'Is sent';
 $string['report:immediately'] = 'Immediately';
 $string['report:for_user_email'] = 'Planned for';
+$string['report:for_user_name'] = 'Recipient name';
+$string['report:timeexpired'] = 'Expires';
 $string['str:mandatory'] = 'Mandatory';
 $string['str:optional'] = 'Optional';
 
@@ -398,3 +401,44 @@ $string['report:heading:timecreated'] = 'Date';
 $string['report:heading:action'] = 'Action(s)';
 $string['action:error:delete'] = 'Delete error';
 $string['tab:errors'] = 'Error reports';
+$string['enrolperiod:indefinite'] = '<i>Indefinite</i>';
+
+$string['label:defaultrole'] = 'Default role';
+$string['label:defaultrole_help'] = 'This will be the default role with which users will get assigned when claiming a coupon';
+
+$string['default-coupon-page-template-main'] = 'With this coupon you can activate access to the following e-learning module(s):<br/>
+{courses}<br/><br/>
+You have {accesstime} access to this module.<br/><br/>
+Please use the following coupon code to activate access<br/>
+{coupon_code}';
+
+$string['view:cleanup:title'] = 'Clean coupons';
+$string['view:cleanup:heading'] = 'Clean coupons';
+$string['coupon:cleanup:heading'] = 'Clean coupons';
+$string['coupon:cleanup:info'] = 'Use this form to configure coupons to delete from the system.<br/>
+<b>Warning:</b> This process will <i>remove</i> coupons from the system, there is no way to get them back when this cleaning process has completed';
+$string['coupon:timeframe'] = 'Type';
+$string['coupon:used'] = 'Removal';
+$string['coupon:used:all'] = 'All coupons';
+$string['coupon:used:yes'] = 'Used coupons only';
+$string['coupon:used:no'] = 'Unused coupons only';
+$string['coupon:type'] = 'Type';
+$string['coupon:type:all'] = 'All';
+$string['timebefore'] = 'Created before';
+$string['timeafter'] = 'Created after';
+$string['tab:cleaner'] = 'Cleanup';
+$string['logo:none'] = 'Do not use a logo';
+$string['logo:default'] = 'Default logo';
+$string['url:couponsignup'] = 'Signup with a coupon code';
+$string['url:managelogos'] = 'Manage coupon images';
+$string['select:logo'] = 'Select template logo';
+$string['select:logo:desc'] = 'Select a template logo.<br/>This will only be used when a PDF will be generated for coupons.';
+$string['logomanager:desc'] = 'Use the logomanager below to manage the logos that can be used on the coupon PDFs.<br/>
+Beware what type of images you upload!<br/>
+You <i>should</i> only be using 300 DPI images on A4 format (2480 x 3508 pixels).<br/>
+<i>Any</i> other image sizes will probably lead to unwanted side effects.
+';
+$string['coupon:extendenrol'] = 'Enrolment extension coupons';
+$string['signup:login'] = 'I already have an account and want to login';
+$string['signup:success'] = 'You have signed up and will now be redirected to the login page.<br/>
+Please validate you have actually been granted access to the course after logging in.';

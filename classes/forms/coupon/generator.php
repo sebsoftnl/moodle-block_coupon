@@ -29,10 +29,13 @@
  */
 
 namespace block_coupon\forms\coupon;
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->libdir . '/formslib.php');
 
 /**
- * block_coupon\forms\
+ * block_coupon\forms\generator
  *
  * @package     block_coupon
  *
@@ -66,6 +69,9 @@ class generator extends \moodleform {
         $mform->setDefault('coupon_type[type]', 0);
         $mform->addRule('coupon_type', get_string('error:required', 'block_coupon'), 'required', null, 'client');
         $mform->addHelpButton('coupon_type', 'label:coupon_type', 'block_coupon');
+
+        // Coupon logo selection.
+        \block_coupon\logostorage::add_select_form_elements($mform);
 
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'));
     }

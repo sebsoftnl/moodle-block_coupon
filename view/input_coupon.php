@@ -28,7 +28,6 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once(dirname(__FILE__) . '/../../../config.php');
-require_once($CFG->dirroot . '/blocks/coupon/classes/settings.php');
 
 use block_coupon\helper;
 use block_coupon\forms\coupon\validator;
@@ -50,7 +49,7 @@ require_login($course, true);
 
 $PAGE->navbar->add(get_string('view:input_coupon:title', 'block_coupon'));
 
-$url = new moodle_url('/blocks/coupon/view/input_coupon.php', array('id' => $id));
+$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/input_coupon.php', array('id' => $id));
 $PAGE->set_url($url);
 
 $PAGE->set_title(get_string('view:input_coupon:title', 'block_coupon'));
@@ -65,7 +64,7 @@ require_capability('block/coupon:inputcoupons', $context);
 // Include the form.
 $mform = new validator($url);
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/course/view.php', array('id' => $course->id)));
+    redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $course->id)));
 } else if ($data = $mform->get_data()) {
     $redirecturl = helper::claim_coupon($data->coupon_code);
     // Redirect to my directly.

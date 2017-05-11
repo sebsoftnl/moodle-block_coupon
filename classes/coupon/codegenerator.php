@@ -30,6 +30,8 @@
 
 namespace block_coupon\coupon;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * block_coupon\coupon\generator
  *

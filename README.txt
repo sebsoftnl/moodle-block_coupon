@@ -50,10 +50,34 @@ Furthermore, coupons can be generated on two "access" levels:
   10 coupons, single PDF -> result is around 400 kB, rendering takes around 3-4 seconds.
   10 coupons, seperate PDFs -> result is around 4 MB, rendering takes around 35-40 seconds.
 
-INSTALLATION
+INSTALLATION INSTRUCTIONS
 
 - Copy the coupon folder to your blocks directory.
-- Configure your plugin.
-- Place the plugin on the main homepage or the My of your site. Thare are the only allowed
-  locations, but also the only logical places the plugin makes sense.
-- We're ready to run!
+- Go to the moodle admin pages (you will probably be confronted with it anyway) and install the plugin
+- Configure the main settings for the plugin.
+- We're set up for usage!
+
+PLACEMENT OF THE PLUGIN
+
+There are only two pages you can add the coupon block on. This is the site's frontpage
+or the user dashboard (my) page. The main reason for this is because the block is the
+"frontend" for users to enter their coupon or voucher code.
+Administrators and users with the correct capabilities will also see the links to
+the coupon administration pages and the coupon generator page.
+
+GENERAL CONSIDERATIONS
+
+There's two main configurations to consider when generating coupons.
+For course type coupons, this plugin attempts to enrol a user through use of Moodle's
+internal function "enrol_try_internal_enrol".
+The Moodle documentation shows it will attempt to enrol you using manual enrolment.
+For this reason manual enrolment MUST be enabled for these courses.
+
+For cohort type coupons, a user is made a member of a cohort. That's all there is to it.
+Surprise though, if you want to actually make a user have access to a course, you
+probably want to configure cohort enrolment for the course.
+
+For those paying attention, creating cohort type coupons thus enables a simple
+way of enrolling users into multiple courses at once just by configuring the right
+cohort enrolments in multiple courses.
+That's still not to say course coupons can't be used in a similar way (using meta courses).

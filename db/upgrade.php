@@ -27,6 +27,7 @@
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die;
 
 /**
  * Upgrade
@@ -35,7 +36,7 @@
  * @return boolean
  */
 function xmldb_block_coupon_upgrade($oldversion) {
-    global $DB;
+    global $DB, $CFG;
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2016011000) {
@@ -88,6 +89,45 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_tped savepoint reached.
         upgrade_block_savepoint(true, 2016011000, 'coupon');
+
+    }
+
+    if ($oldversion < 2017050100) {
+        // Add activity completion table.
+        $table = new xmldb_table('block_coupon');
+        $field = new xmldb_field('logoid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0', 'submission_code');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('typ', XMLDB_TYPE_CHAR, '20', null, null, null, null, 'logoid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Detect all coupon types and set them.
+        // Set cohort types.
+        $cids = $DB->get_fieldset_sql('SELECT DISTINCT couponid FROM {block_coupon_cohorts}');
+        list($insql, $params) = $DB->get_in_or_equal($cids, SQL_PARAMS_QM, 'unused', true, 0);
+        array_unshift($params, 'cohort');
+        $DB->execute('UPDATE {block_coupon} SET typ = ? WHERE id '.$insql, $params);
+        // Set course types.
+        list($notinsql, $params) = $DB->get_in_or_equal($cids, SQL_PARAMS_QM, 'unused', false, 0);
+        array_unshift($params, 'course');
+        $DB->execute('UPDATE {block_coupon} SET typ = ? WHERE id '.$notinsql, $params);
+
+        // Now IF we have a custom logo, please place into Moodle's Filesystem.
+        $logofile = $CFG->dataroot.'/coupon_logos/couponlogo.png';
+        if (file_exists($logofile)) {
+            // Store.
+            $content = file_get_contents($logofile);
+            \block_coupon\logostorage::store_from_content('couponlogo.png', $content);
+            // Delete original.
+            unlink($logofile);
+            // ANd remove dir.
+            remove_dir(dirname($logofile));
+        }
+
+        // Block_tped savepoint reached.
+        upgrade_block_savepoint(true, 2017050100, 'coupon');
 
     }
     return true;

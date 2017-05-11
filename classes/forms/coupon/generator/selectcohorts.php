@@ -29,6 +29,9 @@
  */
 
 namespace block_coupon\forms\coupon\generator;
+
+defined('MOODLE_INTERNAL') || die();
+
 use block_coupon\helper;
 require_once($CFG->libdir . '/formslib.php');
 
@@ -50,6 +53,11 @@ class selectcohorts extends \moodleform {
     public function definition() {
         $mform = & $this->_form;
 
+        $multiselect = true;
+        if (!empty($this->_customdata['cohortmultiselect'])) {
+            $multiselect = (bool)$this->_customdata['cohortmultiselect'];
+        }
+
         $mform->addElement('header', 'header', get_string('heading:info', 'block_coupon'));
         if (!$strinfo = get_config('block_coupon', 'info_coupon_cohorts')) {
             $strinfo = get_string('missing_config_info', 'block_coupon');
@@ -58,7 +66,7 @@ class selectcohorts extends \moodleform {
         $mform->addElement('header', 'header', get_string('heading:input_cohorts', 'block_coupon'));
 
         // First we'll get some useful info.
-        $cohorts = helper::get_cohort_menu();
+        $cohorts = helper::get_cohorts();
 
         // And create data for multiselect.
         $arrcohortselect = array();
@@ -70,7 +78,7 @@ class selectcohorts extends \moodleform {
         // Cohort id.
         $selectcohorts = &$mform->addElement('select', 'coupon_cohorts',
                 get_string('label:coupon_cohorts', 'block_coupon'), $arrcohortselect, $attributes);
-        $selectcohorts->setMultiple(true);
+        $selectcohorts->setMultiple($multiselect);
         $mform->addRule('coupon_cohorts', get_string('error:required', 'block_coupon'), 'required', null, 'client');
         $mform->addHelpButton('coupon_cohorts', 'label:coupon_cohorts', 'block_coupon');
 

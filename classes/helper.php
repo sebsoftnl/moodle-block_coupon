@@ -30,6 +30,8 @@
 
 namespace block_coupon;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * block_coupon\helper
  *
@@ -97,24 +99,25 @@ class helper {
     /**
      * Get a list of all cohorts
      *
+     * @param string $fields the fields to get
      * @return array
      */
-    static public final function get_cohort_menu() {
+    static public final function get_cohorts($fields = 'id,name,idnumber') {
         global $DB;
-        $cohorts = $DB->get_records('cohort', null, null, 'id, name');
+        $cohorts = $DB->get_records('cohort', null, 'name ASC', $fields);
         return (!empty($cohorts)) ? $cohorts : false;
     }
 
     /**
      * Get a list of all visible courses
      *
+     * @param string $fields the fields to get
      * @return array
      */
-    static public final function get_visible_courses() {
+    static public final function get_visible_courses($fields = 'id,shortname,fullname,idnumber') {
         global $DB;
-
         $select = "id != 1 AND visible = 1";
-        $courses = $DB->get_records_select('course', $select, null, 'fullname ASC');
+        $courses = $DB->get_records_select('course', $select, null, 'fullname ASC', $fields);
 
         return (!empty($courses)) ? $courses : false;
     }
@@ -178,17 +181,20 @@ class helper {
      * Claim a coupon
      *
      * @param string $code coupon submission code
+     * @param int $foruserid user for which coupon is claimed. If not given: current user.
      */
-    public static function claim_coupon($code) {
+    public static function claim_coupon($code, $foruserid = null) {
         global $CFG, $DB, $USER;
         // Because we're outside course context we've got to include groups library manually.
         require_once($CFG->dirroot . '/group/lib.php');
         require_once($CFG->dirroot . '/cohort/lib.php');
 
-        $role = $DB->get_record('role', array('shortname' => 'student'));
+        if (empty($foruserid)) {
+            $foruserid = $USER->id;
+        }
+        $role = self::get_default_coupon_role();
         $coupon = $DB->get_record('block_coupon', array('submission_code' => $code));
         $couponcourses = $DB->get_records('block_coupon_courses', array('couponid' => $coupon->id));
-
         // We'll handle coupon_cohorts.
         if (empty($couponcourses)) {
 
@@ -204,7 +210,7 @@ class helper {
                     throw new exception('error:missing_cohort');
                 }
 
-                cohort_add_member($couponcohort->cohortid, $USER->id);
+                cohort_add_member($couponcohort->cohortid, $foruserid);
             }
             // Now execute the cohort sync.
             $result = self::enrol_cohort_sync();
@@ -230,11 +236,11 @@ class helper {
                 if (is_null($context) || $context === false) {
                     throw new exception('error:course-not-found');
                 }
-                if (is_enrolled($context, $USER->id)) {
+                if (is_enrolled($context, $foruserid)) {
                     continue;
                 }
                 // Now we can enrol.
-                if (!enrol_try_internal_enrol($couponcourse->courseid, $USER->id, $role->id, time(), $endenrolment)) {
+                if (!enrol_try_internal_enrol($couponcourse->courseid, $foruserid, $role->id, time(), $endenrolment)) {
                     throw new exception('error:unable_to_enrol');
                 }
                 // Mark the context for cache refresh.
@@ -251,23 +257,23 @@ class helper {
                         throw new exception('error:missing_group');
                     }
                     // Add user if its not a member yet.
-                    if (!groups_is_member($coupongroup->groupid, $USER->id)) {
-                        groups_add_member($coupongroup->groupid, $USER->id);
+                    if (!groups_is_member($coupongroup->groupid, $foruserid)) {
+                        groups_add_member($coupongroup->groupid, $foruserid);
                     }
                 }
             }
         }
 
         // And finally update the coupon record.
-        $coupon->userid = $USER->id;
+        $coupon->userid = $foruserid;
         $coupon->timemodified = time();
         $DB->update_record('block_coupon', $coupon);
         // Trigger event.
         $event = \block_coupon\event\coupon_used::create(
                 array(
                     'objectid' => $coupon->id,
-                    'relateduserid' => $USER->id,
-                    'context' => \context_user::instance($USER->id)
+                    'relateduserid' => $foruserid,
+                    'context' => \context_user::instance($foruserid)
                     )
                 );
         $event->add_record_snapshot('block_coupon', $coupon);
@@ -289,6 +295,7 @@ class helper {
     public static final function mail_coupons($coupons, $emailto, $generatesinglepdfs = false,
             $emailbody = false, $initiatedbycron = false) {
         global $DB, $CFG;
+        raise_memory_limit(MEMORY_HUGE);
         // One PDF for each coupon.
         if ($generatesinglepdfs) {
 
@@ -660,17 +667,182 @@ class helper {
     }
 
     /**
-     * Get the coupon logo, or fall back to internal default file.
+     * Get default assigned role to use with coupons.
      *
-     * @return string file path
+     * @return false|\stdClass
      */
-    public static final function get_coupon_logo() {
-        global $CFG;
-        $fn = BLOCK_COUPON_LOGOFILE;
-        if (!file_exists($fn)) {
-            $fn = $CFG->dirroot . '/blocks/coupon/pix/couponlogo.png';
+    public static function get_default_coupon_role() {
+        global $DB;
+        $config = get_config('block_coupon');
+        $role = $DB->get_record('role', array('id' => $config->defaultrole));
+        return $role;
+    }
+
+    /**
+     * Get course connected to coupons
+     *
+     * @param \stdClass $coupon
+     * @return array result, keys are courseids, values are course shortnames
+     */
+    public static function get_coupon_courses($coupon) {
+        global $DB;
+        $sqls = array();
+        $params = array();
+        $sqls[] = 'SELECT c.id,c.shortname FROM {course} c JOIN {block_coupon_courses} cc ON cc.courseid=c.id AND cc.couponid = ?';
+        $params[] = $coupon->id;
+        $sqls[] = 'SELECT c.id,c.shortname FROM {block_coupon_cohorts} cc
+                JOIN {enrol} e ON (e.customint1=cc.cohortid AND e.enrol=?)
+                JOIN {course} c ON e.courseid=c.id
+                WHERE cc.couponid = ?';
+        $params[] = 'cohort';
+        $params[] = $coupon->id;
+        $sql = 'SELECT * FROM ((' . implode(') UNION (', $sqls) . ')) as x';
+        return $DB->get_records_sql_menu($sql, $params);
+    }
+
+    /**
+     * Get courses connected to all coupons
+     *
+     * @param bool $includeempty whether or not to include an empty element
+     * @return array result, keys are courseids, values are course shortnames
+     */
+    public static function get_coupon_course_menu($includeempty = true) {
+        global $DB;
+        $sqls = array();
+        $params = array();
+        $sqls[] = 'SELECT c.id,c.shortname FROM {course} c JOIN {block_coupon_courses} cc ON cc.courseid=c.id';
+        $sqls[] = 'SELECT c.id,c.shortname FROM {block_coupon_cohorts} cc
+                JOIN {enrol} e ON (e.customint1=cc.cohortid AND e.enrol=?)
+                JOIN {course} c ON e.courseid=c.id
+            ';
+        $params[] = 'cohort';
+        $sql = 'SELECT DISTINCT * FROM ((' . implode(') UNION (', $sqls) . ')) as x';
+        $rs = $DB->get_records_sql_menu($sql, $params);
+        if ($includeempty) {
+            $rs = array(0 => '...') + $rs;
         }
-        return $fn;
+        return $rs;
+    }
+
+    /**
+     * Get cohort connected to all coupons
+     *
+     * @param bool $includeempty whether or not to include an empty element
+     * @return array result, keys are cohort ids, values are cohort names
+     */
+    public static function get_coupon_cohort_menu($includeempty = true) {
+        global $DB;
+        $sql = 'SELECT DISTINCT c.id,c.name FROM {block_coupon_cohorts} cc
+                JOIN {cohort} c ON cc.cohortid=c.id';
+        $rs = $DB->get_records_sql_menu($sql);
+        if ($includeempty) {
+            $rs = array(0 => '...') + $rs;
+        }
+        return $rs;
+    }
+
+    /**
+     * Cleanup coupons given the options
+     * @param \stdClass $options
+     * @param string $operator (SELECT, DELETE)
+     * @param string $fields
+     */
+    public static function cleanup_coupons_query($options, $operator = 'SELECT', $fields = 'id') {
+        global $DB;
+        $options = (object)(array)$options;
+        if (!isset($options->type)) {
+            $options->type = 0; // All.
+        }
+        if (!isset($options->used)) {
+            $options->used = 1; // Used only.
+        }
+        $params = array();
+        $where = array();
+        // Assemble query.
+        // Owner.
+        if (!empty($options->ownerid)) {
+            $where[] = 'ownerid = :ownerid';
+            $params['ownerid'] = $options->ownerid;
+        }
+        // Timing.
+        if (!empty($options->timebefore)) {
+            $where[] = 'timecreated < :timebefore';
+            $params['timebefore'] = $options->timebefore;
+        }
+        if (!empty($options->timeafter)) {
+            $where[] = 'timecreated > :timeafter';
+            $params['timeafter'] = $options->timeafter;
+        }
+        // Usage.
+        switch($options->used) {
+            case 2: // Unused.
+                $where[] = '(userid IS NULL or userid = 0)';
+                break;
+            case 1: // Used.
+                $where[] = '(userid IS NOT NULL AND userid <> 0)';
+                break;
+            case 0:
+            default:
+                break;
+        }
+        // Removal query.
+        if ($options->type == 1) {
+            // Course coupons.
+            $subselect = 'SELECT DISTINCT couponid FROM {block_coupon_courses}';
+            $inparams = array();
+            if (!empty($options->course)) {
+                list($insql, $inparams) = $DB->get_in_or_equal($options->course, SQL_PARAMS_NAMED, 'courseid', true, 0);
+                $subselect .= ' WHERE courseid ' . $insql;
+                $where[] = 'id IN ('.$subselect.')';
+                $params += $inparams;
+            }
+        } else if ($options->type == 2) {
+            // Cohort coupons.
+            $subselect = 'SELECT DISTINCT couponid FROM {block_coupon_cohorts}';
+            $inparams = array();
+            if (!empty($options->cohort)) {
+                list($insql, $inparams) = $DB->get_in_or_equal($options->cohort, SQL_PARAMS_NAMED, 'cohortid', true, 0);
+                $subselect .= ' WHERE cohortid ' . $insql;
+                $where[] = 'id IN ('.$subselect.')';
+                $params += $inparams;
+            }
+        }
+        $sqlparts = array($operator, $fields, 'FROM {block_coupon}');
+        if (!empty($where)) {
+            $sqlparts[] = 'WHERE ' . implode(' AND ', $where);
+        }
+        return array(implode(' ', $sqlparts), $params);
+
+    }
+
+    /**
+     * Cleanup coupons given the options
+     * @param \stdClass $options
+     */
+    public static function cleanup_coupons($options) {
+        global $DB;
+        list($idquery, $idparams) = self::cleanup_coupons_query($options, 'SELECT', 'id');
+        $couponids = $DB->get_fieldset_sql($idquery, $idparams);
+        if (!empty($couponids)) {
+            $DB->delete_records_list('block_coupon', 'id', $couponids);
+            $DB->delete_records_list('block_coupon_courses', 'couponid', $couponids);
+            $DB->delete_records_list('block_coupon_cohorts', 'couponid', $couponids);
+            $DB->delete_records_list('block_coupon_groups', 'couponid', $couponids);
+        }
+    }
+
+    /**
+     * Find first block instance id for block_coupon
+     *
+     * @return int
+     */
+    public static function find_block_instance_id() {
+        global $DB;
+        $rec = $DB->get_record('block_instances', array('blockname' => 'coupon'));
+        if (empty($rec)) {
+            return 0;
+        }
+        return $rec->id;
     }
 
 }

@@ -28,6 +28,9 @@
  */
 
 namespace block_coupon\tables;
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->libdir . '/tablelib.php');
 
 /**
@@ -78,6 +81,30 @@ class coupons extends \table_sql {
     protected $strdeleteconfirm;
 
     /**
+     *
+     * @var \block_coupon\filtering\filtering
+     */
+    protected $filtering;
+
+    /**
+     * Get filtering instance
+     * @return \block_coupon\filtering\filtering
+     */
+    public function get_filtering() {
+        return $this->filtering;
+    }
+
+    /**
+     * Set filtering instance
+     * @param \block_coupon\filtering\filtering $filtering
+     * @return \block_coupon\tables\coupons
+     */
+    public function set_filtering(\block_coupon\filtering\filtering $filtering) {
+        $this->filtering = $filtering;
+        return $this;
+    }
+
+    /**
      * Create a new instance of the logtable
      *
      * @param int $ownerid if set, display only coupons from given owner
@@ -89,6 +116,7 @@ class coupons extends \table_sql {
         $this->ownerid = (int)$ownerid;
         $this->filter = (int)$filter;
         $this->sortable(true, 'c.senddate', 'DESC');
+        $this->no_sorting('owner');
         $this->strdelete = get_string('action:coupon:delete', 'block_coupon');
         $this->strdeleteconfirm = get_string('action:coupon:delete:confirm', 'block_coupon');
     }
@@ -117,22 +145,19 @@ class coupons extends \table_sql {
     public function render($pagesize, $useinitialsbar = true) {
         $columns = array('owner', 'for_user_email', 'senddate',
             'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'issend');
-        if ($this->filter === self::UNUSED) {
+        if ($this->is_downloading() == '') {
             $columns[] = 'action';
         }
         $this->define_table_columns($columns);
 
         // Generate SQL.
-        $fields = 'c.*, ' . get_all_user_name_fields(true, 'u');
-        if ($this->filter === self::UNUSED) {
-            $fields .= ', NULL as action';
-        }
+        $fields = 'c.*, ' . get_all_user_name_fields(true, 'u') . ', NULL as action';
         $from = '{block_coupon} c LEFT JOIN {user} u ON c.ownerid=u.id';
         $where = array();
         $params = array();
         if ($this->ownerid > 0) {
-            $where[] = 'c.ownerid = ?';
-            $params[] = $this->ownerid;
+            $where[] = 'c.ownerid = :ownerid';
+            $params['ownerid'] = $this->ownerid;
         }
         switch ($this->filter) {
             case self::USED:
@@ -145,6 +170,16 @@ class coupons extends \table_sql {
                 // Has no extra where clause.
                 break;
         }
+
+        // Add filtering rules.
+        if (!empty($this->filtering)) {
+            list($fsql, $fparams) = $this->filtering->get_sql_filter();
+            if (!empty($fsql)) {
+                $where[] = $fsql;
+                $params += $fparams;
+            }
+        }
+
         parent::set_sql($fields, $from, implode(' AND ', $where), $params);
         $this->out($pagesize, $useinitialsbar);
     }
@@ -157,6 +192,20 @@ class coupons extends \table_sql {
      */
     public function col_owner($row) {
         return fullname($row);
+    }
+
+    /**
+     * Render visual representation of the 'enrolperiod' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string enrolperiod string
+     */
+    public function col_enrolperiod($row) {
+        static $strindefinite;
+        if ($strindefinite === null) {
+            $strindefinite = get_string('enrolperiod:indefinite', 'block_coupon');
+        }
+        return (($row->enrolperiod <= 0) ? $strindefinite : format_time($row->enrolperiod * 86400));
     }
 
     /**

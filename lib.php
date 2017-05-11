@@ -26,6 +26,7 @@
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die;
 
 /**
  * Send a file
@@ -39,7 +40,8 @@
  * @param array $options
  */
 function block_coupon_pluginfile($course, $birecordorcm, $context, $filearea, $args, $forcedownload, array $options=array()) {
-    if ($filearea !== 'content') {
+    $allowed = array('content', 'logos');
+    if (!in_array($filearea, $allowed)) {
         send_file_not_found();
     }
     if ($context->contextlevel != CONTEXT_SYSTEM) {
@@ -50,10 +52,18 @@ function block_coupon_pluginfile($course, $birecordorcm, $context, $filearea, $a
     // Get file.
     $fs = get_file_storage();
     $filename = array_pop($args);
-    $filepath = ($args ? '/' . implode('/', $args) . '/' : '/');
-    if (!$file = $fs->get_file($context->id, 'block_coupon', 'content', 0, $filepath, $filename) or $file->is_directory()) {
+    $itemid = array_shift($args);
+    if (!is_numeric($itemid)) {
+        $filepath = $itemid . ($args ? '/' . implode('/', $args) . '/' : '/');
+        $itemid = 0;
+    } else {
+        $filepath = ($args ? '/' . implode('/', $args) . '/' : '/');
+    }
+
+    if (!$file = $fs->get_file($context->id, 'block_coupon', $filearea, $itemid, $filepath, $filename) or $file->is_directory()) {
         send_file_not_found();
     }
-    session_get_instance()->write_close();
+
+    \core\session\manager::write_close();
     send_stored_file($file, 60 * 60, 0, $forcedownload, $options);
 }

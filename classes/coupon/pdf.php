@@ -29,6 +29,9 @@
  * */
 
 namespace block_coupon\coupon;
+
+defined('MOODLE_INTERNAL') || die();
+
 use block_coupon\helper;
 
 require_once($CFG->dirroot . '/lib/pdflib.php');
@@ -89,6 +92,12 @@ class pdf extends \pdf {
      * @var string
      */
     protected $templatebotright = '';
+    /**
+     * include QR code?
+     *
+     * @var bool
+     */
+    protected $includeqr = true;
 
     /**
      * Get main text template
@@ -151,6 +160,26 @@ class pdf extends \pdf {
     }
 
     /**
+     * DO we include the QR code somewhere?
+     *
+     * @return bool
+     */
+    public function get_includeqr() {
+        return $this->includeqr;
+    }
+
+    /**
+     * Set whether or not to include QR code
+     *
+     * @param bool $includeqr
+     * @return \block_coupon\coupon\pdf
+     */
+    public function set_includeqr($includeqr) {
+        $this->includeqr = $includeqr;
+        return $this;
+    }
+
+    /**
      * Get logo
      *
      * @return string full filepath to logo
@@ -185,13 +214,29 @@ class pdf extends \pdf {
     protected $imagetemplateid = false;
 
     /**
+     * collection of logo templates mappings
+     * @var array
+     */
+    protected $logotemplates;
+
+    /**
+     * colelction of logo filepaths
+     * @var array
+     */
+    protected $logos;
+
+    /**
+     * coupon we're currently rendering
+     * @var \stdClass
+     */
+    protected $currentcoupon;
+
+    /**
      * Create a new instance
      *
      * @param string $titlestring
      */
     public function __construct($titlestring) {
-        global $CFG;
-
         $this->namestring = $titlestring;
         $this->generatordate = date('Y-m-d', time());
         parent::__construct('P', 'mm', 'A4', true, 'UTF-8');
@@ -209,11 +254,6 @@ class pdf extends \pdf {
         $this->SetMargins(0, 0, 0, true); // L-T-R.
 
         $this->SetAutoPageBreak(false, 0);
-
-        $fn = helper::get_coupon_logo();
-        if (file_exists($fn)) {
-            $this->logo = $fn;
-        }
     }
 
     /**
@@ -230,14 +270,11 @@ class pdf extends \pdf {
      * @return boolean
      */
     public function header() {
-        if (!file_exists($this->logo)) {
-            return;
-        }
+        // Try to load our logo.
+        $this->set_coupon_logo($this->currentcoupon);
+        // And continue processing.
         if (empty($this->imagetemplateid)) {
-            $this->imagetemplateid = $this->startTemplate();
-            $this->Image($this->logo, 0, 0, 0, 0, '', '', '', false, 300, '', false, false, 1, true, false, true);
-            //$this->Image($this->logo, 0, 0, 0, 0, '', '', '', true, 96, '', false, false, 1, true, false, true);
-            $this->endTemplate();
+            return;
         }
         $this->printTemplate($this->imagetemplateid);
     }
@@ -271,37 +308,126 @@ class pdf extends \pdf {
     }
 
     /**
+     * Set the logo to use for the coupon we're generating
+     *
+     * @param \stdClass $coupon
+     */
+    protected function set_coupon_logo($coupon) {
+        global $CFG;
+        if (isset($this->logotemplates[$coupon->logoid])) {
+            $this->logo = $this->logos[$coupon->logoid];
+            $this->imagetemplateid = $this->logotemplates[$coupon->logoid];
+            return;
+        }
+        switch ($coupon->logoid) {
+            case -1:
+                // None.
+                $this->logos[$coupon->logoid] = null;
+                $this->logotemplates[$coupon->logoid] = null;
+                break;
+            case 0:
+                // Default.
+                $this->logos[$coupon->logoid] = $CFG->dirroot . '/blocks/coupon/pix/couponlogo.png';
+                $this->logotemplates[$coupon->logoid] = $this->startTemplate();
+                $dpi = 300; // Could also be 96? Seems the default.
+                $this->Image($this->logos[$coupon->logoid], 0, 0, 0, 0,
+                        '', '', '', false, $dpi, '', false, false, 1, true, false, true);
+                $this->endTemplate();
+                break;
+            default:
+                // File ID.
+                $tempfile = \block_coupon\logostorage::get_tempfile_for($coupon->logoid);
+                $this->logos[$coupon->logoid] = $tempfile->get_filepath();
+                $this->logotemplates[$coupon->logoid] = $this->startTemplate();
+                $dpi = 300; // Could also be 96? Seems the default.
+                $this->Image($this->logos[$coupon->logoid], 0, 0, 0, 0,
+                        '', '', '', false, $dpi, '', false, false, 1, true, false, true);
+                $this->endTemplate();
+                // Destroy tempfile.
+                unset($tempfile);
+        }
+        // Now set internal variables.
+        $this->logo = $this->logos[$coupon->logoid];
+        $this->imagetemplateid = $this->logotemplates[$coupon->logoid];
+    }
+
+    /**
      * write coupon pages in the PDF.
      */
     protected function write_coupon_pages() {
-
         foreach ($this->coupons as $coupon) {
+            // Set current coupon (we HAVE to use this method because templates/images only work in state 2).
+            $this->currentcoupon = $coupon;
+            // Get coupon courses.
+            $courses = helper::get_coupon_courses($coupon);
 
-            $txtmain = $this->compile_main($coupon);
+            $txtmain = $this->compile_main($coupon, $courses);
             $txtbotleft = $this->compile_botleft();
             $txtbotright = $this->compile_botright();
 
             $this->startPage();
             $this->SetFont('helvetica', '', 10);
 
-            $this->MultiCell(150, 150, $txtmain, false, 'L', false, 1, 15, 80, true, 0, true);
+            $this->MultiCell(150, 150, $txtmain, false, 'C', false, 1, 15, 80, true, 0, true);
             $this->MultiCell(90, 100, $txtbotleft, false, 'L', false, 2, 4, 210, true, 0, true);
             $this->MultiCell(90, 100, $txtbotright, false, 'L', false, 2, 109, 210, true, 0, true);
+            // QR.
+            if ($this->includeqr) {
+                $qr = $this->get_qr($coupon);
+                $dpi = 300; // Could also be 96? Seems the default.
+                $this->Image($qr->get_filepath(), 150, 70, 0, 0, '', '', '', false, $dpi, '', false, false, 0, true, false, true);
+                unset($qr);
+            }
 
             $this->endPage();
         }
     }
 
     /**
+     * Get tempfile for the QR.
+     *
+     * @param \stdClass $coupon
+     * @return \block_coupon\tempfile
+     */
+    protected function get_qr($coupon) {
+        global $CFG;
+        require_once($CFG->dirroot . '/blocks/coupon/thirdparty/QrCode/src/QrCode.php');
+        // Check usage.
+        if (!empty($coupon->userid)) {
+            // Always render something.
+            $coupon->submission_code = 0;
+        }
+        $data = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/qrin.php', array(
+            'c' => $coupon->submission_code,
+            'h' => sha1($coupon->id . $coupon->ownerid . $coupon->submission_code),
+        ));
+
+        $code = new \Endroid\QrCode\QrCode();
+        $code->setText($data->out(false));
+        $code->setSize(120);
+        $code->setPadding(6);
+        $code->setErrorCorrection('high');
+        $code->setForegroundColor(array('r' => 0, 'g' => 0, 'b' => 0, 'a' => 0));
+        $code->setBackgroundColor(array('r' => 255, 'g' => 255, 'b' => 255, 'a' => 0));
+        $code->setLabelFontSize(16);
+
+        $filepath = \block_coupon\tempfile::get_storage_path('qr' . microtime(true) . uniqid('', true) . '.png');
+        $code->render($filepath, 'png');
+        return \block_coupon\tempfile::create_from_path($filepath);
+    }
+
+    /**
      * compile main template
      *
      * @param \stdClass $coupon
+     * @param array $courses
      * @return string compiled string
      */
-    protected function compile_main($coupon) {
+    protected function compile_main($coupon, $courses) {
         $find = array(
             '{coupon_code}',
-            '{accesstime}'
+            '{accesstime}',
+            '{courses}'
         );
         if ((int)$coupon->enrolperiod === 0) {
             $accesstime = get_string('unlimited_access', 'block_coupon');
@@ -310,7 +436,8 @@ class pdf extends \pdf {
         }
         $replace = array(
             '<div style="text-align: center; font-size: 200%; font-weight: bold">'.$coupon->submission_code.'</div>',
-            $accesstime
+            $accesstime,
+            '<b>'.implode(', ', $courses).'</b>'
         );
 
         return str_replace($find, $replace, $this->templatemain);

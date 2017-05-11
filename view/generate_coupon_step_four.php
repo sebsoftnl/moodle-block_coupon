@@ -28,7 +28,6 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once(dirname(__FILE__) . '/../../../config.php');
-require_once($CFG->dirroot . '/blocks/coupon/classes/settings.php');
 
 use block_coupon\helper;
 
@@ -49,7 +48,7 @@ require_login($course, true);
 
 $PAGE->navbar->add(get_string('page:generate_coupon_step_four.php:title', 'block_coupon'));
 
-$url = new moodle_url('/blocks/coupon/view/generate_coupon_step_four.php', array('id' => $id));
+$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generate_coupon_step_four.php', array('id' => $id));
 $PAGE->set_url($url);
 
 $PAGE->set_title(get_string('view:generate_coupon:title', 'block_coupon'));
