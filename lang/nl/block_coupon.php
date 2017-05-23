@@ -35,6 +35,7 @@ $string['coupon:inputcoupons'] = 'Gebruik een Coupon';
 $string['coupon:myaddinstance'] = 'Voeg een nieuw Coupon blok toe aan de Mijn Moodle pagina';
 $string['coupon:viewreports'] = 'Toon Coupon rapportages (voor mijn coupons)';
 $string['coupon:viewallreports'] = 'Toon Coupon rapportages (voor alle coupons)';
+$string['coupon:extendenrolments'] = 'Coupons genereren tbv verlenging cursus aanmelding';
 $string['error:sessions-expired'] = 'Uw sessie is verlopen.';
 $string['promo'] = 'Coupon plugin voor Moodle';
 $string['promodesc'] = 'Deze plugin is geschreven door Sebsoft Managed Hosting & Software Development
@@ -289,7 +290,7 @@ Moodle administrator';
 
 $string['days_access'] = '{$a} dagen';
 $string['unlimited_access'] = 'onbeperkt';
-$string['default-coupon-page-template-main'] = 'Met deze e-learning coupon activeert u de toegang tot een e-learningmodule. U heeft {accesstime} toegang tot uw module.
+$string['default-coupon-page-template-main'] = 'Met deze coupon activeert u de toegang tot een e-learningmodule. U heeft {accesstime} toegang tot uw module.
 
 Gebruik onderstaande toegangscode om uw coupon te activeren.
 
@@ -373,6 +374,7 @@ $string['coupon:send:fail'] = 'Verzenden van e-mail mislukt! Reden: {$a}';
 $string['view:errorreport:heading'] = 'Rapport - Coupon fouten';
 $string['view:errorreport:title'] = 'Rapport - Coupon fouten';
 $string['report:heading:coupon'] = 'Coupon';
+$string['report:heading:type'] = 'Type';
 $string['report:heading:errortype'] = 'Type';
 $string['report:heading:errormessage'] = 'Foutmelding';
 $string['report:heading:timecreated'] = 'Datum';
@@ -380,11 +382,12 @@ $string['report:heading:action'] = 'Actie(s)';
 $string['action:error:delete'] = 'Foutmelding verwijderen';
 $string['tab:errors'] = 'Foutrapportage';
 $string['enrolperiod:indefinite'] = '<i>Onbeperkt</i>';
+$string['enrolperiod:extension'] = 'voor een lengte van {$a}';
 
 $string['label:defaultrole'] = 'Standaard rol';
 $string['label:defaultrole_help'] = 'Dit is de standaardrol die gebruikers toegewezen zullen krijgen wanneer ze een coupon claimen';
 
-$string['default-coupon-page-template-main'] = 'Met deze e-learning coupon activeert u de toegang tot de volgende e-learningmodule(s):<br/>
+$string['default-coupon-page-template-main'] = 'Met deze coupon activeert u de toegang tot de volgende e-learningmodule(s):<br/>
 {courses}<br/>
 U heeft {accesstime} toegang tot uw module.<br/><br/>
 Gebruik onderstaande toegangscode om uw coupon te activeren<br/>
@@ -403,11 +406,11 @@ $string['coupon:used:no'] = 'Enkel ongebruikte coupons';
 $string['coupon:type'] = 'Type';
 $string['coupon:type:all'] = 'Alle';
 $string['timebefore'] = 'Gemaakt voor';
-$string['timeafter'] = 'Gemakt na';
+$string['timeafter'] = 'Gemaakt na';
 $string['tab:cleaner'] = 'Opschoning';
 $string['logo:none'] = 'Gebruik geen logo';
 $string['logo:default'] = 'Standaard logo';
-$string['url:couponsignup'] = 'Meldt aan met een coupon';
+$string['url:couponsignup'] = 'Meld aan met een coupon';
 $string['url:managelogos'] = 'Beheer coupon logos';
 $string['select:logo'] = 'Selecteer template logo';
 $string['select:logo:desc'] = 'Selecteer een template logo.<br/>Deze wordt enkel gebruikt indien er PDFs worden gegenereerd.';
@@ -417,6 +420,60 @@ Je <i>zou</i> enkel afbeeldingen van 300 DPI op A4 formaat (2480 x 3508 pixels) 
 <i>Elk</i> ander formaat afbeelding zal meer dan waarschijnlijk leiden tot ongewenste resultaten.
 ';
 $string['coupon:extendenrol'] = 'Inschrijvingsverlenging coupons';
+$string['error:validate-courses'] = 'Course validation errors:
+{$a}';
 $string['signup:login'] = 'Ik heb al een account en wil inloggen';
 $string['signup:success'] = 'Je hebt je ingeschreven en zal nu worden herleid naar de login pagina.<br/>
 Valideer aub dat je meteen toegang hebt tot een of meer curssussen nadat je bent ingelogd.';
+$string['label:users'] = 'Gebruiker(s)';
+$string['label:extendusers:desc'] = 'Selecteer een of meer gebruiker(s).<br/>
+Enkel gebruikers met een <i>manuele</i> aanmelding die tevens een einddatum bevatten zullen getoond worden.';
+$string['label:mailusers'] = 'Verzend coupons via e-mail naar de geselecteerde personen.';
+$string['label:extendperiod'] = 'Duur aanmeldingsverlenging';
+$string['label:extendperiod:desc'] = 'Configureer de optionele aanmeldingsverlenging hieronder. Indien <i>niet</i> aangevinkt of aangemerkt met waarde 0, zal de aanmelding permanent worden';
+$string['view:extendenrolment:title'] = 'Coupon: aanmeldingsverlengingen';
+$string['view:extendenrolment:heading'] = 'Coupon: aanmeldingsverlengingen';
+$string['view:extendenrolment_step1:title'] = 'Verleng aanmelding: selecteer cursus(sen)';
+$string['view:extendenrolment_step1:heading'] = 'Verleng aanmelding: selecteer cursus(sen)';
+$string['view:extendenrolment_step2:title'] = 'Verleng aanmelding: selecteer gebruiker(s)';
+$string['view:extendenrolment_step2:heading'] = 'Verleng aanmelding: selecteer gebruiker(s)';
+$string['view:extendenrolment_step3:title'] = 'Verleng aanmelding: bevestigen';
+$string['view:extendenrolment_step3:heading'] = 'Verleng aanmelding: bevestigen';
+$string['extendenrol:abort-no-users'] = 'Fout: er zijn geen gebruikers gevonden waarvoor de aanmelding kan worden verlengd<br/>
+Alle gebruikers hebben reeds een permanente aanmelding of er zijn geen gebruikers gevnden met een (manuele) aanmelding voor deze cursus(sen).';
+
+$string['coupon:type:course'] = 'Cursusaanmelding';
+$string['coupon:type:cohort'] = 'Sitegroep aanmelding';
+$string['coupon:type:enrolext'] = 'Aanmeldingsverlenging';
+$string['recipient:selected:users'] = 'Geselecteerde deelnemers';
+$string['recipient:none'] = 'Geen';
+$string['coupon:senddate:instant'] = 'Direct';
+$string['coupon:extenrol:summary'] = 'Coupon type: {$a->coupontype}<br/>
+Aantal te genereren coupons: {$a->amount}<br/>
+Gebruikte achtergrond voor coupon(s): {$a->logo}<br/>
+Coupons gegenereerd door: {$a->owner}<br/>
+Geselecteerde cursus(sen): {$a->courses}<br/>
+Verlengingsperiode: {$a->duration}<br/>
+Verzend coupon(s) op: {$a->senddate}<br/>
+Verzend coupon(s) naar: {$a->recipient}<br/><br/>
+Email-body: {$a->emailbody}<br/>
+';
+$string['coupon:claim:wronguser'] = 'Deze gepersonaliseerde coupon is <i>niet</i> door jou te claimen';
+$string['coupon_mail_extend_content'] = 'Beste ##to_gender## ##to_name##,<br /><br />
+
+Je bent aangemeld voor onze training ##course_fullnames## en hebt een optie tot verlenging gekregen.
+Je hebt reeds toegang tot onze Online Leeromgeving: ##site_name##.<br /><br />
+Je verlenging is voor ##extensionperiod##.<br /><br />
+
+Je kunt de coupon voor verlenging in de bijlage vinden. Deze coupon is gepersonaliseerd en uniek, en zal verlenging verlenen tot de aangegeven cursus(sen).
+Lees aub de instructies op de coupon goed.<br /><br />
+
+Wanneer je vragen hebt of of andere vragen hebt, kun je de helpdesk contacteren.
+Informatie kan gevonden worden op onze leeromgeving.
+Indien er niemand beschibaar is om je vraag te beantwoorden, laat dan a.u.b. je naam, e-mailadres en telefoonnummer achter en we zullen zo snel mogelijk proberen te reageren.<br /><br />
+
+Met vriendelijke groet,<br /><br />
+
+##site_name##';
+
+$string['extendaccess'] = '{$a} extra';

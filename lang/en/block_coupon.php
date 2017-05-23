@@ -35,6 +35,7 @@ $string['coupon:inputcoupons'] = 'Use a coupon to subscribe';
 $string['coupon:myaddinstance'] = 'Add a new Coupon block to the My Moodle page';
 $string['coupon:viewreports'] = 'View Coupon reports (for my owned coupons)';
 $string['coupon:viewallreports'] = 'View Coupon reports (for all coupons)';
+$string['coupon:extendenrolments'] = 'Generate coupons to extend course enrolments';
 $string['error:sessions-expired'] = 'Your session expired.';
 $string['promo'] = 'Coupon plugin for Moodle';
 $string['promodesc'] = 'This plugin is written by Sebsoft Managed Hosting & Software Development
@@ -331,7 +332,7 @@ It can always happen that the teacher requests extra materials to be added at a 
 after a physical session. If this happens, you will be abe to see this in the learning environment
 During meetings you will not receive any printed lesson materials, we advise you to bring a laptop and/or tablet.<br /><br />
 
-You\'ll find the coupon to enter the course attached. This coupon os personal and unique, and gives access to the appropriate courses for your education.
+You\'ll find the coupon to enter the course attached. This coupon is personal and unique, and gives access to the appropriate courses for your education.
 Please read the instructions on the coupon carefully.<br /><br />
 
 If you have any questions regarding creating an account or find any other problems, you can contact the helpdesk.
@@ -365,7 +366,7 @@ You\'ll find the coupon to enter the course attached. This coupon os personal an
 Please read the instructions on the coupon carefully.<br /><br />
 
 If you have any questions regarding creating an account or find any other problems, you can contact the helpdesk.
-Information can be found on out Learning Environment.
+Information can be found on our Learning Environment.
 When nobody is available to answer your question, please leave your name, e-mailaddress and phonenumber behind and we will get back to you as
 soon as possible.<br /><br />
 
@@ -395,6 +396,7 @@ $string['coupon:send:fail'] = 'Sending e-mail failed! Reason: {$a}';
 $string['view:errorreport:heading'] = 'Report - Coupon errors';
 $string['view:errorreport:title'] = 'Report - Coupon errors';
 $string['report:heading:coupon'] = 'Coupon';
+$string['report:heading:type'] = 'Type';
 $string['report:heading:errortype'] = 'Type';
 $string['report:heading:errormessage'] = 'Error';
 $string['report:heading:timecreated'] = 'Date';
@@ -402,6 +404,7 @@ $string['report:heading:action'] = 'Action(s)';
 $string['action:error:delete'] = 'Delete error';
 $string['tab:errors'] = 'Error reports';
 $string['enrolperiod:indefinite'] = '<i>Indefinite</i>';
+$string['enrolperiod:extension'] = 'for the duration of {$a}';
 
 $string['label:defaultrole'] = 'Default role';
 $string['label:defaultrole_help'] = 'This will be the default role with which users will get assigned when claiming a coupon';
@@ -439,6 +442,61 @@ You <i>should</i> only be using 300 DPI images on A4 format (2480 x 3508 pixels)
 <i>Any</i> other image sizes will probably lead to unwanted side effects.
 ';
 $string['coupon:extendenrol'] = 'Enrolment extension coupons';
+$string['error:validate-courses'] = 'Course validation errors:
+{$a}';
 $string['signup:login'] = 'I already have an account and want to login';
 $string['signup:success'] = 'You have signed up and will now be redirected to the login page.<br/>
 Please validate you have actually been granted access to the course after logging in.';
+$string['label:users'] = 'User(s)';
+$string['label:extendusers:desc'] = 'Select one or more users below.<br/>
+You will only see users that have <i>manual</i> enrolment and have enddate set to their enrolments.';
+$string['label:mailusers'] = 'Send coupons via e-mail to selected course participants.';
+$string['label:extendperiod'] = 'Enrolment extension period';
+$string['label:extendperiod:desc'] = 'Configure the optional extension period below. If <i>not</i> enabled or set to 0, enrolment will turn into indefinite enrolment';
+$string['view:extendenrolment:title'] = 'Coupon: enrolment extensions';
+$string['view:extendenrolment:heading'] = 'Coupon: enrolment extensions';
+$string['view:extendenrolment_step1:title'] = 'Extend enrolments: select course(s)';
+$string['view:extendenrolment_step1:heading'] = 'Extend enrolments: select course(s)';
+$string['view:extendenrolment_step2:title'] = 'Extend enrolments: select users';
+$string['view:extendenrolment_step2:heading'] = 'Extend enrolments: select users';
+$string['view:extendenrolment_step3:title'] = 'Extend enrolments: confirm';
+$string['view:extendenrolment_step3:heading'] = 'Extend enrolments: confirm';
+$string['extendenrol:abort-no-users'] = 'Error: no users have been found for which enrolments can be extended<br/>
+Users may either all be enrolled indefinitely or no users are found for this course / these courses.';
+
+$string['coupon:type:course'] = 'Course enrolment';
+$string['coupon:type:cohort'] = 'Cohort enrolment';
+$string['coupon:type:enrolext'] = 'Enrolment extension';
+$string['recipient:selected:users'] = 'Selected users';
+$string['recipient:none'] = 'None';
+$string['coupon:senddate:instant'] = 'Instant';
+$string['coupon:extenrol:summary'] = 'Coupon type: {$a->coupontype}<br/>
+Amount of coupons to generate: {$a->amount}<br/>
+Background used to generate coupon(s): {$a->logo}<br/>
+Coupons generated by: {$a->owner}<br/>
+Selected course(s): {$a->courses}<br/>
+Extension period: {$a->duration}<br/>
+Send coupon(s) on: {$a->senddate}<br/>
+Send coupon(s) to: {$a->recipient}<br/><br/>
+Email-body: {$a->emailbody}<br/>
+';
+$string['coupon:claim:wronguser'] = 'This personalized coupon is <i>not</i> yours to claim';
+$string['coupon_mail_extend_content'] = 'Dear ##to_gender## ##to_name##,<br /><br />
+
+You have been enrolled for our training ##course_fullnames## and have been granted and extension.
+You already have access to our Online Learning Environment: ##site_name##.<br /><br />
+Your extension is ##extensionperiod##.<br /><br />
+
+You\'ll find the coupon to extend access to the course attached. This coupon is personal and unique, and extends access to the appropriate courses for your education.
+Please read the instructions on the coupon carefully.<br /><br />
+
+If you have any questions regarding any problems, you can contact the helpdesk.
+Information can be found on our Learning Environment.
+When nobody is available to answer your question, please leave your name, e-mailaddress and phonenumber behind and we will get back to you as
+soon as possible.<br /><br />
+
+With kind regards,<br /><br />
+
+##site_name##';
+
+$string['extendaccess'] = '{$a} extra';
