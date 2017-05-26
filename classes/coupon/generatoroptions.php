@@ -139,6 +139,12 @@ class generatoroptions {
     public $logoid = 0;
 
     /**
+     * coupon extend targets (only applicable when using extend enrolment type coupon)
+     * @var array
+     */
+    public $extendusers;
+
+    /**
      * create a new instance
      */
     public function __construct() {

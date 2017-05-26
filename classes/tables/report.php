@@ -94,7 +94,8 @@ class report extends \table_sql {
      * @param bool $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
-        $this->define_table_columns(array('user', 'coursename', 'cohortname', 'status', 'datestart', 'datecomplete', 'grade'));
+        $columns = array('user', 'type', 'coursename', 'cohortname', 'status', 'datestart', 'datecomplete', 'grade');
+        $this->define_table_columns($columns);
         // We won't be able to sort by most columns.
         $this->no_sorting('status');
         $this->no_sorting('datestart');
@@ -137,7 +138,9 @@ class report extends \table_sql {
                JOIN {block_coupon_courses} cc ON cc.couponid=bc.id
                JOIN {user} u ON bc.userid=u.id
                LEFT JOIN {course} c ON cc.courseid=c.id
-               WHERE bc.userid IS NOT NULL';
+               WHERE bc.userid IS NOT NULL
+               AND claimed = 1
+               ';
         if ($this->ownerid > 0) {
             $q1 .= ' AND bc.ownerid = :ownerid1';
             $q1params['ownerid1'] = $this->ownerid;
@@ -152,6 +155,7 @@ class report extends \table_sql {
                LEFT JOIN {enrol} e ON cc.cohortid=e.customint1
                LEFT JOIN {course} c ON e.courseid = c.id
                WHERE bc.userid IS NOT NULL
+               AND claimed = 1
                AND e.enrol = \'cohort\'';
         if ($this->ownerid > 0) {
             $q2 .= ' AND bc.ownerid = :ownerid2';
@@ -239,11 +243,21 @@ class report extends \table_sql {
      * Render visual representation of the 'user' column for use in the table
      *
      * @param \stdClass $row
-     * @return string time string
+     * @return string
      */
     public function col_user($row) {
         global $CFG;
         return '<a href="' . $CFG->wwwroot . '/user/profile.php?id=' . $row->userid . '">' . $row->user . '</a>';
+    }
+
+    /**
+     * Render visual representation of the 'type' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string type string
+     */
+    public function col_type($row) {
+        return get_string('coupon:type:' . $row->typ, 'block_coupon');
     }
 
     /**

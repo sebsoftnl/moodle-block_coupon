@@ -184,100 +184,33 @@ class helper {
      * @param int $foruserid user for which coupon is claimed. If not given: current user.
      */
     public static function claim_coupon($code, $foruserid = null) {
-        global $CFG, $DB, $USER;
-        // Because we're outside course context we've got to include groups library manually.
-        require_once($CFG->dirroot . '/group/lib.php');
-        require_once($CFG->dirroot . '/cohort/lib.php');
-
-        if (empty($foruserid)) {
-            $foruserid = $USER->id;
-        }
-        $role = self::get_default_coupon_role();
-        $coupon = $DB->get_record('block_coupon', array('submission_code' => $code));
-        $couponcourses = $DB->get_records('block_coupon_courses', array('couponid' => $coupon->id));
-        // We'll handle coupon_cohorts.
-        if (empty($couponcourses)) {
-
-            $couponcohorts = $DB->get_records('block_coupon_cohorts', array('couponid' => $coupon->id));
-            if (count($couponcohorts) == 0) {
-                throw new exception('error:missing_cohort');
-            }
-
-            // Add user to cohort.
-            foreach ($couponcohorts as $couponcohort) {
-
-                if (!$DB->get_record('cohort', array('id' => $couponcohort->cohortid))) {
-                    throw new exception('error:missing_cohort');
-                }
-
-                cohort_add_member($couponcohort->cohortid, $foruserid);
-            }
-            // Now execute the cohort sync.
-            $result = self::enrol_cohort_sync();
-            // If result = 0 it went ok. (lol!).
-            if ($result === 1) {
-                throw new exception('error:cohort_sync');
-            } else if ($result === 2) {
-                throw new exception('error:plugin_disabled');
-            }
-
-            // Otherwise we'll handle based on courses.
-        } else {
-
-            // Set enrolment period.
-            $endenrolment = 0;
-            if (!is_null($coupon->enrolperiod) && $coupon->enrolperiod > 0) {
-                $endenrolment = strtotime("+ {$coupon->enrolperiod} days");
-            }
-
-            foreach ($couponcourses as $couponcourse) {
-                // Make sure we only enrol if its not enrolled yet.
-                $context = \context_course::instance($couponcourse->courseid);
-                if (is_null($context) || $context === false) {
-                    throw new exception('error:course-not-found');
-                }
-                if (is_enrolled($context, $foruserid)) {
-                    continue;
-                }
-                // Now we can enrol.
-                if (!enrol_try_internal_enrol($couponcourse->courseid, $foruserid, $role->id, time(), $endenrolment)) {
-                    throw new exception('error:unable_to_enrol');
-                }
-                // Mark the context for cache refresh.
-                $context->mark_dirty();
-                remove_temp_course_roles($context);
-            }
-
-            // And add user to groups.
-            $coupongroups = $DB->get_records('block_coupon_groups', array('couponid' => $coupon->id));
-            if (!empty($coupongroups)) {
-                foreach ($coupongroups as $coupongroup) {
-                    // Check if the group exists.
-                    if (!$DB->get_record('groups', array('id' => $coupongroup->groupid))) {
-                        throw new exception('error:missing_group');
-                    }
-                    // Add user if its not a member yet.
-                    if (!groups_is_member($coupongroup->groupid, $foruserid)) {
-                        groups_add_member($coupongroup->groupid, $foruserid);
-                    }
-                }
-            }
+        global $CFG, $DB;
+        // Get record.
+        $conditions = array(
+            'submission_code' => $code,
+            'claimed' => 0,
+        );
+        $coupon = $DB->get_record('block_coupon', $conditions);
+        // Base validation.
+        if (empty($coupon)) {
+            throw new exception('error:invalid_coupon_code');
+        } else if (!is_null($coupon->userid) && $coupon->typ != coupon\generatoroptions::ENROLEXTENSION) {
+            throw new exception('error:coupon_already_used');
         }
 
-        // And finally update the coupon record.
-        $coupon->userid = $foruserid;
-        $coupon->timemodified = time();
-        $DB->update_record('block_coupon', $coupon);
-        // Trigger event.
-        $event = \block_coupon\event\coupon_used::create(
-                array(
-                    'objectid' => $coupon->id,
-                    'relateduserid' => $foruserid,
-                    'context' => \context_user::instance($foruserid)
-                    )
-                );
-        $event->add_record_snapshot('block_coupon', $coupon);
-        $event->trigger();
+        // All these checks aren't strictly needed but alas, OOP FTW.
+        $class = '\\block_coupon\\coupon\\types\\' . $coupon->typ;
+        if (!class_exists($class)) {
+            throw new exception('err:no-such-processor', $coupon->typ);
+        }
+        $rc = new \ReflectionClass($class);
+        if (!$rc->implementsInterface('\\block_coupon\\coupon\\icoupontype')) {
+            throw new exception('err:processor-implements', $coupon->typ);
+        }
+
+        // Load coupon type and claim().
+        $instance = $rc->newInstance($coupon);
+        $instance->claim($foruserid);
 
         return (empty($coupon->redirect_url)) ? $CFG->wwwroot . "/my" : $coupon->redirect_url;
     }
@@ -776,10 +709,10 @@ class helper {
         // Usage.
         switch($options->used) {
             case 2: // Unused.
-                $where[] = '(userid IS NULL or userid = 0)';
+                $where[] = '(userid IS NULL or userid = 0 OR claimed = 0)';
                 break;
             case 1: // Used.
-                $where[] = '(userid IS NOT NULL AND userid <> 0)';
+                $where[] = '(userid IS NOT NULL AND userid <> 0 OR claimed = 1)';
                 break;
             case 0:
             default:
@@ -843,6 +776,162 @@ class helper {
             return 0;
         }
         return $rec->id;
+    }
+
+    /**
+     * Add default configuration form elements for the coupon generator for course or cohort type coupons.
+     *
+     * @param \HTML_QuickForm $mform
+     * @param string $type 'cohort' or 'course'
+     */
+    public static function std_coupon_add_default_confirm_form_elements($mform, $type) {
+        global $CFG;
+        // Determine which mailtemplate to use.
+        $mailcontentdefault = '';
+        switch ($type) {
+            case 'course':
+                $mailcontentdefault = get_string('coupon_mail_csv_content', 'block_coupon');
+                break;
+            case 'cohort':
+                $mailcontentdefault = get_string('coupon_mail_csv_content_cohorts', 'block_coupon');
+                break;
+        }
+
+        $mform->addElement('header', 'header', get_string('heading:info', 'block_coupon'));
+        if (!$strinfo = get_config('block_coupon', 'info_coupon_confirm')) {
+            $strinfo = get_string('missing_config_info', 'block_coupon');
+        }
+        $mform->addElement('static', 'info', '', $strinfo);
+
+        // Determine which type of settings we'll use.
+        $radioarray = array();
+        $radioarray[] = & $mform->createElement('radio', 'showform', '',
+                get_string('showform-amount', 'block_coupon'), 'amount', array('onchange' => 'showHide(this.value)'));
+        $radioarray[] = & $mform->createElement('radio', 'showform', '',
+                get_string('showform-csv', 'block_coupon'), 'csv', array('onchange' => 'showHide(this.value)'));
+        $radioarray[] = & $mform->createElement('radio', 'showform', '',
+                get_string('showform-manual', 'block_coupon'), 'manual', array('onchange' => 'showHide(this.value)'));
+        $mform->addGroup($radioarray, 'radioar', get_string('label:showform', 'block_coupon'), array('<br/>'), false);
+        $mform->setDefault('showform', 'amount');
+
+        // Send coupons based on CSV upload.
+        $mform->addElement('header', 'csvForm', get_string('heading:csvForm', 'block_coupon'));
+
+        // Filepicker.
+        $urldownloadcsv = new \moodle_url($CFG->wwwroot . '/blocks/coupon/sample.csv');
+        $mform->addElement('filepicker', 'coupon_recipients',
+                get_string('label:coupon_recipients', 'block_coupon'), null, array('accepted_types' => 'csv'));
+        $mform->addHelpButton('coupon_recipients', 'label:coupon_recipients', 'block_coupon');
+        $mform->addElement('static', 'coupon_recipients_desc', '', get_string('coupon_recipients_desc', 'block_coupon'));
+        $mform->addElement('static', 'sample_csv', '', '<a href="' . $urldownloadcsv
+                . '" target="_blank">' . get_string('download-sample-csv', 'block_coupon') . '</a>');
+
+        // Editable email message.
+        $mform->addElement('editor', 'email_body', get_string('label:email_body', 'block_coupon'), array('noclean' => 1));
+        $mform->setType('email_body', PARAM_RAW);
+        $mform->setDefault('email_body', array('text' => $mailcontentdefault));
+        $mform->addRule('email_body', get_string('required'), 'required');
+        $mform->addHelpButton('email_body', 'label:email_body', 'block_coupon');
+
+        // Configurable enrolment time.
+        $mform->addElement('date_selector', 'date_send_coupons', get_string('label:date_send_coupons', 'block_coupon'));
+        $mform->addRule('date_send_coupons', get_string('required'), 'required');
+        $mform->addHelpButton('date_send_coupons', 'label:date_send_coupons', 'block_coupon');
+
+        // Send coupons based on CSV upload.
+        $mform->addElement('header', 'manualForm', get_string('heading:manualForm', 'block_coupon'));
+
+        // Textarea recipients.
+        $mform->addElement('textarea', 'coupon_recipients_manual',
+                get_string("label:coupon_recipients", 'block_coupon'), 'rows="10" cols="100"');
+        $mform->addRule('coupon_recipients_manual', get_string('required'), 'required', null, 'client');
+        $mform->addHelpButton('coupon_recipients_manual', 'label:coupon_recipients_txt', 'block_coupon');
+        $mform->setDefault('coupon_recipients_manual', 'E-mail,Gender,Name');
+
+        $mform->addElement('static', 'coupon_recipients_desc', '', get_string('coupon_recipients_desc', 'block_coupon'));
+
+        // Editable email message.
+        $mform->addElement('editor', 'email_body_manual', get_string('label:email_body', 'block_coupon'), array('noclean' => 1));
+        $mform->setType('email_body_manual', PARAM_RAW);
+        $mform->setDefault('email_body_manual', array('text' => $mailcontentdefault));
+        $mform->addRule('email_body_manual', get_string('required'), 'required');
+        $mform->addHelpButton('email_body_manual', 'label:email_body', 'block_coupon');
+
+        // Configurable enrolment time.
+        $mform->addElement('date_selector', 'date_send_coupons_manual', get_string('label:date_send_coupons', 'block_coupon'));
+        $mform->addRule('date_send_coupons_manual', get_string('required'), 'required');
+        $mform->addHelpButton('date_send_coupons_manual', 'label:date_send_coupons', 'block_coupon');
+
+        // Send coupons based on Amount field.
+        $mform->addElement('header', 'amountForm', get_string('heading:amountForm', 'block_coupon'));
+
+        // Set email_to variable.
+        $usealternativeemail = get_config('block_coupon', 'use_alternative_email');
+        $alternativeemail = get_config('block_coupon', 'alternative_email');
+
+        // Amount of coupons.
+        $mform->addElement('text', 'coupon_amount', get_string('label:coupon_amount', 'block_coupon'));
+        $mform->setType('coupon_amount', PARAM_INT);
+        $mform->addRule('coupon_amount', get_string('error:numeric_only', 'block_coupon'), 'numeric');
+        $mform->addRule('coupon_amount', get_string('required'), 'required');
+        $mform->addHelpButton('coupon_amount', 'label:coupon_amount', 'block_coupon');
+
+        // Use alternative email address.
+        $mform->addElement('checkbox', 'use_alternative_email', get_string('label:use_alternative_email', 'block_coupon'));
+        $mform->setType('use_alternative_email', PARAM_BOOL);
+        $mform->setDefault('use_alternative_email', $usealternativeemail);
+
+        // Email address to mail to.
+        $mform->addElement('text', 'alternative_email', get_string('label:alternative_email', 'block_coupon'));
+        $mform->setType('alternative_email', PARAM_EMAIL);
+        $mform->setDefault('alternative_email', $alternativeemail);
+        $mform->addRule('alternative_email', get_string('error:invalid_email', 'block_coupon'), 'email', null);
+        $mform->addHelpButton('alternative_email', 'label:alternative_email', 'block_coupon');
+        $mform->disabledIf('alternative_email', 'use_alternative_email', 'notchecked');
+
+        // Generate_pdf checkbox.
+        $mform->addElement('checkbox', 'generate_pdf', get_string('label:generate_pdfs', 'block_coupon'));
+        $mform->addHelpButton('generate_pdf', 'label:generate_pdfs', 'block_coupon');
+    }
+
+    /**
+     * Get all coupons based on the given parameters
+     *
+     * @param string $type Type of coupons to get reports for ('course', 'cohort', 'enrolext' or 'all' (default))
+     * @param int $ownerid ID of the creator of the coupons.
+     * @param date $fromdate Request coupon reports created from this date.
+     *          If given this should be passed in American format (yyyy-mm-dd)
+     * @param date $todate Request coupon reports created until this date.
+     *          If given this should be passed in American format (yyyy-mm-dd)
+     */
+    public static function get_all_coupons($type = 'all', $ownerid = null, $fromdate = null, $todate = null) {
+        global $DB;
+        $params = [];
+        $where = [];
+        if ($type !== 'all') {
+            $where[] = 'type = :typ';
+            $params['typ'] = $type;
+        }
+        if (!empty($ownerid)) {
+            $where[] = 'ownerid = :ownerid';
+            $params['ownerid'] = $ownerid;
+        }
+        if (!empty($fromdate)) {
+            $where[] = 'timecreated >= :fromdate';
+            $params['fromdate'] = $fromdate;
+        }
+        if (!empty($todate)) {
+            $where[] = 'timecreated <= :todate';
+            $params['todate'] = $todate;
+        }
+        $sql = 'SELECT c.id, c.submission_code, c.timecreated, c.claimed, c.userid, c.typ
+            , ' . $DB->sql_fullname() . ' as userfullname, u.email as useremail, u.idnumber as useridnumber
+            FROM {block_coupon} c
+            LEFT JOIN {user} u ON c.userid=u.id';
+        if (!empty($where)) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
+        return $DB->get_records_sql($sql, $params);
     }
 
 }

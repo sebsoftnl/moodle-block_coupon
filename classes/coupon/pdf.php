@@ -368,7 +368,7 @@ class pdf extends \pdf {
             $this->startPage();
             $this->SetFont('helvetica', '', 10);
 
-            $this->MultiCell(150, 150, $txtmain, false, 'C', false, 1, 15, 80, true, 0, true);
+            $this->MultiCell(135, 50, $txtmain, false, 'C', false, 1, 15, 75, true, 0, true);
             $this->MultiCell(90, 100, $txtbotleft, false, 'L', false, 2, 4, 210, true, 0, true);
             $this->MultiCell(90, 100, $txtbotright, false, 'L', false, 2, 109, 210, true, 0, true);
             // QR.
@@ -392,11 +392,6 @@ class pdf extends \pdf {
     protected function get_qr($coupon) {
         global $CFG;
         require_once($CFG->dirroot . '/blocks/coupon/thirdparty/QrCode/src/QrCode.php');
-        // Check usage.
-        if (!empty($coupon->userid)) {
-            // Always render something.
-            $coupon->submission_code = 0;
-        }
         $data = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/qrin.php', array(
             'c' => $coupon->submission_code,
             'h' => sha1($coupon->id . $coupon->ownerid . $coupon->submission_code),
@@ -431,8 +426,10 @@ class pdf extends \pdf {
         );
         if ((int)$coupon->enrolperiod === 0) {
             $accesstime = get_string('unlimited_access', 'block_coupon');
+        } else if ($coupon->typ == generatoroptions::ENROLEXTENSION ) {
+            $accesstime = get_string('extendaccess', 'block_coupon', format_time($coupon->enrolperiod));
         } else {
-            $accesstime = get_string('days_access', 'block_coupon', $coupon->enrolperiod);
+            $accesstime = format_time($coupon->enrolperiod);
         }
         $replace = array(
             '<div style="text-align: center; font-size: 200%; font-weight: bold">'.$coupon->submission_code.'</div>',

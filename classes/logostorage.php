@@ -232,4 +232,15 @@ class logostorage {
         return $tempfile;
     }
 
+    /**
+     * Get a file instance for the given file ID
+     *
+     * @param int $fileid
+     * @return \stored_file
+     */
+    static public function get_file($fileid) {
+        $fs = get_file_storage();
+        return $fs->get_file_by_id($fileid);
+    }
+
 }

@@ -31,6 +31,7 @@ namespace block_coupon\coupon;
 defined('MOODLE_INTERNAL') || die();
 
 use block_coupon\coupon\codegenerator;
+use block_coupon\coupon\icoupongenerator;
 
 /**
  * block_coupon\coupon\generator
@@ -41,7 +42,7 @@ use block_coupon\coupon\codegenerator;
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class generator {
+class generator implements icoupongenerator {
     /**
      * Courses (each element has id, fullname)
      * @var array
@@ -68,6 +69,11 @@ class generator {
      * @var array
      */
     protected $generatorids;
+    /**
+     * list of generated coupon codes
+     * @var array
+     */
+    protected $generatorcodes;
 
     /**
      * Get errors
@@ -86,12 +92,21 @@ class generator {
     }
 
     /**
+     * get the generated coupon codes
+     * @return array
+     */
+    public function get_generated_couponcodes() {
+        return $this->generatorcodes;
+    }
+
+    /**
      * Generate a batch of coupons
      * @param \block_coupon\test\coupon\generatoroptions $options
      * @return bool
      */
     public function generate_coupons(generatoroptions $options) {
         $this->generatorids = array();
+        $this->generatorcodes = array();
         // First, correct options.
         $this->fix_options($options);
         // Validate options.
@@ -122,18 +137,27 @@ class generator {
      * @throws \moodle_exception
      */
     protected function validate_options(generatoroptions $options) {
-        if ($options->type === generatoroptions::COURSE) {
-            if (empty($options->courses)) {
+        switch ($options->type) {
+            case generatoroptions::COURSE:
+            case generatoroptions::ENROLEXTENSION:
+                if (empty($options->courses)) {
+                    throw new \moodle_exception('err:no-courses', 'block_coupon');
+                }
+                // Validate courses.
+                $this->validate_courses($options->courses, $options->groups);
+                break;
+
+            case generatoroptions::COHORT:
+                if (empty($options->cohorts)) {
+                    throw new \moodle_exception('err:no-cohorts', 'block_coupon');
+                }
+                // Validate cohorts.
+                $this->validate_cohorts($options->cohorts);
+                break;
+
+            default:
                 throw new \moodle_exception('err:no-courses', 'block_coupon');
-            }
-            // Validate courses.
-            $this->validate_courses($options->courses, $options->groups);
-        } else if ($options->type === generatoroptions::COHORT) {
-            if (empty($options->cohorts)) {
-                throw new \moodle_exception('err:no-cohorts', 'block_coupon');
-            }
-            // Validate cohorts.
-            $this->validate_cohorts($options->cohorts);
+                break; // Never reached.
         }
         // If we have recipients, we should also have an emailbody.
         if (!empty($options->recipients) && empty($options->emailbody)) {
@@ -170,7 +194,7 @@ class generator {
         }
         // Do we have errors?
         if (!empty($errors)) {
-            throw new \moodle_exception('error:validate-courses', 'block_coupon', implode('<br/>', $errors));
+            throw new \block_coupon\exception('error:validate-courses', '', implode('<br/>', $errors));
         }
     }
 
@@ -222,6 +246,10 @@ class generator {
             $objcoupon->redirect_url = (!empty($options->redirecturl)) ? $options->redirecturl : null;
             $objcoupon->logoid = (int)$options->logoid;
             $objcoupon->typ = $options->type;
+            $objcoupon->claimed = 0;
+            if (!empty($options->extendusers[$i])) {
+                $objcoupon->userid = $options->extendusers[$i];
+            }
 
             // If coupons are personal, set recipient data.
             if (!empty($options->recipients)) {
@@ -240,14 +268,25 @@ class generator {
             }
             // Add generated ID.
             $this->generatorids[] = $objcoupon->id;
+            $this->generatorcodes[] = $objcoupon->submission_code;
 
             // Insert extra data depending on generator type.
             $inserterrors = array();
             $result = true;
-            if ($options->type === generatoroptions::COURSE) {
-                $result = $this->insert_coupon_courses($objcoupon, $inserterrors);
-            } else if ($options->type === generatoroptions::COHORT) {
-                $result = $this->insert_coupon_cohorts($objcoupon, $inserterrors);
+            switch ($options->type) {
+                case generatoroptions::COURSE:
+                case generatoroptions::ENROLEXTENSION:
+                    $result = $this->insert_coupon_courses($objcoupon, $inserterrors);
+                    break;
+
+                case generatoroptions::COHORT:
+                    $result = $this->insert_coupon_cohorts($objcoupon, $inserterrors);
+                    break;
+
+                default:
+                    // Should never happen due to earlier checks.
+                    $errors[] = "Invalid generator type '{$options->type}'.";
+                    break; // Never reached.
             }
             if (!$result) {
                 $errors = array_merge($errors, $inserterrors);
@@ -269,17 +308,27 @@ class generator {
     protected function generate_email($template, $coupon) {
         global $SITE;
         $gendertxt = (!is_null($coupon->for_user_gender)) ? $coupon->for_user_gender : '';
+        $extensionperiod = '';
+        if ($coupon->typ == generatoroptions::ENROLEXTENSION) {
+            if (empty($coupon->enrolperiod)) {
+                $extensionperiod = get_string('enrolperiod:indefinite', 'block_coupon');
+            } else {
+                $extensionperiod = get_string('enrolperiod:extension', 'block_coupon', format_time($coupon->enrolperiod));
+            }
+        }
 
         // Replace some strings in the email body.
         $arrreplace = array(
             '##to_name##',
             '##site_name##',
-            '##to_gender##'
+            '##to_gender##',
+            '##extensionperiod##',
         );
         $arrwith = array(
             $coupon->for_user_name,
             $SITE->fullname,
-            $gendertxt
+            $gendertxt,
+            $extensionperiod
         );
 
         // Check if we're generating based on course, in which case we enter the course name too.
@@ -308,7 +357,7 @@ class generator {
         global $DB;
         $errors = array();
         foreach ($this->courses as $course) {
-            // An object for each added cohort.
+            // An object for each added course.
             $record = (object) array(
                 'couponid' => $coupon->id,
                 'courseid' => $course->id

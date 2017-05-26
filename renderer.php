@@ -32,6 +32,7 @@ use block_coupon\helper;
 use block_coupon\coupon\generatoroptions;
 use block_coupon\coupon\generator;
 
+
 /**
  * Renderer for the coupon block.
  *
@@ -613,4 +614,188 @@ class block_coupon_renderer extends plugin_renderer_base {
         $out .= $this->footer();
         return $out;
     }
+
+    /**
+     * Get form page output (includes header/footer).
+     *
+     * @param \moodleform $mform
+     */
+    protected function get_extendenrolment_form_page($mform) {
+        $out = '';
+        $out .= $this->header();
+        $out .= html_writer::start_div('block-coupon-container');
+        $out .= $mform->render();
+        $out .= html_writer::end_div();
+        $out .= $this->footer();
+        return $out;
+    }
+
+    /**
+     * Start enrlment extension wizard page.
+     *
+     * @param int|null $courseid
+     * @return string
+     */
+    public function page_extendenrolment_wizard($courseid = null) {
+        global $USER, $CFG, $DB;
+        // If we have a valid course ID, continue to page 2.
+        if (!empty($courseid) && $courseid > 1) {
+            // Validate course.
+            if (!$DB->record_exists('course', array('id' => $courseid))) {
+                redirect(new moodle_url($CFG->wwwroot . '/my'),
+                        get_string('generator:extendenrolment:invalidcourse', 'block_coupon'));
+            }
+            // We have a valid course. Prepare generator options and continue to page 2.
+            generatoroptions::clean_session();
+            $generatoroptions = new generatoroptions();
+            $generatoroptions->ownerid = $USER->id;
+            $generatoroptions->type = generatoroptions::ENROLEXTENSION;
+            $generatoroptions->courses = array($courseid);
+            $generatoroptions->to_session();
+            $params = array('id' => $this->page->url->param('id'), 'cid' => $this->page->course->id);
+            $redirect = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/extendenrolment_step2.php', $params);
+            redirect($redirect);
+        }
+
+        // Create form.
+        $options = array('coursemultiselect' => false);
+        $mform = new block_coupon\forms\coupon\extendenrolment($this->page->url, $options);
+        if ($mform->is_cancelled()) {
+            generatoroptions::clean_session();
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+        } else if ($data = $mform->get_data()) {
+            // Load generator options.
+            $generatoroptions = generatoroptions::from_session();
+            $generatoroptions->ownerid = $USER->id;
+            $generatoroptions->type = generatoroptions::ENROLEXTENSION;
+            // Serialize generatoroptions to session.
+            $generatoroptions->to_session();
+            // And redirect user to next page.
+            $params = array('id' => $this->page->url->param('id'), 'cid' => $this->page->course->id);
+            $redirect = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/extendenrolment_step2.php', $params);
+            redirect($redirect);
+        }
+
+        generatoroptions::clean_session();
+        $out = '';
+        $out .= $this->get_extendenrolment_form_page($mform);
+        return $out;
+    }
+
+    /**
+     * Render enrolment extension generator page 2 (including header / footer).
+     *
+     * @return string
+     */
+    public function page_extendenrolment_wizard_step2() {
+        global $CFG, $DB;
+        // Make sure sessions are still alive.
+        generatoroptions::validate_session();
+        // Load options.
+        $generatoroptions = generatoroptions::from_session();
+
+        // Depending on our data we'll get the right form.
+        $options = array('generatoroptions' => $generatoroptions);
+        $mform = new \block_coupon\forms\coupon\extendenrolmentstep2($this->page->url, $options);
+        if ($mform->is_cancelled()) {
+            generatoroptions::clean_session();
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+        } else if ($data = $mform->get_data()) {
+            if ((bool)$data->abort) {
+                generatoroptions::clean_session();
+                redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+                exit; // Never reached.
+            }
+            // Set logo.
+            $generatoroptions->logoid = $data->logo;
+            // Set user(s).
+            $generatoroptions->amount = count($data->extendusers);
+            $generatoroptions->extendusers = $data->extendusers;
+            $generatoroptions->enrolperiod = $data->enrolperiod;
+            $generatoroptions->generatesinglepdfs = $data->generate_pdf;
+            $generatoroptions->redirecturl = $data->redirect_url;
+            $generatoroptions->emailto = (!empty($data->use_alternative_email)) ? $data->alternative_email : null;
+            if (empty($data->use_alternative_email)) {
+                $generatoroptions->emailto = null;
+                // Load recipients!
+                $generatoroptions->recipients = [];
+                $fields = 'id, email, ' . get_all_user_name_fields(true);
+                $users = $DB->get_records_list('user', 'id', $data->extendusers, '', $fields);
+                foreach ($users as $user) {
+                    $generatoroptions->recipients[] = (object) array(
+                        'email' => $user->email,
+                        'name' => fullname($user),
+                        'gender' => '',
+                    );
+                }
+                // Force seperate coupons!
+                $generatoroptions->generatesinglepdfs = true;
+            } else {
+                $generatoroptions->emailto = $data->alternative_email;
+            }
+            $generatoroptions->emailbody = $data->email_body_manual['text'];
+
+            // Serialize generatoroptions to session.
+            $generatoroptions->to_session();
+            $params = array('id' => $this->page->url->param('id'), 'cid' => $this->page->course->id);
+            $url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/extendenrolment_step3.php', $params);
+            redirect($url);
+        }
+
+        $out = '';
+        $out .= $this->get_extendenrolment_form_page($mform);
+        return $out;
+    }
+
+    /**
+     * Render enrolment extension generator page 3 (including header / footer).
+     *
+     * @return string
+     */
+    public function page_extendenrolment_wizard_step3() {
+        global $CFG, $DB;
+        // Make sure sessions are still alive.
+        generatoroptions::validate_session();
+        // Load options.
+        $generatoroptions = generatoroptions::from_session();
+
+        // Depending on our data we'll get the right form.
+        $options = array('generatoroptions' => $generatoroptions);
+        $mform = new \block_coupon\forms\coupon\extendenrolmentconfirm($this->page->url, $options);
+        if ($mform->is_cancelled()) {
+            generatoroptions::clean_session();
+            $conditions = array('id' => $this->page->course->id);
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', $conditions));
+        } else if ($data = $mform->get_data()) {
+            // Now that we've got all information we'll create the coupon objects.
+            $generator = new generator();
+            $result = $generator->generate_coupons($generatoroptions);
+
+            if ($result !== true) {
+                // Means we've got an error.
+                // Don't know yet what we're gonne do in this situation. Maybe mail to supportuser?
+                echo "<p>An error occured while trying to generate the coupons. Please contact support.</p>";
+                echo "<pre>" . implode("\n", $result) . "</pre>";
+                die();
+            }
+
+            // Finish.
+            generatoroptions::clean_session();
+            // We will only use direct sending if we're sending off to an alternative email address.
+            if (empty($generatoroptions->emailto)) {
+                redirect(new moodle_url($CFG->wwwroot . '/my'), get_string('coupons_ready_to_send', 'block_coupon'));
+            } else {
+                // Generate and send off.
+                $coupons = $DB->get_records_list('block_coupon', 'id', $generator->get_generated_couponids());
+                helper::mail_coupons($coupons, $generatoroptions->emailto, $generatoroptions->generatesinglepdfs);
+                generatoroptions::clean_session();
+                redirect(new moodle_url($CFG->wwwroot . '/my'), get_string('coupons_sent', 'block_coupon'));
+            }
+        }
+
+        $out = '';
+        $out .= $this->get_extendenrolment_form_page($mform);
+        return $out;
+    }
+
 }

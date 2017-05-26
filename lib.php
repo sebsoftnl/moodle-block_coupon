@@ -29,6 +29,29 @@
 defined('MOODLE_INTERNAL') || die;
 
 /**
+ * Add items to course navigation
+ * @param navigation_node $parentnode
+ * @param stdClass $course
+ * @param context_course $context
+ */
+function block_coupon_extend_navigation_course(navigation_node $parentnode, stdClass $course, context_course $context) {
+    global $CFG;
+    if (!has_capability('block/coupon:extendenrolments', $context)) {
+        return false;
+    }
+    $biid = \block_coupon\helper::find_block_instance_id();
+    if (empty($biid)) {
+        return;
+    }
+    $icon = new \pix_icon('coupon', get_string('coupon:extendenrol', 'block_coupon'), 'block_coupon');
+    $icon = null;
+    $conditions = array('cid' => $course->id, 'id' => $biid);
+    $action = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/extendenrolment.php', $conditions);
+    $parentnode->add(get_string('coupon:extendenrol', 'block_coupon'), $action, navigation_node::TYPE_CUSTOM,
+            get_string('coupon:extendenrol', 'block_coupon'), 'cpextendenrol', $icon);
+}
+
+/**
  * Send a file
  *
  * @param \stdClass $course

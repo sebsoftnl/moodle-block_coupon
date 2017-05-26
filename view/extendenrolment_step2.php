@@ -15,15 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * index
+ * Enrolment extension coupon generator
  *
- * File         index.php
+ * File         extendenrolment.php
  * Encoding     UTF-8
  *
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -31,28 +30,33 @@ require_once(dirname(__FILE__) . '/../../../config.php');
 
 use block_coupon\helper;
 
+$cid = optional_param('cid', null, PARAM_INT);
 $id = required_param('id', PARAM_INT);
 
-$instance = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
-$context       = \context_block::instance($instance->id);
-$coursecontext = $context->get_course_context(false);
-$course = false;
-if ($coursecontext !== false) {
-    $course = $DB->get_record("course", array("id" => $coursecontext->instanceid));
-}
-if ($course === false) {
+if (empty($cid)) {
     $course = get_site();
+    $context = \context_system::instance();
+} else {
+    $course = $DB->get_record('course', array('id' => $cid));
+    $context = \context_course::instance($cid);
 }
 
 require_login($course, true);
 
-$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/index.php', array('id' => $id));
+$PAGE->navbar->add(get_string('view:extendenrolment:title', 'block_coupon'));
+
+$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/extendenrolment_step2.php', array('id' => $id, 'cid' => $cid));
 $PAGE->set_url($url);
+
+$PAGE->set_title(get_string('view:extendenrolment_step2:title', 'block_coupon'));
+$PAGE->set_heading(get_string('view:extendenrolment_step2:heading', 'block_coupon'));
 $PAGE->set_context($context);
-$PAGE->set_title(get_string('view:index.php:title', 'block_coupon'));
-$PAGE->set_heading(get_string('view:index.php:heading', 'block_coupon'));
 $PAGE->set_pagelayout('standard');
 
 // Make sure the moodle editmode is off.
 helper::force_no_editing_mode();
-require_capability('block/coupon:administration', $context);
+
+require_capability('block/coupon:extendenrolments', $context);
+$renderer = $PAGE->get_renderer('block_coupon');
+
+echo $renderer->page_extendenrolment_wizard_step2($cid);

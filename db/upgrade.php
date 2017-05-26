@@ -130,5 +130,33 @@ function xmldb_block_coupon_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2017050100, 'coupon');
 
     }
+
+    if ($oldversion < 2017050102) {
+        // Add claimed bit.
+        $table = new xmldb_table('block_coupon');
+        $field = new xmldb_field('claimed', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'typ');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Set all that have userids claimed.
+        $sql = 'UPDATE {block_coupon} SET claimed = 1 WHERE (userid IS NOT NULL OR userid = 0)';
+        $DB->execute($sql);
+
+        // Block_tped savepoint reached.
+        upgrade_block_savepoint(true, 2017050102, 'coupon');
+
+    }
+
+    if ($oldversion < 2017050103) {
+        // Transform enrolperiod column to contain seconds instead of days.
+        $sql = 'UPDATE {block_coupon} SET enrolperiod = enrolperiod * 86400 WHERE enrolperiod <> 0';
+        $DB->execute($sql);
+
+        // Block_tped savepoint reached.
+        upgrade_block_savepoint(true, 2017050103, 'coupon');
+
+    }
+
     return true;
 }

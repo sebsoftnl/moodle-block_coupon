@@ -117,6 +117,8 @@ class coupons extends \table_sql {
         $this->filter = (int)$filter;
         $this->sortable(true, 'c.senddate', 'DESC');
         $this->no_sorting('owner');
+        $this->no_sorting('course');
+        $this->no_sorting('cohort');
         $this->strdelete = get_string('action:coupon:delete', 'block_coupon');
         $this->strdeleteconfirm = get_string('action:coupon:delete:confirm', 'block_coupon');
     }
@@ -144,7 +146,7 @@ class coupons extends \table_sql {
      */
     public function render($pagesize, $useinitialsbar = true) {
         $columns = array('owner', 'for_user_email', 'senddate',
-            'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'issend', 'action');
+            'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'issend');
         if ($this->is_downloading() == '') {
             $columns[] = 'action';
         }
@@ -161,10 +163,10 @@ class coupons extends \table_sql {
         }
         switch ($this->filter) {
             case self::USED:
-                $where[] = 'c.userid IS NOT NULL AND c.userid <> 0';
+                $where[] = 'claimed = 1';
                 break;
             case self::UNUSED:
-                $where[] = 'c.userid IS NULL';
+                $where[] = 'claimed = 0';
                 break;
             case self::ALL:
                 // Has no extra where clause.
@@ -205,7 +207,7 @@ class coupons extends \table_sql {
         if ($strindefinite === null) {
             $strindefinite = get_string('enrolperiod:indefinite', 'block_coupon');
         }
-        return (($row->enrolperiod <= 0) ? $strindefinite : format_time($row->enrolperiod * 86400));
+        return (($row->enrolperiod <= 0) ? $strindefinite : format_time($row->enrolperiod));
     }
 
     /**

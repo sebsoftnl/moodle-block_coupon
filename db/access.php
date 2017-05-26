@@ -68,6 +68,13 @@ $capabilities = array(
             'guest' => CAP_PREVENT
         )
     ),
+    'block/coupon:extendenrolments' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        )
+    ),
     'block/coupon:addinstance' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,

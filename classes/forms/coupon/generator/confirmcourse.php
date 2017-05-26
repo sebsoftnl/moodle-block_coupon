@@ -52,104 +52,10 @@ class confirmcourse extends \moodleform {
      */
     public function definition() {
         global $CFG, $DB, $SESSION;
-
         $mform = & $this->_form;
 
-        $mform->addElement('header', 'header', get_string('heading:info', 'block_coupon'));
-        if (!$strinfo = get_config('block_coupon', 'info_coupon_confirm')) {
-            $strinfo = get_string('missing_config_info', 'block_coupon');
-        }
-        $mform->addElement('static', 'info', '', $strinfo);
-
-        // Determine which type of settings we'll use.
-        $radioarray = array();
-        $radioarray[] = & $mform->createElement('radio', 'showform', '',
-                get_string('showform-amount', 'block_coupon'), 'amount', array('onchange' => 'showHide(this.value)'));
-        $radioarray[] = & $mform->createElement('radio', 'showform', '',
-                get_string('showform-csv', 'block_coupon'), 'csv', array('onchange' => 'showHide(this.value)'));
-        $radioarray[] = & $mform->createElement('radio', 'showform', '',
-                get_string('showform-manual', 'block_coupon'), 'manual', array('onchange' => 'showHide(this.value)'));
-        $mform->addGroup($radioarray, 'radioar', get_string('label:showform', 'block_coupon'), array('<br/>'), false);
-        $mform->setDefault('showform', 'amount');
-
-        // Send coupons based on CSV upload.
-        $mform->addElement('header', 'csvForm', get_string('heading:csvForm', 'block_coupon'));
-
-        // Filepicker.
-        $urldownloadcsv = new \moodle_url($CFG->wwwroot . '/blocks/coupon/sample.csv');
-        $mform->addElement('filepicker', 'coupon_recipients',
-                get_string('label:coupon_recipients', 'block_coupon'), null, array('accepted_types' => 'csv'));
-        $mform->addHelpButton('coupon_recipients', 'label:coupon_recipients', 'block_coupon');
-        $mform->addElement('static', 'coupon_recipients_desc', '', get_string('coupon_recipients_desc', 'block_coupon'));
-        $mform->addElement('static', 'sample_csv', '', '<a href="' . $urldownloadcsv
-                . '" target="_blank">' . get_string('download-sample-csv', 'block_coupon') . '</a>');
-
-        // Editable email message.
-        $mform->addElement('editor', 'email_body', get_string('label:email_body', 'block_coupon'), array('noclean' => 1));
-        $mform->setType('email_body', PARAM_RAW);
-        $mform->setDefault('email_body', array('text' => get_string('coupon_mail_csv_content', 'block_coupon')));
-        $mform->addRule('email_body', get_string('required'), 'required');
-        $mform->addHelpButton('email_body', 'label:email_body', 'block_coupon');
-
-        // Configurable enrolment time.
-        $mform->addElement('date_selector', 'date_send_coupons', get_string('label:date_send_coupons', 'block_coupon'));
-        $mform->addRule('date_send_coupons', get_string('required'), 'required');
-        $mform->addHelpButton('date_send_coupons', 'label:date_send_coupons', 'block_coupon');
-
-        // Send coupons based on CSV upload.
-        $mform->addElement('header', 'manualForm', get_string('heading:manualForm', 'block_coupon'));
-
-        // Textarea recipients.
-        $mform->addElement('textarea', 'coupon_recipients_manual',
-                get_string("label:coupon_recipients", 'block_coupon'), 'rows="10" cols="100"');
-        $mform->addRule('coupon_recipients_manual', get_string('required'), 'required', null, 'client');
-        $mform->addHelpButton('coupon_recipients_manual', 'label:coupon_recipients_txt', 'block_coupon');
-        $mform->setDefault('coupon_recipients_manual', 'E-mail,Gender,Name');
-
-        $mform->addElement('static', 'coupon_recipients_desc', '', get_string('coupon_recipients_desc', 'block_coupon'));
-
-        // Editable email message.
-        $mform->addElement('editor', 'email_body_manual', get_string('label:email_body', 'block_coupon'), array('noclean' => 1));
-        $mform->setType('email_body_manual', PARAM_RAW);
-        $mform->setDefault('email_body_manual', array('text' => get_string('coupon_mail_csv_content', 'block_coupon')));
-        $mform->addRule('email_body_manual', get_string('required'), 'required');
-        $mform->addHelpButton('email_body_manual', 'label:email_body', 'block_coupon');
-
-        // Configurable enrolment time.
-        $mform->addElement('date_selector', 'date_send_coupons_manual', get_string('label:date_send_coupons', 'block_coupon'));
-        $mform->addRule('date_send_coupons_manual', get_string('required'), 'required');
-        $mform->addHelpButton('date_send_coupons_manual', 'label:date_send_coupons', 'block_coupon');
-
-        // Send coupons based on Amount field.
-        $mform->addElement('header', 'amountForm', get_string('heading:amountForm', 'block_coupon'));
-
-        // Set email_to variable.
-        $usealternativeemail = get_config('block_coupon', 'use_alternative_email');
-        $alternativeemail = get_config('block_coupon', 'alternative_email');
-
-        // Amount of coupons.
-        $mform->addElement('text', 'coupon_amount', get_string('label:coupon_amount', 'block_coupon'));
-        $mform->setType('coupon_amount', PARAM_INT);
-        $mform->addRule('coupon_amount', get_string('error:numeric_only', 'block_coupon'), 'numeric');
-        $mform->addRule('coupon_amount', get_string('required'), 'required');
-        $mform->addHelpButton('coupon_amount', 'label:coupon_amount', 'block_coupon');
-
-        // Use alternative email address.
-        $mform->addElement('checkbox', 'use_alternative_email', get_string('label:use_alternative_email', 'block_coupon'));
-        $mform->setType('use_alternative_email', PARAM_BOOL);
-        $mform->setDefault('use_alternative_email', $usealternativeemail);
-
-        // Email address to mail to.
-        $mform->addElement('text', 'alternative_email', get_string('label:alternative_email', 'block_coupon'));
-        $mform->setType('alternative_email', PARAM_EMAIL);
-        $mform->setDefault('alternative_email', $alternativeemail);
-        $mform->addRule('alternative_email', get_string('error:invalid_email', 'block_coupon'), 'email', null);
-        $mform->addHelpButton('alternative_email', 'label:alternative_email', 'block_coupon');
-        $mform->disabledIf('alternative_email', 'use_alternative_email', 'notchecked');
-
-        // Generate_pdf checkbox.
-        $mform->addElement('checkbox', 'generate_pdf', get_string('label:generate_pdfs', 'block_coupon'));
-        $mform->addHelpButton('generate_pdf', 'label:generate_pdfs', 'block_coupon');
+        // Add standard form elements.
+        helper::std_coupon_add_default_confirm_form_elements($mform, 'course');
 
         // Settings that apply for both csv and amount.
         $mform->addElement('header', 'lastSettings', get_string('heading:general_settings', 'block_coupon'));
@@ -162,9 +68,8 @@ class confirmcourse extends \moodleform {
         $mform->addHelpButton('redirect_url', 'label:redirect_url', 'block_coupon');
 
         // Configurable enrolment time.
-        $mform->addElement('text', 'enrolment_period', get_string('label:enrolment_period', 'block_coupon'));
-        $mform->addRule('enrolment_period', get_string('required'), 'required');
-        $mform->setType('enrolment_period', PARAM_INT);
+        $mform->addElement('duration', 'enrolment_period',
+                get_string('label:enrolment_period', 'block_coupon'), array('size' => 40, 'optional' => true));
         $mform->setDefault('enrolment_period', '0');
         $mform->addHelpButton('enrolment_period', 'label:enrolment_period', 'block_coupon');
 

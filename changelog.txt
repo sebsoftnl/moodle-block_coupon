@@ -1,3 +1,11 @@
+Version 2017052400 (Release 3.0.1 (build 2017052400))
+* Added new type of coupon: extend (course) enrolment
+* Added webservices!
+* Incorporated some changes here and the in overviews
+
+* Thanks to everyone for their valuable input and remarks.
+-----
+
 Version 2017050100 (Release 3.0.0 (build 2017050100))
 * Added $CFG->wwwroot on all moodle_urls
 * Added setting to choose default assigned role (resolve issue #12: Student role problem.
@@ -15,6 +23,8 @@ Version 2017050100 (Release 3.0.0 (build 2017050100))
 * Added QR based coupon to PDF including processing
 * Added signup for QR based coupon when user is not logged on yet
 * Added possibility for signup with a coupon code (in block_coupon, when user is not yet logged in)
+* Added new manager to manage multiple coupon background
+* Added option to select coupon background to use
 * minimum required version: Moodle3 3.0
 
 * Thanks to everyone for their valuable input and remarks.

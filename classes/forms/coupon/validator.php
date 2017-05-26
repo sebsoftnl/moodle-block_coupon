@@ -74,9 +74,14 @@ class validator extends \moodleform {
         global $DB;
         $errors = parent::validation($data, $files);
 
-        if (!$coupon = $DB->get_record('block_coupon', array('submission_code' => $data['coupon_code']))) {
+        $conditions = array(
+            'submission_code' => $data['coupon_code'],
+            'claimed' => 0,
+        );
+        $coupon = $DB->get_record('block_coupon', $conditions);
+       if (empty($coupon)) {
             $errors['coupon_code'] = get_string('error:invalid_coupon_code', 'block_coupon');
-        } else if (!is_null($coupon->userid)) {
+        } else if (!is_null($coupon->userid) && $coupon->typ != \block_coupon\coupon\generatoroptions::ENROLEXTENSION) {
             $errors['coupon_code'] = get_string('error:coupon_already_used', 'block_coupon');
         }
 
