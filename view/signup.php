@@ -67,6 +67,8 @@ if ($mformsignup->is_cancelled()) {
     $authplugin->user_signup($user, false); // Prints notice and link to login/index.php.
     // Added for coupon.
     \block_coupon\helper::claim_coupon($user->submissioncode, $user->id);
+    // Unset sessionurl.
+    unset($SESSION->wantsurl);
     // Redirect to homepage?
     $message = get_string('signup:success', 'block_coupon');
     redirect(new moodle_url($CFG->wwwroot . '/login/index.php'), $message, 3);
@@ -90,6 +92,7 @@ $PAGE->set_heading($SITE->fullname);
 
 echo $OUTPUT->header();
 // Link to login.
+$SESSION->wantsurl = $CFG->wwwroot . '/'; //Resolves issue #14.
 $loginurl = new moodle_url($CFG->wwwroot . '/login/index.php');
 echo html_writer::link($loginurl, get_string('signup:login', 'block_coupon'));
 echo '<hr/>';

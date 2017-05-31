@@ -79,7 +79,7 @@ class validator extends \moodleform {
             'claimed' => 0,
         );
         $coupon = $DB->get_record('block_coupon', $conditions);
-       if (empty($coupon)) {
+        if (empty($coupon)) {
             $errors['coupon_code'] = get_string('error:invalid_coupon_code', 'block_coupon');
         } else if (!is_null($coupon->userid) && $coupon->typ != \block_coupon\coupon\generatoroptions::ENROLEXTENSION) {
             $errors['coupon_code'] = get_string('error:coupon_already_used', 'block_coupon');

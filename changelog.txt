@@ -1,3 +1,9 @@
+Version 2017052401 (Release 3.0.2 (build 2017052401))
+* Resolved issue #14
+
+* Thanks to everyone for their valuable input and remarks.
+-----
+
 Version 2017052400 (Release 3.0.1 (build 2017052400))
 * Added new type of coupon: extend (course) enrolment
 * Added webservices!
