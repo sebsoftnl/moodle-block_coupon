@@ -64,6 +64,11 @@ class course extends typebase implements icoupontype {
             $foruserid = $USER->id;
         }
 
+        // Validate correct user, if applicable.
+        if (!empty($this->coupon->userid) && $this->coupon->userid != $foruserid) {
+            throw new exception('coupon:claim:wronguser', 'block_coupon');
+        }
+
         $role = \block_coupon\helper::get_default_coupon_role();
         $couponcourses = $DB->get_records('block_coupon_courses', array('couponid' => $this->coupon->id));
         // Set enrolment period.

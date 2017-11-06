@@ -157,6 +157,8 @@ $string['label:coupon_email_help'] = 'This is the email address the generated co
 $string['label:coupon_amount_help'] = 'This is the the amount of coupons that will be generated. Please use this field OR the field recipients, not both.';
 $string['label:coupon_cohorts_help'] = 'Select the one or more cohorts your users will be enrolled in.';
 $string['label:coupon_courses_help'] = 'Select the courses your users will be enrolled in.';
+$string['label:renderqrcode'] = 'Use QR Code?';
+$string['label:renderqrcode_help'] = 'Enable or disable this option to include QR codes in the generated PDF.';
 // Buttons.
 $string['button:next'] = 'Next';
 $string['button:save'] = 'Generate Coupons';

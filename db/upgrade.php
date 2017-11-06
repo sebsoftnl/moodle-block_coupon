@@ -158,5 +158,19 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
     }
 
+    if ($oldversion < 2017052402) {
+        // Add renderqrcode option bit.
+        // This WILL set all existing coupons to the default value of 1 but alas.
+        $table = new xmldb_table('block_coupon');
+        $field = new xmldb_field('renderqrcode', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1', 'claimed');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Block_tped savepoint reached.
+        upgrade_block_savepoint(true, 2017052402, 'coupon');
+
+    }
+
     return true;
 }

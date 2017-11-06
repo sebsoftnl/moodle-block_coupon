@@ -368,11 +368,15 @@ class pdf extends \pdf {
             $this->startPage();
             $this->SetFont('helvetica', '', 10);
 
-            $this->MultiCell(135, 50, $txtmain, false, 'C', false, 1, 15, 75, true, 0, true);
+            if ((bool)$coupon->renderqrcode) {
+                $this->MultiCell(135, 50, $txtmain, false, 'C', false, 1, 15, 75, true, 0, true);
+            } else {
+                $this->MultiCell(150, 150, $txtmain, false, 'C', false, 1, 15, 75, true, 0, true);
+            }
             $this->MultiCell(90, 100, $txtbotleft, false, 'L', false, 2, 4, 210, true, 0, true);
             $this->MultiCell(90, 100, $txtbotright, false, 'L', false, 2, 109, 210, true, 0, true);
             // QR.
-            if ($this->includeqr) {
+            if ((bool)$coupon->renderqrcode) {
                 $qr = $this->get_qr($coupon);
                 $dpi = 300; // Could also be 96? Seems the default.
                 $this->Image($qr->get_filepath(), 150, 70, 0, 0, '', '', '', false, $dpi, '', false, false, 0, true, false, true);

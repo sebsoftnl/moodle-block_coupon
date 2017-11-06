@@ -396,6 +396,7 @@ class block_coupon_renderer extends plugin_renderer_base {
             // These settings are always the same.
             $generatoroptions->redirecturl = (empty($data->redirect_url)) ? null : $data->redirect_url;
             $generatoroptions->enrolperiod = (empty($data->enrolment_period)) ? null : $data->enrolment_period;
+            $generatoroptions->renderqrcode = (isset($data->renderqrcode) && $data->renderqrcode) ? true : false;
 
             // If we're generating based on csv we'll redirect first to confirm the csv input.
             if ($data->showform == 'csv') {
@@ -713,6 +714,7 @@ class block_coupon_renderer extends plugin_renderer_base {
             $generatoroptions->extendusers = $data->extendusers;
             $generatoroptions->enrolperiod = $data->enrolperiod;
             $generatoroptions->generatesinglepdfs = $data->generate_pdf;
+            $generatoroptions->renderqrcode = (isset($data->renderqrcode) && $data->renderqrcode) ? true : false;
             $generatoroptions->redirecturl = $data->redirect_url;
             $generatoroptions->emailto = (!empty($data->use_alternative_email)) ? $data->alternative_email : null;
             if (empty($data->use_alternative_email)) {

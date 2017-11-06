@@ -157,6 +157,8 @@ $string['label:coupon_email_help'] = 'Dit is het e-mail adres waar de gegenereer
 $string['label:coupon_amount_help'] = 'Het aantal coupons dat gegenereerd zal worden. U kunt dit veld OF het Ontvangers veld gebruiken, niet beiden.';
 $string['label:coupon_cohorts_help'] = 'Selecteer een of meer cohort(en) waarin gebruikers zullen worden toegewezen.';
 $string['label:coupon_courses_help'] = 'Selecteer een of meer cursus(sen) waarop gebruikers worden ingeschreven.';
+$string['label:renderqrcode'] = 'Gebruik QR Code?';
+$string['label:renderqrcode_help'] = 'Gebruik deze optie om een QR code wel of niet in de PDF op te nemen.';
 // Buttons.
 $string['button:next'] = 'Volgende';
 $string['button:save'] = 'Genereer Coupons';

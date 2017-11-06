@@ -120,6 +120,11 @@ class extendenrolmentstep2 extends \moodleform {
             $mform->addHelpButton('generate_pdf', 'label:generate_pdfs', 'block_coupon');
             $mform->disabledIf('generate_pdf', 'use_alternative_email', 'notchecked');
 
+            // Render QR code checkbox.
+            $mform->addElement('checkbox', 'renderqrcode', get_string('label:renderqrcode', 'block_coupon'));
+            $mform->addHelpButton('renderqrcode', 'label:renderqrcode', 'block_coupon');
+            $mform->setDefault('renderqrcode', 1);
+
             $mform->addElement('header', 'manualForm', get_string('heading:manualForm', 'block_coupon'));
 
             // Editable email message.

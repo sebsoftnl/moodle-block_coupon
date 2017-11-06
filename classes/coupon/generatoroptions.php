@@ -139,6 +139,12 @@ class generatoroptions {
     public $logoid = 0;
 
     /**
+     * Render QR code?
+     * @var int
+     */
+    public $renderqrcode = true;
+
+    /**
      * coupon extend targets (only applicable when using extend enrolment type coupon)
      * @var array
      */

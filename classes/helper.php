@@ -463,22 +463,6 @@ class helper {
     }
 
     /**
-     * Sync all cohort course links.
-     *
-     * @return int 0 means ok, 1 means error, 2 means plugin disabled
-     */
-    public static final function enrol_cohort_sync() {
-        global $CFG;
-        require_once($CFG->dirroot . '/enrol/cohort/locallib.php');
-        if ($CFG->version < 2013051400) {
-            return enrol_cohort_sync();
-        } else {
-            $trace = new \null_progress_trace();
-            return enrol_cohort_sync($trace);
-        }
-    }
-
-    /**
      * Format a datestring in short or long format
      *
      * @param int $time
@@ -781,7 +765,7 @@ class helper {
     /**
      * Add default configuration form elements for the coupon generator for course or cohort type coupons.
      *
-     * @param \HTML_QuickForm $mform
+     * @param \MoodleQuickForm $mform
      * @param string $type 'cohort' or 'course'
      */
     public static function std_coupon_add_default_confirm_form_elements($mform, $type) {
@@ -892,6 +876,11 @@ class helper {
         // Generate_pdf checkbox.
         $mform->addElement('checkbox', 'generate_pdf', get_string('label:generate_pdfs', 'block_coupon'));
         $mform->addHelpButton('generate_pdf', 'label:generate_pdfs', 'block_coupon');
+
+        // Render QR code checkbox.
+        $mform->addElement('checkbox', 'renderqrcode', get_string('label:renderqrcode', 'block_coupon'));
+        $mform->addHelpButton('renderqrcode', 'label:renderqrcode', 'block_coupon');
+        $mform->setDefault('renderqrcode', 1);
     }
 
     /**

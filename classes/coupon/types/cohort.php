@@ -63,8 +63,10 @@ class cohort extends typebase implements icoupontype {
         if (empty($foruserid)) {
             $foruserid = $USER->id;
         }
-        if ($this->coupon->userid !== $foruserid) {
-            throw new exception('err:coupon-invalid-user');
+
+        // Validate correct user, if applicable.
+        if (!empty($this->coupon->userid) && $this->coupon->userid != $foruserid) {
+            throw new exception('coupon:claim:wronguser', 'block_coupon');
         }
 
         // Load associated cohorts.
@@ -94,6 +96,22 @@ class cohort extends typebase implements icoupontype {
         $this->coupon->userid = $foruserid;
         $this->coupon->timemodified = time();
         $DB->update_record('block_coupon', $this->coupon);
+    }
+
+    /**
+     * Sync all cohort course links.
+     *
+     * @return int 0 means ok, 1 means error, 2 means plugin disabled
+     */
+    public function enrol_cohort_sync() {
+        global $CFG;
+        require_once($CFG->dirroot . '/enrol/cohort/locallib.php');
+        if ($CFG->version < 2013051400) {
+            return enrol_cohort_sync();
+        } else {
+            $trace = new \null_progress_trace();
+            return enrol_cohort_sync($trace);
+        }
     }
 
 }

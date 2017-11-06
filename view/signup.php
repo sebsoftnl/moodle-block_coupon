@@ -21,6 +21,8 @@
  * @copyright  1999 onwards Martin Dougiamas  http://dougiamas.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+// No login check is expected since this is a signup script.
+// @codingStandardsIgnoreLine
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once($CFG->dirroot . '/user/editlib.php');
 
@@ -92,7 +94,7 @@ $PAGE->set_heading($SITE->fullname);
 
 echo $OUTPUT->header();
 // Link to login.
-$SESSION->wantsurl = $CFG->wwwroot . '/'; //Resolves issue #14.
+$SESSION->wantsurl = $CFG->wwwroot . '/'; // Resolves issue #14.
 $loginurl = new moodle_url($CFG->wwwroot . '/login/index.php');
 echo html_writer::link($loginurl, get_string('signup:login', 'block_coupon'));
 echo '<hr/>';

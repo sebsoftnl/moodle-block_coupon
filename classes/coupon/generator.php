@@ -247,6 +247,7 @@ class generator implements icoupongenerator {
             $objcoupon->logoid = (int)$options->logoid;
             $objcoupon->typ = $options->type;
             $objcoupon->claimed = 0;
+            $objcoupon->renderqrcode = ($options->renderqrcode) ? 1 : 0;
             if (!empty($options->extendusers[$i])) {
                 $objcoupon->userid = $options->extendusers[$i];
             }

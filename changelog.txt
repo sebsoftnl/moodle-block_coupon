@@ -1,3 +1,10 @@
+Version 2017052402 (Release 3.0.3 (build 2017052402))
+* Fixed bug in cohort type coupons (fixed incorrect usercheck and cohort synchronisation)
+* Added option to display QR Code in PDF or leave it out.
+
+* Thanks to everyone for their valuable input and remarks.
+-----
+
 Version 2017052401 (Release 3.0.2 (build 2017052401))
 * Resolved issue #14
 
