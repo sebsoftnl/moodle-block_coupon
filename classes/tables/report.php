@@ -299,7 +299,7 @@ class report extends \table_sql {
      */
     protected function get_action_image($action) {
         global $OUTPUT;
-        return '<img src="' . $OUTPUT->pix_url($action, 'block_coupon') . '"/>';
+        return '<img src="' . $OUTPUT->image_url($action, 'block_coupon') . '"/>';
     }
 
     /**

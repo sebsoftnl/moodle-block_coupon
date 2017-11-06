@@ -1,3 +1,9 @@
+Version 3.3.0 (build 2017092500)
+* Fixed deprecated pix_url references (replaced by image_url)
+* Validated functionality for Moodle 3.3 onwards
+* Minimum required Moodle version: 3.3
+----------
+
 Version 2017052402 (Release 3.0.3 (build 2017052402))
 * Fixed bug in cohort type coupons (fixed incorrect usercheck and cohort synchronisation)
 * Added option to display QR Code in PDF or leave it out.
