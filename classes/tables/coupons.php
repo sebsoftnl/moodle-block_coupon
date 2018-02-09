@@ -150,6 +150,14 @@ class coupons extends \table_sql {
         if ($this->is_downloading() == '') {
             $columns[] = 'action';
         }
+        switch ($this->filter) {
+            case self::USED:
+                array_splice($columns, 1, 0, ['usedby']);
+                break;
+            default:
+                // Has no extra columns.
+                break;
+        }
         $this->define_table_columns($columns);
 
         // Generate SQL.
@@ -164,6 +172,8 @@ class coupons extends \table_sql {
         switch ($this->filter) {
             case self::USED:
                 $where[] = 'claimed = 1';
+                $fields .= ', ' . get_all_user_name_fields(true, 'u1', '', 'user_');
+                $from .= ' JOIN {user} u1 ON c.userid=u1.id';
                 break;
             case self::UNUSED:
                 $where[] = 'claimed = 0';
@@ -171,6 +181,11 @@ class coupons extends \table_sql {
             case self::ALL:
                 // Has no extra where clause.
                 break;
+        }
+
+        if (empty($where)) {
+            // Prevent bugs.
+            $where[] = '1 = 1';
         }
 
         // Add filtering rules.
@@ -184,6 +199,27 @@ class coupons extends \table_sql {
 
         parent::set_sql($fields, $from, implode(' AND ', $where), $params);
         $this->out($pagesize, $useinitialsbar);
+    }
+
+    /**
+     * Render visual representation of the 'usedby' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string time string
+     */
+    public function col_usedby($row) {
+        global $CFG;
+        // Nasty modification. Does moodle support better methods here at all??
+        $obj = new \stdClass();
+        foreach ($row as $k => $v) {
+            if (stristr($k, 'user_') !== false) {
+                $nk = str_replace('user_', '', $k);
+                $obj->{$nk} = $v;
+            }
+        }
+
+        $url = new \moodle_url($CFG->wwwroot . '/user/profile.php', ['id' => $row->userid]);
+        return \html_writer::link($url, fullname($obj));
     }
 
     /**

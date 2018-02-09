@@ -54,6 +54,7 @@ class report extends filtering {
             'timemodified' => 1,
             'senddate' => 1,
             'sent' => 0,
+            'couponcode' => 1,
             'context' => 1,
             'cohortid' => 1,
             'courseid' => 1,
@@ -88,6 +89,9 @@ class report extends filtering {
             case 'for_user_name':
                 return new \user_filter_text('for_user_name',
                         get_string('report:for_user_name', 'block_coupon'), $advanced, 'c.for_user_name');
+            case 'couponcode':
+                return new \user_filter_text('couponcode',
+                        get_string('report:coupon_code', 'block_coupon'), $advanced, 'c.submission_code');
             case 'cohortid':
                 return new \block_coupon\filters\couponcohortid($advanced, 'c.id');
             case 'courseid':

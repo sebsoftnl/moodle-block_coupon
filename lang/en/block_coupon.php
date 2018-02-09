@@ -198,6 +198,7 @@ $string['report:status_completed'] = 'Course completed';
 $string['report:dateformat'] = '%d-%m-%Y %H:%M:%S';
 $string['report:dateformatymd'] = '%d-%m-%Y';
 $string['report:heading:user'] = 'User';
+$string['report:heading:couponcode'] = 'Used code';
 $string['report:heading:coursename'] = 'Course name';
 $string['report:heading:cohortname'] = 'Cohort(s)';
 $string['report:heading:coursetype'] = 'Course type';
@@ -261,6 +262,7 @@ $string['page:generate_coupon_step_four.php:title'] = 'Generate coupons';
 $string['page:generate_coupon_step_five.php:title'] = 'Generate coupons';
 $string['page:unused_coupons.php:title'] = 'Unused coupons';
 $string['th:owner'] = 'Owner';
+$string['th:usedby'] = 'Claimed by';
 $string['th:senddate'] = 'Send date';
 $string['th:enrolperiod'] = 'Enrolperiod';
 $string['th:submission_code'] = 'Subscription code';
@@ -502,3 +504,7 @@ With kind regards,<br /><br />
 ##site_name##';
 
 $string['extendaccess'] = '{$a} extra';
+
+// New.
+$string['view:request:title'] = 'Request coupons';
+$string['view:request:heading'] = 'Request coupons';

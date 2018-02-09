@@ -94,7 +94,7 @@ class report extends \table_sql {
      * @param bool $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
-        $columns = array('user', 'type', 'coursename', 'cohortname', 'status', 'datestart', 'datecomplete', 'grade');
+        $columns = array('user', 'couponcode', 'type', 'coursename', 'cohortname', 'status', 'datestart', 'datecomplete', 'grade');
         $this->define_table_columns($columns);
         // We won't be able to sort by most columns.
         $this->no_sorting('status');
@@ -258,6 +258,16 @@ class report extends \table_sql {
      */
     public function col_type($row) {
         return get_string('coupon:type:' . $row->typ, 'block_coupon');
+    }
+
+    /**
+     * Render visual representation of the 'couponcode' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string type string
+     */
+    public function col_couponcode($row) {
+        return $row->submission_code;
     }
 
     /**

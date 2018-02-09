@@ -198,6 +198,7 @@ $string['report:status_completed'] = 'Cursus afgerond';
 $string['report:dateformat'] = '%d-%m-%Y %H:%M:%S';
 $string['report:dateformatymd'] = '%d-%m-%Y';
 $string['report:heading:user'] = 'Gebruiker';
+$string['report:heading:couponcode'] = 'Gebruikte code';
 $string['report:heading:coursename'] = 'Cursus naam';
 $string['report:heading:cohortname'] = 'Sitegroep(en)';
 $string['report:heading:coursetype'] = 'Cursus type';
@@ -261,6 +262,7 @@ $string['page:generate_coupon_step_four.php:title'] = 'Genereer coupons';
 $string['page:generate_coupon_step_five.php:title'] = 'Genereer coupons';
 $string['page:unused_coupons.php:title'] = 'Ongebruikte coupons';
 $string['th:owner'] = 'Eigenaar';
+$string['th:usedby'] = 'Gebruikt door';
 $string['th:senddate'] = 'Verzenddatum';
 $string['th:enrolperiod'] = 'Inschrijvingsduur';
 $string['th:submission_code'] = 'Aanmeldcode';
@@ -479,3 +481,7 @@ Met vriendelijke groet,<br /><br />
 ##site_name##';
 
 $string['extendaccess'] = '{$a} extra';
+
+// New.
+$string['view:request:title'] = 'Coupons aanvragen';
+$string['view:request:heading'] = 'Coupons aanvragen';

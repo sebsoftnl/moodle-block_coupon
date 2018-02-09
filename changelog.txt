@@ -1,3 +1,8 @@
+Version 3.3.1 (build 2017092501)
+* Added coupon code to "progress report" for validation purposes (feature request)
+* Added claimed user to "used coupons" overview for validation purposes (feature request)
+----------
+
 Version 3.3.0 (build 2017092500)
 * Fixed deprecated pix_url references (replaced by image_url)
 * Validated functionality for Moodle 3.3 onwards
