@@ -231,6 +231,11 @@ class generator implements icoupongenerator {
         global $DB;
         raise_memory_limit(MEMORY_HUGE);
         $errors = array();
+        $defaultrole = \block_coupon\helper::get_default_coupon_role();
+        $defaultroleid = null;
+        if (isset($defaultrole->id)) {
+            $defaultroleid = $defaultrole->id;
+        }
         for ($i = 0; $i < $options->amount; $i++) {
             // An object for the coupon itself.
             $objcoupon = new \stdClass();
@@ -248,6 +253,7 @@ class generator implements icoupongenerator {
             $objcoupon->typ = $options->type;
             $objcoupon->claimed = 0;
             $objcoupon->renderqrcode = ($options->renderqrcode) ? 1 : 0;
+            $objcoupon->roleid = (!empty($options->roleid)) ? $options->roleid : $defaultroleid;
             if (!empty($options->extendusers[$i])) {
                 $objcoupon->userid = $options->extendusers[$i];
             }

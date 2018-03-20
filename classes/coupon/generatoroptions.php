@@ -151,6 +151,12 @@ class generatoroptions {
     public $extendusers;
 
     /**
+     * coupon role id
+     * @var int
+     */
+    public $roleid;
+
+    /**
      * create a new instance
      */
     public function __construct() {

@@ -113,6 +113,8 @@ $string['label:connected_courses'] = 'Connected course(s)';
 $string['label:no_courses_connected'] = 'There are no courses connected to this cohort.';
 $string['label:coupon_courses'] = 'Course(s)';
 $string['label:coupon_courses_help'] = 'Select the courses your students should be enrolled in';
+$string['label:coupon_role'] = 'Role';
+$string['label:coupon_role_help'] = 'Select the role with which coupons will be configured or leave empty for the configured default (usually student).';
 $string['label:coupon_cohorts'] = 'Cohort(s)';
 $string['label:cohort'] = 'Cohort';
 $string['label:coupon_code'] = 'Coupon Code';
@@ -272,6 +274,7 @@ $string['th:course'] = 'Course';
 $string['th:issend'] = 'Sent?';
 $string['th:immediately'] = 'Immediately';
 $string['th:for_user_email'] = 'Planned for';
+$string['th:role'] = 'Role';
 
 $string['tab:wzcoupons'] = 'Generate coupon(s)';
 $string['tab:wzcouponimage'] = 'Template image';
@@ -414,7 +417,7 @@ $string['label:defaultrole'] = 'Default role';
 $string['label:defaultrole_help'] = 'This will be the default role with which users will get assigned when claiming a coupon';
 
 $string['default-coupon-page-template-main'] = 'With this coupon you can activate access to the following e-learning module(s):<br/>
-{courses}<br/><br/>
+{courses} ({role})<br/><br/>
 You have {accesstime} access to this module.<br/><br/>
 Please use the following coupon code to activate access<br/>
 {coupon_code}';

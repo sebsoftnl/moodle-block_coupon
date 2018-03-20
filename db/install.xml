@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/coupon/db" VERSION="2016011000" COMMENT="XMLDB file for Moodle blocks/coupon"
+<XMLDB PATH="blocks/coupon/db" VERSION="2017092503" COMMENT="XMLDB file for Moodle blocks/coupon"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -21,8 +21,9 @@
         <FIELD NAME="logoid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="submission_code" NEXT="typ"/>
         <FIELD NAME="typ" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="logoid" NEXT="claimed"/>
         <FIELD NAME="claimed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="typ" NEXT="renderqrcode"/>
-        <FIELD NAME="renderqrcode" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="claimed" NEXT="timecreated"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="renderqrcode" NEXT="timemodified"/>
+        <FIELD NAME="renderqrcode" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="claimed" NEXT="roleid"/>
+        <FIELD NAME="roleid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false" PREVIOUS="renderqrcode" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="roleid" NEXT="timemodified"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="timecreated" NEXT="timeexpired"/>
         <FIELD NAME="timeexpired" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="timemodified"/>
       </FIELDS>

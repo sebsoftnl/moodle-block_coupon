@@ -423,10 +423,12 @@ class pdf extends \pdf {
      * @return string compiled string
      */
     protected function compile_main($coupon, $courses) {
+        global $DB;
         $find = array(
             '{coupon_code}',
             '{accesstime}',
-            '{courses}'
+            '{courses}',
+            '{role}'
         );
         if ((int)$coupon->enrolperiod === 0) {
             $accesstime = get_string('unlimited_access', 'block_coupon');
@@ -435,10 +437,17 @@ class pdf extends \pdf {
         } else {
             $accesstime = format_time($coupon->enrolperiod);
         }
+        if (!empty($coupon->roleid)) {
+            $role = $DB->get_record('role', ['id' => $coupon->roleid]);
+        } else {
+            $role = helper::get_default_coupon_role();
+        }
+        $rolename = role_get_name($role);
         $replace = array(
             '<div style="text-align: center; font-size: 200%; font-weight: bold">'.$coupon->submission_code.'</div>',
             $accesstime,
-            '<b>'.implode(', ', $courses).'</b>'
+            '<b>'.implode(', ', $courses).'</b>',
+            $rolename
         );
 
         return str_replace($find, $replace, $this->templatemain);

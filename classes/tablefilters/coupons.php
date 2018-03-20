@@ -61,6 +61,7 @@ class coupons extends filtering {
             'courseid' => 1,
             'course' => 1,
             'cohort' => 1,
+            'role' => 1,
         );
     }
 
@@ -101,6 +102,9 @@ class coupons extends filtering {
                 return new \block_coupon\filters\couponcourseselect($advanced, 'c.id');
             case 'cohort':
                 return new \block_coupon\filters\couponcohortselect($advanced, 'c.id');
+            case 'role':
+                $options = \block_coupon\helper::get_role_menu();
+                return new \user_filter_select('role', get_string('role'), $advanced, 'c.roleid', $options);
             default:
                 return null;
         }

@@ -282,6 +282,7 @@ class block_coupon_renderer extends plugin_renderer_base {
         } else if ($data = $mform->get_data()) {
             if ($generatoroptions->type == generatoroptions::COURSE) {
                 $generatoroptions->courses = $data->coupon_courses;
+                $generatoroptions->roleid = $data->coupon_role;
 
                 $hasgroups = false;
                 foreach ($data->coupon_courses as $courseid) {

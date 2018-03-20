@@ -53,10 +53,7 @@ if ($ADMIN->fulltree) {
             ''
         ));
 
-    $roleoptions = array();
-    if ($roles = get_all_roles()) {
-        $roleoptions = role_fix_names($roles, null, ROLENAME_ORIGINAL, true);
-    }
+    $roleoptions = \block_coupon\helper::get_role_menu();
     $settings->add(new admin_setting_configselect(
             'block_coupon/defaultrole',
             get_string('label:defaultrole', 'block_coupon'),

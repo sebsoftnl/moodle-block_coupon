@@ -146,7 +146,7 @@ class coupons extends \table_sql {
      */
     public function render($pagesize, $useinitialsbar = true) {
         $columns = array('owner', 'for_user_email', 'senddate',
-            'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'issend');
+            'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'role', 'issend');
         if ($this->is_downloading() == '') {
             $columns[] = 'action';
         }
@@ -162,7 +162,9 @@ class coupons extends \table_sql {
 
         // Generate SQL.
         $fields = 'c.*, ' . get_all_user_name_fields(true, 'u') . ', NULL as action';
-        $from = '{block_coupon} c LEFT JOIN {user} u ON c.ownerid=u.id';
+        $from = '{block_coupon} c ';
+        $from .= 'JOIN {user} u ON c.ownerid=u.id ';
+        $from .= 'LEFT JOIN {role} r ON c.roleid=r.id ';
         $where = array();
         $params = array();
         if ($this->ownerid > 0) {
@@ -274,6 +276,25 @@ class coupons extends \table_sql {
             $strno = get_string('no');
         }
         return (((bool)$row->senddate) ? $stryes : $strno);
+    }
+
+    /**
+     * Render visual representation of the 'role' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string role string
+     */
+    public function col_role($row) {
+        global $DB;
+        if (empty($row->roleid)) {
+            return '-';
+        }
+        static $roles = [];
+        if (!isset($roles[$row->roleid])) {
+            $role = $DB->get_record('role', ['id' => $row->roleid]);
+            $roles[$row->roleid] = role_get_name($role);
+        }
+        return $roles[$row->roleid];
     }
 
     /**

@@ -1,3 +1,7 @@
+Version 3.3.2 (build 2017092503)
+* Added role selection for coupons (cohort/course type only)
+----------
+
 Version 3.3.1 (build 2017092501)
 * Added coupon code to "progress report" for validation purposes (feature request)
 * Added claimed user to "used coupons" overview for validation purposes (feature request)

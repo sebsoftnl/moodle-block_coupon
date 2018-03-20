@@ -596,6 +596,26 @@ class helper {
     }
 
     /**
+     * Get role enu.
+     *
+     * @return false|\stdClass
+     */
+    public static function get_role_menu($context = null, $addempty = false) {
+        $roleoptions = array();
+        if ($roles = get_all_roles($context)) {
+            $roleoptions = role_fix_names($roles, $context, ROLENAME_ORIGINAL, true);
+        }
+        if ($addempty) {
+            $rs = array('' => get_string('select'));
+            foreach ($roleoptions as $k => $v) {
+                $rs[$k] = $v;
+            }
+            $roleoptions = $rs;
+        }
+        return $roleoptions;
+    }
+
+    /**
      * Get course connected to coupons
      *
      * @param \stdClass $coupon

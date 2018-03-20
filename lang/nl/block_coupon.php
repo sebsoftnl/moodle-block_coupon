@@ -113,6 +113,8 @@ $string['label:connected_courses'] = 'Toegevoegde cursus(sen)';
 $string['label:no_courses_connected'] = 'Er zijn nog geen cursussen toegevoegd aan deze cohort.';
 $string['label:coupon_courses'] = 'Cursus(sen)';
 $string['label:coupon_courses_help'] = 'Selecteer hier de cursussen waar uw studenten op ingeschreven dienen te worden.';
+$string['label:coupon_courses'] = 'Rol';
+$string['label:coupon_courses_help'] = 'Selecteer hier de rol waarmee de coupons worden geconfigureerd of laat leeg voor de ingestelde standaardwaarde (normaliter student).';
 $string['label:coupon_cohorts'] = 'Cohort(en)';
 $string['label:cohort'] = 'Cohort';
 $string['label:coupon_code'] = 'Coupon Code';
@@ -272,6 +274,7 @@ $string['th:course'] = 'Cursus';
 $string['th:issend'] = 'Verzonden?';
 $string['th:immediately'] = 'Direct';
 $string['th:for_user_email'] = 'Ingepland voor';
+$string['th:role'] = 'Rol';
 
 $string['tab:wzcoupons'] = 'Genereer coupon(s)';
 $string['tab:wzcouponimage'] = 'Template afbeelding';
@@ -294,10 +297,10 @@ Moodle administrator';
 
 $string['days_access'] = '{$a} dagen';
 $string['unlimited_access'] = 'onbeperkt';
-$string['default-coupon-page-template-main'] = 'Met deze coupon activeert u de toegang tot een e-learningmodule. U heeft {accesstime} toegang tot uw module.
-
-Gebruik onderstaande toegangscode om uw coupon te activeren.
-
+$string['default-coupon-page-template-main'] = 'Met deze coupon activeert u de toegang tot de volgende e-learningmodule(s):<br/>
+{courses} ({role})<br/><br/>
+U heeft {accesstime} toegang tot uw module.<br/><br/>
+Gebruik onderstaande toegangscode om uw coupon te activeren.<br/>
 Toegangscode: {coupon_code}';
 $string['default-coupon-page-template-botleft'] = '<ol>
 <li>Meld u aan bij {site_url}</li>
