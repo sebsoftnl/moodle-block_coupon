@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/coupon/db" VERSION="2017092503" COMMENT="XMLDB file for Moodle blocks/coupon"
+<XMLDB PATH="blocks/coupon/db" VERSION="2018050300" COMMENT="XMLDB file for Moodle blocks/coupon"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="block_coupon" COMMENT="block_coupon table retrofitted from MySQL" NEXT="block_coupon_cohorts">
+    <TABLE NAME="block_coupon" COMMENT="block_coupon table retrofitted from MySQL">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true" NEXT="userid"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="id" NEXT="ownerid"/>
-        <FIELD NAME="ownerid" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="userid" NEXT="courseid"/>
-        <FIELD NAME="for_user_email" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" PREVIOUS="courseid" NEXT="for_user_name"/>
-        <FIELD NAME="for_user_name" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" PREVIOUS="for_user_email" NEXT="for_user_gender"/>
-        <FIELD NAME="for_user_gender" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" PREVIOUS="for_user_name" NEXT="enrolperiod"/>
-        <FIELD NAME="enrolperiod" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="for_user_gender" NEXT="senddate"/>
-        <FIELD NAME="senddate" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="enrolperiod" NEXT="issend"/>
-        <FIELD NAME="issend" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" PREVIOUS="senddate" NEXT="redirect_url"/>
-        <FIELD NAME="redirect_url" TYPE="char" LENGTH="256" NOTNULL="false" SEQUENCE="false" PREVIOUS="issend" NEXT="email_body"/>
-        <FIELD NAME="email_body" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="redirect_url" NEXT="submission_code"/>
-        <FIELD NAME="submission_code" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false" PREVIOUS="email_body" NEXT="logoid"/>
-        <FIELD NAME="logoid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="submission_code" NEXT="typ"/>
-        <FIELD NAME="typ" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="logoid" NEXT="claimed"/>
-        <FIELD NAME="claimed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="typ" NEXT="renderqrcode"/>
-        <FIELD NAME="renderqrcode" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="claimed" NEXT="roleid"/>
-        <FIELD NAME="roleid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false" PREVIOUS="renderqrcode" NEXT="timecreated"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="roleid" NEXT="timemodified"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="timecreated" NEXT="timeexpired"/>
-        <FIELD NAME="timeexpired" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false" PREVIOUS="timemodified"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="ownerid" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="for_user_email" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="for_user_name" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="for_user_gender" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="enrolperiod" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="senddate" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="issend" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="redirect_url" TYPE="char" LENGTH="256" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="email_body" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="submission_code" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="logoid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="typ" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="claimed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="renderqrcode" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="roleid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timeexpired" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="block_coupon_cohorts" COMMENT="block_coupon_cohorts table retrofitted from MySQL" PREVIOUS="block_coupon" NEXT="block_coupon_groups">
+    <TABLE NAME="block_coupon_cohorts" COMMENT="block_coupon_cohorts table retrofitted from MySQL">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true" NEXT="couponid"/>
-        <FIELD NAME="couponid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="cohortid"/>
-        <FIELD NAME="cohortid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="couponid"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="couponid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="cohortid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
@@ -45,11 +45,11 @@
         <INDEX NAME="cohortid" UNIQUE="false" FIELDS="cohortid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="block_coupon_groups" COMMENT="block_coupon_groups table retrofitted from MySQL" PREVIOUS="block_coupon_cohorts" NEXT="block_coupon_courses">
+    <TABLE NAME="block_coupon_groups" COMMENT="block_coupon_groups table retrofitted from MySQL">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true" NEXT="couponid"/>
-        <FIELD NAME="couponid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="groupid"/>
-        <FIELD NAME="groupid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="couponid"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="couponid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="groupid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
@@ -59,11 +59,11 @@
         <INDEX NAME="groupid" UNIQUE="false" FIELDS="groupid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="block_coupon_courses" COMMENT="coupon_users table retrofitted from MySQL" PREVIOUS="block_coupon_groups">
+    <TABLE NAME="block_coupon_courses" COMMENT="coupon_users table retrofitted from MySQL">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true" NEXT="couponid"/>
-        <FIELD NAME="couponid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="courseid"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="couponid"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="couponid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
@@ -73,13 +73,13 @@
         <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="block_coupon_errors" COMMENT="coupon_errors table retrofitted from MySQL" PREVIOUS="block_coupon_groups">
+    <TABLE NAME="block_coupon_errors" COMMENT="coupon_errors table retrofitted from MySQL">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true" NEXT="couponid"/>
-        <FIELD NAME="couponid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="courseid"/>
-        <FIELD NAME="errortype" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" PREVIOUS="couponid" NEXT="errormessage"/>
-        <FIELD NAME="errormessage" TYPE="text" LENGTH="medium" NOTNULL="true" SEQUENCE="false" PREVIOUS="errortype" NEXT="timecreated"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false" PREVIOUS="errormessage"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="couponid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="errortype" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="errormessage" TYPE="text" LENGTH="medium" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>

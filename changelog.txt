@@ -1,5 +1,14 @@
+Version 3.5.0 (build 2018050300)
+* FIXED issue #15 ("mdb->get_record() found more than one record" when calling find_block_instance_id()).
+* FIXED issue #19 where enrolment was never updated when using a new coupon after enrolment expired.
+* Fixed "Sent" column in coupon overviews (displayed information based on wrong field)
+* Added privacy provider
+* Validated functionality for Moodle 3.5 onwards
+* Minimum required Moodle version: 3.5
+----------
+
 Version 3.3.2 (build 2017092503)
-* Added role selection for coupons (cohort/course type only)
+* Added role selection for coupons (course type only)
 ----------
 
 Version 3.3.1 (build 2017092501)

@@ -274,7 +274,7 @@ $string['th:course'] = 'Cursus';
 $string['th:issend'] = 'Verzonden?';
 $string['th:immediately'] = 'Direct';
 $string['th:for_user_email'] = 'Ingepland voor';
-$string['th:role'] = 'Rol';
+$string['th:roleid'] = 'Rol';
 
 $string['tab:wzcoupons'] = 'Genereer coupon(s)';
 $string['tab:wzcouponimage'] = 'Template afbeelding';
@@ -488,3 +488,15 @@ $string['extendaccess'] = '{$a} extra';
 // New.
 $string['view:request:title'] = 'Coupons aanvragen';
 $string['view:request:heading'] = 'Coupons aanvragen';
+
+$string['privacy:metadata:block_coupon:userid'] = 'De primaire database sleutel van de Moodle gebruiker';
+$string['privacy:metadata:block_coupon:for_user_email'] = 'Emailadres van persoon waar de coupon naar verzonden is, indien gegeven';
+$string['privacy:metadata:block_coupon:for_user_name'] = 'Naam van persoon waar de coupon naar verzonden is, indien gegeven';
+$string['privacy:metadata:block_coupon:for_user_gender'] = 'Geslacht van persoon waar de coupon naar verzonden is, indien gegeven';
+$string['privacy:metadata:block_coupon:email_body'] = 'Inhoud van verzOnden email, indien gegeven';
+$string['privacy:metadata:block_coupon:submission_code'] = 'Coupon aanmeldcode';
+$string['privacy:metadata:block_coupon:claimed'] = 'Of de coupon geclaimed is';
+$string['privacy:metadata:block_coupon:roleid'] = 'Rol ID die toegewezen wordt/is';
+$string['privacy:metadata:block_coupon:timecreated'] = 'Tijdstip waarop coupon is aangemaakt';
+$string['privacy:metadata:block_coupon:timemodified'] = 'Tijdstip waarop coupon is gewijzigd';
+$string['privacy:metadata:block_coupon:timeexpired'] = 'Tijdstip waarop coupon verloopt';

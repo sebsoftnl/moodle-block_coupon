@@ -146,7 +146,7 @@ class coupons extends \table_sql {
      */
     public function render($pagesize, $useinitialsbar = true) {
         $columns = array('owner', 'for_user_email', 'senddate',
-            'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'role', 'issend');
+            'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'roleid', 'issend');
         if ($this->is_downloading() == '') {
             $columns[] = 'action';
         }
@@ -275,7 +275,7 @@ class coupons extends \table_sql {
             $stryes = get_string('yes');
             $strno = get_string('no');
         }
-        return (((bool)$row->senddate) ? $stryes : $strno);
+        return (((bool)$row->issend) ? $stryes : $strno);
     }
 
     /**
@@ -284,7 +284,7 @@ class coupons extends \table_sql {
      * @param \stdClass $row
      * @return string role string
      */
-    public function col_role($row) {
+    public function col_roleid($row) {
         global $DB;
         if (empty($row->roleid)) {
             return '-';

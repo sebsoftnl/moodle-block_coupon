@@ -70,7 +70,7 @@ class course extends typebase implements icoupontype {
         }
 
         // Determine role.
-        if (empty($this->roleid)) {
+        if (empty($this->coupon->roleid)) {
             $role = \block_coupon\helper::get_default_coupon_role();
         } else {
             $role = $DB->get_record('role', ['id' => $this->coupon->roleid]);
@@ -87,9 +87,6 @@ class course extends typebase implements icoupontype {
             $context = \context_course::instance($couponcourse->courseid);
             if (is_null($context) || $context === false) {
                 throw new exception('error:course-not-found');
-            }
-            if (is_enrolled($context, $foruserid)) {
-                continue;
             }
             // Now we can enrol.
             if (!enrol_try_internal_enrol($couponcourse->courseid, $foruserid, $role->id, time(), $endenrolment)) {

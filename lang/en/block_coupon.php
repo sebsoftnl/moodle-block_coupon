@@ -274,7 +274,7 @@ $string['th:course'] = 'Course';
 $string['th:issend'] = 'Sent?';
 $string['th:immediately'] = 'Immediately';
 $string['th:for_user_email'] = 'Planned for';
-$string['th:role'] = 'Role';
+$string['th:roleid'] = 'Role';
 
 $string['tab:wzcoupons'] = 'Generate coupon(s)';
 $string['tab:wzcouponimage'] = 'Template image';
@@ -511,3 +511,15 @@ $string['extendaccess'] = '{$a} extra';
 // New.
 $string['view:request:title'] = 'Request coupons';
 $string['view:request:heading'] = 'Request coupons';
+
+$string['privacy:metadata:block_coupon:userid'] = 'The primary database key of the Moodle user';
+$string['privacy:metadata:block_coupon:for_user_email'] = 'Email address of person to which a (personal) coupon is sent, if at all';
+$string['privacy:metadata:block_coupon:for_user_name'] = 'Name of person to which a (personal) coupon is sent, if at all';
+$string['privacy:metadata:block_coupon:for_user_gender'] = 'Gender of person to which a (personal) coupon is sent, if at all';
+$string['privacy:metadata:block_coupon:email_body'] = 'Contents of the email of which a (personal) coupon is sent, if at all';
+$string['privacy:metadata:block_coupon:submission_code'] = 'Coupon subscription code';
+$string['privacy:metadata:block_coupon:claimed'] = 'Whether or not the coupon was claimed';
+$string['privacy:metadata:block_coupon:roleid'] = 'Role ID to be assigned / of the assigned coupon';
+$string['privacy:metadata:block_coupon:timecreated'] = 'Time at which the coupon is created';
+$string['privacy:metadata:block_coupon:timemodified'] = 'Time at which the coupon is modified';
+$string['privacy:metadata:block_coupon:timeexpired'] = 'Expiration date for the coupon';

@@ -596,8 +596,10 @@ class helper {
     }
 
     /**
-     * Get role enu.
+     * Get role menu.
      *
+     * @param \context|null $context
+     * @param bool $addempty
      * @return false|\stdClass
      */
     public static function get_role_menu($context = null, $addempty = false) {
@@ -775,10 +777,11 @@ class helper {
      */
     public static function find_block_instance_id() {
         global $DB;
-        $rec = $DB->get_record('block_instances', array('blockname' => 'coupon'));
-        if (empty($rec)) {
+        $recs = $DB->get_records('block_instances', array('blockname' => 'coupon'));
+        if (empty($recs)) {
             return 0;
         }
+        $rec = reset($recs);
         return $rec->id;
     }
 
