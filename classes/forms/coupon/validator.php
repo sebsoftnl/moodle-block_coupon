@@ -71,7 +71,7 @@ class validator extends \moodleform {
      *         or an empty array if everything is OK (true allowed for backwards compatibility too).
      */
     public function validation($data, $files) {
-        global $DB;
+        global $DB, $USER;
         $errors = parent::validation($data, $files);
 
         $conditions = array(
@@ -83,6 +83,14 @@ class validator extends \moodleform {
             $errors['coupon_code'] = get_string('error:invalid_coupon_code', 'block_coupon');
         } else if (!is_null($coupon->userid) && $coupon->typ != \block_coupon\coupon\generatoroptions::ENROLEXTENSION) {
             $errors['coupon_code'] = get_string('error:coupon_already_used', 'block_coupon');
+        }
+
+        try {
+            if (!empty($coupon)) {
+                \block_coupon\helper::already_enroled_check($USER->id, $coupon->submission_code);
+            }
+        } catch (\Exception $ex) {
+            $errors['coupon_code'] = $ex->getMessage();
         }
 
         return $errors;

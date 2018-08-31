@@ -45,6 +45,24 @@ use block_coupon\coupon\generator;
 class block_coupon_renderer extends plugin_renderer_base {
 
     /**
+     * Return rendered request details
+     * @param stdClass $request
+     */
+    public function requestdetails($request) {
+        $widget = new \block_coupon\output\component\requestdetails($request);
+        return $this->render_requestdetails($widget);
+    }
+
+    /**
+     * Render request details
+     * @param \block_coupon\output\component\requestdetails $widget
+     */
+    public function render_requestdetails(\block_coupon\output\component\requestdetails $widget) {
+        $context = $widget->export_for_template($this);
+        return $this->render_from_template('block_coupon/requestdetails', $context);
+    }
+
+    /**
      * Render image upload page (including header / footer).
      *
      * @param int $id block instance id
@@ -243,6 +261,9 @@ class block_coupon_renderer extends plugin_renderer_base {
             $generatoroptions->ownerid = $USER->id;
             $generatoroptions->type = ($data->coupon_type['type'] == 0) ? generatoroptions::COURSE : generatoroptions::COHORT;
             $generatoroptions->logoid = $data->logo;
+            if (!empty($data->batchid)) {
+                $generatoroptions->batchid = $data->batchid;
+            }
             // Serialize generatoroptions to session.
             $generatoroptions->to_session();
             // And redirect user to next page.
@@ -429,6 +450,7 @@ class block_coupon_renderer extends plugin_renderer_base {
                 $generatoroptions->amount = $data->coupon_amount;
                 $generatoroptions->emailto = (!empty($data->use_alternative_email)) ? $data->alternative_email : $USER->email;
                 $generatoroptions->generatesinglepdfs = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
+                $generatoroptions->generatecodesonly = (isset($data->generatecodesonly) && $data->generatecodesonly) ? true : false;
             }
 
             // Now that we've got all the coupons.
@@ -443,9 +465,12 @@ class block_coupon_renderer extends plugin_renderer_base {
             }
 
             if ($data->showform == 'amount') {
-                // Generate and send off.
-                $coupons = $DB->get_records_list('block_coupon', 'id', $generator->get_generated_couponids());
-                helper::mail_coupons($coupons, $generatoroptions->emailto, $generatoroptions->generatesinglepdfs);
+                // Only send if not opted to only generate the codes!
+                if (!$generatoroptions->generatecodesonly) {
+                    // Generate and send off.
+                    $coupons = $DB->get_records_list('block_coupon', 'id', $generator->get_generated_couponids());
+                    helper::mail_coupons($coupons, $generatoroptions->emailto, $generatoroptions->generatesinglepdfs);
+                }
                 generatoroptions::clean_session();
                 redirect(new moodle_url($CFG->wwwroot . '/my'), get_string('coupons_sent', 'block_coupon'));
             } else {
@@ -536,12 +561,7 @@ class block_coupon_renderer extends plugin_renderer_base {
             $text = '', $title = '', $linkedwhenselected = false) {
         $img = '';
         if ($pix !== null) {
-            $img = $this->image_url($pix, $component) . ' ';
-            $img = '<img src="' . $img . '"';
-            if (!empty($title)) {
-                $img .= ' alt="' . $title . '"';
-            }
-            $img .= '/> ';
+            $img = $this->image_icon($pix, $title, empty($component) ? 'moodle' : $component, ['class' => 'icon']);
         }
         return new \tabobject($id, $link, $img . $text, empty($title) ? $text : $title, $linkedwhenselected);
     }
@@ -557,28 +577,38 @@ class block_coupon_renderer extends plugin_renderer_base {
         global $CFG;
         $tabs = array();
         // Add exclusions.
-        $tabs[] = $this->create_pictab('wzcoupons', 'coupons', 'block_coupon',
+        $tabs[] = $this->create_pictab('wzcoupons', 'e/print', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/generate_coupon.php', $params),
                 get_string('tab:wzcoupons', 'block_coupon'));
-        $tabs[] = $this->create_pictab('wzcouponimage', 'image', 'block_coupon',
+        $tabs[] = $this->create_pictab('wzcouponimage', 'e/insert_edit_image', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/managelogos.php', $params),
                 get_string('tab:wzcouponimage', 'block_coupon'));
-        $tabs[] = $this->create_pictab('cpreport', 'report', 'block_coupon',
+        $requesttab = $this->create_pictab('cprequestadmin', 'i/checkpermissions', '',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', $params),
+                get_string('tab:requests', 'block_coupon'));
+        $requesttab->subtree[] = $this->create_pictab('cprequestusers', 'i/users', '',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', $params + ['action' => 'users']),
+                get_string('tab:requestusers', 'block_coupon'));
+        $requesttab->subtree[] = $this->create_pictab('cprequests', 'e/help', '',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', $params + ['action' => 'requests']),
+                get_string('tab:requests', 'block_coupon'));
+        $tabs[] = $requesttab;
+        $tabs[] = $this->create_pictab('cpreport', 'i/report', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/reports.php', $params),
                 get_string('tab:report', 'block_coupon'));
-        $tabs[] = $this->create_pictab('cpunused', 'unused', 'block_coupon',
+        $tabs[] = $this->create_pictab('cpunused', 'i/completion-manual-n', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/coupon_view.php',
                 array_merge($params, array('tab' => 'unused'))),
                 get_string('tab:unused', 'block_coupon'));
-        $tabs[] = $this->create_pictab('cpused', 'used', 'block_coupon',
+        $tabs[] = $this->create_pictab('cpused', 'i/completion-manual-enabled', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/coupon_view.php',
                 array_merge($params, array('tab' => 'used'))),
                 get_string('tab:used', 'block_coupon'));
-        $tabs[] = $this->create_pictab('cperrorreport', 'error', 'block_coupon',
+        $tabs[] = $this->create_pictab('cperrorreport', 'i/warning', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/errorreport.php',
                 array_merge($params, array('tab' => 'cperrorreport'))),
                 get_string('tab:errors', 'block_coupon'));
-        $tabs[] = $this->create_pictab('cpcleaner', 'delete', 'block_coupon',
+        $tabs[] = $this->create_pictab('cpcleaner', 'e/cleanup_messy_code', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/cleanup.php',
                 array_merge($params, array('tab' => 'cpcleaner'))),
                 get_string('tab:cleaner', 'block_coupon'));

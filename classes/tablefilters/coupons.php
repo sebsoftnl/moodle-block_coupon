@@ -51,6 +51,7 @@ class coupons extends filtering {
     public function get_fields() {
         return array(
             'timeexpired' => 0,
+            'batchid' => 0,
             'timemodified' => 1,
             'senddate' => 1,
             'sent' => 0,
@@ -60,6 +61,8 @@ class coupons extends filtering {
             'cohortid' => 0,
             'courseid' => 1,
             'course' => 1,
+            'coursegroupid' => 1,
+            'coursegroup' => 1,
             'cohort' => 1,
             'role' => 1,
         );
@@ -85,6 +88,9 @@ class coupons extends filtering {
             case 'sent':
                 return new \user_filter_yesno('sent',
                         get_string('report:issend', 'block_coupon'), $advanced, 'c.issend');
+            case 'batchid':
+                return new \user_filter_text('batchid',
+                        get_string('label:batchid', 'block_coupon'), $advanced, 'c.batchid');
             case 'for_user_email':
                 return new \user_filter_text('for_user_email',
                         get_string('report:for_user_email', 'block_coupon'), $advanced, 'c.for_user_email');
@@ -100,6 +106,10 @@ class coupons extends filtering {
                 return new \block_coupon\filters\couponcourseid($advanced, 'c.id');
             case 'course':
                 return new \block_coupon\filters\couponcourseselect($advanced, 'c.id');
+            case 'coursegroupid':
+                return new \block_coupon\filters\couponcoursegroupid($advanced, 'c.id');
+            case 'coursegroup':
+                return new \block_coupon\filters\couponcoursegroupselect($advanced, 'c.id');
             case 'cohort':
                 return new \block_coupon\filters\couponcohortselect($advanced, 'c.id');
             case 'role':

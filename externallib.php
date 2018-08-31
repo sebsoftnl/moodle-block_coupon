@@ -614,4 +614,171 @@ class block_coupon_external extends external_api {
         );
     }
 
+    /**
+     * Returns users based on search query.
+     *
+     * @param string $query search string
+     * @return array $users
+     */
+    public static function find_users($query) {
+        global $CFG, $DB;
+
+        $where = array();
+        $qparams = array();
+        // Never include site gusts.
+        $where[] = 'u.id <> '.$CFG->siteguest;
+        // Do not include admins.
+        $where[] = 'u.id NOT IN ('.$CFG->siteadmins.')';
+        $where[] = 'u.id NOT IN (SELECT userid FROM {block_coupon_rusers})';
+
+        $query = "%{$query}%";
+        $qwhere = [];
+        $qwhere[] = $DB->sql_like($DB->sql_fullname('u.firstname', 'u.lastname'), '?', false, false);
+        $qparams[] = $query;
+
+        $qwhere[] = $DB->sql_like($DB->sql_fullname('u.lastname', 'u.firstname'), '?', false, false);
+        $qparams[] = $query;
+
+        $qwhere[] = $DB->sql_like('u.username', '?', false, false);
+        $qparams[] = $query;
+
+        $qwhere[] = $DB->sql_like('u.email', '?', false, false);
+        $qparams[] = $query;
+
+        $where[] = '('.implode(' OR ', $qwhere).')';
+
+        $sql = "SELECT id, username, ". get_all_user_name_fields(true, 'u')." FROM {user} u
+             WHERE ".implode(" AND ", $where).
+             " ORDER BY firstname ASC";
+        $rs = $DB->get_recordset_sql($sql, $qparams);
+        $users = [];
+        foreach ($rs as $user) {
+            $users[] = (object)[
+                'id' => $user->id,
+                'name' => fullname($user) . ' ('.$user->username.')'
+                ];
+        }
+        $rs->close();
+
+        return $users;
+    }
+
+    /**
+     * Is find_users() allowed from AJAX?
+     * @return bool
+     */
+    public static function find_users_is_allowed_from_ajax() {
+        return true;
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function find_users_parameters() {
+        return new external_function_parameters(array(
+            'query' => new external_value(PARAM_TEXT,
+                    'search string', VALUE_REQUIRED, null, NULL_NOT_ALLOWED),
+        ));
+    }
+
+    /**
+     * Returns description of method return parameters
+     *
+     * @return external_value
+     */
+    public static function find_users_returns() {
+        return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'id' => new external_value(PARAM_INT, 'user id'),
+                    'name' => new external_value(PARAM_TEXT, 'name'),
+                )
+            )
+        );
+    }
+
+
+
+    /**
+     * Returns courses based on search query.
+     *
+     * @param string $query search string
+     * @return array $courses
+     */
+    public static function find_courses($query) {
+        global $DB;
+
+        $where = array();
+        $qparams = array();
+        // Dont include the SITE.
+        $where[] = 'c.id <> ' . SITEID;
+        $where[] = 'c.visible = 1';
+
+        $query = "%{$query}%";
+        $qwhere = [];
+        $qwhere[] = $DB->sql_like('c.shortname', '?', false, false);
+        $qparams[] = $query;
+
+        $qwhere[] = $DB->sql_like('c.fullname', '?', false, false);
+        $qparams[] = $query;
+
+        $qwhere[] = $DB->sql_like('c.idnumber', '?', false, false);
+        $qparams[] = $query;
+
+        $where[] = '('.implode(' OR ', $qwhere).')';
+
+        $sql = "SELECT id, shortname, fullname, idnumber FROM {course} c
+             WHERE ".implode(" AND ", $where).
+             " ORDER BY shortname ASC";
+        $rs = $DB->get_recordset_sql($sql, $qparams);
+        $courses = [];
+        foreach ($rs as $course) {
+            $courses[] = (object)[
+                'id' => $course->id,
+                'name' => $course->shortname . (empty($course->idnumber) ? '' : ' ('.$course->idnumber.')')
+                ];
+        }
+        $rs->close();
+
+        return $courses;
+    }
+
+    /**
+     * Is find_courses() allowed from AJAX?
+     * @return bool
+     */
+    public static function find_courses_is_allowed_from_ajax() {
+        return true;
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function find_courses_parameters() {
+        return new external_function_parameters(array(
+            'query' => new external_value(PARAM_TEXT,
+                    'search string', VALUE_REQUIRED, null, NULL_NOT_ALLOWED),
+        ));
+    }
+
+    /**
+     * Returns description of method return parameters
+     *
+     * @return external_value
+     */
+    public static function find_courses_returns() {
+        return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'id' => new external_value(PARAM_INT, 'course id'),
+                    'name' => new external_value(PARAM_TEXT, 'name'),
+                )
+            )
+        );
+    }
+
 }

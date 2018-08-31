@@ -118,7 +118,9 @@ class coupons extends \table_sql {
         $this->sortable(true, 'c.senddate', 'DESC');
         $this->no_sorting('owner');
         $this->no_sorting('course');
-        $this->no_sorting('cohort');
+        $this->no_sorting('cohorts');
+        $this->no_sorting('groups');
+        $this->no_sorting('roleid');
         $this->strdelete = get_string('action:coupon:delete', 'block_coupon');
         $this->strdeleteconfirm = get_string('action:coupon:delete:confirm', 'block_coupon');
     }
@@ -146,13 +148,13 @@ class coupons extends \table_sql {
      */
     public function render($pagesize, $useinitialsbar = true) {
         $columns = array('owner', 'for_user_email', 'senddate',
-            'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'roleid', 'issend');
+            'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'roleid', 'batchid', 'issend');
         if ($this->is_downloading() == '') {
             $columns[] = 'action';
         }
         switch ($this->filter) {
             case self::USED:
-                array_splice($columns, 1, 0, ['usedby']);
+                array_splice($columns, 1, 0, ['usedby', 'claimedon']);
                 break;
             default:
                 // Has no extra columns.
@@ -362,6 +364,19 @@ class coupons extends \table_sql {
     }
 
     /**
+     * Render visual representation of the 'timeclaimed' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string time string
+     */
+    public function col_claimedon($row) {
+        if (empty($row->timeclaimed)) {
+            return '-';
+        }
+        return userdate($row->timeclaimed);
+    }
+
+    /**
      * Render visual representation of the 'action' column for use in the table
      *
      * @param \stdClass $row
@@ -369,7 +384,16 @@ class coupons extends \table_sql {
      */
     public function col_action($row) {
         $actions = array();
-        $actions[] = $this->get_action($row, 'delete', true);
+
+        global $PAGE;
+        $renderer = $PAGE->get_renderer('block_coupon');
+        $actions[] = $renderer->action_icon(new \moodle_url($this->baseurl,
+                array('action' => 'delete', 'itemid' => $row->id, 'sesskey' => sesskey())),
+                new \image_icon('i/delete', $this->strdelete, 'moodle', ['class' => 'icon',
+                    'onclick' => 'return confirm(\'' . $this->strdeleteconfirm . '\');']),
+                null,
+                ['alt' => $this->strdelete], $linktext = '');
+
         return implode('', $actions);
     }
 

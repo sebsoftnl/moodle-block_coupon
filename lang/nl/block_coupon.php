@@ -113,8 +113,8 @@ $string['label:connected_courses'] = 'Toegevoegde cursus(sen)';
 $string['label:no_courses_connected'] = 'Er zijn nog geen cursussen toegevoegd aan deze cohort.';
 $string['label:coupon_courses'] = 'Cursus(sen)';
 $string['label:coupon_courses_help'] = 'Selecteer hier de cursussen waar uw studenten op ingeschreven dienen te worden.';
-$string['label:coupon_courses'] = 'Rol';
-$string['label:coupon_courses_help'] = 'Selecteer hier de rol waarmee de coupons worden geconfigureerd of laat leeg voor de ingestelde standaardwaarde (normaliter student).';
+$string['label:role_courses'] = 'Rol';
+$string['label:role_courses_help'] = 'Selecteer hier de rol waarmee de coupons worden geconfigureerd of laat leeg voor de ingestelde standaardwaarde (normaliter student).';
 $string['label:coupon_cohorts'] = 'Cohort(en)';
 $string['label:cohort'] = 'Cohort';
 $string['label:coupon_code'] = 'Coupon Code';
@@ -265,6 +265,7 @@ $string['page:generate_coupon_step_five.php:title'] = 'Genereer coupons';
 $string['page:unused_coupons.php:title'] = 'Ongebruikte coupons';
 $string['th:owner'] = 'Eigenaar';
 $string['th:usedby'] = 'Gebruikt door';
+$string['th:claimedon'] = 'Geclaimed op';
 $string['th:senddate'] = 'Verzenddatum';
 $string['th:enrolperiod'] = 'Inschrijvingsduur';
 $string['th:submission_code'] = 'Aanmeldcode';
@@ -275,6 +276,8 @@ $string['th:issend'] = 'Verzonden?';
 $string['th:immediately'] = 'Direct';
 $string['th:for_user_email'] = 'Ingepland voor';
 $string['th:roleid'] = 'Rol';
+$string['th:batchid'] = 'Batch';
+$string['th:fullname'] = 'Volledige naam';
 
 $string['tab:wzcoupons'] = 'Genereer coupon(s)';
 $string['tab:wzcouponimage'] = 'Template afbeelding';
@@ -289,7 +292,7 @@ $string['confirm_coupons_sent_subject'] = 'Alle coupons zijn verzonden';
 $string['confirm_coupons_sent_body'] = '
 Hallo,<br /><br />
 
-Bij dezen informeren wij u graag dat de coupons die u op {$a->timecreated} heeft gemaakt verzonden zijn.<br /><br />
+Bij deze informeren wij u graag dat de coupons die u op {$a->timecreated} heeft gemaakt verzonden zijn.<br /><br />
 
 Met vriendelijke groet,<br /><Br />
 
@@ -500,3 +503,81 @@ $string['privacy:metadata:block_coupon:roleid'] = 'Rol ID die toegewezen wordt/i
 $string['privacy:metadata:block_coupon:timecreated'] = 'Tijdstip waarop coupon is aangemaakt';
 $string['privacy:metadata:block_coupon:timemodified'] = 'Tijdstip waarop coupon is gewijzigd';
 $string['privacy:metadata:block_coupon:timeexpired'] = 'Tijdstip waarop coupon verloopt';
+
+$string['view:requests:admin:title'] = 'Coupon verzoeken administratie';
+$string['view:requests:admin:heading'] = 'Coupon verzoeken administratie';
+$string['str:request:adduser'] = 'Gebruiker toevoegen';
+$string['request:adduser:heading'] = 'Voeg een gebruiker toe die coupon verzoeken kan indienen';
+$string['request:adduser:info'] = 'Selecteer hieronder een gebruik die het wordt toegestaan verzoeken in te dienen om coupons te laten genereren.<br/>
+Je kunt in de dropdown typen om te zoeken.<br/>
+Wanneer je de gebruiker hebt geselecteerdm klik dan op doorgaan. Je wordt vervolgens omgeleid naar de pagina waar je de rest van de opties voor deze gebruiker kunt configureren.
+';
+$string['findusers:noselectionstring'] = 'geen gebruiker geselecteerd';
+$string['findusers:placeholder'] = '... selecteer gebruiker ...';
+$string['findcourses:noselectionstring'] = 'Geen cursus(sen) geselecteerd';
+$string['findcourses:placeholder'] = '... selecteer cursus(sen) ...';
+$string['coupon:user:heading'] = 'Gebruikersconfiguratie voor {$a->firstname} {$a->lastname}';
+$string['coupon:user:info'] = 'Gebruik onderstaand formulier om aan te geven welke opties en voor welke cursussen de gebruiker coupons kan/mag aanvragen';
+$string['knowncourses'] = 'Bekende cursussen';
+$string['removecourse'] = 'Cursus \'{$a}\' verwijderen uit opties';
+$string['othersettings'] = 'Overige instellingen / opties';
+$string['userconfig:allowselectlogo'] = 'Selecteren van coupon logo toestaan';
+$string['userconfig:allowselectrole'] = 'Selecteren van rol toestaan';
+$string['userconfig:allowselectseperatepdf'] = 'Selecteren van mogelijkheid tot genereren van losse PDF bestanden toestaan';
+$string['userconfig:allowselectqr'] = 'Selecteren van QR code insluiten toestaan';
+$string['userconfig:allowselectenrolperiod'] = 'Selecteren van duur van aanmelding toestaan';
+$string['userconfig:default'] = 'Standaardinstelling';
+$string['userconfig:seperatepdf:default'] = 'Genereren van losse PDFs standaard inschakelen';
+$string['userconfig:renderqrcode:default'] = 'Insluiten van QR code standaard inschakelen';
+$string['tab:requests'] = 'Coupon verzoeken';
+$string['tab:requestusers'] = 'Gebruikers voor couponverzoeken';
+$string['delete:requestuser:header'] = 'Verwijder gebruikerrechten tbv couponaanvragen';
+$string['delete:requestuser:description'] = 'Dit zal de rechten voor het aanvragen van coupons verwijderen voor <b>{$a->firstname} {$a->lastname}</b>.<br/>
+Dit proces is onomkeerbaar maar je kunt het account altijd weer toevoegen aan de lijst van toegestane gebruikers en de instellingen opnieuw ingeven.';
+$string['delete:requestuser:confirmmessage'] = 'Ja, ik wil de aanvraagrechten voor deze gebruiker verwijderen';
+$string['request:deny:heading'] = 'Dit coupon verzoek afwijzen';
+$string['request:accept:heading'] = 'Dit coupon verzoek honoreren';
+$string['request:sendmessage'] = 'Informeer de aanvrager?';
+$string['request:message'] = 'Bericht aan aanvrager';
+$string['request:deny:subject'] = 'Aanvraag tot genereren van coupons afgewezen.';
+$string['request:accept:subject'] = 'Aanvraag tot genereren van coupons gehonoreerd.';
+$string['view:userrequest:heading'] = 'Mijn coupon aanvragen';
+$string['view:userrequest:title'] = 'Mijn coupon aanvragen';
+$string['str:request:add'] = 'Coupons aanvragen';
+$string['th:timecreated'] = 'Aangemaakt op';
+$string['delete:request:header'] = 'Verwijder mijn couponaanvraag';
+$string['delete:request:title'] = 'Verwijder mijn couponaanvraag';
+$string['delete:request:confirmmessage'] = 'Ja, ik wil deze aanvraag verwijderen';
+$string['button:continue'] = 'Doorgaan';
+$string['label:logo'] = 'Coupon logo/achtergrond';
+$string['label:defaultlogo'] = 'Standaard logo';
+$string['label:defaultlogo_help'] = 'Selecteer het logo dat voor deze gebruiker wordt geforceerd voor alle coupons';
+$string['request:coupons'] = 'Coupons aanvragen';
+
+$string['label:displayregisterhelp'] = 'Toon registratie hulp';
+$string['label:displayregisterhelp_help'] = 'Vink deze optie aan om aan de niet ingelogde gebruiker een begeleidende tekst te tonen zodat duidelijk is dat ze een nieuw account kunnen aanmaken met behulp van de link in het blok.';
+$string['label:displayinputhelp'] = 'Toon coupon invoer hulp';
+$string['label:displayinputhelp_help'] = 'Vind deze optie aan om een begeleidende tekst aan ingelogde eindgebruikers te tonen boven het coupon invoerveld.';
+$string['str:inputhelp'] = 'Gebruik onderstaand invoerveld om toegang tot cursussen te krijgen indien je een coupon code hebt ontvangen';
+$string['str:signuphelp'] = 'Gebruik onderstaande link om een nieuw account <i>met</i> een coupon code te maken wanneer je er nog geen hebt';
+$string['label:useloginlayoutonsignup'] = 'Gebruik \'login\' pagina layout op interne aanmeldpagina?';
+$string['label:useloginlayoutonsignup_help'] = 'Indien ingeschakeld, zal dit de standaard \'login\' pagina layout gebruoiken op de interne aanmeldpagina.<br/>
+Dit betekent dat alle headers en footers niet getoond worden, en de pagina enkel het aanmeldformulier zelf bevat.';
+$string['label:batchid'] = 'Batch naam';
+$string['label:batchid_help'] = 'Je kunt hier een (unieke) naam opgeven voor de groepering.<br/>
+Het opgeven van een batchnaam kan je later helpen een groep gegenereerde coupons te identificeren.<br/>
+Wanneer je geen naam opgeeft wordt automatisch een batchnaam gegenereerd';
+$string['err:batchid'] = 'Batch naam bestaat al. Kies een andere of laat dit veld leeg';
+$string['label:generatecodesonly'] = 'Alleen codes genereren';
+$string['label:generatecodesonly_help'] = 'Wanneer je deze optie inschakelt, worden er geen PDFs gemaakt en geen emails verstuurd!';
+
+$string['generator:export:mail:subject'] = 'Coupons klaar voor download';
+$string['generator:export:mail:body'] = 'Beste {$a->to_name},<br /><br />
+Je ontvangt deze email omdat er nieuwe coupons zijn gegenereerd.<br/>
+De coupons kunnen gedownload worden vanaf {$a->downloadlink} (vereist inloggen in Moodle).<br />
+Let er aub op dat deze link slechts 1 maal kan worden gebruikt. Wanneer de coupons zijn gedownload, is deze link niet langer bruikbaar.<br />
+Met vriendelijke groet,<br /><br />
+{$a->from_name}';
+
+$string['error:already-enrolled-in-courses'] = 'Je bent al in alle cursussen aangemeld';
+$string['error:already-enrolled-in-cohorts'] = 'Je bent al in alle sitegroepen aangemeld';

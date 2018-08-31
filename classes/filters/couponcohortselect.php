@@ -54,7 +54,7 @@ class couponcohortselect extends \user_filter_type {
      */
     public function __construct($advanced, $fieldid = 'id') {
         $this->fieldid = $fieldid;
-        parent::user_filter_type('couponcohortselect', get_string('cohort', 'core_cohort') . ' ID', $advanced);
+        parent::__construct('couponcohortselect', get_string('cohort', 'core_cohort') . ' ID', $advanced);
     }
 
     /**
@@ -73,7 +73,7 @@ class couponcohortselect extends \user_filter_type {
      */
     public function get_cohortmenu() {
         global $DB;
-        return array_merge(array(0 => '...'), $DB->get_records_menu('cohort', null, 'name ASC', 'id,name'));
+        return array(0 => '...') + $DB->get_records_menu('cohort', null, 'name ASC', 'id,name');
     }
 
     /**

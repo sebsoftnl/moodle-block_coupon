@@ -54,7 +54,7 @@ class couponcourseselect extends \user_filter_type {
      */
     public function __construct($advanced, $fieldid = 'id') {
         $this->fieldid = $fieldid;
-        parent::user_filter_type('couponcourseselect', get_string('course') . ' ID', $advanced);
+        parent::__construct('couponcourseselect', get_string('course') . ' ID', $advanced);
     }
 
     /**
@@ -73,7 +73,7 @@ class couponcourseselect extends \user_filter_type {
      */
     public function get_coursemenu() {
         global $DB;
-        return array_merge(array(0 => '...'), $DB->get_records_menu('course', null, 'fullname ASC', 'id,fullname'));
+        return array(0 => '...') + $DB->get_records_menu('course', null, 'fullname ASC', 'id,fullname');
     }
 
     /**

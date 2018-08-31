@@ -58,7 +58,7 @@ class block_coupon extends block_base {
      * @return stdClass
      */
     public function get_content() {
-        global $CFG;
+        global $CFG, $DB, $USER;
         if ($this->content !== null) {
             return $this->content;
         }
@@ -116,13 +116,32 @@ class block_coupon extends block_base {
                     <input type='hidden' name='sesskey' value='" . sesskey() . "' />
                 </form>";
 
-            $menuitems[] = $couponform;
+            $displayinputhelp = (bool)get_config('block_coupon', 'displayinputhelp');
+            if ($displayinputhelp) {
+                $menuitems[] = "<div>".get_string('str:inputhelp', 'block_coupon')."<br/>{$couponform}</div>";
+
+            } else {
+                $menuitems[] = $couponform;
+            }
         }
 
         // Signup using a coupon.
-        if (!isloggedin()) {
+        if (!isloggedin() || isguestuser()) {
             $urlsignupcoupon = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/signup.php', $baseparams);
-            $menuitems[] = html_writer::link($urlsignupcoupon, get_string('url:couponsignup', 'block_coupon'));
+            $signupurl = html_writer::link($urlsignupcoupon, get_string('url:couponsignup', 'block_coupon'));
+            $displaysignuphelp = (bool)get_config('block_coupon', 'displayregisterhelp');
+            if ($displaysignuphelp) {
+                $menuitems[] = "<div>".get_string('str:signuphelp', 'block_coupon')."<br/>{$signupurl}</div>";
+
+            } else {
+                $menuitems[] = $signupurl;
+            }
+        }
+
+        // Add link to ability to request coupons if applicable.
+        if ($DB->record_exists('block_coupon_rusers', ['userid' => $USER->id])) {
+            $urlrequestcoupon = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php', $baseparams);
+            $menuitems[] = html_writer::link($urlrequestcoupon, get_string('request:coupons', 'block_coupon'));
         }
 
         // Now print the menu blocks.

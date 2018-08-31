@@ -129,6 +129,10 @@ class generator implements icoupongenerator {
         if (empty($options->ownerid)) {
             $options->ownerid = $USER->id;
         }
+        // If options have no batch id, create it.
+        if (empty($options->batchid)) {
+            $options->batchid = md5(uniqid((string)microtime(true), true));
+        }
     }
 
     /**
@@ -257,6 +261,8 @@ class generator implements icoupongenerator {
             if (!empty($options->extendusers[$i])) {
                 $objcoupon->userid = $options->extendusers[$i];
             }
+            // Add batch id.
+            $objcoupon->batchid = $options->batchid;
 
             // If coupons are personal, set recipient data.
             if (!empty($options->recipients)) {

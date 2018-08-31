@@ -373,8 +373,8 @@ class pdf extends \pdf {
             } else {
                 $this->MultiCell(150, 150, $txtmain, false, 'C', false, 1, 15, 75, true, 0, true);
             }
-            $this->MultiCell(90, 100, $txtbotleft, false, 'L', false, 2, 4, 210, true, 0, true);
-            $this->MultiCell(90, 100, $txtbotright, false, 'L', false, 2, 109, 210, true, 0, true);
+            $this->MultiCell(90, 100, $txtbotleft, false, 'L', false, 2, 10, 210, true, 0, true);
+            $this->MultiCell(90, 100, $txtbotright, false, 'L', false, 2, 115, 210, true, 0, true);
             // QR.
             if ((bool)$coupon->renderqrcode) {
                 $qr = $this->get_qr($coupon);

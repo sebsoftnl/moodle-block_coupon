@@ -94,7 +94,9 @@ class cohort extends typebase implements icoupontype {
         // And finally update the coupon record.
         $this->coupon->claimed = 1;
         $this->coupon->userid = $foruserid;
-        $this->coupon->timemodified = time();
+        $time = time();
+        $this->coupon->timemodified = $time;
+        $this->coupon->timeclaimed = $time;
         $DB->update_record('block_coupon', $this->coupon);
     }
 

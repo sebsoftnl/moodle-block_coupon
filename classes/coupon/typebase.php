@@ -70,7 +70,11 @@ abstract class typebase {
                         array(
                             'objectid' => $this->coupon->id,
                             'relateduserid' => $this->coupon->userid,
-                            'context' => \context_user::instance($this->coupon->userid)
+                            'context' => \context_user::instance($this->coupon->userid),
+                            'other' => [
+                                'code' => $this->coupon->submission_code,
+                                'type' => $this->coupon->typ
+                            ]
                         )
         );
         $event->add_record_snapshot('block_coupon', $this->coupon);

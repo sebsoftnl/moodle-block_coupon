@@ -265,6 +265,7 @@ $string['page:generate_coupon_step_five.php:title'] = 'Generate coupons';
 $string['page:unused_coupons.php:title'] = 'Unused coupons';
 $string['th:owner'] = 'Owner';
 $string['th:usedby'] = 'Claimed by';
+$string['th:claimedon'] = 'Claimed on';
 $string['th:senddate'] = 'Send date';
 $string['th:enrolperiod'] = 'Enrolperiod';
 $string['th:submission_code'] = 'Subscription code';
@@ -275,6 +276,8 @@ $string['th:issend'] = 'Sent?';
 $string['th:immediately'] = 'Immediately';
 $string['th:for_user_email'] = 'Planned for';
 $string['th:roleid'] = 'Role';
+$string['th:batchid'] = 'Batch';
+$string['th:fullname'] = 'Fullname';
 
 $string['tab:wzcoupons'] = 'Generate coupon(s)';
 $string['tab:wzcouponimage'] = 'Template image';
@@ -523,3 +526,85 @@ $string['privacy:metadata:block_coupon:roleid'] = 'Role ID to be assigned / of t
 $string['privacy:metadata:block_coupon:timecreated'] = 'Time at which the coupon is created';
 $string['privacy:metadata:block_coupon:timemodified'] = 'Time at which the coupon is modified';
 $string['privacy:metadata:block_coupon:timeexpired'] = 'Expiration date for the coupon';
+
+$string['view:requests:admin:title'] = 'Coupon request administration';
+$string['view:requests:admin:heading'] = 'Coupon request administration';
+$string['str:request:adduser'] = 'Add user';
+$string['request:adduser:heading'] = 'Add a user that can make coupon requests';
+$string['request:adduser:info'] = 'Select a user who will be allowed to make coupon requests below.<br/>
+You can start typing in the selector below to narrow your user search.<br/>
+When you selected the user, please click next and you will be redirected to further configure the settings for this user.
+';
+$string['findusers:noselectionstring'] = 'no user selected yet';
+$string['findusers:placeholder'] = '... select user ...';
+$string['findcourses:noselectionstring'] = 'no course(s) selected yet';
+$string['findcourses:placeholder'] = '... select course(s) ...';
+$string['coupon:user:heading'] = 'User configuration for {$a->firstname} {$a->lastname}';
+$string['coupon:user:info'] = 'Use the form below to configure the options and accessible courses this use can request coupons for';
+$string['knowncourses'] = 'Known courses';
+$string['removecourse'] = 'Remove course \'{$a}\' from options';
+$string['othersettings'] = 'Other settings / options';
+$string['userconfig:allowselectlogo'] = 'Allow selection of coupon logo';
+$string['userconfig:allowselectrole'] = 'Allow selection of role';
+$string['userconfig:allowselectseperatepdf'] = 'Allow selection of ability to generate seperate PDFs';
+$string['userconfig:allowselectqr'] = 'Allow selection of QR code inclusion';
+$string['userconfig:allowselectenrolperiod'] = 'Allow selection of enrolment period';
+$string['userconfig:default'] = 'Default setting';
+$string['userconfig:seperatepdf:default'] = 'Enable generating seperate PDFs by default';
+$string['userconfig:renderqrcode:default'] = 'Enable inclusion of QR code by default';
+$string['tab:requests'] = 'Coupon requests';
+$string['tab:requestusers'] = 'Coupon request users';
+$string['delete:requestuser:header'] = 'Delete coupon request user';
+$string['delete:requestuser:description'] = 'This will delete ability to request coupons for user <b>{$a->firstname} {$a->lastname}</b>.<br/>
+The process is irreversable, but you can always re-configure this user by re-adding him or her to the allowed users.';
+$string['delete:requestuser:confirmmessage'] = 'Yes, I want to delete this user';
+$string['request:deny:heading'] = 'Deny this coupon request';
+$string['request:accept:heading'] = 'Accept this coupon request';
+$string['request:sendmessage'] = 'Inform the user?';
+$string['request:message'] = 'User message';
+$string['request:deny:subject'] = 'Coupon request denied.';
+$string['request:accept:subject'] = 'Coupon request accepted.';
+$string['view:userrequest:heading'] = 'My coupon requests';
+$string['view:userrequest:title'] = 'My coupon requests';
+$string['str:request:add'] = 'Request coupons';
+$string['th:timecreated'] = 'Created on';
+$string['delete:request:header'] = 'Delete my coupon request';
+$string['delete:request:title'] = 'Delete my coupon request';
+$string['delete:request:confirmmessage'] = 'I want to delete this request';
+$string['button:continue'] = 'Continue';
+$string['label:logo'] = 'Coupon logo/background';
+$string['label:defaultlogo'] = 'Default logo';
+$string['label:defaultlogo_help'] = 'Select the logo that will be forced on all coupons for this user';
+$string['request:coupons'] = 'Request coupons';
+
+$string['delete:request:description'] = 'todo: should be renderable/template based';
+
+$string['label:displayregisterhelp'] = 'Display registration help text';
+$string['label:displayregisterhelp_help'] = 'Enable this option to display a registration help text to the non-registered end user.<br/>
+This will display a short explanation above the link in the block users can click to register a new account with a coupon code.';
+$string['label:displayinputhelp'] = 'Display coupon input help text';
+$string['label:displayinputhelp_help'] = 'Enable this option to display a text to end users above the coupon entry field.';
+$string['str:inputhelp'] = 'Use the input field below to gain access to courses if you received a coupon code';
+$string['str:signuphelp'] = 'Use the link below to create a new account <i>with</i> a coupon code if you received one but have no active account yet';
+$string['label:useloginlayoutonsignup'] = 'Use \'login\' page layout on internal signup?';
+$string['label:useloginlayoutonsignup_help'] = 'If enabled, this will use the default \'login\' page layout on the internal signup page.<br/>
+This means the signup page is stripped of all headers and footers, and only provides the signup form itself.';
+$string['label:batchid'] = 'Batch name';
+$string['label:batchid_help'] = 'You can provide a custom name for this batch, so it can be identified later<br/>
+Naming a batch will help you identify a group of generated coupons later.<br/>
+If you don\'t provide a batch name it will be automatically generated';
+$string['err:batchid'] = 'Batch name already exists. Please choose another natch name or leave this fields empty';
+$string['label:generatecodesonly'] = 'Generate codes only';
+$string['label:generatecodesonly_help'] = 'If you enable this option, only codes will be generated.<br/>
+This means the complete mailing option and creating PDFs will be skipped!';
+
+$string['generator:export:mail:subject'] = 'Coupons ready for download';
+$string['generator:export:mail:body'] = 'Dear {$a->to_name},<br /><br />
+You are receiving this message because there have been newly generated coupons.<br/>
+The coupons can be downloaded from {$a->downloadlink} (requires logging in to Moodle).<br />
+Please note this link can only be used once. After you\'ve downloaded the generated coupons, this link can no longer be used.<br />
+With kind regards,<br /><br />
+{$a->from_name}';
+
+$string['error:already-enrolled-in-courses'] = 'You have already been enrolled in all courses';
+$string['error:already-enrolled-in-cohorts'] = 'You have already been enrolled in all cohorts';

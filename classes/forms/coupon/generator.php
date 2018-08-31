@@ -73,7 +73,29 @@ class generator extends \moodleform {
         // Coupon logo selection.
         \block_coupon\logostorage::add_select_form_elements($mform);
 
+        // Add custom batchid.
+        $mform->addElement('text', 'batchid', get_string('label:batchid', 'block_coupon'));
+        $mform->setType('batchid', PARAM_TEXT);
+        $mform->addHelpButton('batchid', 'label:batchid', 'block_coupon');
+
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'));
+    }
+
+    /**
+     * Validate input
+     *
+     * @param array $data
+     * @param array $files
+     * @return array
+     */
+    public function validation($data, $files) {
+        global $DB;
+        // Make sure batch id is unique if provided.
+        $err = parent::validation($data, $files);
+        if (!empty($data['batchid']) && $DB->record_exists('block_coupon', ['batchid' => $data['batchid']])) {
+            $err['batchid'] = get_string('err:batchid', 'block_coupon');
+        }
+        return $err;
     }
 
 }

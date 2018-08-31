@@ -50,11 +50,36 @@ class signup extends \login_signup_form {
     public function definition() {
         $mform = $this->_form;
         // Add coupon submission code entry.
-        $element = $mform->addElement('text', 'submissioncode', get_string('label:coupon_code', 'block_coupon'));
+        $mform->addElement('text', 'submissioncode', get_string('label:coupon_code', 'block_coupon'));
         $mform->addRule('submissioncode', get_string('error:required', 'block_coupon'), 'required', null, 'client');
         $mform->addRule('submissioncode', get_string('error:required', 'block_coupon'), 'required', null, 'server');
         $mform->setType('submissioncode', PARAM_RAW);
         $mform->addHelpButton('submissioncode', 'label:coupon_code', 'block_coupon');
         parent::definition();
+    }
+
+    /**
+     * Validate form input
+     *
+     * @param array $data
+     * @param array $files
+     * @return array
+     */
+    public function validation($data, $files) {
+        global $DB;
+        $errors = parent::validation($data, $files);
+
+        $conditions = array(
+            'submission_code' => $data['submissioncode'],
+            'claimed' => 0,
+        );
+        $coupon = $DB->get_record('block_coupon', $conditions);
+        if (empty($coupon)) {
+            $errors['submissioncode'] = get_string('error:invalid_coupon_code', 'block_coupon');
+        } else if (!is_null($coupon->userid) && $coupon->typ != \block_coupon\coupon\generatoroptions::ENROLEXTENSION) {
+            $errors['submissioncode'] = get_string('error:coupon_already_used', 'block_coupon');
+        }
+
+        return $errors;
     }
 }

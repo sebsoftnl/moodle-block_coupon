@@ -1,0 +1,26 @@
+<table>
+<tr><td>{{#str}}th:owner, block_coupon{{/str}}</td><td>{{ownerfullname}}</td></tr>
+<tr><td>{{#str}}email{{/str}}</td><td>{{emailto}}</td></tr>
+<tr><td>{{#str}}label:coupon_amount, block_coupon{{/str}}</td><td>{{amount}}</td></tr>
+<tr><td>{{#str}}label:coupon_code_length, block_coupon{{/str}}</td><td>{{codesize}}</td></tr>
+<tr><td>{{#str}}label:redirect_url, block_coupon{{/str}}</td><td>{{redirecturl}}</td></tr>
+<tr><td>{{#str}}label:generate_pdfs, block_coupon{{/str}}</td><td>{{#generatesinglepdfs}}{{#str}}yes{{/str}}{{/generatesinglepdfs}}{{^generatesinglepdfs}}{{#str}}no{{/str}}{{/generatesinglepdfs}}</td></tr>
+<tr><td>{{#str}}label:renderqrcode, block_coupon{{/str}}</td><td>{{#renderqrcode}}{{#str}}yes{{/str}}{{/renderqrcode}}{{^renderqrcode}}{{#str}}no{{/str}}{{/renderqrcode}}</td></tr>
+<tr><td>{{#str}}label:logo, block_coupon{{/str}}</td><td>{{logo}}</td></tr>
+<tr><td>{{#str}}th:enrolperiod, block_coupon{{/str}}</td><td>{{{enrolperiod}}}</td></tr>
+<tr><td>{{#str}}label:coupon_type, block_coupon{{/str}}</td><td>{{type}}</td></tr>
+{{#hascourses}}
+<tr><td>{{#str}}label:coupon_courses, block_coupon{{/str}}</td><td>
+{{#courses}}
+{{fullname}}{{#idnumber}}{{idnumber}}){{/idnumber}}<br/>
+{{/courses}}
+</td></tr>
+{{/hascourses}}
+{{#hascohorts}}
+<tr><td>{{#str}}label:coupon_cohorts, block_coupon{{/str}}</td><td>
+{{#cohorts}}
+{{name}}{{#idnumber}}{{idnumber}}){{/idnumber}}<br/>
+{{/cohorts}}
+</td></tr>
+{{/hascohorts}}
+</table>

@@ -54,7 +54,7 @@ class couponcohortid extends \user_filter_type {
      */
     public function __construct($advanced, $fieldid = 'id') {
         $this->fieldid = $fieldid;
-        parent::user_filter_type('couponcohortid', get_string('cohort', 'core_cohort'), $advanced);
+        parent::__construct('couponcohortid', get_string('cohort', 'core_cohort'), $advanced);
     }
 
     /**

@@ -186,5 +186,70 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
     }
 
+    if ($oldversion < 2018050301) {
+        // Add request users/requests table.
+        $table = new xmldb_table('block_coupon_rusers');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('configuration', XMLDB_TYPE_TEXT, 'medium', null, XMLDB_NOTNULL, null, null, 'userid');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'configuration');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
+        // Add KEYS.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        // Add INDEXES.
+        $table->add_index('userid', XMLDB_INDEX_NOTUNIQUE, array('userid'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        $table = new xmldb_table('block_coupon_requests');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('configuration', XMLDB_TYPE_TEXT, 'medium', null, XMLDB_NOTNULL, null, null, 'userid');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'configuration');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
+        // Add KEYS.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        // Add INDEXES.
+        $table->add_index('userid', XMLDB_INDEX_NOTUNIQUE, array('userid'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Block_tped savepoint reached.
+        upgrade_block_savepoint(true, 2018050301, 'coupon');
+
+    }
+
+    if ($oldversion < 2018050302) {
+        // Add batchid field to coupon table.
+        $table = new xmldb_table('block_coupon');
+        $field = new xmldb_field('batchid', XMLDB_TYPE_CHAR, '40', null, null, null, null, 'roleid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Block_tped savepoint reached.
+        upgrade_block_savepoint(true, 2018050302, 'coupon');
+
+    }
+
+    if ($oldversion < 2018050303) {
+        // Add batchid field to coupon table.
+        $table = new xmldb_table('block_coupon');
+        $field = new xmldb_field('timeclaimed', XMLDB_TYPE_INTEGER, '18', null, null, null, null, 'timeexpired');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        // Assume all coupons claimed on "timemodified".
+        $DB->execute("UPDATE {block_coupon} SET timeclaimed = timemodified WHERE claimed = 1");
+
+        // Block_tped savepoint reached.
+        upgrade_block_savepoint(true, 2018050303, 'coupon');
+
+    }
+
     return true;
 }

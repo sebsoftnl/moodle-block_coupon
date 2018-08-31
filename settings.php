@@ -78,6 +78,28 @@ if ($ADMIN->fulltree) {
             50, PARAM_INT
         ));
 
+    // Display "help" in block.
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/displayregisterhelp',
+            get_string('label:displayregisterhelp', 'block_coupon'),
+            get_string('label:displayregisterhelp_help', 'block_coupon'),
+            0
+        ));
+
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/displayinputhelp',
+            get_string('label:displayinputhelp', 'block_coupon'),
+            get_string('label:displayinputhelp_help', 'block_coupon'),
+            0
+        ));
+
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/useloginlayoutonsignup',
+            get_string('label:useloginlayoutonsignup', 'block_coupon'),
+            get_string('label:useloginlayoutonsignup_help', 'block_coupon'),
+            1
+        ));
+
     // Task settings.
     $settings->add(new admin_setting_heading('block_coupon_tasksettings',
             get_string('tasksettings', 'block_coupon'),

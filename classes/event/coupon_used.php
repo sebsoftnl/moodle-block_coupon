@@ -67,7 +67,11 @@ class coupon_used extends \core\event\base {
      * @return string
      */
     public function get_description() {
-        return "The user with id '$this->userid' used a coupon with id '$this->objectid'.";
+        $msg = "The user with id '$this->userid' used a coupon with id '$this->objectid'";
+        if (isset($this->other['code'])) {
+            $msg .= " (code = {$this->other['code']})";
+        }
+        return $msg . '.';
     }
 
     /**

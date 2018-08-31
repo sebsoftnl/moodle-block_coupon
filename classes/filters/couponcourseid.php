@@ -54,7 +54,7 @@ class couponcourseid extends \user_filter_type {
      */
     public function __construct($advanced, $fieldid = 'id') {
         $this->fieldid = $fieldid;
-        parent::user_filter_type('couponcourseid', get_string('course'), $advanced);
+        parent::__construct('couponcourseid', get_string('course'), $advanced);
     }
 
     /**

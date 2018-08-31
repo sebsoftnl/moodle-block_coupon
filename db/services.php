@@ -39,6 +39,8 @@ $services = array(
             'block_coupon_request_coupon_codes_for_cohorts',
             'block_coupon_generate_coupons_for_cohorts',
             'block_coupon_get_coupon_reports',
+            'block_coupon_find_users',
+            'block_coupon_find_courses',
         ),
         'requiredcapability' => '',
         'restrictedusers' => 0,
@@ -53,6 +55,7 @@ $functions = array(
         'classpath' => 'blocks/coupon/externallib.php',
         'description' => 'Get courses.',
         'type' => 'read',
+        'ajax' => true
     ),
     'block_coupon_get_cohorts' => array(
         'classname' => 'block_coupon_external',
@@ -60,6 +63,7 @@ $functions = array(
         'classpath' => 'blocks/coupon/externallib.php',
         'description' => 'Get cohorts.',
         'type' => 'read',
+        'ajax' => true
     ),
     'block_coupon_get_course_groups' => array(
         'classname' => 'block_coupon_external',
@@ -67,6 +71,7 @@ $functions = array(
         'classpath' => 'blocks/coupon/externallib.php',
         'description' => 'Get course groups.',
         'type' => 'read',
+        'ajax' => true
     ),
     'block_coupon_request_coupon_codes_for_course' => array(
         'classname' => 'block_coupon_external',
@@ -74,6 +79,7 @@ $functions = array(
         'classpath' => 'blocks/coupon/externallib.php',
         'description' => 'Generate coupon codes for a course.',
         'type' => 'write',
+        'ajax' => true
     ),
     'block_coupon_generate_coupons_for_course' => array(
         'classname' => 'block_coupon_external',
@@ -81,6 +87,7 @@ $functions = array(
         'classpath' => 'blocks/coupon/externallib.php',
         'description' => 'Generate coupons for a course.',
         'type' => 'write',
+        'ajax' => true
     ),
     'block_coupon_request_coupon_codes_for_cohorts' => array(
         'classname' => 'block_coupon_external',
@@ -88,6 +95,7 @@ $functions = array(
         'classpath' => 'blocks/coupon/externallib.php',
         'description' => 'Generate coupon codes for cohort(s).',
         'type' => 'write',
+        'ajax' => true
     ),
     'block_coupon_generate_coupons_for_cohorts' => array(
         'classname' => 'block_coupon_external',
@@ -95,6 +103,7 @@ $functions = array(
         'classpath' => 'blocks/coupon/externallib.php',
         'description' => 'Generate coupons for cohort(s).',
         'type' => 'write',
+        'ajax' => true
     ),
     'block_coupon_get_coupon_reports' => array(
         'classname' => 'block_coupon_external',
@@ -102,5 +111,22 @@ $functions = array(
         'classpath' => 'blocks/coupon/externallib.php',
         'description' => 'Get coupon reports.',
         'type' => 'read',
+        'ajax' => true
+    ),
+    'block_coupon_find_users' => array(
+        'classname' => 'block_coupon_external',
+        'methodname' => 'find_users',
+        'classpath' => 'blocks/coupon/externallib.php',
+        'description' => 'Find users.',
+        'type' => 'read',
+        'ajax' => true
+    ),
+    'block_coupon_find_courses' => array(
+        'classname' => 'block_coupon_external',
+        'methodname' => 'find_courses',
+        'classpath' => 'blocks/coupon/externallib.php',
+        'description' => 'Find courses.',
+        'type' => 'read',
+        'ajax' => true
     ),
 );

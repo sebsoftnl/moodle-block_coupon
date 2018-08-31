@@ -157,6 +157,18 @@ class generatoroptions {
     public $roleid;
 
     /**
+     * coupon batch id
+     * @var string
+     */
+    public $batchid;
+
+    /**
+     * Only generate codes?
+     * @var bool
+     */
+    public $generatecodesonly = false;
+
+    /**
      * create a new instance
      */
     public function __construct() {
@@ -164,6 +176,7 @@ class generatoroptions {
         if (!$this->codesize) {
             $this->codesize = 16;
         }
+        $this->batchid = md5(uniqid((string)microtime(true), true));
     }
 
     /**

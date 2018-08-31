@@ -896,14 +896,20 @@ class helper {
         $mform->addHelpButton('alternative_email', 'label:alternative_email', 'block_coupon');
         $mform->disabledIf('alternative_email', 'use_alternative_email', 'notchecked');
 
+        // Generate codesonly checkbox.
+        $mform->addElement('checkbox', 'generatecodesonly', get_string('label:generatecodesonly', 'block_coupon'));
+        $mform->addHelpButton('generatecodesonly', 'label:generatecodesonly', 'block_coupon');
+
         // Generate_pdf checkbox.
         $mform->addElement('checkbox', 'generate_pdf', get_string('label:generate_pdfs', 'block_coupon'));
         $mform->addHelpButton('generate_pdf', 'label:generate_pdfs', 'block_coupon');
+        $mform->disabledIf('generate_pdf', 'generatecodesonly', 'checked');
 
         // Render QR code checkbox.
         $mform->addElement('checkbox', 'renderqrcode', get_string('label:renderqrcode', 'block_coupon'));
         $mform->addHelpButton('renderqrcode', 'label:renderqrcode', 'block_coupon');
         $mform->setDefault('renderqrcode', 1);
+        $mform->disabledIf('renderqrcode', 'generatecodesonly', 'checked');
     }
 
     /**
@@ -944,6 +950,55 @@ class helper {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
         return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
+     * Checks if the cron has send all the coupons generated at specific time by specific owner.
+     *
+     * @param int $userid
+     * @param int $couponcode
+     * @return bool
+     */
+    public static final function already_enroled_check($userid, $couponcode) {
+        global $CFG, $DB;
+        // Get record.
+        $conditions = array(
+            'submission_code' => $couponcode,
+            'claimed' => 0,
+        );
+        $coupon = $DB->get_record('block_coupon', $conditions);
+        if (empty($coupon)) {
+            return true;
+        }
+        switch ($coupon->typ) {
+            case coupon\generatoroptions::COURSE:
+            case coupon\generatoroptions::ENROLEXTENSION:
+                $couponcourses = $DB->get_records('block_coupon_courses', array('couponid' => $coupon->id));
+                $cansignup = false;
+                foreach ($couponcourses as $couponcourse) {
+                    $ee = enrol_get_enrolment_end($couponcourse->courseid, $userid);
+                    if ($ee === false) {
+                        $cansignup = true;
+                    }
+                }
+                if (!$cansignup) {
+                    throw new exception('error:already-enrolled-in-courses');
+                }
+                break;
+            case coupon\generatoroptions::COHORT:
+                $couponcohorts = $DB->get_records('block_coupon_cohorts', array('couponid' => $coupon->id));
+                $cansignup = false;
+                foreach ($couponcohorts as $couponcohort) {
+                    $ee = cohort_is_member($couponcohort->cohortid, $userid);
+                    if ($ee === false) {
+                        $cansignup = true;
+                    }
+                }
+                if (!$cansignup) {
+                    throw new exception('error:already-enrolled-in-cohorts');
+                }
+                break;
+        }
     }
 
 }
