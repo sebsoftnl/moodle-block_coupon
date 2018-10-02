@@ -86,6 +86,12 @@ class block_coupon extends block_base {
 
             $urlmanagelogos = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/managelogos.php', $baseparams);
             $menuitems[] = html_writer::link($urlmanagelogos, get_string('url:managelogos', 'block_coupon'));
+
+            // Add link to requests.
+            $requestusersurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', $baseparams + ['action' => 'users']);
+            $menuitems[] = html_writer::link($requestusersurl, get_string('tab:requestusers', 'block_coupon'));
+            $requestsurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', $baseparams + ['action' => 'requests']);
+            $menuitems[] = html_writer::link($requestsurl, get_string('tab:requests', 'block_coupon'));
         }
 
         // View Reports.
@@ -146,7 +152,6 @@ class block_coupon extends block_base {
 
         // Now print the menu blocks.
         foreach ($menuitems as $item) {
-
             $this->content->footer .= $item . "<br />";
         }
     }

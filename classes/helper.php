@@ -961,6 +961,7 @@ class helper {
      */
     public static final function already_enroled_check($userid, $couponcode) {
         global $CFG, $DB;
+        require_once($CFG->dirroot . '/cohort/lib.php');
         // Get record.
         $conditions = array(
             'submission_code' => $couponcode,

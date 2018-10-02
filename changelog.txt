@@ -1,3 +1,7 @@
+Version 3.5.0 (build 2018050304)
+* Fixed issue #21 (cohort_is_member fatal error: thanks Michael Neulinger)
+----------
+
 Version 3.5.0 (build 2018050303)
 * Fixed faulty course / cohort ID filter
 * Added course groups filter possibilities
