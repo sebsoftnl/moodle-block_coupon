@@ -201,7 +201,7 @@ class cohortcoupon {
      * Process page 3
      */
     protected function process_page_3() {
-        global $CFG, $USER;
+        global $CFG;
         $url = $this->get_url(['page' => '3']);
 
         // Load generator options.
@@ -336,7 +336,7 @@ class cohortcoupon {
      * Process page 5
      */
     protected function process_page_5() {
-        global $CFG, $USER;
+        global $CFG;
         $url = $this->get_url(['page' => '5']);
 
         // Set up preview stuff.

@@ -84,7 +84,7 @@ class couponbatch extends \user_filter_type {
         $objs['value'] = $mform->createElement('select', $this->_name, null, $cohorts);
         $objs['select'] = $mform->createElement('select', $this->_name.'_op', null, $this->get_operators());
         $objs['select']->setLabel(get_string('limiterfor', 'filters', $this->_label));
-        $grp =& $mform->addElement('group', $this->_name.'_grp', $this->_label, $objs, '', false);
+        $mform->addElement('group', $this->_name.'_grp', $this->_label, $objs, '', false);
         // Batch ID has PARAM_ALPHANUM.
         $mform->setType($this->_name, PARAM_RAW);
         if ($this->_advanced) {
@@ -125,7 +125,6 @@ class couponbatch extends \user_filter_type {
      * @return array sql string and $params
      */
     public function get_sql_filter($data) {
-        global $DB;
         static $counter = 0;
         $name = 'ex_couponbatch'.$counter++;
 

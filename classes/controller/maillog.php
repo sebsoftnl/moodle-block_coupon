@@ -99,8 +99,6 @@ class maillog {
 
     /**
      * Display overview table
-     *
-     * @param int $filter
      */
     protected function process_overview() {
         global $USER;

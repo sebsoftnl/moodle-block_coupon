@@ -121,7 +121,7 @@ class requestadmin {
      * Process edit requestuser instance
      */
     protected function process_add_user() {
-        global $CFG, $DB;
+        global $DB;
         $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
             $redirect = $this->get_url(['action' => 'users']);
@@ -158,7 +158,7 @@ class requestadmin {
      * Process edit requestuser instance
      */
     protected function process_edit_user() {
-        global $CFG, $DB;
+        global $DB;
         $itemid = required_param('itemid', PARAM_INT);
         $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
@@ -277,7 +277,7 @@ class requestadmin {
      * Process delete requestuser instance
      */
     protected function process_delete_user() {
-        global $CFG, $DB;
+        global $DB;
         $itemid = required_param('itemid', PARAM_INT);
         $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
@@ -327,7 +327,7 @@ class requestadmin {
      * Process deny request instance
      */
     protected function process_deny_request() {
-        global $CFG, $DB;
+        global $DB;
         $itemid = required_param('itemid', PARAM_INT);
         $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
@@ -367,7 +367,7 @@ class requestadmin {
      * Process deny request instance
      */
     protected function process_accept_request() {
-        global $CFG, $DB;
+        global $DB;
         $itemid = required_param('itemid', PARAM_INT);
         $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {

@@ -48,7 +48,7 @@ class page2 extends \moodleform {
      * form definition
      */
     protected function definition() {
-        global $CFG, $OUTPUT;
+        global $CFG;
         $mform = & $this->_form;
         $generatoroptions = $this->_customdata['generatoroptions'];
 

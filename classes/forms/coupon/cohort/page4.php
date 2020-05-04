@@ -65,7 +65,6 @@ class page4 extends \moodleform {
      * form definition
      */
     public function definition() {
-        global $CFG;
         $mform = & $this->_form;
 
         list($this->generatoroptions) = $this->_customdata;

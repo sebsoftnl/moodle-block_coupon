@@ -176,7 +176,7 @@ class pdf extends \pdf {
      *
      * @return bool
      */
-    public function get_includeqr() {
+    public function is_includeqr() {
         return $this->includeqr;
     }
 
@@ -424,13 +424,20 @@ class pdf extends \pdf {
             $this->startPage();
             $this->SetFont('helvetica', '', 10);
 
+            // Load advanced offsets.
+            $offsets = $this->get_bot_offsets();
+
             if ((bool)$coupon->renderqrcode) {
-                $this->MultiCell(135, 50, $txtmain, false, 'C', false, 1, 15, 75, true, 0, true);
+                $this->MultiCell(135, 50, $txtmain, false, 'C', false, 1,
+                        15 + $offsets->main->x, 75 + $offsets->main->y, true, 0, true);
             } else {
-                $this->MultiCell(150, 150, $txtmain, false, 'C', false, 1, 15, 75, true, 0, true);
+                $this->MultiCell(150, 150, $txtmain, false, 'C', false, 1,
+                        15 + $offsets->main->x, 75 + $offsets->main->y, true, 0, true);
             }
-            $this->MultiCell(90, 100, $txtbotleft, false, 'L', false, 2, 10, 210, true, 0, true);
-            $this->MultiCell(90, 100, $txtbotright, false, 'L', false, 2, 115, 210, true, 0, true);
+            $this->MultiCell(90, 100, $txtbotleft, false, 'L', false, 2,
+                    10 + $offsets->left->x, 210 + $offsets->left->y, true, 0, true);
+            $this->MultiCell(90, 100, $txtbotright, false, 'L', false, 2,
+                    115 + $offsets->right->x, 210 + $offsets->right->y, true, 0, true);
             // QR.
             if ((bool)$coupon->renderqrcode) {
                 $url = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/qrin.php', array(
@@ -536,6 +543,43 @@ class pdf extends \pdf {
     public function get_pdf_string() {
         // Output as string.
         return $this->Output('ignore', 'S');
+    }
+
+    /**
+     * Load bot template offsets.
+     * Do note this is advanced behavior and can only be set in the main Moodle config file for now.
+     *
+     * @return \stdClass
+     */
+    protected function get_bot_offsets() {
+        global $CFG;
+        $offsets = (object)[
+            'main' => (object)['x' => 0, 'y' => 0],
+            'left' => (object)['x' => 0, 'y' => 0],
+            'right' => (object)['x' => 0, 'y' => 0],
+        ];
+        // Main bot.
+        if (!empty($CFG->coupon_offset_bot_main_x)) {
+            $offsets->main->x = $CFG->coupon_offset_bot_main_x;
+        }
+        if (!empty($CFG->coupon_offset_bot_main_y)) {
+            $offsets->main->y = $CFG->coupon_offset_bot_main_y;
+        }
+        // Left bot.
+        if (!empty($CFG->coupon_offset_bot_left_x)) {
+            $offsets->left->x = $CFG->coupon_offset_bot_left_x;
+        }
+        if (!empty($CFG->coupon_offset_bot_left_y)) {
+            $offsets->left->y = $CFG->coupon_offset_bot_left_y;
+        }
+        // Right bot.
+        if (!empty($CFG->coupon_offset_bot_right_x)) {
+            $offsets->right->x = $CFG->coupon_offset_bot_right_x;
+        }
+        if (!empty($CFG->coupon_offset_bot_right_y)) {
+            $offsets->right->y = $CFG->coupon_offset_bot_right_y;
+        }
+        return $offsets;
     }
 
 }

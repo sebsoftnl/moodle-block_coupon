@@ -55,7 +55,7 @@ class course extends \moodleform {
      * form definition
      */
     public function definition() {
-        global $SESSION, $DB;
+        global $DB;
         $mform = & $this->_form;
 
         list($requestinstance, $user) = $this->_customdata;

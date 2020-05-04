@@ -114,6 +114,7 @@ class page1 extends \moodleform {
         // Role id.
         $selectrole = &$mform->addElement('select', 'coupon_role',
                 get_string('label:coupon_role', 'block_coupon'), $roles, $attributes);
+        $selectrole->setMultiple(false);
         $mform->setDefault('coupon_role', helper::get_default_coupon_role()->id);
         $mform->addHelpButton('coupon_role', 'label:coupon_role', 'block_coupon');
 

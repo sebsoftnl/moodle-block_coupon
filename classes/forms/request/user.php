@@ -48,11 +48,10 @@ class user extends \moodleform {
      * form definition
      */
     public function definition() {
-        global $CFG, $DB;
+        global $CFG;
         $mform = & $this->_form;
 
         list($instance, $user) = $this->_customdata;
-        $configuration = json_decode($instance->configuration);
 
         // Register element.
         $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcourses.php';
@@ -129,23 +128,6 @@ class user extends \moodleform {
 
         // We CANNOT use set_data( this )) here, IN form definition() causes a rest of set values...
         // See https://tracker.moodle.org/browse/MDL-53889.
-    }
-
-    /**
-     * get option or default value
-     * @param \stdClass $config
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
-     */
-    private function get_option($config, $key, $default = '') {
-        if (empty($config)) {
-            return $default;
-        }
-        if (isset($config->{$key})) {
-            return $config->{$key};
-        }
-        return $default;
     }
 
     /**

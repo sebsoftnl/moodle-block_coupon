@@ -49,7 +49,6 @@ class cleanup extends \moodleform {
      * form definition
      */
     public function definition() {
-        global $DB;
         $mform = & $this->_form;
 
         $mform->addElement('header', 'header', get_string('coupon:cleanup:heading', 'block_coupon'));

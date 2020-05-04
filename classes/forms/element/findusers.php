@@ -80,8 +80,7 @@ class findusers extends MoodleQuickForm_autocomplete {
      * @param  string|array $value The value to set.
      * @return boolean
      */
-    // @codingStandardsIgnoreLine
-    public function setValue($value) {
+    public function setValue($value) { // @codingStandardsIgnoreLine Can't change parent behaviour.
         global $DB;
         // The following lines SEEM to fix the issues around the autocomplete...
         // When e.g. postback of form introduces a server side validation error.

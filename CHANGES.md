@@ -1,6 +1,18 @@
-Version 4.0.2 (build 2019031803)
+Version 4.0.3-RC1 (build 2019031805)
+* Release candidate for beta testing
+
+----------
+
+Version 4.0.2 (build 2019031804)
+* Added ADVANCED global $CFG options to manipulate template bot output offsets.
+* Fixed wrongful addition of "batchID" when adding any filter (used/unused coupon view)
+* Fixed PHP notice in batchID filter
 * Fixed some more Oracle table alias issues
 * Fixed wrong links in notification context urls
+* Added maillog tab. Still too many requests about mails not being sent, so we decided
+   to wrap Moodle's email_to_user method and log *any* debug output if relevant.
+* General code cleanup (as a result of Travis-CI)
+
 ----------
 
 Version 4.0.1 (build 2019031802)

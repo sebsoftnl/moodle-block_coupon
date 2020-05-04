@@ -87,7 +87,7 @@ function xmldb_block_coupon_upgrade($oldversion) {
             $dbman->add_index($table, $index);
         }
 
-        // Block_tped savepoint reached.
+        // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2016011000, 'coupon');
 
     }
@@ -126,7 +126,7 @@ function xmldb_block_coupon_upgrade($oldversion) {
             remove_dir(dirname($logofile));
         }
 
-        // Block_tped savepoint reached.
+        // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2017050100, 'coupon');
 
     }
@@ -143,7 +143,7 @@ function xmldb_block_coupon_upgrade($oldversion) {
         $sql = 'UPDATE {block_coupon} SET claimed = 1 WHERE (userid IS NOT NULL OR userid = 0)';
         $DB->execute($sql);
 
-        // Block_tped savepoint reached.
+        // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2017050102, 'coupon');
 
     }
@@ -153,7 +153,7 @@ function xmldb_block_coupon_upgrade($oldversion) {
         $sql = 'UPDATE {block_coupon} SET enrolperiod = enrolperiod * 86400 WHERE enrolperiod <> 0';
         $DB->execute($sql);
 
-        // Block_tped savepoint reached.
+        // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2017050103, 'coupon');
 
     }
@@ -167,7 +167,7 @@ function xmldb_block_coupon_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Block_tped savepoint reached.
+        // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2017052402, 'coupon');
 
     }
@@ -181,7 +181,7 @@ function xmldb_block_coupon_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Block_tped savepoint reached.
+        // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2017092503, 'coupon');
 
     }
@@ -218,7 +218,7 @@ function xmldb_block_coupon_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-        // Block_tped savepoint reached.
+        // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2018050301, 'coupon');
 
     }
@@ -231,7 +231,7 @@ function xmldb_block_coupon_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Block_tped savepoint reached.
+        // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2018050302, 'coupon');
 
     }
@@ -246,7 +246,7 @@ function xmldb_block_coupon_upgrade($oldversion) {
         // Assume all coupons claimed on "timemodified".
         $DB->execute("UPDATE {block_coupon} SET timeclaimed = timemodified WHERE claimed = 1");
 
-        // Block_tped savepoint reached.
+        // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2018050303, 'coupon');
 
     }
@@ -258,7 +258,7 @@ function xmldb_block_coupon_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Block_tped savepoint reached.
+        // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2019031804, 'coupon');
 
     }

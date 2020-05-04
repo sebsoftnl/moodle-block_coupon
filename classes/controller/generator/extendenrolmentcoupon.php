@@ -228,7 +228,7 @@ class extendenrolmentcoupon {
      * Process page 3
      */
     protected function process_page_3() {
-        global $CFG, $USER, $DB;
+        global $CFG, $DB;
         $url = $this->get_url(['page' => '3']);
 
         // Make sure sessions are still alive.

@@ -1,3 +1,37 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_coupon/cleanupconfirm
+
+    Cleanup confirmation details.
+
+    Example context (json):
+    {
+        "hasstartdate": "Whether or not there is a startdate",
+        "startdate": "Date indicating cleanup after",
+        "hasenddate": "Whether or not there is an enddate",
+        "enddate": "Date indicating cleanup before",
+        "usedtypestr": "String indicating cleanup of used coupon(s)",
+        "typestr": "Coupon type to cleanup",
+        "hasdeletestrings": "Whether or not we have deletion info",
+        "deletestrings": "Deletion information (array of string)",
+        "deletecount": "Deletion counter"
+    }
+}}
 <div>
 {{#hasstartdate}}{{#str}}timebefore, block_coupon{{/str}}: {{startdate}}<br/>{{/hasstartdate}}
 {{#hasenddate}}{{#str}}timeafter, block_coupon{{/str}}: {{enddate}}<br/>{{/hasenddate}}

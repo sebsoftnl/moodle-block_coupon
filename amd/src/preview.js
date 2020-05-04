@@ -21,21 +21,20 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['jquery', 'core/str'], function($, Str) {
+define(['jquery', 'core/str', 'core/notification'], function($, Str, Notification) {
 
     /**
      * Constructor
      * @param {string} clickselector
      * @param {string} url
-     * @return {CouponPreview}
      */
     var CouponPreview = function(clickselector, url) {
         this.selector = clickselector;
         this.url = url;
-        Str.get_string('preview-pdf', 'block_coupon').then(function(title){
+        Str.get_string('preview-pdf', 'block_coupon').then(function(title) {
             this.title = title;
             this.setupHandlers();
-        }.bind(this));
+        }.bind(this)).fail(Notification.exception);
     };
 
     /**
@@ -67,7 +66,7 @@ define(['jquery', 'core/str'], function($, Str) {
     };
 
     /**
-     * out of bounds click handler handler
+     * Out of bounds click handler handler
      * @param {Event} e
      */
     CouponPreview.prototype.clickOutHandler = function(e) {

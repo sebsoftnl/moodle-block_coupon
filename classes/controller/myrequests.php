@@ -151,7 +151,7 @@ class myrequests {
      * Process edit requestuser instance
      */
     protected function process_new_request() {
-        global $CFG, $DB, $USER;
+        global $DB, $USER;
         $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
             $redirect = $this->get_url(['action' => 'list']);
@@ -204,16 +204,8 @@ class myrequests {
      * Process details view
      */
     protected function process_request_details() {
-        global $CFG, $DB;
+        global $DB;
         $itemid = required_param('itemid', PARAM_INT);
-        $redirect = optional_param('redirect', null, PARAM_LOCALURL);
-        if (empty($redirect)) {
-            $redirect = $this->get_url(['action' => 'list']);
-        }
-
-        $params = array('action' => 'details', 'itemid' => $itemid);
-        $url = $this->get_url($params);
-
         $instance = $DB->get_record('block_coupon_requests', ['id' => $itemid]);
         $user = \core_user::get_user($instance->userid);
         // Assert correct user.

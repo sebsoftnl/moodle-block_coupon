@@ -245,7 +245,8 @@ class helper {
 
             $zippedsuccessfully = $zip->close();
             if (!$zippedsuccessfully) {
-                // TODO!
+                // TODO! Future implementation should notify and break processing.
+                $zippedsuccessfully = $zippedsuccessfully;
             }
 
             // All coupons in 1 PDF.
@@ -369,10 +370,9 @@ class helper {
      * @param string $batchid
      * @param int $timecreated
      * @return bool
-     *
-     * @todo: DEPRECATE: replaced by notifications :)
      */
     public static final function confirm_coupons_sent($ownerid, $batchid, $timecreated) {
+        // TODO: DEPRECATE: replaced by notifications :).
         global $DB;
 
         $owner = $DB->get_record('user', array('id' => $ownerid));
@@ -963,7 +963,6 @@ class helper {
      * @param string $type coupon type
      */
     public static function add_manual_generator_elements($mform, $type) {
-        global $CFG;
         // Determine which mailtemplate to use.
         $mailcontentdefault = '';
         switch ($type) {
@@ -1147,7 +1146,8 @@ class helper {
 
             $zippedsuccessfully = $zip->close();
             if (!$zippedsuccessfully) {
-                // TODO!
+                // TODO! Future implementation should notify and break processing.
+                $zippedsuccessfully = $zippedsuccessfully;
             }
 
             // All coupons in 1 PDF.
@@ -1232,7 +1232,7 @@ class helper {
      * @param string $subject plain text subject line of the email
      * @param string $messagetext plain text version of the message
      * @param string $messagehtml complete html version of the message (optional)
-     * @param string $attachment a file on the filesystem, either relative to $CFG->dataroot or a full path to a file in $CFG->tempdir
+     * @param string $attachment a file, either relative to $CFG->dataroot or a full path to a file in $CFG->tempdir
      * @param string $attachname the name of the file (extension indicates MIME)
      * @param bool $usetrueaddress determines whether $from email address should
      *          be sent out. Will be overruled by user profile setting for maildisplay
@@ -1241,8 +1241,9 @@ class helper {
      * @param int $wordwrapwidth custom word wrap width, default 79
      * @return bool Returns true if mail was sent OK and false if there was an error.
      */
-    public static function do_email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', $attachment = '', $attachname = '',
-                       $usetrueaddress = true, $replyto = '', $replytoname = '', $wordwrapwidth = 79) {
+    public static function do_email_to_user($user, $from, $subject, $messagetext, $messagehtml = '',
+            $attachment = '', $attachname = '', $usetrueaddress = true,
+            $replyto = '', $replytoname = '', $wordwrapwidth = 79) {
         global $CFG, $DB;
         $debuglevel = $CFG->debug;
         $CFG->debug = DEBUG_DEVELOPER; // Highest level.

@@ -94,7 +94,7 @@ class couponbatchselect extends \user_filter_type {
         $objs['value'] = $mform->createElement('select', $this->_name, null, $batches);
         $objs['select']->setLabel(get_string('limiterfor', 'filters', $this->_label));
         $objs['value']->setLabel(get_string('valuefor', 'filters', $this->_label));
-        $grp =& $mform->addElement('group', $this->_name.'_grp', $this->_label, $objs, '', false);
+        $mform->addElement('group', $this->_name.'_grp', $this->_label, $objs, '', false);
         $mform->setType($this->_name, PARAM_RAW);
         $mform->disabledIf($this->_name, $this->_name.'_op', 'eq', 5);
         if ($this->_advanced) {
@@ -113,7 +113,7 @@ class couponbatchselect extends \user_filter_type {
         $operator = $field.'_op';
 
         if (array_key_exists($operator, $formdata)) {
-            if ($formdata->$operator != 5 and $formdata->$field == '') {
+            if (empty($formdata->$field)) {
                 // No data - no change except for empty filter.
                 return false;
             }
@@ -134,7 +134,6 @@ class couponbatchselect extends \user_filter_type {
      * @return array sql string and $params
      */
     public function get_sql_filter($data) {
-        global $DB;
         static $counter = 0;
         $name = 'ex_couponbatchselect'.$counter++;
 
@@ -173,11 +172,10 @@ class couponbatchselect extends \user_filter_type {
     public function get_label($data) {
         $operator  = $data['operator'];
         $value     = $data['value'];
-        $field     = $data['field'];
         $operators = $this->get_operators();
 
         $a = new \stdClass();
-        $a->label    = $this->_label . '.' . $field;
+        $a->label    = $this->_label;
         $a->value    = '"'.s($value).'"';
         $a->operator = $operators[$operator];
 
