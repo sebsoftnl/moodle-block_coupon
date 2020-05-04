@@ -51,15 +51,16 @@ class coupons extends filtering {
     public function get_fields() {
         return array(
             'timeexpired' => 0,
-            'batchid' => 0,
+            'batchselect' => 0,
+            'batchid' => 1,
             'timemodified' => 1,
             'senddate' => 1,
             'sent' => 0,
             'couponcode' => 1,
             'for_user_email' => 0,
             'for_user_name' => 0,
+            'courseid' => 0,
             'cohortid' => 0,
-            'courseid' => 1,
             'course' => 1,
             'coursegroupid' => 1,
             'coursegroup' => 1,
@@ -91,6 +92,8 @@ class coupons extends filtering {
             case 'batchid':
                 return new \user_filter_text('batchid',
                         get_string('label:batchid', 'block_coupon'), $advanced, 'c.batchid');
+            case 'batchselect':
+                return new \block_coupon\filters\couponbatchselect($advanced, 'c.batchid');
             case 'for_user_email':
                 return new \user_filter_text('for_user_email',
                         get_string('report:for_user_email', 'block_coupon'), $advanced, 'c.for_user_email');

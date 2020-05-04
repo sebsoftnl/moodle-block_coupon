@@ -50,11 +50,14 @@ class eventobservers
      */
     public static function course_deleted(\core\event\course_deleted $event) {
         global $DB;
-        $couponids = $DB->get_fieldset_select('block_coupon_courses', 'DICTINCT couponid', 'courseid = ?', array($event->objectid));
+        $couponids = $DB->get_fieldset_select('block_coupon_courses', 'DISTINCT couponid', 'courseid = ?', array($event->objectid));
+        if (empty($couponids)) {
+            return;
+        }
         $DB->delete_records('block_coupon_courses', array('courseid' => $event->objectid));
 
         list($insql, $params) = $DB->get_in_or_equal($couponids);
-        $remainingcouponids = $DB->get_fieldset_select('block_coupon_courses', 'DICTINCT couponid', 'couponid '.$insql, $params);
+        $remainingcouponids = $DB->get_fieldset_select('block_coupon_courses', 'DISTINCT couponid', 'couponid '.$insql, $params);
 
         $deletecouponids = array_diff($couponids, $remainingcouponids);
         $DB->delete_records_list('block_coupon', 'id ', $deletecouponids);
@@ -68,11 +71,14 @@ class eventobservers
      */
     public static function cohort_deleted(\core\event\cohort_deleted $event) {
         global $DB;
-        $couponids = $DB->get_fieldset_select('block_coupon_cohorts', 'DICTINCT couponid', 'cohortid = ?', array($event->objectid));
+        $couponids = $DB->get_fieldset_select('block_coupon_cohorts', 'DISTINCT couponid', 'cohortid = ?', array($event->objectid));
+        if (empty($couponids)) {
+            return;
+        }
         $DB->delete_records('block_coupon_cohorts', array('cohortid' => $event->objectid));
 
         list($insql, $params) = $DB->get_in_or_equal($couponids);
-        $remainingcouponids = $DB->get_fieldset_select('block_coupon_cohorts', 'DICTINCT couponid', 'couponid '.$insql, $params);
+        $remainingcouponids = $DB->get_fieldset_select('block_coupon_cohorts', 'DISTINCT couponid', 'couponid '.$insql, $params);
 
         $deletecouponids = array_diff($couponids, $remainingcouponids);
         $DB->delete_records_list('block_coupon', 'id ', $deletecouponids);

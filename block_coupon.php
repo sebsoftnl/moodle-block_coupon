@@ -81,23 +81,25 @@ class block_coupon extends block_base {
         // Generate Coupon.
         $baseparams = array('id' => $this->instance->id);
         if (has_capability('block/coupon:generatecoupons', $this->context)) {
-            $urlgeneratecoupons = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generate_coupon.php', $baseparams);
+            $urlgeneratecoupons = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/index.php', $baseparams);
             $menuitems[] = html_writer::link($urlgeneratecoupons, get_string('url:generate_coupons', 'block_coupon'));
 
             $urlmanagelogos = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/managelogos.php', $baseparams);
             $menuitems[] = html_writer::link($urlmanagelogos, get_string('url:managelogos', 'block_coupon'));
 
             // Add link to requests.
-            $requestusersurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', $baseparams + ['action' => 'users']);
+            $requestusersurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php',
+                    $baseparams + ['action' => 'users']);
             $menuitems[] = html_writer::link($requestusersurl, get_string('tab:requestusers', 'block_coupon'));
-            $requestsurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', $baseparams + ['action' => 'requests']);
+            $requestsurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php',
+                    $baseparams + ['action' => 'requests']);
             $menuitems[] = html_writer::link($requestsurl, get_string('tab:requests', 'block_coupon'));
         }
 
         // View Reports.
         if (has_capability('block/coupon:viewreports', $this->context)) {
             $urlreports = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/reports.php', $baseparams);
-            $urlunusedreports = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/coupon_view.php',
+            $urlunusedreports = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php',
                     array('id' => $this->instance->id, 'tab' => 'unused'));
 
             $menuitems[] = html_writer::link($urlreports, get_string('url:view_reports', 'block_coupon'));

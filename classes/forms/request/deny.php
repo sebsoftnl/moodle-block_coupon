@@ -55,8 +55,6 @@ class deny extends \moodleform {
         $mform->addElement('header', 'header', $heading);
         $mform->addElement('static', 'info', '', $info);
 
-        $mform->addElement('advcheckbox', 'sendmessage', '', get_string('request:sendmessage', 'block_coupon'));
-
         $attributes = [
             'maxfiles' => 0
         ];

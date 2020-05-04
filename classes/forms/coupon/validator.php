@@ -56,7 +56,7 @@ class validator extends \moodleform {
         $mform->addElement('text', 'coupon_code', get_string('label:coupon_code', 'block_coupon'));
         $mform->addRule('coupon_code', get_string('error:required', 'block_coupon'), 'required', null, 'client');
         $mform->addRule('coupon_code', get_string('error:required', 'block_coupon'), 'required', null, 'server');
-        $mform->setType('coupon_code', PARAM_RAW);
+        $mform->setType('coupon_code', PARAM_ALPHANUM);
         $mform->addHelpButton('coupon_code', 'label:coupon_code', 'block_coupon');
 
         $this->add_action_buttons(false, get_string('button:submit_coupon_code', 'block_coupon'));
@@ -71,25 +71,17 @@ class validator extends \moodleform {
      *         or an empty array if everything is OK (true allowed for backwards compatibility too).
      */
     public function validation($data, $files) {
-        global $DB, $USER;
+        global $USER;
         $errors = parent::validation($data, $files);
 
-        $conditions = array(
-            'submission_code' => $data['coupon_code'],
-            'claimed' => 0,
-        );
-        $coupon = $DB->get_record('block_coupon', $conditions);
-        if (empty($coupon)) {
-            $errors['coupon_code'] = get_string('error:invalid_coupon_code', 'block_coupon');
-        } else if (!is_null($coupon->userid) && $coupon->typ != \block_coupon\coupon\generatoroptions::ENROLEXTENSION) {
-            $errors['coupon_code'] = get_string('error:coupon_already_used', 'block_coupon');
-        }
-
+        // Get type processor.
+        $typeproc = \block_coupon\coupon\typebase::get_type_instance($data['coupon_code']);
         try {
-            if (!empty($coupon)) {
-                \block_coupon\helper::already_enroled_check($USER->id, $coupon->submission_code);
-            }
-        } catch (\Exception $ex) {
+            // Assert not yet used.
+            $typeproc->assert_not_claimed();
+            // Assert specialized.
+            $typeproc->assert_internal_checks($USER->id);
+        } catch (Exception $ex) {
             $errors['coupon_code'] = $ex->getMessage();
         }
 

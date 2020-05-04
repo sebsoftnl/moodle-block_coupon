@@ -115,7 +115,7 @@ class myrequests {
     protected function process_delete_request() {
         global $DB;
         $itemid = required_param('itemid', PARAM_INT);
-        $redirect = optional_param('redirect', null, PARAM_URL);
+        $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
             $redirect = $this->get_url(['action' => 'list']);
         }
@@ -125,6 +125,8 @@ class myrequests {
 
         $instance = $DB->get_record('block_coupon_requests', ['id' => $itemid]);
         $user = \core_user::get_user($instance->userid);
+        // Assert correct user.
+        $this->assert_user($user->id);
 
         $options = [
             get_string('delete:request:header', 'block_coupon', $user),
@@ -150,7 +152,7 @@ class myrequests {
      */
     protected function process_new_request() {
         global $CFG, $DB, $USER;
-        $redirect = optional_param('redirect', null, PARAM_URL);
+        $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
             $redirect = $this->get_url(['action' => 'list']);
         }
@@ -204,7 +206,7 @@ class myrequests {
     protected function process_request_details() {
         global $CFG, $DB;
         $itemid = required_param('itemid', PARAM_INT);
-        $redirect = optional_param('redirect', null, PARAM_URL);
+        $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
             $redirect = $this->get_url(['action' => 'list']);
         }
@@ -214,6 +216,8 @@ class myrequests {
 
         $instance = $DB->get_record('block_coupon_requests', ['id' => $itemid]);
         $user = \core_user::get_user($instance->userid);
+        // Assert correct user.
+        $this->assert_user($user->id);
 
         echo $this->output->header();
         echo $this->renderer->requestdetails($instance);
@@ -230,6 +234,29 @@ class myrequests {
         $url = $this->page->url;
         $url->params($mergeparams);
         return $url;
+    }
+
+    /**
+     * Asser the intended user is the current user.
+     *
+     * We DO allow site administrators and anyone with the coupon administration capability.
+     *
+     * @param int $userid
+     * @throws \block_coupon\exception
+     */
+    protected function assert_user($userid) {
+        global $USER;
+        if (is_siteadmin()) {
+            // We'll allow site admins to do everything.
+            return;
+        }
+        if (has_capability('block/coupon:administration', $this->page->context)) {
+            // We will also allow anyone with administration rights.
+            return;
+        }
+        if ($USER->id != $userid) {
+            throw new \block_coupon\exception('error:myrequests:user');
+        }
     }
 
 }

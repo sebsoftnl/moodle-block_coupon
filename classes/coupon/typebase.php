@@ -31,6 +31,9 @@ namespace block_coupon\coupon;
 
 defined('MOODLE_INTERNAL') || die();
 
+use block_coupon\coupon\generatoroptions;
+use block_coupon\exception;
+
 /**
  * block_coupon\coupon\typebase
  *
@@ -58,8 +61,48 @@ abstract class typebase {
     /**
      * Claim coupon.
      * @param int $foruserid user that claims coupon. Current userid if not given.
+     * @param mixed $options any options required by the instance
      */
-    abstract public function claim($foruserid = null);
+    abstract public function claim($foruserid = null, $options = null);
+
+    /**
+     * Return whether this coupon type has extended claim options.
+     * @return bool.
+     */
+    abstract public function has_extended_claim_options();
+
+    /**
+     * Process the claim.
+     * @param int $foruserid user that claims coupon. Current userid if not given.
+     */
+    public function process_claim($foruserid = null) {
+        global $CFG;
+        // The base is: call claim. Should be sufficient for most coupons.
+        $this->claim($foruserid);
+
+        $redirect = (empty($this->coupon->redirect_url)) ? $CFG->wwwroot . "/my" : $this->coupon->redirect_url;
+        redirect($redirect, get_string('success:coupon_used', 'block_coupon'));
+    }
+
+    /**
+     * Assert claimable.
+     * @throws \block_coupon\exception
+     */
+    public function assert_not_claimed() {
+        if ((bool)$this->coupon->claimed) {
+            get_string('error:coupon_already_used', 'block_coupon');
+        }
+    }
+
+    /**
+     * Assert other. This can be anything really.
+     *
+     * @param int $userid user claiming.
+     * @throws exception
+     */
+    public function assert_internal_checks($userid) {
+        return;
+    }
 
     /**
      * Trigger event that this coupon is claimed.
@@ -79,6 +122,42 @@ abstract class typebase {
         );
         $event->add_record_snapshot('block_coupon', $this->coupon);
         $event->trigger();
+    }
+
+    /**
+     * Get class instance for given couponcode
+     *
+     * @param string $couponcode code to claim
+     * @return self
+     * @throws \block_coupon\exception
+     */
+    public static function get_type_instance($couponcode) {
+        global $DB;
+        // Get record.
+        $conditions = array(
+            'submission_code' => $couponcode
+        );
+        $coupon = $DB->get_record('block_coupon', $conditions, '*', MUST_EXIST);
+        // Base validation.
+        if (empty($coupon)) {
+            throw new exception('error:invalid_coupon_code');
+        } else if (!is_null($coupon->userid) && $coupon->typ != generatoroptions::ENROLEXTENSION) {
+            throw new exception('error:coupon_already_used');
+        }
+
+        // All these checks aren't strictly needed but alas, OOP FTW.
+        $class = '\\block_coupon\\coupon\\types\\' . $coupon->typ;
+        if (!class_exists($class)) {
+            throw new exception('err:no-such-processor', $coupon->typ);
+        }
+        $rc = new \ReflectionClass($class);
+        if (!$rc->implementsInterface('\\block_coupon\\coupon\\icoupontype')) {
+            throw new exception('err:processor-implements', $coupon->typ);
+        }
+
+        // Load coupon type and claim().
+        $instance = $rc->newInstance($coupon);
+        return $instance;
     }
 
 }

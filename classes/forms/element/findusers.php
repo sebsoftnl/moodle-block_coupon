@@ -43,6 +43,14 @@ require_once($CFG->libdir . '/form/autocomplete.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class findusers extends MoodleQuickForm_autocomplete {
+
+    /**
+     * Has setValue() already been called already?
+     *
+     * @var bool
+     */
+    private $selectedset = false;
+
     /**
      * Constructor.
      *
@@ -72,8 +80,19 @@ class findusers extends MoodleQuickForm_autocomplete {
      * @param  string|array $value The value to set.
      * @return boolean
      */
+    // @codingStandardsIgnoreLine
     public function setValue($value) {
         global $DB;
+        // The following lines SEEM to fix the issues around the autocomplete...
+        // When e.g. postback of form introduces a server side validation error.
+        // The result is that when this method has been called before, selection is reset to NOTHING.
+        // See https://tracker.moodle.org/browse/MDL-53889 among others.
+        // The autocomplete, is must say, is VERY poorly developed and not properly tested.
+        if ($this->selectedset) {
+            return;
+        }
+        $this->selectedset = true;
+
         $values = (array) $value;
         $ids = array();
         foreach ($values as $onevalue) {
@@ -83,7 +102,7 @@ class findusers extends MoodleQuickForm_autocomplete {
             }
         }
         if (empty($ids)) {
-            return $this->setSelected(array());
+            return;
         }
         // Logic here is simulating API.
         $toselect = array();
@@ -92,7 +111,7 @@ class findusers extends MoodleQuickForm_autocomplete {
         foreach ($users as $user) {
             if ($user->deleted || $user->suspended) {
                 continue;
-            };
+            }
             $optionname = fullname($user) . (empty($user->idnumber) ? '' : ' ('.$user->idnumber.')');
             $this->addOption($optionname, $user->id, ['selected' => 'selected']);
             array_push($toselect, $user->id);

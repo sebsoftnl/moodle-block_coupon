@@ -62,17 +62,29 @@ helper::force_no_editing_mode();
 
 require_capability('block/coupon:inputcoupons', $context);
 // Include the form.
-$mform = new validator($url);
-if ($mform->is_cancelled()) {
-    redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $course->id)));
-} else if ($data = $mform->get_data()) {
-    $redirecturl = helper::claim_coupon($data->coupon_code);
-    // Redirect to my directly.
-    redirect($redirecturl, get_string('success:coupon_used', 'block_coupon'));
-} else {
-    echo $OUTPUT->header();
-    echo '<div class="block-coupon-container">';
-    $mform->display();
-    echo '</div>';
-    echo $OUTPUT->footer();
+try {
+    $mform = new validator($url);
+    if ($mform->is_cancelled()) {
+        redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $course->id)));
+    } else if ($data = $mform->get_data()) {
+        // Get type processor.
+        $typeproc = block_coupon\coupon\typebase::get_type_instance($data->coupon_code);
+        // Perform assertions.
+        $typeproc->assert_not_claimed();
+        $typeproc->assert_internal_checks($USER->id);
+        // Process the claim.
+        // The base is to just claim, but various coupons might have their own processing.
+        $typeproc->process_claim($USER->id);
+    } else {
+        echo $OUTPUT->header();
+        echo '<div class="block-coupon-container">';
+        $mform->display();
+        echo '</div>';
+        echo $OUTPUT->footer();
+    }
+} catch (block_coupon\exception $e) {
+    \core\notification::error($e->getMessage());
+} catch (\Exception $ex) {
+    \core\notification::error(get_string('err:coupon:generic'));
 }
+redirect($CFG->wwwroot . '/my');

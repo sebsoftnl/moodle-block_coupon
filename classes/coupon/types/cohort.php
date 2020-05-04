@@ -49,8 +49,9 @@ class cohort extends typebase implements icoupontype {
     /**
      * Claim coupon.
      * @param int $foruserid user that claims coupon. Current userid if not given.
+     * @param mixed $options any options required by the instance
      */
-    public function claim($foruserid = null) {
+    public function claim($foruserid = null, $options = null) {
         global $CFG, $DB, $USER;
         // Because we're outside course context we've got to include libraries manually.
         require_once($CFG->dirroot . '/cohort/lib.php');
@@ -113,6 +114,50 @@ class cohort extends typebase implements icoupontype {
         } else {
             $trace = new \null_progress_trace();
             return enrol_cohort_sync($trace);
+        }
+    }
+
+    /**
+     * Return whether this coupon type has extended claim options.
+     * @return bool false.
+     */
+    public function has_extended_claim_options() {
+        return false;
+    }
+
+    /**
+     * Assert claimable.
+     * @throws exception
+     */
+    public function assert_not_claimed() {
+        // Call parent.
+        parent::assert_not_claimed();
+        // Specialized.
+        if (!is_null($this->coupon->userid)) {
+            throw new exception('error:coupon_already_used');
+        }
+    }
+
+    /**
+     * Assert other. This can be anything really.
+     *
+     * @param int $userid user claiming.
+     * @throws exception
+     */
+    public function assert_internal_checks($userid) {
+        global $DB, $CFG;
+        require_once($CFG->dirroot . '/cohort/lib.php');
+        // Validate we're not yet in ANY cohort yet.
+        $couponcohorts = $DB->get_records('block_coupon_cohorts', array('couponid' => $this->coupon->id));
+        $cansignup = false;
+        foreach ($couponcohorts as $couponcohort) {
+            $ee = cohort_is_member($couponcohort->cohortid, $userid);
+            if ($ee === false) {
+                $cansignup = true;
+            }
+        }
+        if (!$cansignup) {
+            throw new exception('error:already-enrolled-in-cohorts');
         }
     }
 

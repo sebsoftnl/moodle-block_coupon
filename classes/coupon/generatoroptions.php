@@ -169,6 +169,18 @@ class generatoroptions {
     public $generatecodesonly = false;
 
     /**
+     * What generator method do we use?
+     * @var string
+     */
+    public $generatormethod = 'amount';
+
+    /**
+     * CSV Delimiter if applicable
+     * @var string
+     */
+    public $csvdelimitername = ',';
+
+    /**
      * create a new instance
      */
     public function __construct() {

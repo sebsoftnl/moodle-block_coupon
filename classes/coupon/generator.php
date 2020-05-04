@@ -32,6 +32,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use block_coupon\coupon\codegenerator;
 use block_coupon\coupon\icoupongenerator;
+use block_coupon\exception;
 
 /**
  * block_coupon\coupon\generator
@@ -138,14 +139,14 @@ class generator implements icoupongenerator {
     /**
      * Validate generator options
      * @param \block_coupon\test\coupon\generatoroptions $options
-     * @throws \moodle_exception
+     * @throws exception
      */
     protected function validate_options(generatoroptions $options) {
         switch ($options->type) {
             case generatoroptions::COURSE:
             case generatoroptions::ENROLEXTENSION:
                 if (empty($options->courses)) {
-                    throw new \moodle_exception('err:no-courses', 'block_coupon');
+                    throw new exception('err:no-courses');
                 }
                 // Validate courses.
                 $this->validate_courses($options->courses, $options->groups);
@@ -153,19 +154,19 @@ class generator implements icoupongenerator {
 
             case generatoroptions::COHORT:
                 if (empty($options->cohorts)) {
-                    throw new \moodle_exception('err:no-cohorts', 'block_coupon');
+                    throw new exception('err:no-cohorts');
                 }
                 // Validate cohorts.
                 $this->validate_cohorts($options->cohorts);
                 break;
 
             default:
-                throw new \moodle_exception('err:no-courses', 'block_coupon');
+                throw new exception('err:no-courses');
                 break; // Never reached.
         }
         // If we have recipients, we should also have an emailbody.
         if (!empty($options->recipients) && empty($options->emailbody)) {
-            throw new \moodle_exception('error:no-emailbody', 'block_coupon');
+            throw new exception('error:no-emailbody');
         }
     }
 
@@ -174,7 +175,7 @@ class generator implements icoupongenerator {
      *
      * @param array $courseids
      * @param array|null $groupids
-     * @throws \moodle_exception
+     * @throws exception
      */
     protected function validate_courses($courseids, $groupids = null) {
         global $DB;
@@ -198,7 +199,7 @@ class generator implements icoupongenerator {
         }
         // Do we have errors?
         if (!empty($errors)) {
-            throw new \block_coupon\exception('error:validate-courses', '', implode('<br/>', $errors));
+            throw new exception('error:validate-courses', '', implode('<br/>', $errors));
         }
     }
 
@@ -206,7 +207,7 @@ class generator implements icoupongenerator {
      * Validate the configured cohorts
      *
      * @param array $cohortids
-     * @throws \moodle_exception
+     * @throws exception
      */
     protected function validate_cohorts($cohortids) {
         global $DB;
@@ -220,7 +221,7 @@ class generator implements icoupongenerator {
         }
         // Do we have errors?
         if (!empty($errors)) {
-            throw new \moodle_exception('error:validate-cohorts', 'block_coupon', implode('<br/>', $errors));
+            throw new exception('error:validate-cohorts', '', implode('<br/>', $errors));
         }
     }
 
@@ -229,7 +230,7 @@ class generator implements icoupongenerator {
      *
      * @param \block_coupon\test\coupon\generatoroptions $options
      * @return boolean
-     * @throws \moodle_exception
+     * @throws exception
      */
     protected function generate(generatoroptions $options) {
         global $DB;
@@ -240,12 +241,14 @@ class generator implements icoupongenerator {
         if (isset($defaultrole->id)) {
             $defaultroleid = $defaultrole->id;
         }
+        $generatortime = time();
+
         for ($i = 0; $i < $options->amount; $i++) {
             // An object for the coupon itself.
             $objcoupon = new \stdClass();
             $objcoupon->ownerid = $options->ownerid;
             $objcoupon->submission_code = codegenerator::generate_unique_code($options->codesize);
-            $objcoupon->timecreated = time();
+            $objcoupon->timecreated = $generatortime;
             $objcoupon->timeexpired = null;
             $objcoupon->email_body = null;
             $objcoupon->userid = null;
@@ -307,7 +310,7 @@ class generator implements icoupongenerator {
         }
 
         if (!empty($errors)) {
-            throw new \moodle_exception('error:coupon:generator', 'block_coupon', implode('<br/>', $errors));
+            throw new exception('error:coupon:generator', '', implode('<br/>', $errors));
         }
         return true;
     }
@@ -336,12 +339,14 @@ class generator implements icoupongenerator {
             '##site_name##',
             '##to_gender##',
             '##extensionperiod##',
+            '##submission_code##',
         );
         $arrwith = array(
             $coupon->for_user_name,
             $SITE->fullname,
             $gendertxt,
-            $extensionperiod
+            $extensionperiod,
+            $coupon->submission_code
         );
 
         // Check if we're generating based on course, in which case we enter the course name too.

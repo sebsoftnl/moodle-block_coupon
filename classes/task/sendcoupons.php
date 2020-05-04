@@ -62,27 +62,52 @@ class sendcoupons extends \core\task\scheduled_task {
      */
     public function execute() {
         global $DB;
-        // Call coupons.
-        $coupons = helper::get_coupons_to_send();
-
-        if (!$coupons || empty($coupons)) {
+        $time = $this->get_next_run_time();
+        if (empty($time)) {
+            $time = time();
+        }
+        // Find batches.
+        $sql = "SELECT batchid FROM {block_coupon}
+            WHERE senddate < ? AND issend = 0 AND for_user_email IS NOT NULL
+            ORDER BY timecreated ASC
+            LIMIT 1";
+        $batchid = $DB->get_field_sql($sql, [$time]);
+        if (empty($batchid)) {
+            mtrace("No batches found");
             return;
         }
 
-        // Omdat we geen koppeltabel hebben...
-        $sentcoupons = array();
-        $couponsend = time(); // Dit moet even om ervoor te zorgen dat dingen per owner gegroepeerd worden.
-        // Let op: dit verkloot meerdere batches per owner - Sebastian dd 2014-03-19.
+        // Load coupons for batch.
+        $sql = "SELECT * FROM {block_coupon}
+            WHERE batchid = ? AND issend = 0 AND for_user_email IS NOT NULL";
+        $coupons = $DB->get_records_sql($sql, [$batchid], 0, 500);
+
+        if (!$coupons || empty($coupons)) {
+            mtrace("No coupons found for batch {$batchid}");
+            return;
+        }
+
+        // Find owner for batch.
+        $ownerid = $DB->get_field('block_coupon', 'ownerid', ['batchid' => $batchid], IGNORE_MULTIPLE);
+
+        mtrace("SENDING COUPON BATCH (max 500 items | have = ".count($coupons).") {$batchid} WITH OWNER {$ownerid}");
+
+        $this->send_batch($coupons, $batchid, $time);
+    }
+
+    /**
+     * Send coupon batch.
+     *
+     * @param array $coupons
+     * @param string $batchid
+     * @param int $timeexecuted
+     */
+    protected function send_batch($coupons, $batchid, $timeexecuted) {
+        global $DB;
+        $ownerid = null;
         foreach ($coupons as $coupon) {
-            // Check if we have an owner.
-            if (!is_null($coupon->ownerid)) {
-                // And add to sentCoupons so we can check if all of them have been sent.
-                if (!isset($sentcoupons[$coupon->ownerid])) {
-                    $sentcoupons[$coupon->ownerid] = array();
-                }
-                if (!in_array($coupon->timecreated, $sentcoupons[$coupon->ownerid])) {
-                    $sentcoupons[$coupon->ownerid][] = $couponsend;
-                }
+            if (empty($ownerid)) {
+                $ownerid = $coupon->ownerid;
             }
 
             $result = helper::mail_coupons(array($coupon), $coupon->for_user_email, null, $coupon->email_body, true);
@@ -94,16 +119,18 @@ class sendcoupons extends \core\task\scheduled_task {
             }
         }
 
-        // Check if all coupons have been send.
-        if (!empty($sentcoupons)) {
-            foreach ($sentcoupons as $ownerid => $coupons) {
-                foreach ($coupons as $coupontimecreated) {
-                    if (helper::has_sent_all_coupons($ownerid, $coupontimecreated)) {
-                        // Mail confirmation.
-                        helper::confirm_coupons_sent($ownerid, $coupontimecreated);
-                    }
-                }
-            }
+        // Check batch completed.
+        $conditions = array(
+            'issend' => 0,
+            'ownerid' => $ownerid,
+            'batchid' => $batchid
+        );
+        $batchcomplete = ($DB->count_records('block_coupon', $conditions) === 0);
+        if ($batchcomplete) {
+            // Mail confirmation.
+            mtrace("Send batch completed notification");
+            helper::confirm_coupons_sent($ownerid, $batchid, $timeexecuted);
+            \block_coupon\couponnotification::send_task_notification($ownerid, $batchid, $timeexecuted);
         }
     }
 

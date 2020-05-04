@@ -1,0 +1,13 @@
+<div>
+{{#hasstartdate}}{{#str}}timebefore, block_coupon{{/str}}: {{startdate}}<br/>{{/hasstartdate}}
+{{#hasenddate}}{{#str}}timeafter, block_coupon{{/str}}: {{enddate}}<br/>{{/hasenddate}}
+{{#str}}coupon:used, block_coupon{{/str}}: {{usedtypestr}}<br/>
+{{#str}}coupon:type, block_coupon{{/str}}: {{typestr}}<br/>
+{{#hasdeletestrings}}
+{{#str}}with-names, block_coupon{{/str}}:
+<ul>
+{{#deletestrings}}<li>{{{.}}}</li>{{/deletestrings}}
+</ul>
+{{/hasdeletestrings}}
+{{#str}}remove-count, block_coupon, {{deletecount}}{{/str}}
+</div>

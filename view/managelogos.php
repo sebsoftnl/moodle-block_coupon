@@ -62,4 +62,6 @@ helper::force_no_editing_mode();
 require_capability('block/coupon:generatecoupons', $context);
 $renderer = $PAGE->get_renderer('block_coupon');
 
-echo $renderer->page_logomanager($id);
+// Using a manager.
+$requestcontroller = new \block_coupon\controller\logomanager($PAGE, $OUTPUT, $renderer);
+$requestcontroller->execute_request();

@@ -26,3 +26,45 @@
 .block-coupon-container {
     display: block;
 }
+
+#block-coupon-modal {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    z-index: 99999;
+    margin: auto;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.block-coupon-modal-content {
+    height:100%;
+}
+.block-coupon-modal-header {
+    width: 90%;
+    margin: auto;
+    padding: 2px 16px;
+    height: 3.5em;
+    vertical-align: middle;
+    text-align: center;
+    background-color: rgb(255, 255, 255);
+}
+.block-coupon-modal-header .close {
+    color: #000;
+    float: right;
+    font-size: 3em;
+    font-weight: bold;
+}
+.block-coupon-modal-header h2 {
+    display: inline;
+}
+.block-coupon-modal-body {
+    width: 90%;
+    height:100%;
+    margin: auto;
+}
+.block-coupon-modal-body iframe {
+    width: 100%;
+    height: 100%;
+}

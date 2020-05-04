@@ -45,7 +45,8 @@ interface icoupontype {
     /**
      * Claim coupon.
      * @param int $foruserid user that claims coupon. Current userid if not given.
+     * @param mixed $options any options required by the instance
      */
-    public function claim($foruserid = null);
+    public function claim($foruserid = null, $options = null);
 
 }

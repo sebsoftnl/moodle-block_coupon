@@ -46,7 +46,7 @@ function block_coupon_extend_navigation_course(navigation_node $parentnode, stdC
     $icon = new \pix_icon('coupon', get_string('coupon:extendenrol', 'block_coupon'), 'block_coupon');
     $icon = null;
     $conditions = array('cid' => $course->id, 'id' => $biid);
-    $action = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/extendenrolment.php', $conditions);
+    $action = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/extendenrolment.php', $conditions);
     $parentnode->add(get_string('coupon:extendenrol', 'block_coupon'), $action, navigation_node::TYPE_CUSTOM,
             get_string('coupon:extendenrol', 'block_coupon'), 'cpextendenrol', $icon);
 }

@@ -51,7 +51,7 @@ $heading = 'view:requests:admin:heading';
 
 $PAGE->navbar->add(get_string($title, 'block_coupon'));
 
-$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', array('id' => $id, 'tab' => 'requestadmin'));
+$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', array('id' => $id));
 $PAGE->set_url($url);
 
 $PAGE->set_title(get_string($title, 'block_coupon'));

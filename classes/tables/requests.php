@@ -92,6 +92,7 @@ class requests extends \table_sql {
         global $USER;
         parent::__construct(__CLASS__. '-' . $USER->id);
         $this->no_sorting('action');
+        $this->sortable(true, 'timecreated', SORT_DESC);
         $this->strdelete = get_string('action:coupon:delete', 'block_coupon');
         $this->strdeleteconfirm = get_string('action:coupon:delete:confirm', 'block_coupon');
     }
@@ -118,14 +119,14 @@ class requests extends \table_sql {
      * @param bool $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
-        $columns = array('fullname');
+        $columns = array('fullname', 'timecreated');
         if ($this->is_downloading() == '') {
             $columns[] = 'action';
         }
         $this->define_table_columns($columns);
 
         // Generate SQL.
-        $fields = 'cu.id, cu.userid, ' . get_all_user_name_fields(true, 'u') . ', NULL as action';
+        $fields = 'cu.id, cu.timecreated, cu.configuration, cu.userid, ' . get_all_user_name_fields(true, 'u') . ', NULL as action';
         $from = '{block_coupon_requests} cu ';
         $from .= 'JOIN {user} u ON cu.userid=u.id ';
         $where = array();
@@ -156,6 +157,20 @@ class requests extends \table_sql {
      */
     public function col_timecreated($row) {
         return userdate($row->timecreated);
+    }
+
+    /**
+     * Render visual representation of the 'fullname' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string time string
+     */
+    public function col_fullname($row) {
+        $str = parent::col_fullname($row);
+        $config = unserialize($row->configuration);
+        $str .= '<br/>';
+        $str .= get_string('request:info', 'block_coupon', $config);
+        return $str;
     }
 
     /**

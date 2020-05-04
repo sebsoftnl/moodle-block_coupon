@@ -49,8 +49,9 @@ class course extends typebase implements icoupontype {
     /**
      * Claim coupon.
      * @param int $foruserid user that claims coupon. Current userid if not given.
+     * @param mixed $options any options required by the instance
      */
-    public function claim($foruserid = null) {
+    public function claim($foruserid = null, $options = null) {
         global $CFG, $DB, $USER;
         // Because we're outside course context we've got to include libraries manually.
         require_once($CFG->dirroot . '/group/lib.php');
@@ -119,6 +120,49 @@ class course extends typebase implements icoupontype {
         $this->coupon->timemodified = $time;
         $this->coupon->timeclaimed = $time;
         $DB->update_record('block_coupon', $this->coupon);
+    }
+
+    /**
+     * Return whether this coupon type has extended claim options.
+     * @return bool false.
+     */
+    public function has_extended_claim_options() {
+        return false;
+    }
+
+    /**
+     * Assert claimable.
+     * @throws exception
+     */
+    public function assert_not_claimed() {
+        // Call parent.
+        parent::assert_not_claimed();
+        // Specialized.
+        if (!is_null($this->coupon->userid)) {
+            throw new exception('error:coupon_already_used');
+        }
+    }
+
+    /**
+     * Assert other. This can be anything really.
+     *
+     * @param int $userid user claiming.
+     * @throws exception
+     */
+    public function assert_internal_checks($userid) {
+        global $DB;
+        // Assert we have at least ONE course we can sign up to..
+        $couponcourses = $DB->get_records('block_coupon_courses', array('couponid' => $this->coupon->id));
+        $cansignup = false;
+        foreach ($couponcourses as $couponcourse) {
+            $ee = enrol_get_enrolment_end($couponcourse->courseid, $userid);
+            if ($ee === false) {
+                $cansignup = true;
+            }
+        }
+        if (!$cansignup) {
+            throw new exception('error:already-enrolled-in-courses');
+        }
     }
 
 }

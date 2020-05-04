@@ -1,0 +1,15 @@
+{
+  "name": "moodle-block_coupon",
+  "title": "Moodle coupon / voucher",
+  "version": "4.0.0",
+  "devDependencies": {
+    "grunt": "^1.0.3",
+    "grunt-contrib-clean": "*",
+    "grunt-contrib-jshint": "^2.1.0",
+    "grunt-contrib-less": "^2.0.0",
+    "grunt-contrib-sass": "*",
+    "grunt-contrib-uglify": "^4.0.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-load-gruntfile": "0.0.2"
+  }
+}

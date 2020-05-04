@@ -105,7 +105,7 @@ class requestadmin {
      */
     protected function process_user_overview() {
         $table = new \block_coupon\tables\requestusers();
-        $table->baseurl = new \moodle_url($this->page->url->out());
+        $table->baseurl = new \moodle_url($this->get_url(['action' => 'users']));
 
         $addurl = $this->get_url(['action' => 'adduser']);
 
@@ -122,7 +122,7 @@ class requestadmin {
      */
     protected function process_add_user() {
         global $CFG, $DB;
-        $redirect = optional_param('redirect', null, PARAM_URL);
+        $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
             $redirect = $this->get_url(['action' => 'users']);
         }
@@ -160,7 +160,7 @@ class requestadmin {
     protected function process_edit_user() {
         global $CFG, $DB;
         $itemid = required_param('itemid', PARAM_INT);
-        $redirect = optional_param('redirect', null, PARAM_URL);
+        $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
             $redirect = $this->get_url(['action' => 'users']);
         }
@@ -175,9 +175,10 @@ class requestadmin {
         if ($mform->is_cancelled()) {
             redirect($redirect);
         } else if ($data = $mform->get_data()) {
-            $options = json_decode($instance->options);
-            if (empty($options)) {
+            if (empty($instance->options)) {
                 $options = new \stdClass;
+            } else {
+                $options = json_decode($instance->options);
             }
             // Merge allowed courses.
             if (!empty($data->course)) {
@@ -185,10 +186,14 @@ class requestadmin {
             }
             // Merge other options.
             $this->merge_options($options, 'allowselectlogo', $data->allowselectlogo, false, true);
-            $this->merge_options($options, 'logo', $data->logo, false, true);
+            if (!empty($data->logo)) {
+                $this->merge_options($options, 'logo', $data->logo, false, true);
+            }
 
             $this->merge_options($options, 'allowselectrole', $data->allowselectrole, false, true);
-            $this->merge_options($options, 'role', $data->role, false, true);
+            if (!empty($data->role)) {
+                $this->merge_options($options, 'role', $data->role, false, true);
+            }
 
             $this->merge_options($options, 'allowselectseperatepdf', $data->allowselectseperatepdf, false, true);
             $this->merge_options($options, 'seperatepdfdefault', $data->seperatepdfdefault, false, true);
@@ -209,7 +214,14 @@ class requestadmin {
         // We MUST do this here, IN form definition() causes a rest of set values...
         // See https://tracker.moodle.org/browse/MDL-53889.
         $configuration = json_decode($instance->configuration);
-        $configuration->course = $configuration->courses;
+        if (empty($configuration)) {
+            $configuration = new \stdClass();
+        }
+        if (!empty($configuration->courses)) {
+            $configuration->course = $configuration->courses;
+        } else {
+            $configuration->course = [];
+        }
         $mform->set_data($configuration);
 
         echo $this->output->header();
@@ -267,7 +279,7 @@ class requestadmin {
     protected function process_delete_user() {
         global $CFG, $DB;
         $itemid = required_param('itemid', PARAM_INT);
-        $redirect = optional_param('redirect', null, PARAM_URL);
+        $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
             $redirect = $this->get_url(['action' => 'users']);
         }
@@ -317,7 +329,7 @@ class requestadmin {
     protected function process_deny_request() {
         global $CFG, $DB;
         $itemid = required_param('itemid', PARAM_INT);
-        $redirect = optional_param('redirect', null, PARAM_URL);
+        $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
             $redirect = $this->get_url(['action' => 'requests']);
         }
@@ -338,13 +350,11 @@ class requestadmin {
         } else if ($data = $mform->get_data()) {
             $DB->delete_records('block_coupon_requests', ['id' => $itemid]);
             // Send message if applicable.
-            if ((bool)$data->sendmessage) {
-                $from = \core_user::get_noreply_user();
-                $subject = get_string('request:deny:subject', 'block_coupon');
-                $messagehtml = $data->message['text'];
-                $messagetext = format_text_email($messagehtml, FORMAT_MOODLE);
-                email_to_user($user, $from, $subject, $messagetext, $messagehtml);
-            }
+            $from = \core_user::get_noreply_user();
+            $subject = get_string('request:deny:subject', 'block_coupon');
+            $messagehtml = $data->message['text'];
+            $messagetext = format_text_email($messagehtml, FORMAT_MOODLE);
+            email_to_user($user, $from, $subject, $messagetext, $messagehtml);
             redirect($redirect);
         }
         echo $this->output->header();
@@ -359,7 +369,7 @@ class requestadmin {
     protected function process_accept_request() {
         global $CFG, $DB;
         $itemid = required_param('itemid', PARAM_INT);
-        $redirect = optional_param('redirect', null, PARAM_URL);
+        $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
             $redirect = $this->get_url(['action' => 'requests']);
         }
@@ -387,14 +397,10 @@ class requestadmin {
 
                 $DB->delete_records('block_coupon_requests', ['id' => $record->id]);
 
-                // Send message if applicable.
-                if ((bool)$data->sendmessage) {
-                    $from = \core_user::get_noreply_user();
-                    $subject = get_string('request:accept:subject', 'block_coupon');
-                    $messagehtml = $data->message['text'];
-                    $messagetext = format_text_email($messagehtml, FORMAT_MOODLE);
-                    email_to_user($user, $from, $subject, $messagetext, $messagehtml);
-                }
+                // Generate and send off.
+                $coupons = $DB->get_records_list('block_coupon', 'id', $generator->get_generated_couponids());
+                \block_coupon\helper::mail_requested_coupons($user, $coupons,
+                        $options, $data->message['text']);
 
                 $dbt->allow_commit();
             } catch (\Exception $ex) {

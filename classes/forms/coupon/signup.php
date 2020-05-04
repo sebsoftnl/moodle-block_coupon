@@ -53,7 +53,7 @@ class signup extends \login_signup_form {
         $mform->addElement('text', 'submissioncode', get_string('label:coupon_code', 'block_coupon'));
         $mform->addRule('submissioncode', get_string('error:required', 'block_coupon'), 'required', null, 'client');
         $mform->addRule('submissioncode', get_string('error:required', 'block_coupon'), 'required', null, 'server');
-        $mform->setType('submissioncode', PARAM_RAW);
+        $mform->setType('submissioncode', PARAM_ALPHANUM);
         $mform->addHelpButton('submissioncode', 'label:coupon_code', 'block_coupon');
         parent::definition();
     }

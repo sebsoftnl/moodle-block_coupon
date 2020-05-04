@@ -69,6 +69,7 @@ class cleanup extends \moodleform {
             0 => get_string('coupon:type:all', 'block_coupon'),
             1 => get_string('course'),
             2 => get_string('cohort', 'core_cohort'),
+            3 => get_string('th:batchid', 'block_coupon'),
         );
         $select = $mform->addElement('select', 'type', get_string('coupon:type', 'block_coupon'), $options);
         $mform->setDefault('type', 0);
@@ -104,8 +105,15 @@ class cleanup extends \moodleform {
         $cohortselect = $mform->addElement('select', 'cohort', get_string('th:cohorts', 'block_coupon'), $cohorts, $attributes);
         $cohortselect->setMultiple(true);
 
+        // Batch selector.
+        $batches = \block_coupon\helper::get_coupon_batch_menu();
+        $attributes = array('size' => min(max(0, count($batches)), 10));
+        $batchselect = $mform->addElement('select', 'batchid', get_string('th:batchid', 'block_coupon'), $batches, $attributes);
+        $batchselect->setMultiple(true);
+
         $mform->disabledIf('course', 'type', 'neq', 1);
         $mform->disabledIf('cohort', 'type', 'neq', 2);
+        $mform->disabledIf('batchid', 'type', 'neq', 3);
 
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'));
     }

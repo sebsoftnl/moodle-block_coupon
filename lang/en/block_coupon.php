@@ -54,11 +54,16 @@ $string['heading:label_instructions'] = 'Instructions';
 $string['heading:coupon_type'] = 'Type of coupon';
 $string['heading:input_coupon'] = 'Input coupon';
 $string['heading:general_settings'] = 'Last settings';
-$string['heading:input_cohorts'] = 'Select cohorts';
-$string['heading:input_course'] = 'Select course';
+$string['heading:input_cohorts'] = 'Select cohort(s)';
+$string['heading:input_course'] = 'Select course(s)';
 $string['heading:input_groups'] = 'Select groups';
 $string['heading:imageupload'] = 'Upload image';
 $string['heading:info'] = 'Info';
+$string['heading:courseandvars'] = 'Select coupon variables, course(s) and course enrolment variables';
+$string['heading:coursegroups'] = 'Connect course groups to selected courses';
+$string['heading:cohortandvars'] = 'Select coupon variables, cohort(s) and course enrolment variables';
+$string['heading:cohortlinkcourses'] = 'Link courses to cohort(s)';
+$string['heading:generatormethod'] = 'Select how you want to generate the coupons';
 $string['heading:csvForm'] = 'CSV settings';
 $string['heading:amountForm'] = 'Amount settings';
 $string['heading:manualForm'] = 'Manual settings';
@@ -101,11 +106,11 @@ $string['url:view_reports'] = 'View reports';
 $string['url:view_unused_coupons'] = 'View unused coupons';
 
 // Form Labels.
-$string['label:coupon_type'] = 'Generate based on';
+$string['label:coupon_type'] = 'Generate coupon(s) for';
 $string['label:coupon_email'] = 'Email address';
 $string['label:coupon_amount'] = 'Amount of coupons';
-$string['label:type_course'] = 'Course';
-$string['label:type_cohorts'] = 'Cohort(s)';
+$string['label:type_course'] = 'Course enrolment';
+$string['label:type_cohorts'] = 'Enrolment in cohort(s)';
 $string['label:coupon_connect_course'] = 'Add course(s)';
 $string['label:coupon_connect_course_help'] = 'Select all courses you wish to add to the cohort.
     <br /><b><i>Note: </i></b>All users who are already enrolled in this cohort will also be enrolled in the selected courses!';
@@ -169,6 +174,10 @@ $string['button:submit_coupon_code'] = 'Submit Coupon';
 // View strings.
 $string['view:generate_coupon:title'] = 'Generate Coupon';
 $string['view:generate_coupon:heading'] = 'Generate Coupon';
+$string['view:generator:course:heading'] = 'Generate course coupon(s)';
+$string['view:generator:course:title'] = 'Generate course coupon(s)';
+$string['view:generator:cohort:heading'] = 'Generate cohort coupon(s)';
+$string['view:generator:cohort:title'] = 'Generate cohort coupon(s)';
 $string['view:reports:heading'] = 'Report - Coupon based progress';
 $string['view:reports:title'] = 'Report - Coupon based progress';
 $string['view:reports-used:title'] = 'Report - Used Coupons';
@@ -189,6 +198,12 @@ $string['missing_config_info'] = 'Put your extra information here - to be set up
 $string['pdf_generated'] = 'The coupons have been attached to this email in PDF files.<br /><br />';
 $string['and'] = 'and';
 
+$string['coupons_generated'] = '<p>Your coupon(s) have been generated.<br/>
+You should have received an e-mail containing the link to download the generated coupons.<br/>
+You can also choose to download your coupons directly by clicking {$a}</p>.';
+$string['coupons_generated_codes_only'] = '<p>Your couponcode(s) have been generated.<br/>
+Because you have opted to only generate the codes, you will not recieve an email<br/>
+You can use the overview for (un)used coupons with a specific filter on the batch ID to download an overview of the generated codes</p>.';
 $string['coupons_sent'] = 'Your coupon(s) have been generated. Within several minutes you will receive an email with the Coupons in the attachments.';
 $string['coupons_ready_to_send'] = 'Your coupon(s) has/have been generated and will be send at the entered date.<br />
     You will receive a confirmation email message when all the coupons have been sent.';
@@ -247,7 +262,8 @@ $string['showform-csv'] = 'I want to create coupons using a CSV with recipients'
 $string['showform-manual'] = 'I want to manually configure the recipients';
 $string['showform-amount'] = 'I want to create an arbitrary amount of coupons';
 $string['error:recipients-max-exceeded'] = 'Your csv file has exceeded the maximum of 10.000 coupon users. Please limit it.';
-$string['error:recipients-columns-missing'] = 'The file could not be validated. Are you sure you entered the right columns and seperator?';
+$string['error:recipients-columns-missing'] = 'The file could not be validated. Are you sure you entered the right columns and seperator?<br/>
+The following columns <i>must</i> be present in the first row with the name exactly as given: {$a}';
 $string['error:recipients-invalid'] = 'The file could not be validated. Are you sure you entered the right columns and seperator?';
 $string['error:recipients-empty'] = 'Please enter at least one user.';
 $string['error:recipients-email-invalid'] = 'The email address {$a->email} is invalid. Please fix it in the csv file.';
@@ -317,14 +333,12 @@ $string['default-coupon-page-template-botright'] = '<ol>
 <li>Happy learning!</li>
 </ol>';
 
-$string['coupon_mail_content'] = '
-Dear {$a->to_name},<br /><br />
-
-You are receiving this message because there have been newly generated coupons. The coupons have been added in the attachment to this message.<br /><br />
-
-With kind regards,<br /><br />
-
-{$a->from_name}';
+$string['coupon_mail_content'] = '<p>Dear {$a->to_name},</p>
+<p>You are receiving this message because there have been newly generated coupons.<br/>
+The coupons are available for download on the e-learning environment.<br /><br />
+Please click {$a->downloadlink} to get your coupons</p>
+<p>With kind regards,<br /><br />
+{$a->from_name}</p>';
 
 $string['coupon_mail_csv_content'] = '
 Dear ##to_gender## ##to_name##,<br /><br />
@@ -342,7 +356,9 @@ It can always happen that the teacher requests extra materials to be added at a 
 after a physical session. If this happens, you will be abe to see this in the learning environment
 During meetings you will not receive any printed lesson materials, we advise you to bring a laptop and/or tablet.<br /><br />
 
-You\'ll find the coupon to enter the course attached. This coupon is personal and unique, and gives access to the appropriate courses for your education.
+The coupon code you require to enrol is: ##submission_code##<br/><br/>
+
+This coupon is personal and unique, and gives access to the appropriate courses for your education.
 Please read the instructions on the coupon carefully.<br /><br />
 
 If you have any questions regarding creating an account or find any other problems, you can contact the helpdesk.
@@ -372,7 +388,9 @@ It can always happen that the teacher requests extra materials to be added at a 
 after a physical session. If this happens, you will be abe to see this in the learning environment
 During meetings you will not receive any printed lesson materials, we advise you to bring a laptop and/or tablet.<br /><br />
 
-You\'ll find the coupon to enter the course attached. This coupon os personal and unique, and gives access to the appropriate courses for your education.
+The coupon code you require to enrol is: ##submission_code##<br/><br/>
+
+This coupon is personal and unique, and gives access to the appropriate courses for your education.
 Please read the instructions on the coupon carefully.<br /><br />
 
 If you have any questions regarding creating an account or find any other problems, you can contact the helpdesk.
@@ -564,6 +582,13 @@ $string['request:sendmessage'] = 'Inform the user?';
 $string['request:message'] = 'User message';
 $string['request:deny:subject'] = 'Coupon request denied.';
 $string['request:accept:subject'] = 'Coupon request accepted.';
+$string['request:accept:custommessage'] = '<p>The following remark has been added for you: {$a}</p>';
+$string['request:accept:content'] = '<p>Dear {$a->fullname}</p>,
+<p>You are receiving this message because your requested coupons have been generated.<br/>
+The coupons are available for download on the e-learning environment.<br /><br />
+Please click {$a->downloadlink} to get your coupons</p>{$a->custommessage}
+<p>With kind regards,<br /><br />
+{$a->signoff}</p>';
 $string['view:userrequest:heading'] = 'My coupon requests';
 $string['view:userrequest:title'] = 'My coupon requests';
 $string['str:request:add'] = 'Request coupons';
@@ -608,3 +633,45 @@ With kind regards,<br /><br />
 
 $string['error:already-enrolled-in-courses'] = 'You have already been enrolled in all courses';
 $string['error:already-enrolled-in-cohorts'] = 'You have already been enrolled in all cohorts';
+$string['error:myrequests:user'] = 'You are not allowed to execute this request on another person\'s behalf';
+
+$string['with-names'] = 'With the following names or identifiers';
+$string['remove-count'] = 'This will remove <i>{$a}</i> coupon(s)';
+$string['cleanup:confirm:header'] = 'Please confirm the following cleanup options';
+$string['cleanup:confirm:confirmmessage'] = 'Yes, I want to delete the coupons with these options';
+$string['preview-pdf'] = 'Preview PDF';
+
+$string['findcourses'] = 'Allowed courses';
+$string['findcourses_help'] = 'The courses selected / added here will be the only courses the user will be allowed to generate coupons for<br/>
+Do note you <i>have</i> to make a selection. It\'s not possible to leave this field empty, allowing all courses to be chosen';
+$string['forcelogo_exp'] = '<i>If logo selection is disabled for this user, you <b>must</b> select a default logo in the dropdown to apply to all coupons requested by this user</i>';
+$string['label:forcelogo'] = 'Forced logo';
+$string['label:forcelogo_help'] = 'Select the logo that will be forced on all coupons for this user';
+
+$string['forcerole_exp'] = '<i>If role selection is disabled for this user, you <b>must</b> select a default role in the dropdown to apply to all coupons requested by this user</i>';
+$string['label:forcerole'] = 'Forced role';
+$string['label:forcerole_help'] = 'Select the role that will be forced on all coupons for this user';
+$string['label:enrolment_perioddefault'] = 'Default enrolment period';
+$string['request:info'] = 'Request for {$a->amount} coupons';
+
+$string['view:download:heading'] = 'Download your coupons';
+$string['view:download:title'] = 'Download coupons';
+$string['downloadcoupons:text'] = '<div>You can download your coupons by clicking the link below.<br/>
+Please note you can only download this archive or PDF <i>once</i><br/>
+As soon as you\'ve downloaded, the related file <i>will</i> be deleted.<br/>
+{$a}
+</div>';
+$string['downloadcoupons:buttontext'] = 'Please click here to start your download';
+$string['here'] = 'here';
+$string['messageprovider:coupon_notification'] = 'Coupons generated notification';
+$string['messageprovider:coupon_task_notification'] = 'Personal coupons sent out notification';
+$string['coupon_notification_subject'] = 'Coupons generated!';
+$string['coupon_notification_content'] = '<p>The coupon(s) you requested have been generated<br/>
+You should have received an e-mail containing the link to download the generated coupons.<br/>
+You can also choose to download your coupons directly by clicking {$a}</p>
+';
+$string['coupons:cleaned'] = 'A total of {$a} coupons have been cleaned / removed';
+$string['err:coupon:generic'] = 'Something went wrong. Please contact the systems administrator';
+$string['err:download-not-exists'] = 'The archive you want to download no longer exists<br/>
+Most likely you have already downloaded the archive.<br/>
+If you are absolutely sure you have <i>not</i> downloaded the generated coupons yourself, please contact the system administrator.';

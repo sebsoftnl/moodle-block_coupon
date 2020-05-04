@@ -65,5 +65,5 @@ helper::force_no_editing_mode();
 require_capability('block/coupon:generatecoupons', $context);
 $renderer = $PAGE->get_renderer('block_coupon');
 
-$owner = (has_capability('block/coupon:viewallreports', $context) ? null : $USER->id);
-echo $renderer->page_cleanup($owner);
+$controller = new \block_coupon\controller\cleanup($PAGE, $OUTPUT, $renderer);
+$controller->execute_request();

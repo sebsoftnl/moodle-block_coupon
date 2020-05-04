@@ -96,6 +96,7 @@ class couponcohortid extends \user_filter_type {
         $objs['select']->setLabel(get_string('limiterfor', 'filters', $this->_label));
         $objs['text']->setLabel(get_string('valuefor', 'filters', $this->_label));
         $grp =& $mform->addElement('group', $this->_name.'_grp', $this->_label, $objs, '', false);
+        // ID Number for cohorts has PARAM_RAW.
         $mform->setType($this->_name, PARAM_RAW);
         $mform->disabledIf($this->_name, $this->_name.'_op', 'eq', 5);
         if ($this->_advanced) {
@@ -148,6 +149,11 @@ class couponcohortid extends \user_filter_type {
 
         if ($value === '') {
             return '';
+        }
+
+        // If field is NOT the idnumber, clean using PARAM_TEXT.
+        if ($field <> 'idnumber') {
+            $value = clean_param($value, PARAM_TEXT);
         }
 
         $not = '';

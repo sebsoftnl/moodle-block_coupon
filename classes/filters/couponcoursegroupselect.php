@@ -95,12 +95,12 @@ class couponcoursegroupselect extends \user_filter_type {
         $objs['select']->setLabel(get_string('limiterfor', 'filters', $this->_label));
         $objs['value']->setLabel(get_string('valuefor', 'filters', $this->_label));
         $grp =& $mform->addElement('group', $this->_name.'_grp', $this->_label, $objs, '', false);
-        $mform->setType($this->_name, PARAM_RAW);
+        $mform->setType($this->_name, PARAM_INT);
         $mform->disabledIf($this->_name, $this->_name.'_op', 'eq', 5);
         if ($this->_advanced) {
             $mform->setAdvanced($this->_name.'_grp');
         }
-        $mform->setDefault($this->_name.'_op', 2);
+        $mform->setDefault($this->_name.'_op', 0);
     }
 
     /**

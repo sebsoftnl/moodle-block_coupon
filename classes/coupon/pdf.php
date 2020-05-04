@@ -98,6 +98,18 @@ class pdf extends \pdf {
      * @var bool
      */
     protected $includeqr = true;
+    /**
+     * preview mode?
+     *
+     * @var bool
+     */
+    protected $preview = false;
+    /**
+     * preview courses
+     *
+     * @var array
+     */
+    protected $previewcourses = null;
 
     /**
      * Get main text template
@@ -197,6 +209,45 @@ class pdf extends \pdf {
     public function set_logo($logo) {
         $this->logo = $logo;
         return $this;
+    }
+
+    /**
+     * Set preview mode
+     *
+     * @param bool $preview
+     * @param array $courses
+     * @return $this
+     */
+    public function set_preview($preview, $courses) {
+        $this->preview = $preview;
+        $this->set_preview_courses($courses);
+        return $this;
+    }
+
+    /**
+     * Set preview courses
+     *
+     * @param array $courses
+     * @return $this
+     */
+    protected function set_preview_courses($courses) {
+        $this->previewcourses = $courses;
+        return $this;
+    }
+
+    /**
+     * Generate preview courses
+     *
+     * @return $this
+     */
+    protected function generate_preview_courses() {
+        global $DB;
+        $rs = $DB->get_records_list('course', 'id', $this->previewcourses, '', 'id,shortname');
+        $menu = [];
+        foreach ($rs as $record) {
+            $menu[$record->id] = $record->shortname;
+        }
+        return $menu;
     }
 
     /**
@@ -355,11 +406,16 @@ class pdf extends \pdf {
      * write coupon pages in the PDF.
      */
     protected function write_coupon_pages() {
+        global $CFG;
         foreach ($this->coupons as $coupon) {
             // Set current coupon (we HAVE to use this method because templates/images only work in state 2).
             $this->currentcoupon = $coupon;
             // Get coupon courses.
-            $courses = helper::get_coupon_courses($coupon);
+            if ($this->preview) {
+                $courses = $this->generate_preview_courses();
+            } else {
+                $courses = helper::get_coupon_courses($coupon);
+            }
 
             $txtmain = $this->compile_main($coupon, $courses);
             $txtbotleft = $this->compile_botleft();
@@ -377,42 +433,25 @@ class pdf extends \pdf {
             $this->MultiCell(90, 100, $txtbotright, false, 'L', false, 2, 115, 210, true, 0, true);
             // QR.
             if ((bool)$coupon->renderqrcode) {
-                $qr = $this->get_qr($coupon);
-                $dpi = 300; // Could also be 96? Seems the default.
-                $this->Image($qr->get_filepath(), 150, 70, 0, 0, '', '', '', false, $dpi, '', false, false, 0, true, false, true);
-                unset($qr);
+                $url = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/qrin.php', array(
+                    'c' => $coupon->submission_code,
+                    'h' => sha1($coupon->id . $coupon->ownerid . $coupon->submission_code),
+                ));
+
+                $style = [
+                    'border' => false,
+                    'vpadding' => 2,
+                    'hpadding' => 2,
+                    'fgcolor' => array(0, 0, 0),
+                    'bgcolor' => false,
+                    'module_width' => 1, // Width of a single module in points.
+                    'module_height' => 1 // Height of a single module in points.
+                ];
+                $this->write2DBarcode($url->out(false), 'QRCODE,H', 150, 70, 50, 50, $style, '', false);
             }
 
             $this->endPage();
         }
-    }
-
-    /**
-     * Get tempfile for the QR.
-     *
-     * @param \stdClass $coupon
-     * @return \block_coupon\tempfile
-     */
-    protected function get_qr($coupon) {
-        global $CFG;
-        require_once($CFG->dirroot . '/blocks/coupon/thirdparty/QrCode/src/QrCode.php');
-        $data = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/qrin.php', array(
-            'c' => $coupon->submission_code,
-            'h' => sha1($coupon->id . $coupon->ownerid . $coupon->submission_code),
-        ));
-
-        $code = new \Endroid\QrCode\QrCode();
-        $code->setText($data->out(false));
-        $code->setSize(120);
-        $code->setPadding(6);
-        $code->setErrorCorrection('high');
-        $code->setForegroundColor(array('r' => 0, 'g' => 0, 'b' => 0, 'a' => 0));
-        $code->setBackgroundColor(array('r' => 255, 'g' => 255, 'b' => 255, 'a' => 0));
-        $code->setLabelFontSize(16);
-
-        $filepath = \block_coupon\tempfile::get_storage_path('qr' . microtime(true) . uniqid('', true) . '.png');
-        $code->render($filepath, 'png');
-        return \block_coupon\tempfile::create_from_path($filepath);
     }
 
     /**

@@ -32,23 +32,35 @@ $code = required_param('c', PARAM_ALPHANUMEXT);
 $hash = required_param('h', PARAM_ALPHANUMEXT);
 
 // And process the coupon code.
-$data = $DB->get_record('block_coupon', array('submission_code' => $code), '*', IGNORE_MISSING);
-if (empty($data->id)) {
-    throw new block_coupon\exception('error:invalid_coupon_code');
-} else if ($hash !== sha1($data->id . $data->ownerid . $data->submission_code)) {
-    throw new block_coupon\exception('error:invalid_coupon_code');
-} else if (!empty($data->userid)) {
-    throw new block_coupon\exception('error:coupon_already_used');
-} else {
-    if (!isloggedin()) {
-        // Redirect to signup with coupon code.
-        $params = array('submissioncode' => $data->submission_code);
-        $couponsignup = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/signup.php', $params);
-        redirect($couponsignup);
-        exit; // Never reached.
+try {
+    $data = $DB->get_record('block_coupon', array('submission_code' => $code), '*', IGNORE_MISSING);
+    if (empty($data->id)) {
+        throw new block_coupon\exception('error:invalid_coupon_code');
+    } else if ($hash !== sha1($data->id . $data->ownerid . $data->submission_code)) {
+        throw new block_coupon\exception('error:invalid_coupon_code');
+    } else if (!empty($data->userid)) {
+        throw new block_coupon\exception('error:coupon_already_used');
+    } else {
+        if (!isloggedin()) {
+            // Redirect to signup with coupon code.
+            $params = array('submissioncode' => $data->submission_code);
+            $couponsignup = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/signup.php', $params);
+            redirect($couponsignup);
+            exit; // Never reached.
+        }
+        require_login(null, false);
+        // Get type processor.
+        $typeproc = block_coupon\coupon\typebase::get_type_instance($data->submission_code);
+        // Perform assertions.
+        $typeproc->assert_not_claimed();
+        $typeproc->assert_internal_checks($USER->id);
+        // Process the claim.
+        // The base is to just claim, but various coupons might have their own processing.
+        $typeproc->process_claim($USER->id);
     }
-    require_login(null, false);
-    $redirecturl = block_coupon\helper::claim_coupon($data->submission_code);
-    // Redirect to my directly.
-    redirect($redirecturl, get_string('success:coupon_used', 'block_coupon'));
+} catch (block_coupon\exception $e) {
+    \core\notification::error($e->getMessage());
+} catch (\Exception $ex) {
+    \core\notification::error(get_string('err:coupon:generic'));
 }
+redirect($CFG->wwwroot . '/my');

@@ -104,10 +104,11 @@ class course extends \moodleform {
         $mform->setType('coupon_amount', PARAM_INT);
         $mform->addRule('coupon_amount', get_string('error:numeric_only', 'block_coupon'), 'numeric');
         $mform->addRule('coupon_amount', get_string('required'), 'required');
+        $mform->addRule('coupon_amount', null, 'nonzero');
         $mform->addHelpButton('coupon_amount', 'label:coupon_amount', 'block_coupon');
 
         // Use alternative email address.
-        $mform->addElement('checkbox', 'use_alternative_email', get_string('label:use_alternative_email', 'block_coupon'));
+        $mform->addElement('advcheckbox', 'use_alternative_email', get_string('label:use_alternative_email', 'block_coupon'));
         $mform->setType('use_alternative_email', PARAM_BOOL);
         $mform->setDefault('use_alternative_email', false);
 

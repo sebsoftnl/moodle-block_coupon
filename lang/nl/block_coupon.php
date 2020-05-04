@@ -54,11 +54,16 @@ $string['heading:label_instructions'] = 'Instructies';
 $string['heading:coupon_type'] = 'Type coupon';
 $string['heading:input_coupon'] = 'Coupon invoeren';
 $string['heading:general_settings'] = 'Laatste instellingen';
-$string['heading:input_cohorts'] = 'Selecteer cohorten';
-$string['heading:input_course'] = 'Selecteer cursus';
+$string['heading:input_cohorts'] = 'Selecteer cohort(en)';
+$string['heading:input_course'] = 'Selecteer cursus(sen)';
 $string['heading:input_groups'] = 'Selecteer groepen';
 $string['heading:imageupload'] = 'Upload afbeelding';
 $string['heading:info'] = 'Informatie';
+$string['heading:courseandvars'] = 'Selecteer coupon variabelen, cursus(sen) en aanmeldingsvariabelen';
+$string['heading:coursegroups'] = 'Koppel gekozen cursussen aan cursusgroepen';
+$string['heading:cohortandvars'] = 'Selecteer coupon variabelen, sitegroep(en) en aanmeldingsvariabelen';
+$string['heading:cohortlinkcourses'] = 'Koppel cursus(sen) aan sitegroep(en)';
+$string['heading:generatormethod'] = 'Selecteer hoe je de coupons wilt genereren';
 $string['heading:csvForm'] = 'CSV instellingen';
 $string['heading:amountForm'] = 'Aantal instellingen';
 $string['heading:manualForm'] = 'Manuele instellingen';
@@ -101,11 +106,11 @@ $string['url:view_reports'] = 'Bekijk rapporten';
 $string['url:view_unused_coupons'] = 'Bekijk ongebruikte coupons';
 
 // Form Labels.
-$string['label:coupon_type'] = 'Genereer gebaseerd op';
+$string['label:coupon_type'] = 'Genereer coupon(s) voor';
 $string['label:coupon_email'] = 'E-mail adres';
 $string['label:coupon_amount'] = 'Aantal coupons';
-$string['label:type_course'] = 'Cursus';
-$string['label:type_cohorts'] = 'Cohort(s)';
+$string['label:type_course'] = 'Cursusaanmelding';
+$string['label:type_cohorts'] = 'Aanmelding op sitegroep(en)';
 $string['label:coupon_connect_course'] = 'Cursus(sen) toevoegen';
 $string['label:coupon_connect_course_help'] = 'Selecteer de cursussen die aan de cohort moeten worden toegevoegd.
     <br /><b><i>Let op: </i></b>Als er al deelnemers aan die cohort toegevoegd zijn worden deze ook in de cursussen ingeschreven!';
@@ -113,8 +118,8 @@ $string['label:connected_courses'] = 'Toegevoegde cursus(sen)';
 $string['label:no_courses_connected'] = 'Er zijn nog geen cursussen toegevoegd aan deze cohort.';
 $string['label:coupon_courses'] = 'Cursus(sen)';
 $string['label:coupon_courses_help'] = 'Selecteer hier de cursussen waar uw studenten op ingeschreven dienen te worden.';
-$string['label:role_courses'] = 'Rol';
-$string['label:role_courses_help'] = 'Selecteer hier de rol waarmee de coupons worden geconfigureerd of laat leeg voor de ingestelde standaardwaarde (normaliter student).';
+$string['label:coupon_role'] = 'Rol';
+$string['label:coupon_role_help'] = 'Selecteer hier de rol waarmee de coupons worden geconfigureerd of laat leeg voor de ingestelde standaardwaarde (normaliter student).';
 $string['label:coupon_cohorts'] = 'Cohort(en)';
 $string['label:cohort'] = 'Cohort';
 $string['label:coupon_code'] = 'Coupon Code';
@@ -169,6 +174,10 @@ $string['button:submit_coupon_code'] = 'Invoeren';
 // View strings.
 $string['view:generate_coupon:title'] = 'Genereer Coupon';
 $string['view:generate_coupon:heading'] = 'Genereer Coupon';
+$string['view:generator:course:heading'] = 'Genereer cursus coupon(s)';
+$string['view:generator:course:title'] = 'Genereer cursus coupon(s)';
+$string['view:generator:cohort:heading'] = 'Genereer cohort coupon(s)';
+$string['view:generator:cohort:title'] = 'Genereer cohort coupon(s)';
 $string['view:reports:heading'] = 'Rapportage - Voortgang voor coupons';
 $string['view:reports:title'] = 'Rapportage - Voortgang voor coupons';
 $string['view:reports-unused:title'] = 'Rapportage - Ongebruikte coupons';
@@ -189,9 +198,15 @@ $string['missing_config_info'] = 'Plaats hier uw extra informatie - in te stelle
 $string['pdf_generated'] = 'De Coupons zijn aan dit email bericht toegevoegd als PDF bestanden.<br /><br />';
 $string['and'] = 'en';
 
+$string['coupons_generated'] = '<p>Uw coupon(s) zijn aangemaakt.<br/>
+Je zou een email moeten ontvangen met de link om de coupons te downloaden.<br/>
+Je kunt er ook voor kiezen de coupons direct te downloaden door {$a} te klikken.</p>.';
+$string['coupons_generated_codes_only'] = '<p>Uw couponcode(s) zijn aangemaakt.<br/>
+Je krijgt hierover geen email melding aangezien je hebt gekozen alleen de codes te genereren<br/>
+Je kunt het overzicht voor (on)gebruikte coupons gebruiken in combinatie met een filter op de batch ID om een overzicht van de gegenereerde couponcodes te downloaden</p>.';
 $string['coupons_sent'] = 'Uw coupons zijn aangemaakt. Binnen enkele minuten ontvangt u een email bericht met de coupons in de bijlage.';
 $string['coupons_ready_to_send'] = 'Uw coupons zijn aangemaakt en zullen worden verstuurd op het door u opgegeven moment.<br />
-    U ontvangt een e-mail bevestiging zodra alle coupons verstuurd zijn.';
+U ontvangt een e-mail bevestiging zodra alle coupons verstuurd zijn.';
 
 // Report.
 $string['report:status_not_started'] = 'Cursus nog niet gestart';
@@ -247,7 +262,8 @@ $string['showform-csv'] = 'Ik wil coupons aanmaken door een CSV met ontvangers t
 $string['showform-manual'] = 'Ik wil coupons aanmaken door manueel de ontvangers op te geven';
 $string['showform-amount'] = 'Ik wil een arbitrair aantal coupons aanmaken';
 $string['error:recipients-max-exceeded'] = 'Uw bestand is over de maximum aantal regels van 10.000. Limiteer het aantal gebruikers svp.';
-$string['error:recipients-columns-missing'] = 'Uw bestand kon niet gevalideerd worden. Controleer svp of de juiste kolommen en scheidingsteken gebruikt zijn.';
+$string['error:recipients-columns-missing'] = 'Uw bestand kon niet gevalideerd worden. Controleer svp of de juiste kolommen en scheidingsteken gebruikt zijn.<br/>
+De volgende kolommen <i>moeten</i> in dezelfde benaming in de eerste rij aanwezig zijn: {$a}';
 $string['error:recipients-invalid'] = 'Uw bestand kon niet gevalideerd worden. Controleer svp of de juiste kolommen en scheidingsteken gebruikt zijn.';
 $string['error:recipients-empty'] = 'Vul minstens 1 gebruiker in svp.';
 $string['error:recipients-email-invalid'] = 'Het e-mailadres {$a->email} is geen correct e-mailadres. Corrigeer dit eerst in het csv bestand.';
@@ -292,9 +308,9 @@ $string['confirm_coupons_sent_subject'] = 'Alle coupons zijn verzonden';
 $string['confirm_coupons_sent_body'] = '
 Hallo,<br /><br />
 
-Bij deze informeren wij u graag dat de coupons die u op {$a->timecreated} heeft gemaakt verzonden zijn.<br /><br />
+Bij deze informeren wij u graag dat de coupons die u op {$a->timecreated} met batchnummer {$a->batchid} heeft gemaakt verzonden zijn.<br /><br />
 
-Met vriendelijke groet,<br /><Br />
+Met vriendelijke groet,<br /><br />
 
 Moodle administrator';
 
@@ -317,14 +333,12 @@ $string['default-coupon-page-template-botright'] = '<ol>
 <li>Veel leerplezier!</li>
 </ol>';
 
-$string['coupon_mail_content'] = '
-Beste {$a->to_name},<br /><br />
-
-U ontvangt dit bericht omdat er zojuist nieuwe Coupons zijn gegenereered. De coupons zijn toegevoegd in de bijlage van dit email bericht.<br /><br />
-
-Met vriendelijke groet,<br /><br />
-
-{$a->from_name}';
+$string['coupon_mail_content'] = '<p>Beste {$a->to_name},</p>
+<p>U ontvangt dit bericht omdat er zojuist nieuwe Coupons zijn gegenereered.<br/>
+De coupons zijn als download beschikbaar gemaakt binnen de leeromgeving.<br /><br />
+Klik a.u.b {$a->downloadlink} om je coupons op te halen.</p>
+<p>Met vriendelijke groet,<br /><br />
+{$a->from_name}</p>';
 
 $string['coupon_mail_csv_content'] = '
 Beste ##to_gender## ##to_name##,<br /><br />
@@ -335,7 +349,9 @@ In deze omgeving vindt u naast de lesmateriaal ook de mogelijkheid tot netwerken
 
 De lesstof zelf zal uiterlijk 4 werkdagen voor aanvang van de lesdag voor u toegankelijk zijn. Het kan zijn dat op verzoek van de docent eventuele stukken pas ná of op de lesdag beschikbaar gesteld wordt. U ziet dit in de leeromgeving. Tijdens de bijeenkomsten ontvangt u geen gedrukt lesmateriaal, wij adviseren u daarom om een laptop en/of tablet mee te nemen.<br /><br />
 
-Bijgaand treft u de toegangcoupon. Deze coupon is persoonlijk en uniek, en zorgt ervoor dat u toegang krijgt tot uw omgeving van uw opleiding. Lees de instructies op de coupon goed.<br /><br />
+De code waarmee je je kunt aanmelden is: ##submission_code##<br/><br/>
+
+Deze coupon is persoonlijk en uniek, en zorgt ervoor dat u toegang krijgt tot uw omgeving van uw opleiding. Lees de instructies op de coupon goed.<br /><br />
 
 Indien u vragen heeft over het aanmaken van een account of problemen ondervindt, kunt u via de site contact zoeken met de helpdesk. Is er geen medewerker direct beschikbaar, laat dan uw naam, mailadres en telefoonnummer achter dan nemen zij z.s.m. contact met u op.<br /><br />
 
@@ -354,7 +370,9 @@ In deze omgeving vindt u naast de lesmateriaal ook de mogelijkheid tot netwerken
 
 De lesstof zelf zal uiterlijk 4 werkdagen voor aanvang van de lesdag voor u toegankelijk zijn. Het kan zijn dat op verzoek van de docent eventuele stukken pas ná of op de lesdag beschikbaar gesteld wordt. U ziet dit in de leeromgeving. Tijdens de bijeenkomsten ontvangt u geen gedrukt lesmateriaal, wij adviseren u daarom om een laptop en/of tablet mee te nemen.<br /><br />
 
-Bijgaand treft u de toegangcoupon. Deze coupon is persoonlijk en uniek, en zorgt ervoor dat u toegang krijgt tot uw omgeving van uw opleiding. Lees de instructies op de coupon goed.<br /><br />
+De code waarmee je je kunt aanmelden is: ##submission_code##<br/><br/>
+
+Deze coupon is persoonlijk en uniek, en zorgt ervoor dat u toegang krijgt tot uw omgeving van uw opleiding. Lees de instructies op de coupon goed.<br /><br />
 
 Indien u vragen heeft over het aanmaken van een account of problemen ondervindt, kunt u via de site contact zoeken met de helpdesk. Is er geen medewerker direct beschikbaar, laat dan uw naam, mailadres en telefoonnummer achter dan nemen zij z.s.m. contact met u op.<br /><br />
 
@@ -541,6 +559,13 @@ $string['request:sendmessage'] = 'Informeer de aanvrager?';
 $string['request:message'] = 'Bericht aan aanvrager';
 $string['request:deny:subject'] = 'Aanvraag tot genereren van coupons afgewezen.';
 $string['request:accept:subject'] = 'Aanvraag tot genereren van coupons gehonoreerd.';
+$string['request:accept:custommessage'] = '<p>The following remark has been added for you: {$a}</p>';
+$string['request:accept:content'] = '<p>Beste {$a->fullname}</p>,
+<p>Je ontvangt dit bericht omdat je aangevraagde coupons zijn gegenereerd.<br/>
+De coupons zijn beschikbaar ter download op de leeromgeving.<br /><br />
+de coupons direct te downloaden door {$a->downloadlink} te klikken</p>{$a->custommessage}
+<p>With kind regards,<br /><br />
+{$a->signoff}</p>';
 $string['view:userrequest:heading'] = 'Mijn coupon aanvragen';
 $string['view:userrequest:title'] = 'Mijn coupon aanvragen';
 $string['str:request:add'] = 'Coupons aanvragen';
@@ -581,3 +606,45 @@ Met vriendelijke groet,<br /><br />
 
 $string['error:already-enrolled-in-courses'] = 'Je bent al in alle cursussen aangemeld';
 $string['error:already-enrolled-in-cohorts'] = 'Je bent al in alle sitegroepen aangemeld';
+$string['error:myrequests:user'] = 'Je mag dit verzoek niet namens een andere uitvoeren';
+
+$string['with-names'] = 'Met de volgende namen of identifiers';
+$string['remove-count'] = 'Dit zal <i>{$a}</i> coupon(s) verwijderen';
+$string['cleanup:confirm:header'] = 'Bevestig a.u.b. het verwijderen van coupons met de volgende opties';
+$string['cleanup:confirm:confirmmessage'] = 'Ja, ik wil de coupons met deze opties verwijderen';
+$string['preview-pdf'] = 'PDF Preview';
+
+$string['findcourses'] = 'Toegestane cursussen';
+$string['findcourses_help'] = 'De geselecteerde / toegevoegde cursussen zijn de enige die de gebruiker zal kunnen aangeven om coupons voor te genereren<br/>
+Houd er rekening mee dat je dus één of meer cursussen <i>moet</i> selecteren. Het is niet mogelijk om dit veld leeg te laten met als gevolg dat alle cursussen door de gebruiker aan te geven zijn';
+$string['forcelogo_exp'] = '<i>Wanneer het selecteren van een logo is uitgeschakeld voor deze gebruiker, <b>moet</b> je aangeven of en welk logo er standaard zal worden toegepast voor alle coupons van deze gebruiker</i>';
+$string['label:forcelogo'] = 'Geforceerd logo';
+$string['label:forcelogo_help'] = 'Selecteer het logo dat geforceerd wordt voor alle coupons voor deze gebruiker';
+
+$string['forcerole_exp'] = '<i>Wanneer het selecteren van een rol is uitgeschakeld voor deze gebruiker, <b>moet</b> je aangeven of en welke rol er standaard zal worden toegepast voor alle coupons van deze gebruiker</i>';
+$string['label:forcerole'] = 'Geforceerde rol';
+$string['label:forcerole_help'] = 'Selecteer de rol die geforceerd wordt voor alle coupons voor deze gebruiker';
+$string['label:enrolment_perioddefault'] = 'Standaard lengte voor aanmelding';
+$string['request:info'] = 'Aanvraag voor {$a->amount} coupons';
+
+$string['view:download:heading'] = 'Download je coupons';
+$string['view:download:title'] = 'Download coupons';
+$string['downloadcoupons:text'] = '<div>Je kunt nu je coupons downloaden door op de onderstaande link te klikken.<br/>
+Houd er a.u.b. rekening mee dat dit slechts <i>één</i> maal mogelijk is<br/>
+Zodra je de coupons hebt gedownload, wordt het relevante bestand verwijderd.<br/>
+{$a}
+</div>';
+$string['downloadcoupons:buttontext'] = 'Klik a.u.b. hier om je download te starten';
+$string['here'] = 'hier';
+$string['messageprovider:coupon_notification'] = 'Coupons gegenereerd notificatie';
+$string['messageprovider:coupon_task_notification'] = 'Persoonlijke coupons verzonden notificatie';
+$string['coupon_notification_subject'] = 'Coupons generated!';
+$string['coupon_notification_content'] = '<p>Je ontvangt dit bericht omdat er zojuist nieuwe coupons zijn gegenereered.<br/>
+Je zou een email moeten hebben ontvangen met de details en download link.<br />
+Je kunt ook direct de coupon(s) downloaden door {$a->downloadlink} te klikken.</p>
+';
+$string['coupons:cleaned'] = '{$a} coupons zijn opgeschoond / verwijderd.';
+$string['err:coupon:generic'] = 'Er is iets foutgegaan. Neem aub contant op met de systeembeheerder';
+$string['err:download-not-exists'] = 'Het archief dat je wilt downloaden betaat niet meer<br/>
+Waarschijnlijk heb je deze al een keer gedownload en is deze daarna verwijderd.<br/>
+Wanneer je er zeker van bent dat je zelf de aangemaakte coupons <i>niet</i> hebt gedownload, neem dan aub contact op met de systeembeheerder.';
