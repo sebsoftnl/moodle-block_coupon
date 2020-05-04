@@ -302,7 +302,7 @@ class helper {
         // Try to force &amp; issue in "format_text_email" AGAIN.
         // Various tests have shown the text based email STILL displays "&amp;" entities.
         $messagetext = str_replace('&amp;', '&', $messagetext);
-        $mailstatus = email_to_user($recipient, $from, $subject, $messagetext, $messagehtml);
+        $mailstatus = static::do_email_to_user($recipient, $from, $subject, $messagetext, $messagehtml);
         // Also send notification in moodle itself.
         if ($mailstatus) {
             couponnotification::send_notification($USER->id, $batchid, $ts);
@@ -323,6 +323,7 @@ class helper {
                 $error->errortype = 'email';
                 $error->errormessage = get_string('coupon:send:fail', 'block_coupon', 'failed');
                 $error->timecreated = time();
+                $error->iserror = 1;
                 $DB->insert_record('block_coupon_errors', $error);
             }
         }
@@ -383,7 +384,7 @@ class helper {
         $messagetext = format_text_email($messagehtml, FORMAT_MOODLE);
         $subject = get_string('confirm_coupons_sent_subject', 'block_coupon');
 
-        return email_to_user($owner, $supportuser, $subject, $messagetext, $messagehtml);
+        return static::do_email_to_user($owner, $supportuser, $subject, $messagetext, $messagehtml);
     }
 
     /**
@@ -1191,9 +1192,7 @@ class helper {
         // Try to force &amp; issue in "format_text_email" AGAIN.
         // Various tests have shown the text based email STILL displays "&amp;" entities.
         $messagetext = str_replace('&amp;', '&', $messagetext);
-        email_to_user($user, $from, $subject, $messagetext, $messagehtml);
-
-        $mailstatus = email_to_user($user, $from, $subject, $messagetext, $messagehtml);
+        $mailstatus = static::do_email_to_user($user, $from, $subject, $messagetext, $messagehtml);
         // Also send notification in moodle itself.
         if ($mailstatus) {
             couponnotification::send_request_accept_notification($user->id, $generatoroptions->batchid, $ts, $extramessage);
@@ -1214,11 +1213,63 @@ class helper {
                 $error->errortype = 'email';
                 $error->errormessage = get_string('coupon:send:fail', 'block_coupon', 'failed');
                 $error->timecreated = time();
+                $error->iserror = 1;
                 $DB->insert_record('block_coupon_errors', $error);
             }
         }
 
         return [$mailstatus, $generatoroptions->batchid, $ts];
+    }
+
+    /**
+     * Send an email to a specified user.
+     *
+     * Mimicing Moodle here and storing the results.
+     * We keep on getting issues with mail not being sent, so we decided to log EVERYTHING.
+     *
+     * @param stdClass $user  A {@link $USER} object
+     * @param stdClass $from A {@link $USER} object
+     * @param string $subject plain text subject line of the email
+     * @param string $messagetext plain text version of the message
+     * @param string $messagehtml complete html version of the message (optional)
+     * @param string $attachment a file on the filesystem, either relative to $CFG->dataroot or a full path to a file in $CFG->tempdir
+     * @param string $attachname the name of the file (extension indicates MIME)
+     * @param bool $usetrueaddress determines whether $from email address should
+     *          be sent out. Will be overruled by user profile setting for maildisplay
+     * @param string $replyto Email address to reply to
+     * @param string $replytoname Name of reply to recipient
+     * @param int $wordwrapwidth custom word wrap width, default 79
+     * @return bool Returns true if mail was sent OK and false if there was an error.
+     */
+    public static function do_email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', $attachment = '', $attachname = '',
+                       $usetrueaddress = true, $replyto = '', $replytoname = '', $wordwrapwidth = 79) {
+        global $CFG, $DB;
+        $debuglevel = $CFG->debug;
+        $CFG->debug = DEBUG_DEVELOPER; // Highest level.
+
+        ob_start();
+        $result = email_to_user($user, $from, $subject, $messagetext, $messagehtml,
+                $attachment, $attachname, $usetrueaddress, $replyto, $replytoname, $wordwrapwidth);
+        $debugstr = ob_get_clean();
+        if ($result === false || !empty($debugstr)) {
+            $debugstr = 'Sending email to ' . fullname($user) . ' (' . $user->email . ') from ' .
+                fullname($from) . ' (' . $from->email . ')<br/><br/>' . $debugstr;
+        }
+
+        if (!empty($debugstr)) {
+            // Store "error" record.
+            $error = new \stdClass();
+            $error->couponid = 0;
+            $error->errortype = 'debugemail';
+            $error->errormessage = strip_tags($debugstr, 'ul,li,p,pre,br');
+            $error->timecreated = time();
+            $error->iserror = ($result ? 0 : 1);
+            $DB->insert_record('block_coupon_errors', $error);
+        }
+
+        // Reset old level!
+        $CFG->debug = $debuglevel;
+        return $result;
     }
 
 }

@@ -354,7 +354,7 @@ class requestadmin {
             $subject = get_string('request:deny:subject', 'block_coupon');
             $messagehtml = $data->message['text'];
             $messagetext = format_text_email($messagehtml, FORMAT_MOODLE);
-            email_to_user($user, $from, $subject, $messagetext, $messagehtml);
+            \block_coupon\helper::do_email_to_user($user, $from, $subject, $messagetext, $messagehtml);
             redirect($redirect);
         }
         echo $this->output->header();

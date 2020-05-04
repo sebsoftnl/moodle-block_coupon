@@ -681,3 +681,7 @@ $string['th:tid'] = 'Time ID';
 $string['label:buttonclass'] = 'Button/link class';
 $string['label:buttonclass_desc'] = 'Choose button class; this impacts the way links are displayed';
 $string['batchidselect'] = 'Batch ID';
+$string['report:heading:iserror'] = 'Is error?';
+$string['view:reports-maillog:heading'] = 'E-mail log';
+$string['view:reports-maillog:title'] = 'E-mail log';
+$string['tab:maillog'] = 'E-mail log';

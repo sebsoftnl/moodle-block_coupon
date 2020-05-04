@@ -122,9 +122,9 @@ class sendcoupons extends \core\task\scheduled_task {
                 $ownerid = $coupon->ownerid;
             }
 
-            $result = helper::mail_coupons(array($coupon), $coupon->for_user_email, null, $coupon->email_body, true);
+            list($rs, $batchid, $ts) = helper::mail_coupons(array($coupon), $coupon->for_user_email, null, $coupon->email_body, true);
 
-            if ($result !== false) {
+            if ($rs !== false) {
                 $coupon->issend = true;
                 $coupon->timemodified = time();
                 $DB->update_record('block_coupon', $coupon);

@@ -201,6 +201,10 @@ class block_coupon_renderer extends plugin_renderer_base {
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/downloadbatchlist.php',
                 array_merge($params, array('tab' => 'cpbatchlist'))),
                 get_string('tab:downloadbatchlist', 'block_coupon'));
+        $tabs[] = $this->create_pictab('cpmaillog', 'i/warning', '',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/maillog.php',
+                array_merge($params, array('tab' => 'maillog'))),
+                get_string('tab:maillog', 'block_coupon'));
         return $this->tabtree($tabs, $selected);
     }
 

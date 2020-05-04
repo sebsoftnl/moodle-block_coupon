@@ -654,3 +654,7 @@ $string['th:tid'] = 'Tijd ID';
 $string['label:buttonclass'] = 'Knop/link klasse';
 $string['label:buttonclass_desc'] = 'Kies knop/link klasse; dit heeft impact op hoe de links/knoppen in het blok worden getoond';
 $string['batchidselect'] = 'Batch ID';
+$string['report:heading:iserror'] = 'Is fout?';
+$string['view:reports-maillog:heading'] = 'E-mail log';
+$string['view:reports-maillog:title'] = 'E-mail log';
+$string['tab:maillog'] = 'E-mail log';

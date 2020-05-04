@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * this file contains the tle to display coupon errorreports
+ * this file contains the tle to display coupon maillogs
  *
- * File         errorreport.php
+ * File         maillog.php
  * Encoding     UTF-8
  *
  * @package     block_coupon
@@ -35,7 +35,7 @@ use block_coupon\helper;
 require_once($CFG->libdir . '/tablelib.php');
 
 /**
- * block_coupon\tables\errorreport
+ * block_coupon\tables\maillog
  *
  * @package     block_coupon
  *
@@ -43,7 +43,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class errorreport extends \table_sql {
+class maillog extends \table_sql {
 
     /**
      * Do we render the history or the current status?
@@ -84,13 +84,12 @@ class errorreport extends \table_sql {
     /**
      * Create a new instance of the logtable
      *
-     * @param int $ownerid if set, display only errorreport from given owner
+     * @param int $ownerid if set, display only maillog from given owner
      */
     public function __construct($ownerid = null) {
         global $USER;
         parent::__construct(__CLASS__. '-' . $USER->id . '-' . ((int)$ownerid));
         $this->ownerid = (int)$ownerid;
-        $this->strdelete = get_string('action:error:delete', 'block_coupon');
     }
 
     /**
@@ -100,10 +99,10 @@ class errorreport extends \table_sql {
      * @param bool $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
-        $this->define_table_columns(array('coupon', 'batchid', 'errortype', 'errormessage', 'timecreated', 'action'));
-        // We won't be able to sort by action columns.
-        $this->no_sorting('action');
-
+        $this->define_table_columns(array('timecreated', 'errortype', 'errormessage'));
+        $this->no_sorting('errortype');
+        $this->no_sorting('errormessage');
+        $this->sortable(true, 'timecreated', SORT_DESC);
         $this->out($pagesize, $useinitialsbar);
     }
 
@@ -129,17 +128,11 @@ class errorreport extends \table_sql {
      */
     protected function get_query($forcount = false) {
         global $DB;
-        $where = array('iserror = 1');
-        $params = array();
-        if ($this->ownerid > 0) {
-            $params['ownerid'] = $this->ownerid;
-            $where[] = 'c.ownerid = :ownerid';
-        }
-        $fields = $DB->sql_concat('c.id', '\'-\'', 'e.id') . ' as idx,
-               c.submission_code as coupon, c.batchid, e.*, null as action';
+        $where = array('errortype = :type');
+        $params = array('type' => 'debugemail');
+        $fields = 'e.*, null as action';
         $sql = 'SELECT ' . $fields . '
-               FROM {block_coupon} c
-               JOIN {block_coupon_errors} e ON e.couponid=c.id';
+               FROM {block_coupon_errors} e';
 
         // Add filtering rules.
         if (!empty($this->filtering)) {
@@ -212,45 +205,7 @@ class errorreport extends \table_sql {
      * @return string time string
      */
     public function col_timecreated($row) {
-        return (is_numeric($row->timecreated) ? helper::render_date($row->timecreated, false) : $row->timecreated);
-    }
-
-    /**
-     * Render visual representation of the 'action' column for use in the table
-     *
-     * @param \stdClass $row
-     * @return string actions
-     */
-    public function col_action($row) {
-        $actions = array();
-        $actions[] = $this->get_action($row, 'delete');
-        return implode('', $actions);
-    }
-
-    /**
-     * Return the image tag representing an action image
-     *
-     * @param string $action
-     * @return string HTML image tag
-     */
-    protected function get_action_image($action) {
-        global $OUTPUT;
-        return '<img src="' . $OUTPUT->image_url($action, 'block_coupon') . '"/>';
-    }
-
-    /**
-     * Return a string containing the link to an action
-     *
-     * @param \stdClass $row
-     * @param string $action
-     * @return string link representing the action with an image
-     */
-    protected function get_action($row, $action) {
-        $actionstr = 'str' . $action;
-        return '<a href="' . new \moodle_url($this->baseurl,
-                array('action' => $action, 'itemid' => $row->id, 'sesskey' => sesskey())) .
-                '" alt="' . $this->{$actionstr} .
-                '">' . $this->get_action_image($action) . '</a>';
+        return userdate($row->timecreated);
     }
 
     /**
@@ -263,11 +218,7 @@ class errorreport extends \table_sql {
         $this->define_columns($columns);
         $headers = array();
         foreach ($columns as $name) {
-            if ($name == 'batchid') {
-                $headers[] = get_string('label:' . $name, 'block_coupon');
-            } else {
-                $headers[] = get_string('report:heading:' . $name, 'block_coupon');
-            }
+            $headers[] = get_string('report:heading:' . $name, 'block_coupon');
         }
         $this->define_headers($headers);
     }

@@ -1,3 +1,8 @@
+Version 4.0.2 (build 2019031803)
+* Fixed some more Oracle table alias issues
+* Fixed wrong links in notification context urls
+----------
+
 Version 4.0.1 (build 2019031802)
 * Fixed param type on download page.
 * Added an overview to display downloadable batches (only scans for coupon archives in moodledata).

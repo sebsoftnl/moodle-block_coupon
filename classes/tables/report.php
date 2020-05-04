@@ -178,7 +178,7 @@ class report extends \table_sql {
         list($sql, $params) = $this->get_query(false);
 
         if (!$this->is_downloading()) {
-            $total = $DB->count_records_sql('SELECT COUNT(*) FROM ('.$sql.') AS c', $params);
+            $total = $DB->count_records_sql('SELECT COUNT(*) FROM ('.$sql.') c', $params);
             $this->pagesize($pagesize, $total);
         }
 
@@ -197,7 +197,7 @@ class report extends \table_sql {
                 $params += $fparams;
             }
         }
-        $sql = 'SELECT * FROM ('.$sql.') AS c ';
+        $sql = 'SELECT * FROM ('.$sql.') c ';
         if (!empty($where)) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
