@@ -658,3 +658,6 @@ $string['report:heading:iserror'] = 'Is fout?';
 $string['view:reports-maillog:heading'] = 'E-mail log';
 $string['view:reports-maillog:title'] = 'E-mail log';
 $string['tab:maillog'] = 'E-mail log';
+$string['tab:listrequests'] = 'Mijn verzoeken';
+$string['str:request:details'] = 'Details couponverzoek';
+$string['err:not-a-requestuser'] = 'Je hebt onvoldoende rechten om deze pagina te bezoeken';

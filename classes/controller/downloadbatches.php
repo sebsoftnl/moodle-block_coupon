@@ -105,7 +105,7 @@ class downloadbatches {
         $ownerid = (has_capability('block/coupon:viewallreports', $this->page->context) ? 0 : $USER->id);
 
         // Table instance.
-        $table = new \block_coupon\tables\downloadbatchlist($ownerid);
+        $table = new \block_coupon\tables\downloadbatchlist($this->page->context, $ownerid);
         $table->baseurl = $this->page->url;
 
         $id = $this->page->url->param('id');

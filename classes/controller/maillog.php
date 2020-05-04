@@ -125,7 +125,7 @@ class maillog {
         echo $this->output->header();
         echo html_writer::start_div('block-coupon-container');
         echo html_writer::start_div();
-        echo $this->renderer->get_tabs($this->page->context, 'maillog', array('id' => $id));
+        echo $this->renderer->get_tabs($this->page->context, 'cpmaillog', array('id' => $id));
         echo html_writer::end_div();
         $filtering->display_add();
         $filtering->display_active();

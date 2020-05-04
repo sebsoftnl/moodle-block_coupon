@@ -208,4 +208,53 @@ class block_coupon_renderer extends plugin_renderer_base {
         return $this->tabtree($tabs, $selected);
     }
 
+    /**
+     * Generate navigation tabs
+     *
+     * @param \context $context current context to work in (needed to determine capabilities).
+     * @param string $selected selected tab
+     * @param array $params any paramaters needed for the base url
+     */
+    public function get_my_requests_tabs($context, $selected, $params = array()) {
+        global $CFG;
+        $tabs = array();
+
+        $requesttab = $this->create_pictab('cpmyrequests', 'i/checkpermissions', '',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php', $params),
+                get_string('tab:requests', 'block_coupon'));
+        $requesttab->subtree[] = $this->create_pictab('myrequests', null, '',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php',
+                        $params + ['action' => 'list']),
+                get_string('tab:listrequests', 'block_coupon'));
+        switch ($selected) {
+            case 'newrequest':
+                $requesttab->subtree[] = $this->create_pictab('newrequest', null, '',
+                        new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php',
+                                $params + ['action' => 'newrequest']),
+                        get_string('str:request:add', 'block_coupon'));
+                break;
+            case 'delete':
+                $requesttab->subtree[] = $this->create_pictab('delete', null, '',
+                        new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php',
+                                $params + ['action' => 'delete']),
+                        get_string('delete:request:header', 'block_coupon'));
+                break;
+            case 'details':
+                $requesttab->subtree[] = $this->create_pictab('details', null, '',
+                        new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php',
+                                $params + ['action' => 'details']),
+                        get_string('str:request:details', 'block_coupon'));
+                break;
+        }
+        $tabs[] = $requesttab;
+
+        $batchlisttab = $this->create_pictab('cpmybatches', 'i/down', '',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php',
+                        $params + ['action' => 'batchlist']),
+                get_string('tab:downloadbatchlist', 'block_coupon'));
+        $tabs[] = $batchlisttab;
+
+        return $this->tabtree($tabs, $selected);
+    }
+
 }

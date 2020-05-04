@@ -32,6 +32,8 @@ namespace block_coupon\controller;
 
 defined('MOODLE_INTERNAL') || die();
 
+use html_writer;
+
 /**
  * block_coupon\manager\myrequests
  *
@@ -86,6 +88,9 @@ class myrequests {
             case 'details':
                 $this->process_request_details();
                 break;
+            case 'batchlist':
+                $this->process_batchlist_overview();
+                break;
             case 'list':
             default:
                 $this->process_request_overview();
@@ -103,9 +108,29 @@ class myrequests {
         $newurl = $this->get_url(['action' => 'newrequest']);
 
         echo $this->output->header();
+        echo $this->renderer->get_my_requests_tabs($this->page->context, 'myrequests', $this->page->url->params());
         echo \html_writer::link($newurl, get_string('str:request:add', 'block_coupon'));
         echo '<br/>';
         echo $table->render(25);
+        echo $this->output->footer();
+    }
+
+    /**
+     * Display user overview table
+     */
+    protected function process_batchlist_overview() {
+        global $USER;
+        // Table instance.
+        $table = new \block_coupon\tables\downloadbatchlist($this->page->context, $USER->id);
+        $table->baseurl = $this->page->url;
+
+        echo $this->output->header();
+        echo html_writer::start_div('block-coupon-container');
+        echo html_writer::start_div();
+        echo $this->renderer->get_my_requests_tabs($this->page->context, 'cpmybatches', $this->page->url->params());
+        echo html_writer::end_div();
+        echo $table->render(999999);
+        echo html_writer::end_div();
         echo $this->output->footer();
     }
 
@@ -138,11 +163,12 @@ class myrequests {
             redirect($redirect);
         } else if ($data = $mform->get_data()) {
             if ((bool) $data->confirm) {
-                $DB->delete_records('block_coupon_request', ['id' => $itemid]);
+                $DB->delete_records('block_coupon_requests', ['id' => $itemid]);
             }
             redirect($redirect);
         }
         echo $this->output->header();
+        echo $this->renderer->get_my_requests_tabs($this->page->context, 'delete', $this->page->url->params());
         $mform->display();
         echo $this->output->footer();
     }
@@ -196,6 +222,7 @@ class myrequests {
         }
 
         echo $this->output->header();
+        echo $this->renderer->get_my_requests_tabs($this->page->context, 'newrequest', $this->page->url->params());
         echo $mform->render();
         echo $this->output->footer();
     }
@@ -212,6 +239,7 @@ class myrequests {
         $this->assert_user($user->id);
 
         echo $this->output->header();
+        echo $this->renderer->get_my_requests_tabs($this->page->context, 'details', $this->page->url->params());
         echo $this->renderer->requestdetails($instance);
         echo $this->output->footer();
     }

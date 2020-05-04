@@ -150,18 +150,36 @@ class coupons extends \table_sql {
     public function render($pagesize, $useinitialsbar = true) {
         $columns = array('owner', 'for_user_email', 'senddate',
             'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'roleid', 'batchid', 'issend');
+        $headers = array(
+            get_string('th:owner', 'block_coupon'),
+            get_string('th:for_user_email', 'block_coupon'),
+            get_string('th:senddate', 'block_coupon'),
+            get_string('th:enrolperiod', 'block_coupon'),
+            get_string('th:submission_code', 'block_coupon'),
+            get_string('th:course', 'block_coupon'),
+            get_string('th:cohorts', 'block_coupon'),
+            get_string('th:groups', 'block_coupon'),
+            get_string('th:roleid', 'block_coupon'),
+            get_string('th:batchid', 'block_coupon'),
+            get_string('th:issend', 'block_coupon')
+        );
         if ($this->is_downloading() == '') {
             $columns[] = 'action';
+            $headers[] = get_string('th:action', 'block_coupon');
         }
         switch ($this->filter) {
             case self::USED:
-                array_splice($columns, 1, 0, ['usedby', 'claimedon']);
+                $this->useridfield = 'userid';
+                array_splice($columns, 1, 0, ['fullname', 'timeclaimed']);
+                array_splice($headers, 1, 0, [get_string('fullname'),
+                    get_string('th:claimedon', 'block_coupon')]);
                 break;
             default:
                 // Has no extra columns.
                 break;
         }
-        $this->define_table_columns($columns);
+        $this->define_columns($columns);
+        $this->define_headers($headers);
 
         // Generate SQL.
         $fields = 'c.*, ' . get_all_user_name_fields(true, 'u') . ', NULL as action';
@@ -204,27 +222,6 @@ class coupons extends \table_sql {
 
         parent::set_sql($fields, $from, implode(' AND ', $where), $params);
         $this->out($pagesize, $useinitialsbar);
-    }
-
-    /**
-     * Render visual representation of the 'usedby' column for use in the table
-     *
-     * @param \stdClass $row
-     * @return string time string
-     */
-    public function col_usedby($row) {
-        global $CFG;
-        // Nasty modification. Does moodle support better methods here at all??
-        $obj = new \stdClass();
-        foreach ($row as $k => $v) {
-            if (stristr($k, 'user_') !== false) {
-                $nk = str_replace('user_', '', $k);
-                $obj->{$nk} = $v;
-            }
-        }
-
-        $url = new \moodle_url($CFG->wwwroot . '/user/profile.php', ['id' => $row->userid]);
-        return \html_writer::link($url, fullname($obj));
     }
 
     /**
@@ -370,7 +367,7 @@ class coupons extends \table_sql {
      * @param \stdClass $row
      * @return string time string
      */
-    public function col_claimedon($row) {
+    public function col_timeclaimed($row) {
         if (empty($row->timeclaimed)) {
             return '-';
         }
@@ -428,21 +425,6 @@ class coupons extends \table_sql {
                 array('action' => $action, 'itemid' => $row->id, 'sesskey' => sesskey())) .
                 '" alt="' . $this->{$actionstr} .
                 '">' . $this->get_action_image($action) . '</a>';
-    }
-
-    /**
-     * Define columns for output table and define the headers through automated
-     * lookup of the language strings.
-     *
-     * @param array $columns list of column names
-     */
-    protected function define_table_columns($columns) {
-        $this->define_columns($columns);
-        $headers = array();
-        foreach ($columns as $name) {
-            $headers[] = get_string('th:' . $name, 'block_coupon');
-        }
-        $this->define_headers($headers);
     }
 
 }

@@ -132,7 +132,7 @@ class course extends \moodleform {
 
         // Render QR code checkbox.
         if ($this->get_option($this->options, 'allowselectqr', false)) {
-            $mform->addElement('checkbox', 'renderqrcode', get_string('label:renderqrcode', 'block_coupon'));
+            $mform->addElement('advcheckbox', 'renderqrcode', get_string('label:renderqrcode', 'block_coupon'));
             $mform->addHelpButton('renderqrcode', 'label:renderqrcode', 'block_coupon');
             $mform->setDefault('renderqrcode', 1);
         } else {

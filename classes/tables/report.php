@@ -94,7 +94,9 @@ class report extends \table_sql {
      * @param bool $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
-        $columns = array('user', 'couponcode', 'type', 'coursename', 'cohortname', 'status', 'datestart', 'datecomplete', 'grade');
+        $this->useridfield = 'userid';
+        $columns = array('fullname', 'submission_code', 'typ', 'coursename',
+            'cohortname', 'status', 'datestart', 'datecomplete', 'grade');
         $this->define_table_columns($columns);
         // We won't be able to sort by most columns.
         $this->no_sorting('status');
@@ -131,7 +133,7 @@ class report extends \table_sql {
         $q2params = array();
         $fields = $DB->sql_concat('c.id', '\'-\'', 'bc.id') . ' as idx,
                bc.*, c.id as courseid, c.fullname as coursename,
-               ' . $DB->sql_fullname() . ' as user, u.firstname, u.lastname';
+               ' . get_all_user_name_fields(true, 'u');
         $q1 = 'SELECT ' . $fields . '
                , null as cohortname
                FROM {block_coupon} bc
@@ -337,7 +339,15 @@ class report extends \table_sql {
         $this->define_columns($columns);
         $headers = array();
         foreach ($columns as $name) {
-            $headers[] = get_string('report:heading:' . $name, 'block_coupon');
+            if ($name === 'fullname') {
+                $headers[] = get_string('fullname');
+            } else if ($name === 'submission_code') {
+                $headers[] = get_string('report:heading:couponcode', 'block_coupon');
+            } else if ($name === 'typ') {
+                $headers[] = get_string('report:heading:type', 'block_coupon');
+            } else {
+                $headers[] = get_string('report:heading:' . $name, 'block_coupon');
+            }
         }
         $this->define_headers($headers);
     }

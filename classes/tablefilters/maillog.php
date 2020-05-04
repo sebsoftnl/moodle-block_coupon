@@ -64,7 +64,7 @@ class maillog extends filtering {
         switch ($fieldname) {
             case 'timecreated':
                 return new \user_filter_date('timecreated',
-                        get_string('report:heading:timecreated', 'block_coupon'), $advanced, 'c.timecreated');
+                        get_string('report:heading:timecreated', 'block_coupon'), $advanced, 'e.timecreated');
             default:
                 return null;
         }

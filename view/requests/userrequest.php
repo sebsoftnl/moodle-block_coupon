@@ -60,6 +60,11 @@ $PAGE->set_context($context);
 $PAGE->set_course($course);
 $PAGE->set_pagelayout('standard');
 
+// If you're no request user, deny access.
+if (!$DB->record_exists('block_coupon_rusers', ['userid' => $USER->id])) {
+    throw new \block_coupon\exception('err:not-a-requestuser');
+}
+
 // Make sure the moodle editmode is off.
 helper::force_no_editing_mode();
 $renderer = $PAGE->get_renderer('block_coupon');

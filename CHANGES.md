@@ -1,3 +1,10 @@
+Version 4.0.4 (build 2020010800)
+* Validated Moodle 3.8
+* Changed a few table implementations (fixes sorting bugs)
+* Changed headers/sorting on tables for USER fields
+
+----------
+
 Version 4.0.3-RC1 (build 2019031805)
 * Release candidate for beta testing
 

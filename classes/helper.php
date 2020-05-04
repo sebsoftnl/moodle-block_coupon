@@ -760,7 +760,6 @@ class helper {
         if ($options->type == 1) {
             // Course coupons.
             $subselect = 'SELECT DISTINCT couponid FROM {block_coupon_courses}';
-            $inparams = array();
             if (!empty($options->course)) {
                 list($insql, $inparams) = $DB->get_in_or_equal($options->course, SQL_PARAMS_NAMED, 'courseid', true, 0);
                 $subselect .= ' WHERE courseid ' . $insql;
@@ -770,7 +769,6 @@ class helper {
         } else if ($options->type == 2) {
             // Cohort coupons.
             $subselect = 'SELECT DISTINCT couponid FROM {block_coupon_cohorts}';
-            $inparams = array();
             if (!empty($options->cohort)) {
                 list($insql, $inparams) = $DB->get_in_or_equal($options->cohort, SQL_PARAMS_NAMED, 'cohortid', true, 0);
                 $subselect .= ' WHERE cohortid ' . $insql;
@@ -780,7 +778,6 @@ class helper {
         } else if ($options->type == 3) {
             // Batch coupons.
             if (!empty($options->batchid)) {
-                $inparams = array();
                 list($insql, $inparams) = $DB->get_in_or_equal($options->batchid, SQL_PARAMS_NAMED, 'batchid', true, 0);
                 $where[] = 'batchid '.$insql;
                 $params += $inparams;

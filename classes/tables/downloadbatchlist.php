@@ -57,6 +57,13 @@ class downloadbatchlist extends \table_sql {
     protected $ownerid;
 
     /**
+     * Context used to check capabilities
+     *
+     * @var \context
+     */
+    protected $context;
+
+    /**
      *
      * @var \block_coupon\filtering\filtering
      */
@@ -83,11 +90,13 @@ class downloadbatchlist extends \table_sql {
     /**
      * Create a new instance of the logtable
      *
+     * @param \context $context - used for capability checks
      * @param int $ownerid if set, display only coupons from given owner
      */
-    public function __construct($ownerid = null) {
+    public function __construct(\context $context, $ownerid = null) {
         global $USER;
         parent::__construct(__CLASS__. '-' . $USER->id . '-' . ((int)$ownerid));
+        $this->context = $context;
         $this->ownerid = (int)$ownerid;
         $this->sortable(false);
         $this->strdownload = get_string('view:download:title', 'block_coupon');
@@ -144,24 +153,40 @@ class downloadbatchlist extends \table_sql {
             }
         }
         // Loop through rows and find owners.
-        list($insql, $params) = $DB->get_in_or_equal($batchids, SQL_PARAMS_QM, 'bid', true, 0);
-        //$DB->set_debug(1);
+        list($insql, $params) = $DB->get_in_or_equal($batchids, SQL_PARAMS_NAMED, 'bid', true, 0);
+
         $sql = "SELECT c.batchid, c.ownerid, " . get_all_user_name_fields(true, 'u') . "
             FROM {block_coupon} c
             JOIN {user} u ON u.id=c.ownerid
             WHERE c.batchid {$insql}
             GROUP BY c.batchid, c.ownerid";
         $udata = $DB->get_records_sql($sql, $params);
-        //$DB->set_debug(0);
         foreach ($rows as $row) {
             if (isset($udata[$row->batchid])) {
                 $row->owner = fullname($udata[$row->batchid]);
-                $row->ownerid = fullname($udata[$row->batchid]->ownerid);
+                $row->ownerid = $udata[$row->batchid]->ownerid;
             } else {
                 $row->owner = '-';
                 $row->ownerid = '-';
             }
         }
+
+        // Limiting owners (this SHOULD prevent request users to view more than they're allowed to).
+        if (!has_capability('block/coupon:viewallreports', $this->context)) {
+            $finalrows = [];
+            $batchids = [];
+            $tids = [];
+            foreach ($rows as $row) {
+                if ($row->ownerid != $this->ownerid) {
+                    continue;
+                }
+                $finalrows[] = $row;
+                $batchids[] = $row->batchid;
+                $tids[] = $row->tid;
+            }
+            $rows = $finalrows;
+        }
+
         // Sort.
         array_multisort($tids, SORT_DESC, SORT_NUMERIC, $rows);
 

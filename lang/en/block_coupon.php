@@ -685,3 +685,6 @@ $string['report:heading:iserror'] = 'Is error?';
 $string['view:reports-maillog:heading'] = 'E-mail log';
 $string['view:reports-maillog:title'] = 'E-mail log';
 $string['tab:maillog'] = 'E-mail log';
+$string['tab:listrequests'] = 'My requests';
+$string['str:request:details'] = 'My request details';
+$string['err:not-a-requestuser'] = 'You have insufficient rights to access this page';
