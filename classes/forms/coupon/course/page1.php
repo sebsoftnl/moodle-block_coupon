@@ -79,9 +79,10 @@ class page1 extends \moodleform {
         \block_coupon\logostorage::add_select_form_elements($mform);
 
         // Add custom batchid.
-        $mform->addElement('text', 'batchid', get_string('label:batchid', 'block_coupon'));
+        $mform->addElement('text', 'batchid', get_string('label:batchid', 'block_coupon'), ['maxlength' => 255]);
         $mform->setType('batchid', PARAM_TEXT);
         $mform->addHelpButton('batchid', 'label:batchid', 'block_coupon');
+        $mform->addRule('batchid', null, 'maxlength', 255, 'client');
 
         // Select course(s).
         $multiselect = true;

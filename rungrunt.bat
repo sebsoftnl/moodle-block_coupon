@@ -1,1 +1,0 @@
-grunt watch -dirroot="D:\MOODLE-SOURCES\moodle340"

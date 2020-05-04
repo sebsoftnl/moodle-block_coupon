@@ -23,7 +23,7 @@
         <FIELD NAME="claimed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="renderqrcode" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="roleid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="batchid" TYPE="char" LENGTH="40" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="batchid" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="timeexpired" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false"/>

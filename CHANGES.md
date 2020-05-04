@@ -1,3 +1,8 @@
+Version 4.0.4.2 (build 2020010802)
+* Changed length of batchid to 255.
+
+----------
+
 Version 4.0.4.1 (build 2020010801)
 * Updated privacy provider.
 * Removed https verification from custom signup page.

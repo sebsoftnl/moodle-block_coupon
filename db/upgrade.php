@@ -263,5 +263,18 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
     }
 
+    if ($oldversion < 2020010802) {
+        // Add batchid field to coupon table.
+        $table = new xmldb_table('block_coupon');
+        $field = new xmldb_field('batchid', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'roleid');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_precision($table, $field);
+        }
+
+        // Block_coupon savepoint reached.
+        upgrade_block_savepoint(true, 2020010802, 'coupon');
+
+    }
+
     return true;
 }
