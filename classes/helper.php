@@ -153,9 +153,8 @@ class helper {
         $senddate = time();
         $sql = "
             SELECT * FROM {block_coupon} v
-            WHERE senddate < ? AND issend = 0 AND for_user_email IS NOT NULL
-            LIMIT 500";
-        $coupons = $DB->get_records_sql($sql, array($senddate));
+            WHERE senddate < ? AND issend = 0 AND for_user_email IS NOT NULL";
+        $coupons = $DB->get_records_sql($sql, array($senddate), 0, 500);
 
         return $coupons;
     }
@@ -184,6 +183,7 @@ class helper {
      * @param int $foruserid user for which coupon is claimed. If not given: current user.
      */
     public static function claim_coupon($code, $foruserid = null) {
+        global $CFG;
         $instance = coupon\typebase::get_type_instance($code);
         $instance->claim($foruserid);
 
@@ -243,7 +243,10 @@ class helper {
                 $increment++;
             }
 
-            $zip->close();
+            $zippedsuccessfully = $zip->close();
+            if (!$zippedsuccessfully) {
+                // TODO!
+            }
 
             // All coupons in 1 PDF.
         } else {
@@ -365,6 +368,8 @@ class helper {
      * @param string $batchid
      * @param int $timecreated
      * @return bool
+     *
+     * @todo: DEPRECATE: replaced by notifications :)
      */
     public static final function confirm_coupons_sent($ownerid, $batchid, $timecreated) {
         global $DB;
@@ -641,7 +646,7 @@ class helper {
                 WHERE cc.couponid = ?';
         $params[] = 'cohort';
         $params[] = $coupon->id;
-        $sql = 'SELECT * FROM ((' . implode(') UNION (', $sqls) . ')) as x';
+        $sql = 'SELECT * FROM ((' . implode(') UNION (', $sqls) . ')) x';
         return $DB->get_records_sql_menu($sql, $params);
     }
 
@@ -661,7 +666,7 @@ class helper {
                 JOIN {course} c ON e.courseid=c.id
             ';
         $params[] = 'cohort';
-        $sql = 'SELECT DISTINCT * FROM ((' . implode(') UNION (', $sqls) . ')) as x';
+        $sql = 'SELECT DISTINCT * FROM ((' . implode(') UNION (', $sqls) . ')) x';
         $rs = $DB->get_records_sql_menu($sql, $params);
         if ($includeempty) {
             $rs = array(0 => '...') + $rs;
@@ -1139,7 +1144,10 @@ class helper {
                 $increment++;
             }
 
-            $zip->close();
+            $zippedsuccessfully = $zip->close();
+            if (!$zippedsuccessfully) {
+                // TODO!
+            }
 
             // All coupons in 1 PDF.
         } else {

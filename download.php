@@ -35,7 +35,7 @@ ini_set('display_errors', 0);
 unset($CFG->debugusers, $CFG->debugdisplay);
 $CFG->debug = 0;
 
-$batchid = required_param('bid', PARAM_ALPHANUMEXT);
+$batchid = required_param('bid', PARAM_TEXT); // Changed to TEXT because that's how the form defines the param type!
 $timeid = required_param('t', PARAM_ALPHANUM);
 $dodl = optional_param('dl', false, PARAM_BOOL);
 

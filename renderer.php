@@ -109,6 +109,9 @@ class block_coupon_renderer extends plugin_renderer_base {
         $table = new \block_coupon\tables\errorreport($ownerid);
         $table->baseurl = $this->page->url;
 
+        $filtering = new \block_coupon\tablefilters\errorreport($this->page->url);
+        $table->set_filtering($filtering);
+
         $out = '';
         $out .= $this->header();
         $out .= html_writer::start_div('block-coupon-container');
@@ -116,6 +119,8 @@ class block_coupon_renderer extends plugin_renderer_base {
         $out .= $this->get_tabs($this->page->context, 'cperrorreport', array('id' => $id));
         $out .= html_writer::end_div();
         ob_start();
+        $filtering->display_add();
+        $filtering->display_active();
         $table->render(25);
         $out .= ob_get_clean();
         $out .= html_writer::end_div();
@@ -192,6 +197,10 @@ class block_coupon_renderer extends plugin_renderer_base {
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/cleanup.php',
                 array_merge($params, array('tab' => 'cpcleaner'))),
                 get_string('tab:cleaner', 'block_coupon'));
+        $tabs[] = $this->create_pictab('cpbatchlist', 'i/down', '',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/downloadbatchlist.php',
+                array_merge($params, array('tab' => 'cpbatchlist'))),
+                get_string('tab:downloadbatchlist', 'block_coupon'));
         return $this->tabtree($tabs, $selected);
     }
 

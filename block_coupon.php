@@ -78,22 +78,34 @@ class block_coupon extends block_base {
         // We'll fill the array of menu items with everything the logged in user has permission to.
         $menuitems = array();
 
+        // The "button class" for links.
+        $linkseparator = '';
+        $cfgbuttonclass = get_config('block_coupon', 'buttonclass');
+        $btnclass = 'btn-coupon';
+        if ($cfgbuttonclass != 'none') {
+            $btnclass .= ' ' . $cfgbuttonclass;
+            $linkseparator = '<br/>';
+        }
         // Generate Coupon.
         $baseparams = array('id' => $this->instance->id);
         if (has_capability('block/coupon:generatecoupons', $this->context)) {
             $urlgeneratecoupons = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/index.php', $baseparams);
-            $menuitems[] = html_writer::link($urlgeneratecoupons, get_string('url:generate_coupons', 'block_coupon'));
+            $menuitems[] = html_writer::link($urlgeneratecoupons,
+                    get_string('url:generate_coupons', 'block_coupon'), ['class' => $btnclass]);
 
             $urlmanagelogos = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/managelogos.php', $baseparams);
-            $menuitems[] = html_writer::link($urlmanagelogos, get_string('url:managelogos', 'block_coupon'));
+            $menuitems[] = html_writer::link($urlmanagelogos,
+                    get_string('url:managelogos', 'block_coupon'), ['class' => $btnclass]);
 
             // Add link to requests.
             $requestusersurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php',
                     $baseparams + ['action' => 'users']);
-            $menuitems[] = html_writer::link($requestusersurl, get_string('tab:requestusers', 'block_coupon'));
+            $menuitems[] = html_writer::link($requestusersurl,
+                    get_string('tab:requestusers', 'block_coupon'), ['class' => $btnclass]);
             $requestsurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php',
                     $baseparams + ['action' => 'requests']);
-            $menuitems[] = html_writer::link($requestsurl, get_string('tab:requests', 'block_coupon'));
+            $menuitems[] = html_writer::link($requestsurl,
+                    get_string('tab:requests', 'block_coupon'), ['class' => $btnclass]);
         }
 
         // View Reports.
@@ -102,8 +114,10 @@ class block_coupon extends block_base {
             $urlunusedreports = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php',
                     array('id' => $this->instance->id, 'tab' => 'unused'));
 
-            $menuitems[] = html_writer::link($urlreports, get_string('url:view_reports', 'block_coupon'));
-            $menuitems[] = html_writer::link($urlunusedreports, get_string('url:view_unused_coupons', 'block_coupon'));
+            $menuitems[] = html_writer::link($urlreports,
+                    get_string('url:view_reports', 'block_coupon'), ['class' => $btnclass]);
+            $menuitems[] = html_writer::link($urlunusedreports,
+                    get_string('url:view_unused_coupons', 'block_coupon'), ['class' => $btnclass]);
         }
 
         // Input Coupon.
@@ -116,7 +130,7 @@ class block_coupon extends block_base {
                         <tr><td>" . get_string('label:enter_coupon_code', 'block_coupon') . ":</td></tr>
                         <tr><td><input type='text' name='coupon_code'></td></tr>
                         <tr><td><input type='submit' name='submitbutton' value='"
-                    . get_string('button:submit_coupon_code', 'block_coupon') . "'></td></tr>
+                    . get_string('button:submit_coupon_code', 'block_coupon') . "' class='{$btnclass}'></td></tr>
                     </table>
                     <input type='hidden' name='id' value='{$this->instance->id}' />
                     <input type='hidden' name='submitbutton' value='Submit Coupon' />
@@ -136,7 +150,8 @@ class block_coupon extends block_base {
         // Signup using a coupon.
         if (!isloggedin() || isguestuser()) {
             $urlsignupcoupon = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/signup.php', $baseparams);
-            $signupurl = html_writer::link($urlsignupcoupon, get_string('url:couponsignup', 'block_coupon'));
+            $signupurl = html_writer::link($urlsignupcoupon,
+                    get_string('url:couponsignup', 'block_coupon'), ['class' => $btnclass]);
             $displaysignuphelp = (bool)get_config('block_coupon', 'displayregisterhelp');
             if ($displaysignuphelp) {
                 $menuitems[] = "<div>".get_string('str:signuphelp', 'block_coupon')."<br/>{$signupurl}</div>";
@@ -149,12 +164,13 @@ class block_coupon extends block_base {
         // Add link to ability to request coupons if applicable.
         if ($DB->record_exists('block_coupon_rusers', ['userid' => $USER->id])) {
             $urlrequestcoupon = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php', $baseparams);
-            $menuitems[] = html_writer::link($urlrequestcoupon, get_string('request:coupons', 'block_coupon'));
+            $menuitems[] = html_writer::link($urlrequestcoupon,
+                    get_string('request:coupons', 'block_coupon'), ['class' => $btnclass]);
         }
 
         // Now print the menu blocks.
         foreach ($menuitems as $item) {
-            $this->content->footer .= $item . "<br />";
+            $this->content->footer .= $item . $linkseparator;
         }
     }
 

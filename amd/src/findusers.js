@@ -30,7 +30,6 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
         /**
          * List users.
          *
-         * @param {Number} contextId The context ID.
          * @param {Object} options Additional parameters to pass to the external function.
          * @return {Promise}
          */

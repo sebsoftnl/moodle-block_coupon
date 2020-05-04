@@ -648,3 +648,9 @@ $string['err:coupon:generic'] = 'Er is iets foutgegaan. Neem aub contant op met 
 $string['err:download-not-exists'] = 'Het archief dat je wilt downloaden betaat niet meer<br/>
 Waarschijnlijk heb je deze al een keer gedownload en is deze daarna verwijderd.<br/>
 Wanneer je er zeker van bent dat je zelf de aangemaakte coupons <i>niet</i> hebt gedownload, neem dan aub contact op met de systeembeheerder.';
+$string['tab:downloadbatchlist'] = 'Batch archieven';
+$string['view:downloadbatches:title'] = 'Beschikbare batcharchieven';
+$string['th:tid'] = 'Tijd ID';
+$string['label:buttonclass'] = 'Knop/link klasse';
+$string['label:buttonclass_desc'] = 'Kies knop/link klasse; dit heeft impact op hoe de links/knoppen in het blok worden getoond';
+$string['batchidselect'] = 'Batch ID';

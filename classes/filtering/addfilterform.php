@@ -56,6 +56,11 @@ class addfilterform extends \moodleform {
         $extraparams = $this->_customdata['extraparams'];
 
         $mform->addElement('header', 'newfilter', get_string('newfilter', 'filters'));
+        if (!empty($this->_customdata['alwayscollapsed'])) {
+            // Use option to collapse filters as per default.
+            // Expanded filters by deault generally drive me NUTS on larger filter forms!
+            $mform->setExpanded('newfilter', false, true);
+        }
 
         foreach ($fields as $ft) {
             // Nasty little hack so WE, internally, adhere to Moodle standards.

@@ -39,7 +39,7 @@
     background-color: rgba(0, 0, 0, 0.5);
 }
 .block-coupon-modal-content {
-    height:100%;
+    height: 100%;
 }
 .block-coupon-modal-header {
     width: 90%;
@@ -61,10 +61,11 @@
 }
 .block-coupon-modal-body {
     width: 90%;
-    height:100%;
+    height: 100%;
     margin: auto;
 }
 .block-coupon-modal-body iframe {
     width: 100%;
     height: 100%;
 }
+.btn-coupon {}

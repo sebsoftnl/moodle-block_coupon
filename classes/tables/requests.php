@@ -95,6 +95,8 @@ class requests extends \table_sql {
         $this->sortable(true, 'timecreated', SORT_DESC);
         $this->strdelete = get_string('action:coupon:delete', 'block_coupon');
         $this->strdeleteconfirm = get_string('action:coupon:delete:confirm', 'block_coupon');
+        // Needed to generate correct link to user.
+        $this->useridfield = 'userid';
     }
 
     /**

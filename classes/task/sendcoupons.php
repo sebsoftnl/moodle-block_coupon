@@ -67,10 +67,22 @@ class sendcoupons extends \core\task\scheduled_task {
             $time = time();
         }
         // Find batches.
-        $sql = "SELECT batchid FROM {block_coupon}
-            WHERE senddate < ? AND issend = 0 AND for_user_email IS NOT NULL
-            ORDER BY timecreated ASC
-            LIMIT 1";
+        switch ($DB->get_dbfamily()) {
+            case 'oracle':
+                // Thanks goes out to: Wade Colclough from Zuken Limited and their team.
+                $sql = "SELECT batchid FROM(
+                        SELECT batchid FROM {block_coupon}
+                        WHERE senddate < ? AND issend = 0 AND for_user_email IS NOT NULL
+                        ORDER BY timecreated ASC
+                    ) where ROWNUM = 1";
+                break;
+            default:
+                $sql = "SELECT batchid FROM {block_coupon}
+                    WHERE senddate < ? AND issend = 0 AND for_user_email IS NOT NULL
+                    ORDER BY timecreated ASC
+                    LIMIT 1";
+                break;
+        }
         $batchid = $DB->get_field_sql($sql, [$time]);
         if (empty($batchid)) {
             mtrace("No batches found");
@@ -129,7 +141,6 @@ class sendcoupons extends \core\task\scheduled_task {
         if ($batchcomplete) {
             // Mail confirmation.
             mtrace("Send batch completed notification");
-            helper::confirm_coupons_sent($ownerid, $batchid, $timeexecuted);
             \block_coupon\couponnotification::send_task_notification($ownerid, $batchid, $timeexecuted);
         }
     }

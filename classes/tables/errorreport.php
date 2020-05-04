@@ -57,6 +57,29 @@ class errorreport extends \table_sql {
      * @var string
      */
     protected $strdelete;
+    /**
+     *
+     * @var \block_coupon\filtering\filtering
+     */
+    protected $filtering;
+
+    /**
+     * Get filtering instance
+     * @return \block_coupon\filtering\filtering
+     */
+    public function get_filtering() {
+        return $this->filtering;
+    }
+
+    /**
+     * Set filtering instance
+     * @param \block_coupon\filtering\filtering $filtering
+     * @return \block_coupon\tables\coupons
+     */
+    public function set_filtering(\block_coupon\filtering\filtering $filtering) {
+        $this->filtering = $filtering;
+        return $this;
+    }
 
     /**
      * Create a new instance of the logtable
@@ -77,7 +100,7 @@ class errorreport extends \table_sql {
      * @param bool $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
-        $this->define_table_columns(array('coupon', 'errortype', 'errormessage', 'timecreated', 'action'));
+        $this->define_table_columns(array('coupon', 'batchid', 'errortype', 'errormessage', 'timecreated', 'action'));
         // We won't be able to sort by action columns.
         $this->no_sorting('action');
 
@@ -113,12 +136,22 @@ class errorreport extends \table_sql {
             $where[] = 'c.ownerid = ?';
         }
         $fields = $DB->sql_concat('c.id', '\'-\'', 'e.id') . ' as idx,
-               c.submission_code as coupon, e.*, null as action';
+               c.submission_code as coupon, c.batchid, e.*, null as action';
         $sql = 'SELECT ' . $fields . '
                FROM {block_coupon} c
                JOIN {block_coupon_errors} e ON e.couponid=c.id';
+
+        // Add filtering rules.
+        if (!empty($this->filtering)) {
+            list($fsql, $fparams) = $this->filtering->get_sql_filter();
+            if (!empty($fsql)) {
+                $where[] = $fsql;
+                $params += $fparams;
+            }
+        }
+
         if (!empty($where)) {
-            $sql .= 'WHERE ' . implode(' AND ', $where);
+            $sql .= ' WHERE ' . implode(' AND ', $where);
         }
 
         return array($sql, $params);
@@ -230,7 +263,11 @@ class errorreport extends \table_sql {
         $this->define_columns($columns);
         $headers = array();
         foreach ($columns as $name) {
-            $headers[] = get_string('report:heading:' . $name, 'block_coupon');
+            if ($name == 'batchid') {
+                $headers[] = get_string('label:' . $name, 'block_coupon');
+            } else {
+                $headers[] = get_string('report:heading:' . $name, 'block_coupon');
+            }
         }
         $this->define_headers($headers);
     }

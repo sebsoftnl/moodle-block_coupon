@@ -164,4 +164,12 @@ if ($ADMIN->fulltree) {
             ''
         ));
 
+    $settings->add(new admin_setting_configselect(
+            'block_coupon/buttonclass',
+            get_string('label:buttonclass', 'block_coupon'),
+            get_string('label:buttonclass_desc', 'block_coupon'),
+            'btn-primary',
+            ['none' => '', 'btn btn-primary' => 'btn-primary', 'btn btn-secondary' => 'btn-secondary']
+        ));
+
 }

@@ -1,3 +1,28 @@
+Version 4.0.1 (build 2019031802)
+* Fixed param type on download page.
+* Added an overview to display downloadable batches (only scans for coupon archives in moodledata).
+* Added option to download from this overview.
+* Fixed issue #27 again (wrong link to user profile)
+* Fixed issue #38 again (wrong link to user profile, different view)
+* Fixed issue #37 (configurable button class for links; see global plugin configuration)
+* Fixed issue #36 (had already been done in build 2018050301, only noted here for automatic issue resolving)
+* Filter forms are now collapsed by default. Always expanded drove me nuts on larger filters/forms.
+* Fixed breaking LIMIT database issues affecting OracleDB ("LIMIT" clauses not supported as such)
+* Fixed breaking alias issues affecting OracleDB (Oracle does NOT support the "AS" keyword)
+* Fixed issue #39 (partial) Added filter capabilities in error report.
+* Fixed issue #31 (part 2: message sent twice)
+
+* Special thanks to Theodore Pylarinos for providing extremely detailed information
+   that helped to haunt down the bug of downloads not being found!
+* Special thanks to Wade Colclough from Zuken Limited for providing excellent feedback
+   and willingness to put in the time and effort to help fixing issues related to Oracle DB.
+----------
+
+Version 4.0.0 (build 2019031801)
+* Added correct userid identifier on requests table so the link to the user
+   profile points to the correct one (extension to issue #27)
+----------
+
 Version 4.0.0 (build 2019031800)
 * Small change in workflow of user requested coupons
 * Added mailing and notification of accepted user requested coupons

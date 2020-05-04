@@ -90,7 +90,9 @@ abstract class filtering {
         }
 
         // Fist the new filter form.
-        $this->_addform = new addfilterform($baseurl, array('fields' => $this->_fields, 'extraparams' => $extraparams));
+        $addfilterparams = array('fields' => $this->_fields, 'extraparams' => $extraparams);
+        $addfilterparams['alwayscollapsed'] = true; // Collapse by default.
+        $this->_addform = new addfilterform($baseurl, $addfilterparams);
         if ($adddata = $this->_addform->get_data()) {
             foreach ($this->_fields as $fname => $field) {
                 $data = $field->check_data($adddata);

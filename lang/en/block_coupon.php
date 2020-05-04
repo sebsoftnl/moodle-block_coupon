@@ -675,3 +675,9 @@ $string['err:coupon:generic'] = 'Something went wrong. Please contact the system
 $string['err:download-not-exists'] = 'The archive you want to download no longer exists<br/>
 Most likely you have already downloaded the archive.<br/>
 If you are absolutely sure you have <i>not</i> downloaded the generated coupons yourself, please contact the system administrator.';
+$string['tab:downloadbatchlist'] = 'Batch archives';
+$string['view:downloadbatches:title'] = 'Downloadable batch archives';
+$string['th:tid'] = 'Time ID';
+$string['label:buttonclass'] = 'Button/link class';
+$string['label:buttonclass_desc'] = 'Choose button class; this impacts the way links are displayed';
+$string['batchidselect'] = 'Batch ID';
