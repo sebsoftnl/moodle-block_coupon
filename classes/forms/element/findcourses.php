@@ -85,6 +85,7 @@ class findcourses extends MoodleQuickForm_autocomplete {
         $validattributes['showsuggestions'] = true;
         parent::__construct($elementname, $elementlabel, array(), $validattributes);
     }
+
     /**
      * Set the value of this element.
      *

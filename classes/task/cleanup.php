@@ -31,6 +31,8 @@ namespace block_coupon\task;
 
 defined('MOODLE_INTERNAL') || die();
 
+use block_coupon\helper;
+
 /**
  * block_coupon\task\cleanup
  *
@@ -80,9 +82,7 @@ class cleanup extends \core\task\scheduled_task {
             $DB->commit_delegated_transaction($transaction);
         }
         // Standard cleaning, just to be sure.
-        $DB->execute('DELETE FROM {block_coupon_courses} WHERE couponid NOT IN (SELECT id FROM {block_coupon})');
-        $DB->execute('DELETE FROM {block_coupon_cohorts} WHERE couponid NOT IN (SELECT id FROM {block_coupon})');
-        $DB->execute('DELETE FROM {block_coupon_groups} WHERE couponid NOT IN (SELECT id FROM {block_coupon})');
+        helper::cleanup_invalid_links();
     }
 
 }

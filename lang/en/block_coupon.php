@@ -688,3 +688,5 @@ $string['tab:maillog'] = 'E-mail log';
 $string['tab:listrequests'] = 'My requests';
 $string['str:request:details'] = 'My request details';
 $string['err:not-a-requestuser'] = 'You have insufficient rights to access this page';
+
+$string['privacy:metadata:block_coupon'] = 'The coupon block stores coupon/voucher codes and links users that have claimed it';

@@ -212,60 +212,9 @@ class helper {
             $batchid = uniqid();
         }
 
-        // One PDF for each coupon.
-        if ($generatesinglepdfs) {
-
-            // Initiate archive.
-            $zip = new \ZipArchive();
-            $relativefilename = "coupons-{$batchid}-{$ts}.zip";
-            $filename = "{$CFG->dataroot}/{$relativefilename}";
-            if (file_exists($filename)) {
-                unlink($filename);
-            }
-
-            $zip->open($filename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-
-            $increment = 1;
-            foreach ($coupons as $coupon) {
-                // Generate the PDF.
-                $pdfgen = new coupon\pdf(get_string('pdf:titlename', 'block_coupon'));
-                // Fill the coupon with text.
-                $pdfgen->set_templatemain(get_string('default-coupon-page-template-main', 'block_coupon'));
-                $pdfgen->set_templatebotleft(get_string('default-coupon-page-template-botleft', 'block_coupon'));
-                $pdfgen->set_templatebotright(get_string('default-coupon-page-template-botright', 'block_coupon'));
-                // Generate it.
-                $pdfgen->generate($coupon);
-                // FI enables storing on local system, this could be nice to have?
-                $pdfstr = $pdfgen->Output('coupon_' . $increment . '.pdf', 'S');
-                // Add PDF to the zip.
-                $zip->addFromString("coupon_$increment.pdf", $pdfstr);
-                // And up the increment.
-                $increment++;
-            }
-
-            $zippedsuccessfully = $zip->close();
-            if (!$zippedsuccessfully) {
-                // TODO! Future implementation should notify and break processing.
-                $zippedsuccessfully = $zippedsuccessfully;
-            }
-
-            // All coupons in 1 PDF.
-        } else {
-
-            $pdfgen = new coupon\pdf(get_string('pdf:titlename', 'block_coupon'));
-            $pdfgen->set_templatemain(get_string('default-coupon-page-template-main', 'block_coupon'));
-            $pdfgen->set_templatebotleft(get_string('default-coupon-page-template-botleft', 'block_coupon'));
-            $pdfgen->set_templatebotright(get_string('default-coupon-page-template-botright', 'block_coupon'));
-            $pdfgen->generate($coupons);
-
-            $relativefilename = "coupons-{$batchid}-{$ts}.pdf";
-            $filename = "{$CFG->dataroot}/{$relativefilename}";
-            if (file_exists($filename)) {
-                unlink($filename);
-            }
-
-            $pdfgen->Output($filename, 'F');
-        }
+        // Generate!
+        list($filename, $relativefilename) = static::generate_coupons($coupons,
+                $generatesinglepdfs, $batchid, $ts);
 
         // Try mailing...
         global $USER;
@@ -809,6 +758,18 @@ class helper {
     }
 
     /**
+     * Cleanup all invalid coupon links (aka clean up linked tables).
+     */
+    public static function cleanup_invalid_links() {
+        global $DB;
+        // Standard cleaning. Removes all invalid linkks to coupons.
+        $DB->execute('DELETE FROM {block_coupon_courses} WHERE couponid NOT IN (SELECT id FROM {block_coupon})');
+        $DB->execute('DELETE FROM {block_coupon_cohorts} WHERE couponid NOT IN (SELECT id FROM {block_coupon})');
+        $DB->execute('DELETE FROM {block_coupon_groups} WHERE couponid NOT IN (SELECT id FROM {block_coupon})');
+        $DB->execute('DELETE FROM {block_coupon_errors} WHERE couponid NOT IN (SELECT id FROM {block_coupon})');
+    }
+
+    /**
      * Count coupons given the options
      * @param \stdClass $options
      * @return int number of found coupons given the options
@@ -1110,60 +1071,9 @@ class helper {
             $generatoroptions->batchid = uniqid();
         }
 
-        // One PDF for each coupon.
-        if ($generatoroptions->generatesinglepdfs) {
-
-            // Initiate archive.
-            $zip = new \ZipArchive();
-            $relativefilename = "coupons-{$generatoroptions->batchid}-{$ts}.zip";
-            $filename = "{$CFG->dataroot}/{$relativefilename}";
-            if (file_exists($filename)) {
-                unlink($filename);
-            }
-
-            $zip->open($filename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-
-            $increment = 1;
-            foreach ($coupons as $coupon) {
-                // Generate the PDF.
-                $pdfgen = new coupon\pdf(get_string('pdf:titlename', 'block_coupon'));
-                // Fill the coupon with text.
-                $pdfgen->set_templatemain(get_string('default-coupon-page-template-main', 'block_coupon'));
-                $pdfgen->set_templatebotleft(get_string('default-coupon-page-template-botleft', 'block_coupon'));
-                $pdfgen->set_templatebotright(get_string('default-coupon-page-template-botright', 'block_coupon'));
-                // Generate it.
-                $pdfgen->generate($coupon);
-                // FI enables storing on local system, this could be nice to have?
-                $pdfstr = $pdfgen->Output('coupon_' . $increment . '.pdf', 'S');
-                // Add PDF to the zip.
-                $zip->addFromString("coupon_$increment.pdf", $pdfstr);
-                // And up the increment.
-                $increment++;
-            }
-
-            $zippedsuccessfully = $zip->close();
-            if (!$zippedsuccessfully) {
-                // TODO! Future implementation should notify and break processing.
-                $zippedsuccessfully = $zippedsuccessfully;
-            }
-
-            // All coupons in 1 PDF.
-        } else {
-
-            $pdfgen = new coupon\pdf(get_string('pdf:titlename', 'block_coupon'));
-            $pdfgen->set_templatemain(get_string('default-coupon-page-template-main', 'block_coupon'));
-            $pdfgen->set_templatebotleft(get_string('default-coupon-page-template-botleft', 'block_coupon'));
-            $pdfgen->set_templatebotright(get_string('default-coupon-page-template-botright', 'block_coupon'));
-            $pdfgen->generate($coupons);
-
-            $relativefilename = "coupons-{$generatoroptions->batchid}-{$ts}.pdf";
-            $filename = "{$CFG->dataroot}/{$relativefilename}";
-            if (file_exists($filename)) {
-                unlink($filename);
-            }
-
-            $pdfgen->Output($filename, 'F');
-        }
+        // Generate!
+        list($filename, $relativefilename) = static::generate_coupons($coupons,
+                $generatoroptions->generatesinglepdfs, $generatoroptions->batchid, $ts);
 
         if (!empty($generatoroptions->emailto)) {
             $user->email = $generatoroptions->emailto;
@@ -1268,6 +1178,141 @@ class helper {
         // Reset old level!
         $CFG->debug = $debuglevel;
         return $result;
+    }
+
+    /**
+     * Generate given coupons using given options.
+     *
+     * @param array $coupons An array of generated coupons
+     * @param bool $generatesinglepdfs Whether each coupon gets a PDF or 1 PDF for all coupons
+     * @param string $batchid batch ID
+     * @param string $ts timestamp indicator
+     * @return array of 0: relative filename, 1: full pathname
+     */
+    protected static function generate_coupons($coupons, $generatesinglepdfs, $batchid, $ts) {
+        global $CFG;
+        if ($generatesinglepdfs) {
+            // One PDF for each coupon.
+
+            // Initiate archive.
+            $zip = new \ZipArchive();
+            $relativefilename = "coupons-{$batchid}-{$ts}.zip";
+            $filename = "{$CFG->dataroot}/{$relativefilename}";
+            if (file_exists($filename)) {
+                unlink($filename);
+            }
+
+            $zip->open($filename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+
+            $increment = 1;
+            foreach ($coupons as $coupon) {
+                // Generate the PDF.
+                $pdfgen = new coupon\pdf(get_string('pdf:titlename', 'block_coupon'));
+                // Fill the coupon with text.
+                $pdfgen->set_templatemain(get_string('default-coupon-page-template-main', 'block_coupon'));
+                $pdfgen->set_templatebotleft(get_string('default-coupon-page-template-botleft', 'block_coupon'));
+                $pdfgen->set_templatebotright(get_string('default-coupon-page-template-botright', 'block_coupon'));
+                // Generate it.
+                $pdfgen->generate($coupon);
+                // FI enables storing on local system, this could be nice to have?
+                $pdfstr = $pdfgen->Output('coupon_' . $increment . '.pdf', 'S');
+                // Add PDF to the zip.
+                $zip->addFromString("coupon_$increment.pdf", $pdfstr);
+                // And up the increment.
+                $increment++;
+            }
+
+            $zippedsuccessfully = $zip->close();
+            if (!$zippedsuccessfully) {
+                // TODO! Future implementation should notify and break processing.
+                $zippedsuccessfully = $zippedsuccessfully;
+            }
+
+            return [$relativefilename, $filename];
+        } else {
+            // All coupons in 1 PDF.
+            $pdfgen = new coupon\pdf(get_string('pdf:titlename', 'block_coupon'));
+            $pdfgen->set_templatemain(get_string('default-coupon-page-template-main', 'block_coupon'));
+            $pdfgen->set_templatebotleft(get_string('default-coupon-page-template-botleft', 'block_coupon'));
+            $pdfgen->set_templatebotright(get_string('default-coupon-page-template-botright', 'block_coupon'));
+            $pdfgen->generate($coupons);
+
+            $relativefilename = "coupons-{$batchid}-{$ts}.pdf";
+            $filename = "{$CFG->dataroot}/{$relativefilename}";
+            if (file_exists($filename)) {
+                unlink($filename);
+            }
+
+            $pdfgen->Output($filename, 'F');
+
+            return [$relativefilename, $filename];
+        }
+    }
+
+    /**
+     * Mail Personalized Coupon
+     * This function will mail A generated PERSONALIZED coupon.
+     *
+     * @param \stdClass $coupon A personalized coupon
+     */
+    public static final function mail_personalized_coupon($coupon) {
+        global $DB, $CFG;
+        raise_memory_limit(MEMORY_HUGE);
+
+        // Prepare time identifier and batchid.
+        $ts = date('dmYHis');
+        if (empty($coupon->batchid)) {
+            $coupon->batchid = uniqid();
+            $coupon->timemodified = time();
+            $DB->update_record('block_coupon', $coupon);
+        }
+
+        // Generate!
+        // Do note the FALSE param value, so we actually generate a PDF!
+        list($filename, $relativefilename) = static::generate_coupons([$coupon],
+                $generatesinglepdfs = false, $coupon->batchid, $ts);
+
+        // Possibly split first/lastname.
+        $parts = explode(' ', str_replace('  ', ' ', $coupon->for_user_name), 2);
+        $firstname = $parts[0];
+        $lastname = empty($parts[1]) ? '' : $parts[1];
+
+        // Try mailing...
+        $supportuser = \core_user::get_support_user();
+        $username = $supportuser->username;
+        $mailformat = $CFG->defaultpreference_mailformat;
+
+        $recipient = self::get_dummy_user_record($coupon->for_user_email, $firstname, $lastname, $username);
+        $recipient->mailformat = $mailformat;
+
+        $from = \core_user::get_noreply_user();
+        $subject = get_string('coupon_mail_subject', 'block_coupon');
+        // Set email body.
+        $messagehtml = $coupon->email_body;
+        $messagetext = format_text_email($messagehtml, FORMAT_HTML);
+
+        // Try to force &amp; issue in "format_text_email" AGAIN.
+        // Various tests have shown the text based email STILL displays "&amp;" entities.
+        $messagetext = str_replace('&amp;', '&', $messagetext);
+        $mailstatus = static::do_email_to_user($recipient, $from, $subject, $messagetext, $messagehtml,
+                $relativefilename, $relativefilename);
+
+        if ($mailstatus) {
+            // Set the coupons to send state.
+            $coupon->senddate = time();
+            $coupon->issend = 1;
+            $DB->update_record('block_coupon', $coupon);
+        } else {
+            $error = new \stdClass();
+            $error->couponid = $coupon->id;
+            $error->errortype = 'email';
+            $error->errormessage = get_string('coupon:send:fail', 'block_coupon', 'failed');
+            $error->timecreated = time();
+            $error->iserror = 1;
+            $DB->insert_record('block_coupon_errors', $error);
+        }
+
+        return [$mailstatus, $coupon->batchid, $ts];
     }
 
 }

@@ -36,6 +36,8 @@ use core_privacy\local\request\contextlist;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\transform;
 use core_privacy\local\request\writer;
+use core_privacy\local\request\userlist;
+use core_privacy\local\request\approved_userlist;
 
 /**
  * Privacy provider.
@@ -48,7 +50,8 @@ use core_privacy\local\request\writer;
  */
 class provider implements
         \core_privacy\local\metadata\provider,
-        \core_privacy\local\request\plugin\provider {
+        \core_privacy\local\request\plugin\provider,
+        \core_privacy\local\request\core_userlist_provider {
 
     /**
      * Provides meta data that is stored about a user with block_coupon
@@ -71,7 +74,8 @@ class provider implements
                 'timecreated' => 'privacy:metadata:block_coupon:timecreated',
                 'timemodified' => 'privacy:metadata:block_coupon:timemodified',
                 'timeexpired' => 'privacy:metadata:block_coupon:timeexpired',
-            ]
+            ],
+            'privacy:metadata:block_coupon'
         );
         return $collection;
     }
@@ -258,6 +262,45 @@ class provider implements
             $DB->delete_records_list('block_coupon', 'id', $couponids);
         }
 
+    }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        global $DB;
+        // I'm unsure if we should also include the course contexts.
+        // I'm also unsure if we should include the cohort linked contexts.
+        // If we should, we'll implement those too.
+        // For now, include "all".
+        $userids1 = $DB->get_fieldset_sql('SELECT DISTINCT userid FROM {block_coupon}');
+        $userids2 = $DB->get_fieldset_sql('SELECT DISTINCT userid FROM {block_coupon_rusers}');
+        $userids3 = $DB->get_fieldset_sql('SELECT DISTINCT userid FROM {block_coupon_requests}');
+        $userids = array_unique(array_merge($userids1, $userids2, $userids3));
+        $userlist->add_users($userids);
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param  approved_userlist $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        global $DB;
+        $context = $userlist->get_context();
+
+        if ($context instanceof \context_user) {
+            $DB->delete_records('block_coupon_requests', ['userid' => $context->instanceid]);
+            $DB->delete_records('block_coupon_rusers', ['userid' => $context->instanceid]);
+            $DB->delete_records('block_coupon', ['userid' => $context->instanceid]);
+            // Now this is tricky... set ownership to main site admin.
+            $admin = get_admin();
+            $DB->execute('UPDATE {block_coupon} SET ownerid = ? WHERE ownerid = ?', [$admin->id, $context->instanceid]);
+            // And kick generic cleaning.
+            \block_coupon\helper::cleanup_invalid_links();
+        }
     }
 
 }

@@ -38,6 +38,8 @@ Furthermore, coupons can be generated on two "access" levels:
   On our tests, for a 300 DPI image on A4 format (2480 x 3508 pixels) with an alpha channel,
   rendering a single PDF took around 25 seconds. Taking the alpha channel out of the image,
   rendering a single PDF was reduced to around 3 seconds.
+  This means the PNG images should _always_ be stored as 24-bit true colour images.
+  _Do not use 32-bit_ (true colour + transparency)!
   Furthermore, whenever possible, have the coupon generator create a single PDF with all
   coupons (this is only applicable when generating coupons in "bulk" mode). The process of
   generating coupons has been optimized to only "use" the image 1 time when creating any amount

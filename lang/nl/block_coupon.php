@@ -661,3 +661,5 @@ $string['tab:maillog'] = 'E-mail log';
 $string['tab:listrequests'] = 'Mijn verzoeken';
 $string['str:request:details'] = 'Details couponverzoek';
 $string['err:not-a-requestuser'] = 'Je hebt onvoldoende rechten om deze pagina te bezoeken';
+
+$string['privacy:metadata:block_coupon'] = 'Het coupon blok slaat coupon/voucher codes op en eventuele koppelingen met gebruikers die een code hebben geclaimed';

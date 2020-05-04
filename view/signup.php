@@ -29,7 +29,7 @@ require_once($CFG->libdir . '/authlib.php');
 require_once($CFG->dirroot . '/login/lib.php');
 
 if (!$authplugin = signup_is_enabled()) {
-    print_error('notlocalisederrormessage', 'error', '', 'Sorry, you may not use this page.');
+    print_error('notlocalisederrormessage', 'error', '', 'Sorry, you may not use this page (signup is not enabled).');
 }
 
 $PAGE->set_url('/blocks/coupon/view/signup.php');
@@ -99,9 +99,6 @@ if ($mformsignup->is_cancelled()) {
     notice(get_string('emailconfirmsent', '', $user->email), "$CFG->wwwroot/index.php");
     exit; // Never reached.
 }
-
-// Make sure we really are on the https page when https login required.
-$PAGE->verify_https_required();
 
 $submissioncode = optional_param('submissioncode', '', PARAM_ALPHANUMEXT);
 $mformsignup->set_data(array('submissioncode' => $submissioncode));

@@ -122,15 +122,8 @@ class sendcoupons extends \core\task\scheduled_task {
                 $ownerid = $coupon->ownerid;
             }
 
-            $email = $coupon->for_user_email;
-            $body = $coupon->email_body;
-            list($rs, $batchid, $ts) = helper::mail_coupons(array($coupon), $email, null, $body, true);
-
-            if ($rs !== false) {
-                $coupon->issend = 1;
-                $coupon->timemodified = time();
-                $DB->update_record('block_coupon', $coupon);
-            }
+            // Send off. All handling is done by the helper method.
+            helper::mail_personalized_coupon($coupon);
         }
 
         // Check batch completed.

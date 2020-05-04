@@ -1,7 +1,19 @@
+Version 4.0.4.1 (build 2020010801)
+* Updated privacy provider.
+* Removed https verification from custom signup page.
+
+Special thanks to Gemma Lesterhuis (Lesterhuis Training & Consultancy)
+for useful input, bug reports and beta testing.
+
+----------
+
 Version 4.0.4 (build 2020010800)
 * Validated Moodle 3.8
 * Changed a few table implementations (fixes sorting bugs)
 * Changed headers/sorting on tables for USER fields
+
+Special thanks to Gemma Lesterhuis (Lesterhuis Training & Consultancy)
+for donating to Moodle 3.8 validation, useful input and beta testing.
 
 ----------
 
