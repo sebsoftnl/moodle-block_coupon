@@ -2,7 +2,7 @@ image: ubuntu:latest
 
 before_script:
     - apt-get update -y 
-    - apt-get install openssh-client rsync git -y
+    - apt-get install openssh-client git -y
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - eval $(ssh-agent -s)
@@ -17,5 +17,5 @@ sendtogithub:
     - git checkout origin/master
     - git remote add github git@github.com:sebsoftnl/moodle-block_coupon.git
     - git remote -v
-    - git push -u github
-    - git push -u github --tags
+    - git status
+    - git push -u github master:master
