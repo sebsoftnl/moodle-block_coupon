@@ -17,5 +17,6 @@ sendtogithub:
     - git checkout origin/master
     - git remote add github git@github.com:sebsoftnl/moodle-block_coupon.git
     - git remote -v
+    - git fetch github
     - git status
-    - git push -u github master:master
+    - git push github master
