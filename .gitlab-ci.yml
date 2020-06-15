@@ -1,0 +1,19 @@
+image: ubuntu:latest
+
+before_script:
+    - apt-get update -y 
+    - apt-get install openssh-client rsync git -y
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - eval $(ssh-agent -s)
+    - git config --global user.email "helpdesk@sebsoft.nl"
+    - git config --global user.name "Sebsoft Gitlab service"
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - ssh-keyscan github.com >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+
+sendtogithub:
+  script:
+    - git remote add github git@github.com:sebsoftnl/moodle-block_coupon.git
+    - git remote -v
+    - git push github
