@@ -14,6 +14,7 @@ before_script:
 
 sendtogithub:
   script:
+    - git checkout origin/master
     - git remote add github git@github.com:sebsoftnl/moodle-block_coupon.git
     - git remote -v
-    - git push github
+    - git push github master
