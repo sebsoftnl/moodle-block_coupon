@@ -1,4 +1,4 @@
-image: moodlehq/moodle-php-apache:7.1
+image: moodlehq/moodle-php-apache:7.3
 
 cache:
  paths:
@@ -19,8 +19,8 @@ before_script:
  - chmod +x /usr/local/bin/phpunit
  - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
  - source $HOME/.nvm/nvm.sh
- - nvm install 8.9
- - nvm use 8.9
+ - nvm install 14.4
+ - nvm use 14.4
  - curl -sS https://getcomposer.org/installer | php
  - mv composer.phar /usr/local/bin/composer
  - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
@@ -34,72 +34,72 @@ before_script:
 
 phplint:
  <<: *job_definition
- image: php:7.1
+ image: php:7.3
  variables:
-  MOODLE_BRANCH: "MOODLE_35_STABLE"
+  MOODLE_BRANCH: "MOODLE_37_STABLE"
  script:  
   - moodle-plugin-ci phplint 
   
 phpcpd:
  <<: *job_definition
- image: php:7.1
+ image: php:7.3
  variables:
-  MOODLE_BRANCH: "MOODLE_35_STABLE"
+  MOODLE_BRANCH: "MOODLE_37_STABLE"
  script:  
   - moodle-plugin-ci phpcpd 
   
 codechecker:
  <<: *job_definition
- image: php:7.1
+ image: php:7.3
  variables:
-  MOODLE_BRANCH: "MOODLE_35_STABLE"
+  MOODLE_BRANCH: "MOODLE_37_STABLE"
  script:  
   - moodle-plugin-ci codechecker 
   
 savepoints:
  <<: *job_definition
- image: php:7.1
+ image: php:7.3
  variables:
-  MOODLE_BRANCH: "MOODLE_35_STABLE"
+  MOODLE_BRANCH: "MOODLE_37_STABLE"
  script:  
   - moodle-plugin-ci savepoints 
   
 mustache:
  <<: *job_definition
- image: php:7.1
+ image: php:7.3
  variables:
-  MOODLE_BRANCH: "MOODLE_35_STABLE"
+  MOODLE_BRANCH: "MOODLE_37_STABLE"
  script:  
   - moodle-plugin-ci mustache 
   
 grunt:
  <<: *job_definition
- image: php:7.1
+ image: php:7.3
  variables:
-  MOODLE_BRANCH: "MOODLE_35_STABLE"
+  MOODLE_BRANCH: "MOODLE_37_STABLE"
  script:  
   - moodle-plugin-ci grunt 
   
 validate:
  <<: *job_definition
- image: php:7.1
+ image: php:7.3
  variables:
-  MOODLE_BRANCH: "MOODLE_35_STABLE"
+  MOODLE_BRANCH: "MOODLE_37_STABLE"
  script:  
   - moodle-plugin-ci validate 
   
 phpunit:
  <<: *job_definition
- image: php:7.1
+ image: php:7.3
  variables:
-  MOODLE_BRANCH: "MOODLE_35_STABLE"
+  MOODLE_BRANCH: "MOODLE_37_STABLE"
  script:  
   - moodle-plugin-ci phpunit 
   
 behat:
  <<: *job_definition
- image: php:7.1
+ image: php:7.3
  variables:
-  MOODLE_BRANCH: "MOODLE_35_STABLE"
+  MOODLE_BRANCH: "MOODLE_37_STABLE"
  script:  
   - moodle-plugin-ci behat 
