@@ -100,17 +100,32 @@ class page2 extends \moodleform {
         }
 
         if (!empty($groupoptions)) {
-            $groupselement = &$mform->addElement('selectgroups', 'coupon_groups',
-                    get_string('label:coupon_groups', 'block_coupon'), $groupoptions);
-            $mform->addHelpButton('coupon_groups', 'label:coupon_groups', 'block_coupon');
-            $groupselement->setMultiple(true);
             // Shouldn't happen cause it'll just skip this step if no groups are connected.
+            $this->add_course_groups($groupoptions);
         } else {
-            $groupselement = &$mform->addElement('static', 'coupon_groups', '',
+            $mform->addElement('static', 'coupon_groups', '',
                     get_string('label:no_groups_selected', 'block_coupon'));
         }
 
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'));
+    }
+
+    /**
+     * Add checkboxes to select groups on a PER course basis.
+     *
+     * @param array $groupoptions
+     */
+    protected function add_course_groups($groupoptions) {
+        $groupelements = [];
+        $i = 0;
+        foreach ($groupoptions as $cname => $cgroups) {
+            $groupelements[] = $this->_form->createElement('static', '_c' . $i, '', "<strong>{$cname}</strong>");
+            foreach ($cgroups as $id => $name) {
+                $groupelements[] = $this->_form->createElement('advcheckbox', $id, '', $name);
+            }
+        }
+        $this->_form->addGroup($groupelements, 'coupon_groups', get_string('label:coupon_groups', 'block_coupon'), '<br/>', true);
+        $this->_form->addHelpButton('coupon_groups', 'label:coupon_groups', 'block_coupon');
     }
 
     /**
@@ -123,6 +138,44 @@ class page2 extends \moodleform {
     public function validation($data, $files) {
         $err = parent::validation($data, $files);
         return $err;
+    }
+
+    /**
+     * Modify get_data() so we have output as if we're using a select-element.
+     * We're doing this so we don't have to modify the controller code (we were using select before).
+     */
+    public function get_data() {
+        $data = parent::get_data();
+        if (is_object($data)) {
+            $ctmp = [];
+            foreach ($data->coupon_groups as $id => $include) {
+                if ((bool)$include) {
+                    $ctmp[] = $id;
+                }
+            }
+            $data->coupon_groups = $ctmp;
+        }
+        return $data;
+    }
+
+    /**
+     * Modify set_data() so we have input as if we were using a select-element.
+     * We're doing this so we don't have to modify the controller code (we were using select before).
+     *
+     * @param stdClass|array $defaultvalues object or array of default values
+     */
+    public function set_data($defaultvalues) {
+        if (is_object($defaultvalues)) {
+            $defaultvalues = (array)$defaultvalues;
+        }
+        if (!empty($defaultvalues['coupon_groups'])) {
+            $ctmp = [];
+            foreach ($defaultvalues['coupon_groups'] as $includeid) {
+                $ctmp[$includeid] = 1;
+            }
+            $defaultvalues['coupon_groups'] = $ctmp;
+        }
+        parent::set_data($defaultvalues);
     }
 
 }

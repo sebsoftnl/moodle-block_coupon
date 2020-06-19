@@ -283,6 +283,7 @@ class cohortcoupon {
             if ($generatoroptions->generatormethod == 'amount') {
                 // Save last settings in sessions.
                 $generatoroptions->amount = $data->coupon_amount;
+                $generatoroptions->codesize = $data->codesize;
                 $generatoroptions->emailto = (!empty($data->use_alternative_email)) ? $data->alternative_email : $USER->email;
                 $generatoroptions->generatesinglepdfs = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
                 $generatoroptions->generatecodesonly = (isset($data->generatecodesonly) && $data->generatecodesonly) ? true : false;

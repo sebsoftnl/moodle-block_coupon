@@ -94,6 +94,10 @@ class coupons {
             case 'delete':
                 $this->process_delete();
                 break;
+            case 'personal':
+                $filter = \block_coupon\tables\coupons::PERSONAL;
+                $this->process_overview($filter);
+                break;
             case 'used':
                 $filter = \block_coupon\tables\coupons::USED;
                 $this->process_overview($filter);
@@ -138,6 +142,9 @@ class coupons {
                 break;
             case \block_coupon\tables\coupons::USED:
                 $selectedtab = 'cpused';
+                break;
+            case \block_coupon\tables\coupons::PERSONAL:
+                $selectedtab = 'cppersonal';
                 break;
         }
 

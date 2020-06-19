@@ -65,7 +65,12 @@ class page2 extends \moodleform {
      * form definition
      */
     public function definition() {
+        global $CFG;
         $mform = & $this->_form;
+
+        // Register element.
+        $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcohortcourses.php';
+        \MoodleQuickForm::registerElementType('findcohortcourses', $path, '\block_coupon\forms\element\findcohortcourses');
 
         list($this->generatoroptions) = $this->_customdata;
 
@@ -100,21 +105,10 @@ class page2 extends \moodleform {
                         get_string('label:no_courses_connected', 'block_coupon'));
             }
 
-            // Collect not connected courses.
-            $notconnectedcourses = helper::get_unconnected_cohort_courses($cohort->id);
-
-            // If we have not connected courses we'll display them.
-            if ($notconnectedcourses) {
-                $arrnotconnectedcourses = array();
-                foreach ($notconnectedcourses as $notconnectedcourse) {
-                    $arrnotconnectedcourses[$notconnectedcourse->id] = $notconnectedcourse->fullname;
-                }
-                $attributes = array('size' => min(20, count($arrnotconnectedcourses)));
-                $selectconnectcourses = &$mform->addElement('select', 'connect_courses[' . $cohort->id . ']',
-                        get_string('label:coupon_connect_course', 'block_coupon'), $arrnotconnectedcourses, $attributes);
-                $mform->addHelpButton('connect_courses[' . $cohort->id . ']', 'label:coupon_connect_course', 'block_coupon');
-                $selectconnectcourses->setMultiple(true);
-            }
+            $options = ['multiple' => true, 'onlyvisible' => true];
+            $mform->addElement('findcohortcourses', 'connect_courses[' . $cohort->id . ']',
+                    get_string('label:coupon_connect_course', 'block_coupon'), $cohort->id, $options);
+            $mform->addHelpButton('connect_courses[' . $cohort->id . ']', 'label:coupon_connect_course', 'block_coupon');
 
             // That's the end of the loop.
         }

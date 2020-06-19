@@ -77,9 +77,10 @@ class helper {
      * Get a list of courses that have NOT been enabled for cohort enrolment for a given cohort.
      *
      * @param int $cohortid
+     * @param bool $idsonly if true, only returns list of IDs
      * @return array
      */
-    final static public function get_unconnected_cohort_courses($cohortid) {
+    final static public function get_unconnected_cohort_courses($cohortid, $idsonly = false) {
         global $DB;
 
         $sql = "
@@ -93,7 +94,11 @@ class helper {
             ORDER BY c.fullname ASC";
         $unconnectedcourses = $DB->get_records_sql($sql, array($cohortid));
 
-        return (!empty($unconnectedcourses)) ? $unconnectedcourses : false;
+        if ($idsonly) {
+            return (!empty($unconnectedcourses)) ? array_keys($unconnectedcourses) : false;
+        } else {
+            return (!empty($unconnectedcourses)) ? $unconnectedcourses : false;
+        }
     }
 
     /**
@@ -241,8 +246,8 @@ class helper {
         } else {
             $downloadurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php', ['bid' => $batchid, 't' => $ts]);
             $bodyparams = array(
-                'to_name' => fullname($USER),
-                'from_name' => fullname($USER),
+                'fullname' => fullname($USER),
+                'signoff' => generate_email_signoff(),
                 'downloadlink' => \html_writer::link($downloadurl, get_string('here', 'block_coupon'))
             );
             $messagehtml = get_string('coupon_mail_content', 'block_coupon', $bodyparams);
@@ -834,6 +839,15 @@ class helper {
         $mform->addRule('coupon_amount', get_string('required'), 'required');
         $mform->addHelpButton('coupon_amount', 'label:coupon_amount', 'block_coupon');
 
+        // Add custom code size.
+        $mform->addElement('text', 'codesize', get_string('label:coupon_code_length', 'block_coupon'), ['maxlength' => 64]);
+        $mform->setType('codesize', PARAM_INT);
+        $mform->addHelpButton('codesize', 'label:coupon_code_length', 'block_coupon');
+        $mform->addRule('codesize', null, 'required', null, 'client');
+        $mform->addRule('codesize', null, 'maxlength', 64, 'client');
+        $mform->addRule('codesize', get_string('invalidnum', 'error'), 'positiveint', null, 'client');
+        $mform->setDefault('codesize', get_config('block_coupon', 'coupon_code_length'));
+
         // Use alternative email address.
         $mform->addElement('checkbox', 'use_alternative_email', get_string('label:use_alternative_email', 'block_coupon'));
         $mform->setType('use_alternative_email', PARAM_BOOL);
@@ -1269,8 +1283,12 @@ class helper {
 
         // Generate!
         // Do note the FALSE param value, so we actually generate a PDF!
-        list($filename, $relativefilename) = static::generate_coupons([$coupon],
-                $generatesinglepdfs = false, $coupon->batchid, $ts);
+        $filename = '';
+        $relativefilename = '';
+        $sendpdf = (bool)get_config('block_coupon', 'personalsendpdf');
+        if ($sendpdf) {
+            list($filename, $relativefilename) = static::generate_personalized_coupon($coupon);
+        }
 
         // Possibly split first/lastname.
         $parts = explode(' ', str_replace('  ', ' ', $coupon->for_user_name), 2);
@@ -1312,7 +1330,37 @@ class helper {
             $DB->insert_record('block_coupon_errors', $error);
         }
 
+        // If we mailed this crapper, remove the generated PDF.
+        if ($mailstatus && ! empty($filename)) {
+            unlink($filename);
+        }
+
         return [$mailstatus, $coupon->batchid, $ts];
+    }
+
+    /**
+     * Generate a personalized coupon
+     *
+     * @param stdClass $coupon
+     * @return array [(full) filename, relativefilename]
+     */
+    static public function generate_personalized_coupon($coupon) {
+        global $CFG;
+        $identifier = uniqid($coupon->id);
+        // Generate the PDF.
+        $pdfgen = new coupon\pdf(get_string('pdf:titlename', 'block_coupon'));
+        // Fill the coupon with text.
+        $pdfgen->set_templatemain(get_string('default-coupon-page-template-main', 'block_coupon'));
+        $pdfgen->set_templatebotleft(get_string('default-coupon-page-template-botleft', 'block_coupon'));
+        $pdfgen->set_templatebotright(get_string('default-coupon-page-template-botright', 'block_coupon'));
+        // Generate it.
+        $pdfgen->generate($coupon);
+        // FI enables storing on local system, this could be nice to have?
+        $relativefilename = 'coupon_' . $identifier. '.pdf';
+        $filename = "{$CFG->dataroot}/{$relativefilename}";
+        $pdfgen->Output($filename, 'F');
+
+        return [$filename, $relativefilename];
     }
 
 }

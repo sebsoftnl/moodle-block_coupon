@@ -66,7 +66,7 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configselect(
             'block_coupon/coupon_code_length',
             get_string('label:coupon_code_length', 'block_coupon'),
-            get_string('label:coupon_code_length_desc', 'block_coupon'),
+            get_string('label:coupon_code_length_help', 'block_coupon'),
             16,
             $maxcodelengthchoices
         ));
@@ -170,6 +170,20 @@ if ($ADMIN->fulltree) {
             get_string('label:buttonclass_desc', 'block_coupon'),
             'btn-primary',
             ['none' => '', 'btn btn-primary' => 'btn-primary', 'btn btn-secondary' => 'btn-secondary']
+        ));
+
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/personalsendpdf',
+            get_string('label:personalsendpdf', 'block_coupon'),
+            get_string('label:personalsendpdf_help', 'block_coupon'),
+            0
+        ));
+
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/seperatepersonalcoupontab',
+            get_string('label:seperatepersonalcoupontab', 'block_coupon'),
+            get_string('label:seperatepersonalcoupontab_help', 'block_coupon'),
+            0
         ));
 
 }

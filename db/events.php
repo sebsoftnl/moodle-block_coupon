@@ -29,13 +29,18 @@
 defined('MOODLE_INTERNAL') || die;
 $observers = array(
     array(
-        'eventname'   => '\core\event\course_deleted',
+        'eventname'   => core\event\course_deleted::class,
         'callback'    => 'block_coupon\eventobservers::course_deleted',
         'internal' => false
     ),
     array(
-        'eventname'   => '\core\event\cohort_deleted',
+        'eventname'   => core\event\cohort_deleted::class,
         'callback'    => 'block_coupon\eventobservers::cohort_deleted',
+        'internal' => false
+    ),
+    array(
+        'eventname'   => core\event\user_deleted::class,
+        'callback'    => 'block_coupon\eventobservers::user_deleted',
         'internal' => false
     ),
 );

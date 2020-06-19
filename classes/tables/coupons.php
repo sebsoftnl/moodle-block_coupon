@@ -53,6 +53,10 @@ class coupons extends \table_sql {
      */
     const UNUSED = 2;
     /**
+     * Filter to display personalised coupons only
+     */
+    const PERSONAL = 3;
+    /**
      * Filter to display all coupons
      */
     const ALL = 3;
@@ -87,6 +91,13 @@ class coupons extends \table_sql {
     protected $filtering;
 
     /**
+     * Should we use an action menu for the actions?
+     *
+     * @var bool
+     */
+    protected $useactionmenu = true;
+
+    /**
      * Get filtering instance
      * @return \block_coupon\filtering\filtering
      */
@@ -105,6 +116,26 @@ class coupons extends \table_sql {
     }
 
     /**
+     * Should we use an action menu for the actions?
+     *
+     * @return bool
+     */
+    public function get_useactionmenu() {
+        return $this->useactionmenu;
+    }
+
+    /**
+     * Set whether whould use an action menu for the actions?
+     *
+     * @param bool $useactionmenu
+     * @return self
+     */
+    public function set_useactionmenu($useactionmenu) {
+        $this->useactionmenu = $useactionmenu;
+        return $this;
+    }
+
+    /**
      * Create a new instance of the logtable
      *
      * @param int $ownerid if set, display only coupons from given owner
@@ -112,11 +143,11 @@ class coupons extends \table_sql {
      */
     public function __construct($ownerid = null, $filter = 3) {
         global $USER;
-        parent::__construct(__CLASS__. '-' . $USER->id . '-' . ((int)$ownerid));
+        parent::__construct(__CLASS__. '-' . $USER->id . '-' . ((int)$ownerid . '-' . $filter));
         $this->ownerid = (int)$ownerid;
         $this->filter = (int)$filter;
         $this->sortable(true, 'c.senddate', 'DESC');
-        $this->no_sorting('owner');
+//        $this->no_sorting('owner');
         $this->no_sorting('course');
         $this->no_sorting('cohorts');
         $this->no_sorting('groups');
@@ -124,6 +155,8 @@ class coupons extends \table_sql {
         $this->no_sorting('action');
         $this->strdelete = get_string('action:coupon:delete', 'block_coupon');
         $this->strdeleteconfirm = get_string('action:coupon:delete:confirm', 'block_coupon');
+
+        $this->otherusercolumns = [];
     }
 
     /**
@@ -148,6 +181,7 @@ class coupons extends \table_sql {
      * @param bool $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
+        global $DB;
         $columns = array('owner', 'for_user_email', 'senddate',
             'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'roleid', 'batchid', 'issend');
         $headers = array(
@@ -169,9 +203,9 @@ class coupons extends \table_sql {
         }
         switch ($this->filter) {
             case self::USED:
-                $this->useridfield = 'userid';
-                array_splice($columns, 1, 0, ['fullname', 'timeclaimed']);
-                array_splice($headers, 1, 0, [get_string('fullname'),
+            case self::PERSONAL:
+                array_splice($columns, 1, 0, ['usedby', 'timeclaimed']);
+                array_splice($headers, 1, 0, [get_string('th:usedby', 'block_coupon'),
                     get_string('th:claimedon', 'block_coupon')]);
                 break;
             default:
@@ -182,7 +216,9 @@ class coupons extends \table_sql {
         $this->define_headers($headers);
 
         // Generate SQL.
-        $fields = 'c.*, ' . get_all_user_name_fields(true, 'u') . ', NULL as action';
+        $fields = 'c.*, ' . get_all_user_name_fields(true, 'u', '', 'owner_') .
+                ', ' . $DB->sql_fullname('u.firstname', 'u.lastname') . ' AS owner' .
+                ', NULL as action';
         $from = '{block_coupon} c ';
         $from .= 'JOIN {user} u ON c.ownerid=u.id ';
         $from .= 'LEFT JOIN {role} r ON c.roleid=r.id ';
@@ -195,11 +231,18 @@ class coupons extends \table_sql {
         switch ($this->filter) {
             case self::USED:
                 $where[] = 'claimed = 1';
-                $fields .= ', ' . get_all_user_name_fields(true, 'u1', '', 'user_');
+                $fields .= ', ' . get_all_user_name_fields(true, 'u1');
+                $fields .= ', ' . $DB->sql_fullname('u1.firstname', 'u1.lastname') . ' AS usedby';
                 $from .= ' JOIN {user} u1 ON c.userid=u1.id';
                 break;
             case self::UNUSED:
                 $where[] = 'claimed = 0';
+                break;
+            case self::PERSONAL:
+                $where[] = 'for_user_email IS NOT NULL';
+                $fields .= ', ' . get_all_user_name_fields(true, 'u1');
+                $fields .= ', ' . $DB->sql_fullname('u1.firstname', 'u1.lastname') . ' AS usedby';
+                $from .= ' LEFT JOIN {user} u1 ON c.userid=u1.id';
                 break;
             case self::ALL:
                 // Has no extra where clause.
@@ -219,7 +262,6 @@ class coupons extends \table_sql {
                 $params += $fparams;
             }
         }
-
         parent::set_sql($fields, $from, implode(' AND ', $where), $params);
         $this->out($pagesize, $useinitialsbar);
     }
@@ -231,7 +273,42 @@ class coupons extends \table_sql {
      * @return string time string
      */
     public function col_owner($row) {
-        return fullname($row);
+        // This is a nasty hack, but it works.
+        $mrow = new \stdClass;
+        $mrow->userid = $row->ownerid;
+        $match = null;
+        foreach ($row as $k => $v) {
+            if (preg_match('/^owner_(.+)$/', $k, $match)) {
+                $fk = $match[1];
+                $mrow->{$fk} = $v;
+            }
+        }
+        $old = $this->useridfield;
+        $this->useridfield = 'userid';
+        $fullname = parent::col_fullname($mrow);
+        $this->useridfield = $old;
+        return $fullname;
+    }
+
+    /**
+     * Render visual representation of the 'user' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string time string
+     */
+    public function col_usedby($row) {
+        // This is a nasty hack, but it works.
+        $mrow = new \stdClass;
+        $mrow->userid = $row->userid;
+        $match = null;
+        foreach ($row as $k => $v) {
+            $mrow->{$k} = $v;
+        }
+        $old = $this->useridfield;
+        $this->useridfield = 'userid';
+        $fullname = parent::col_fullname($mrow);
+        $this->useridfield = $old;
+        return $fullname;
     }
 
     /**
@@ -387,12 +464,19 @@ class coupons extends \table_sql {
         $renderer = $PAGE->get_renderer('block_coupon');
         $actions[] = $renderer->action_icon(new \moodle_url($this->baseurl,
                 array('action' => 'delete', 'itemid' => $row->id, 'sesskey' => sesskey())),
-                new \image_icon('i/delete', $this->strdelete, 'moodle', ['class' => 'icon',
+                new \pix_icon('i/delete', $this->strdelete, 'moodle', ['class' => 'icon',
                     'onclick' => 'return confirm(\'' . $this->strdeleteconfirm . '\');']),
                 null,
-                ['alt' => $this->strdelete], $linktext = '');
+                ['alt' => $this->strdelete],
+                $this->useactionmenu ? $this->strdelete : null,
+                true);
 
-        return implode('', $actions);
+        if ($this->useactionmenu) {
+            $m = new \action_menu($actions);
+            return $renderer->render($m);
+        } else {
+            return implode('', $actions);
+        }
     }
 
     /**

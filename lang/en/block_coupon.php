@@ -132,7 +132,7 @@ $string['label:use_alternative_email_help'] = 'When checked it will by default u
 $string['label:max_coupons'] = 'Maximum coupons';
 $string['label:max_coupons_desc'] = 'Amount of coupons that can be created in one time.';
 $string['label:coupon_code_length'] = 'Code length';
-$string['label:coupon_code_length_desc'] = 'Amount of characters of the coupon code.';
+$string['label:coupon_code_length_help'] = 'Amount of characters of the coupon code.';
 
 $string['label:selected_groups'] = 'Selected group(s)';
 $string['label:selected_courses'] = 'Selected courses';
@@ -184,6 +184,8 @@ $string['view:reports-used:title'] = 'Report - Used Coupons';
 $string['view:reports-used:heading'] = 'Report - Used Coupons';
 $string['view:reports-unused:title'] = 'Report - Unused Coupons';
 $string['view:reports-unused:heading'] = 'Report - Unused Coupons';
+$string['view:reports-personal:title'] = 'Report - Personalised Coupons';
+$string['view:reports-personal:heading'] = 'Report - Personalised Coupons';
 $string['view:api:heading'] = 'Coupon API';
 $string['view:api:title'] = 'Coupon API';
 $string['view:api_docs:heading'] = 'Coupon API Documentation';
@@ -557,6 +559,9 @@ $string['findusers:noselectionstring'] = 'no user selected yet';
 $string['findusers:placeholder'] = '... select user ...';
 $string['findcourses:noselectionstring'] = 'no course(s) selected yet';
 $string['findcourses:placeholder'] = '... select course(s) ...';
+$string['findcohorts:noselectionstring'] = 'no cohort(s) selected yet';
+$string['findcohorts:placeholder'] = '... select cohort(s) ...';
+$string['findcohortcourses:noselectionstring'] = 'no selection made yet';
 $string['coupon:user:heading'] = 'User configuration for {$a->firstname} {$a->lastname}';
 $string['coupon:user:info'] = 'Use the form below to configure the options and accessible courses this use can request coupons for';
 $string['knowncourses'] = 'Known courses';
@@ -624,12 +629,12 @@ $string['label:generatecodesonly_help'] = 'If you enable this option, only codes
 This means the complete mailing option and creating PDFs will be skipped!';
 
 $string['generator:export:mail:subject'] = 'Coupons ready for download';
-$string['generator:export:mail:body'] = 'Dear {$a->to_name},<br /><br />
+$string['generator:export:mail:body'] = 'Dear {$a->fullname},<br /><br />
 You are receiving this message because there have been newly generated coupons.<br/>
 The coupons can be downloaded from {$a->downloadlink} (requires logging in to Moodle).<br />
 Please note this link can only be used once. After you\'ve downloaded the generated coupons, this link can no longer be used.<br />
 With kind regards,<br /><br />
-{$a->from_name}';
+{$a->signoff}';
 
 $string['error:already-enrolled-in-courses'] = 'You have already been enrolled in all courses';
 $string['error:already-enrolled-in-cohorts'] = 'You have already been enrolled in all cohorts';
@@ -668,7 +673,7 @@ $string['messageprovider:coupon_task_notification'] = 'Personal coupons sent out
 $string['coupon_notification_subject'] = 'Coupons generated!';
 $string['coupon_notification_content'] = '<p>The coupon(s) you requested have been generated<br/>
 You should have received an e-mail containing the link to download the generated coupons.<br/>
-You can also choose to download your coupons directly by clicking {$a}</p>
+You can also choose to download your coupons directly by clicking {$a->downloadlink}</p>
 ';
 $string['coupons:cleaned'] = 'A total of {$a} coupons have been cleaned / removed';
 $string['err:coupon:generic'] = 'Something went wrong. Please contact the systems administrator';
@@ -690,3 +695,15 @@ $string['str:request:details'] = 'My request details';
 $string['err:not-a-requestuser'] = 'You have insufficient rights to access this page';
 
 $string['privacy:metadata:block_coupon'] = 'The coupon block stores coupon/voucher codes and links users that have claimed it';
+$string['label:personalsendpdf'] = 'Send PDF with personalised coupons?';
+$string['label:personalsendpdf_help'] = 'If enabled, this will include the PDF when sending coupons to personal recipients.<br/>
+Do note that when this is disabled, the e-mail for recipients of personal coupons <i>should</i> have a coupon code field/template variable.<br/>
+If this template variable is missing and no PDF is sent along, the recipient would not know which coupon code to enter.
+';
+$string['label:seperatepersonalcoupontab'] = 'Add seperate personalized coupon tab?';
+$string['label:seperatepersonalcoupontab_help'] = 'If enabled, this will include an extra tab specific to personalized coupons.<br/>
+Of course, the default used/unused coupon tabs will be available no matter what and personalized coupons <i>will</i> always be available on those tabs.<br/>
+Hence, this setting does not affect the used/unused coupons tabs.
+';
+$string['tab:personalcoupons'] = 'Personalised coupons';
+$string['err:codesize:left'] = 'Codesize error: for {$a->want} coupons of {$a->size} characters we have {$a->left} slots left (given the current character options)';

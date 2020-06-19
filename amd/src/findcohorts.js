@@ -25,7 +25,7 @@
 
 define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notification) {
 
-    return /** @alias module:block_coupon/findusers */ {
+    return /** @alias module:block_coupon/findcohorts */ {
 
         /**
          * List users.
@@ -39,7 +39,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
 
             $.extend(args, typeof options === 'undefined' ? {} : options);
             promise = Ajax.call([{
-                methodname: 'block_coupon_find_users',
+                methodname: 'block_coupon_find_cohorts',
                 args: args
             }])[0];
 

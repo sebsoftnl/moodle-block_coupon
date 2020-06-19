@@ -1,0 +1,105 @@
+image: moodlehq/moodle-php-apache:7.1
+
+cache:
+ paths:
+  - $HOME/.composer/cache
+  - $HOME/.npm
+
+variables:
+ DB: "mariadb"
+ MYSQL_ROOT_PASSWORD: "hg67u5ignrfusdn"
+  
+before_script:
+ - mkdir plugin
+ - mv -vf * plugin || true
+ - apt-get update
+ - apt-get install -y git mariadb-client mariadb-server python2.7 unzip
+ - service mysql start
+ - curl -o /usr/local/bin/phpunit https://phar.phpunit.de/phpunit.phar
+ - chmod +x /usr/local/bin/phpunit
+ - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
+ - source $HOME/.nvm/nvm.sh
+ - nvm install 8.9
+ - nvm use 8.9
+ - curl -sS https://getcomposer.org/installer | php
+ - mv composer.phar /usr/local/bin/composer
+ - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
+ - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
+ - moodle-plugin-ci install --db-user=root --db-pass=hg67u5ignrfusdn --db-host=localhost --plugin plugin -vvv --no-ansi
+
+.job_template: &job_definition
+ script:  
+  - moodle-plugin-ci phplint 
+
+
+phplint:
+ <<: *job_definition
+ image: php:7.1
+ variables:
+  MOODLE_BRANCH: "MOODLE_35_STABLE"
+ script:  
+  - moodle-plugin-ci phplint 
+  
+phpcpd:
+ <<: *job_definition
+ image: php:7.1
+ variables:
+  MOODLE_BRANCH: "MOODLE_35_STABLE"
+ script:  
+  - moodle-plugin-ci phpcpd 
+  
+codechecker:
+ <<: *job_definition
+ image: php:7.1
+ variables:
+  MOODLE_BRANCH: "MOODLE_35_STABLE"
+ script:  
+  - moodle-plugin-ci codechecker 
+  
+savepoints:
+ <<: *job_definition
+ image: php:7.1
+ variables:
+  MOODLE_BRANCH: "MOODLE_35_STABLE"
+ script:  
+  - moodle-plugin-ci savepoints 
+  
+mustache:
+ <<: *job_definition
+ image: php:7.1
+ variables:
+  MOODLE_BRANCH: "MOODLE_35_STABLE"
+ script:  
+  - moodle-plugin-ci mustache 
+  
+grunt:
+ <<: *job_definition
+ image: php:7.1
+ variables:
+  MOODLE_BRANCH: "MOODLE_35_STABLE"
+ script:  
+  - moodle-plugin-ci grunt 
+  
+validate:
+ <<: *job_definition
+ image: php:7.1
+ variables:
+  MOODLE_BRANCH: "MOODLE_35_STABLE"
+ script:  
+  - moodle-plugin-ci validate 
+  
+phpunit:
+ <<: *job_definition
+ image: php:7.1
+ variables:
+  MOODLE_BRANCH: "MOODLE_35_STABLE"
+ script:  
+  - moodle-plugin-ci phpunit 
+  
+behat:
+ <<: *job_definition
+ image: php:7.1
+ variables:
+  MOODLE_BRANCH: "MOODLE_35_STABLE"
+ script:  
+  - moodle-plugin-ci behat 

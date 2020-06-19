@@ -70,7 +70,7 @@ final class codegenerator {
      *
      * @param int $size code size
      * @param int $flags generator flags
-     * @param array $exclude charachters to exclude
+     * @param array $exclude characters to exclude
      * @return string guaranteed unique coupon code
      */
     static public function generate_unique_code($size, $flags = self::ALL, $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
@@ -89,37 +89,10 @@ final class codegenerator {
      *
      * @param int $size code size
      * @param int $flags generator flags
-     * @param array $exclude charachters to exclude
+     * @param array $exclude characters to exclude
      */
     static private function generate_code($size, $flags = self::ALL, $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
-        $chars = '';
-        if (self::is_flag($flags, self::NUMERIC)) {
-            $chars .= '0123456789';
-        }
-        if (self::is_flag($flags, self::LETTERS)) {
-            $chars .= 'abcdefghijklmnopqrstuvwxyz';
-        }
-        if (self::is_flag($flags, self::CAPITALS)) {
-            $chars .= 'ABCDEFGHIJKLMNOPQRTSUVWXYZ';
-        }
-
-        $chars = implode('', array_diff(str_split($chars), $exclude));
-
-        $code = '';
-        $max = strlen($chars);
-        while (true && (strlen($code) < $size)) {
-            $n = rand(0, $max - 1);
-            if (strlen($code) == 0) {
-                // Do not use number as first char.
-                if (!is_numeric($chars{$n})) {
-                    $code .= $chars{$n};
-                }
-            } else {
-                $code .= $chars{$n};
-            }
-        }
-
-        return $code;
+        return static::get_token($size, $flags, $exclude);
     }
 
     /**
@@ -131,6 +104,132 @@ final class codegenerator {
      */
     static private function is_flag($value, $flag) {
         return (($value & $flag) === $flag);
+    }
+
+    /**
+     * Calculate max number of unique codes we have left
+     *
+     * @param int $size code size
+     * @param int $flags generator flags
+     * @param array $exclude characters to exclude
+     * @return array [maximum, have]
+     */
+    static public function calc_max_codes_for_size($size, $flags = self::ALL,
+            $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
+        global $DB;
+
+        $have = $DB->count_records_sql('SELECT COUNT(1) FROM {block_coupon} WHERE LENGTH(submission_code) = ?', [$size]);
+
+        $charstr = static::get_char_str($flags, $exclude);
+        $max = pow(strlen($charstr), $size);
+        // Because we do NOT support numeric values as first character, take this into account.
+        $chars = '0123456789';
+        $max -= count(array_diff(str_split($chars), $exclude));
+
+        return [$max, $have];
+    }
+
+    /**
+     * Fetch character string ti use.
+     *
+     * @param int $flags generator flags
+     * @param array $exclude characters to exclude
+     */
+    static private function get_char_str($flags = self::ALL,
+            $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
+        $chars = '';
+        if (self::is_flag($flags, self::NUMERIC)) {
+            $chars .= '0123456789';
+        }
+        if (self::is_flag($flags, self::LETTERS)) {
+            $chars .= 'abcdefghijklmnopqrstuvwxyz';
+        }
+        if (self::is_flag($flags, self::CAPITALS)) {
+            $chars .= 'ABCDEFGHIJKLMNOPQRTSUVWXYZ';
+        }
+
+        return implode('', array_diff(str_split($chars), $exclude));
+    }
+
+    /**
+     * Generate crypto (original).
+     * Nasty mt_rand usage which is OLD and crappy.
+     *
+     * @param int $min
+     * @param int $max
+     * @return int
+     */
+    static protected function crypto_mt_rand($min, $max) {
+        static $seeded;
+        if (empty($seeded)) {
+            mt_srand();
+            $seeded = true;
+        }
+        return mt_rand($min, $max);
+    }
+
+    /**
+     * Generate crypto.
+     *
+     * @see https://stackoverflow.com/questions/1846202/php-how-to-generate-a-random-unique-alphanumeric-string
+     *
+     * @param int $min
+     * @param int $max
+     * @return int
+     */
+    static protected function crypto_rand_secure($min, $max) {
+        $range = $max - $min;
+        if ($range < 1) {
+            return $min; // Not so random...
+        }
+        $log = ceil(log($range, 2));
+        $bytes = (int) ($log / 8) + 1; // Length in bytes.
+        $bits = (int) $log + 1; // Length in bits.
+        $filter = (int) (1 << $bits) - 1; // Set all lower bits to 1.
+        do {
+            $rnd = hexdec(bin2hex(openssl_random_pseudo_bytes($bytes)));
+            $rnd = $rnd & $filter; // Discard irrelevant bits.
+        } while ($rnd > $range);
+        return $min + $rnd;
+    }
+
+    /**
+     * get token.
+     *
+     * @see https://stackoverflow.com/questions/1846202/php-how-to-generate-a-random-unique-alphanumeric-string
+     *
+     * @param int $size code size
+     * @param int $flags generator flags
+     * @param array $exclude characters to exclude
+     * @return string
+     */
+    static protected function get_token($size, $flags = self::ALL, $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
+        $codealphabet = static::get_char_str($flags, $exclude);
+        $token = '';
+        $max = strlen($codealphabet);
+        $func = '';
+        if (function_exists('random_int')) {
+            $func = 'random_int';
+        } else if (function_exists('openssl_random_pseudo_bytes')) {
+            $func = [static::class, 'crypto_rand_secure'];
+        } else {
+            // Original. This is the worst implementation.
+            $func = [static::class, 'crypto_mt_rand'];
+        }
+
+        while (true && (strlen($token) < $size)) {
+            $n = $func(0, $max - 1);
+            if (strlen($token) == 0) {
+                // Do not use number as first char.
+                if (!is_numeric($codealphabet{$n})) {
+                    $token .= $codealphabet{$n};
+                }
+            } else {
+                $token .= $codealphabet{$n};
+            }
+        }
+
+        return $token;
     }
 
 }

@@ -189,6 +189,12 @@ class block_coupon_renderer extends plugin_renderer_base {
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php',
                 array_merge($params, array('tab' => 'used'))),
                 get_string('tab:used', 'block_coupon'));
+        if (get_config('block_coupon', 'seperatepersonalcoupontab')) {
+            $tabs[] = $this->create_pictab('cppersonal', 'i/permissionlock', '',
+                    new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php',
+                    array_merge($params, array('tab' => 'personal'))),
+                    get_string('tab:personalcoupons', 'block_coupon'));
+        }
         $tabs[] = $this->create_pictab('cperrorreport', 'i/warning', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/errorreport.php',
                 array_merge($params, array('tab' => 'cperrorreport'))),
@@ -255,6 +261,54 @@ class block_coupon_renderer extends plugin_renderer_base {
         $tabs[] = $batchlisttab;
 
         return $this->tabtree($tabs, $selected);
+    }
+
+
+
+    /**
+     * Renders an action_icon.
+     *
+     * This function uses the {@link core_renderer::action_link()} method for the
+     * most part. What it does different is prepare the icon as HTML and use it
+     * as the link text.
+     *
+     * Theme developers: If you want to change how action links and/or icons are rendered,
+     * consider overriding function {@link core_renderer::render_action_link()} and
+     * {@link core_renderer::render_pix_icon()}.
+     *
+     * @param string|moodle_url $url A string URL or moodel_url
+     * @param pix_icon $pixicon
+     * @param component_action $action
+     * @param array $attributes associative array of html link attributes + disabled
+     * @param bool $linktext show title next to image in link
+     * @param bool $iconbeforetext override default Moodle to place icon BEFORE text
+     * @return string HTML fragment
+     */
+    public function action_icon($url, pix_icon $pixicon, component_action $action = null,
+            array $attributes = null, $linktext = false, $iconbeforetext = false) {
+        if (!($url instanceof moodle_url)) {
+            $url = new moodle_url($url);
+        }
+        $attributes = (array) $attributes;
+
+        if (empty($attributes['class'])) {
+            // Let ppl override the class via $options.
+            $attributes['class'] = 'action-icon';
+        }
+
+        $icon = $this->render($pixicon);
+
+        if ($linktext) {
+            $text = $pixicon->attributes['alt'];
+        } else {
+            $text = '';
+        }
+
+        if ($iconbeforetext) {
+            return $this->action_link($url, $icon . $text, $action, $attributes);
+        } else {
+            return $this->action_link($url, $text . $icon, $action, $attributes);
+        }
     }
 
 }

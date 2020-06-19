@@ -68,3 +68,20 @@
     width: 100%;
     height: 100%;
 }
+.block-coupon-container .mform .form-inline .form-control, .block-coupon-container .mform .form-inline .custom-select {
+    width: 100%; /*oid; do not use 100% due to autocomplete elements!!!!*/
+}
+.block-coupon-container .mform .form-inline[data-fieldtype="autocomplete"] input.form-control {
+    width: 90%; /*oid; do not use 100% due to autocomplete elements!!!!*/
+}
+[data-block="coupon"] .btn {
+    margin-top: 10px;
+}
+/* prevent outline on single row. Stupid flex layout. Moodle hasn't really thought this one through... */
+[data-groupname="coupon_groups"] .form-inline {
+    display: block;
+}
+[data-groupname="coupon_groups"] .form-check-inline {
+    display: inline;
+    margin-left: 20px;
+}

@@ -1,3 +1,43 @@
+Version 4.0.6 (build 2020010806)
+* Added autocompletes for cohort/cohort courses.
+* Added user_deleted observer.
+* Fixed notice (generate_pdf) on POST data (user requesting coupon; made field an advcheckbox).
+* Fixed CSS issue... _sigh_.
+* Undo previous work on user column (used coupons).
+* Fix sorting on user column.
+* Add sorting on owner column.
+* Added user/claimed_on columns for personalised coupons.
+* Fixed langstring 'coupon_notification_content'.
+* Fixed get_string variables (in helper).
+
+----------
+
+Version 4.0.6 (build 2020010805)
+* Added INDICES to block_coupon.
+
+----------
+
+Version 4.0.6 (build 2020010804)
+* Changed course selection when generating coupons to auto-complete element.
+* Changed cohort selection when generating coupons to auto-complete element.
+* Added services.
+* Added 10px whitespace between buttons in block.
+* Set width of most default for elements to 75% (never EVER set to 100% due to autocomplete element).
+* Modified course group selection to checkboxes.
+* Added tab dedicated to personalised coupons (uses global setting to enable!).
+* Add field to manipulate code size for coupons.
+
+Special thanks to Gemma Lesterhuis (Lesterhuis Training & Consultancy)
+for useful input, funding of these changes, bug reports and beta testing.
+
+----------
+
+Version 4.0.5 (build 2020010803)
+* Added option to include PDF when sending personalised coupons.
+* Modified (AGAIN) sending process of personal coupons.
+
+----------
+
 Version 4.0.4.2 (build 2020010802)
 * Changed length of batchid to 255.
 

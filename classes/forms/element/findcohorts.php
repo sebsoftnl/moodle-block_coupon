@@ -16,7 +16,7 @@
 /**
  * Courses selector field.
  *
- * File         findcourses.php
+ * File         findcohorts.php
  * Encoding     UTF-8
  *
  * @package     block_coupon
@@ -35,7 +35,7 @@ global $CFG;
 require_once($CFG->libdir . '/form/autocomplete.php');
 
 /**
- * Form field type for choosing a course.
+ * Form field type for choosing a cohort.
  *
  * @package     block_coupon
  *
@@ -43,20 +43,20 @@ require_once($CFG->libdir . '/form/autocomplete.php');
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class findcourses extends MoodleQuickForm_autocomplete {
+class findcohorts extends MoodleQuickForm_autocomplete {
 
     /**
-     * Display only visible courses?
+     * Display only visible cohorts?
      * @var bool
      */
-    protected $onlyvisible = true;
+    private $onlyvisible = true;
 
     /**
      * Has setValue() already been called already?
      *
      * @var bool
      */
-    protected $selectedset = false;
+    private $selectedset = false;
 
     /**
      * Constructor.
@@ -69,7 +69,7 @@ class findcourses extends MoodleQuickForm_autocomplete {
      */
     public function __construct($elementname = null, $elementlabel = null, $options = array()) {
         $validattributes = array(
-            'ajax' => 'block_coupon/findcourses',
+            'ajax' => 'block_coupon/findcohorts',
             'multiple' => true
         );
         if (!empty($options['multiple'])) {
@@ -80,8 +80,8 @@ class findcourses extends MoodleQuickForm_autocomplete {
         }
         $validattributes['tags'] = false;
         $validattributes['casesensitive'] = false;
-        $validattributes['placeholder'] = get_string('findcourses:placeholder', 'block_coupon');
-        $validattributes['noselectionstring'] = get_string('findcourses:noselectionstring', 'block_coupon');
+        $validattributes['placeholder'] = get_string('findcohorts:placeholder', 'block_coupon');
+        $validattributes['noselectionstring'] = get_string('findcohorts:noselectionstring', 'block_coupon');
         $validattributes['showsuggestions'] = true;
         parent::__construct($elementname, $elementlabel, array(), $validattributes);
     }
@@ -118,14 +118,14 @@ class findcourses extends MoodleQuickForm_autocomplete {
         // Logic here is simulating API.
         $toselect = array();
         list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'param');
-        $courses = $DB->get_records_select('course', 'id '.$insql, $inparams);
-        foreach ($courses as $course) {
-            if ($this->onlyvisible && !$course->visible) {
+        $cohorts = $DB->get_records_select('cohort', 'id '.$insql, $inparams);
+        foreach ($cohorts as $cohort) {
+            if ($this->onlyvisible && !$cohort->visible) {
                 continue;
             }
-            $optionname = $course->shortname . (empty($course->idnumber) ? '' : ' ('.$course->idnumber.')');
-            $this->addOption($optionname, $course->id, ['selected' => 'selected']);
-            array_push($toselect, $course->id);
+            $optionname = $cohort->name . (empty($cohort->idnumber) ? '' : ' ('.$cohort->idnumber.')');
+            $this->addOption($optionname, $cohort->id, ['selected' => 'selected']);
+            array_push($toselect, $cohort->id);
         }
         $rs = $this->setSelected($toselect);
         return $rs;

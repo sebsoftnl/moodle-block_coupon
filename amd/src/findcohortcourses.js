@@ -25,7 +25,7 @@
 
 define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notification) {
 
-    return /** @alias module:block_coupon/findusers */ {
+    return /** @alias module:block_coupon/findcohortcourses */ {
 
         /**
          * List users.
@@ -39,7 +39,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
 
             $.extend(args, typeof options === 'undefined' ? {} : options);
             promise = Ajax.call([{
-                methodname: 'block_coupon_find_users',
+                methodname: 'block_coupon_find_potential_cohort_courses',
                 args: args
             }])[0];
 
@@ -72,7 +72,10 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
          * @param {Function} callback A callback function receiving an array of results.
          */
         transport: function(selector, query, callback) {
+            // Find cohortid.
+            var cohortid = $(selector).closest('[data-fieldtype="autocomplete"]').find('select[data-cohortid]').data('cohortid');
             this.list({
+                cohortid: cohortid,
                 query: query
             }).then(callback);
         }

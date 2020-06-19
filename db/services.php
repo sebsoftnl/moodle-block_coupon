@@ -41,6 +41,8 @@ $services = array(
             'block_coupon_get_coupon_reports',
             'block_coupon_find_users',
             'block_coupon_find_courses',
+            'block_coupon_find_potential_cohort_courses',
+            'block_coupon_find_cohorts',
         ),
         'requiredcapability' => '',
         'restrictedusers' => 0,
@@ -126,6 +128,22 @@ $functions = array(
         'methodname' => 'find_courses',
         'classpath' => 'blocks/coupon/externallib.php',
         'description' => 'Find courses.',
+        'type' => 'read',
+        'ajax' => true
+    ),
+    'block_coupon_find_potential_cohort_courses' => array(
+        'classname' => 'block_coupon_external',
+        'methodname' => 'find_potential_cohort_courses',
+        'classpath' => 'blocks/coupon/externallib.php',
+        'description' => 'Find potential courses to connect to a cohort.',
+        'type' => 'read',
+        'ajax' => true
+    ),
+    'block_coupon_find_cohorts' => array(
+        'classname' => 'block_coupon_external',
+        'methodname' => 'find_cohorts',
+        'classpath' => 'blocks/coupon/externallib.php',
+        'description' => 'Find cohorts. Only use for AMD please',
         'type' => 'read',
         'ajax' => true
     ),

@@ -32,6 +32,14 @@
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+        <INDEX NAME="ownerid" UNIQUE="false" FIELDS="ownerid"/>
+        <INDEX NAME="logoid" UNIQUE="false" FIELDS="logoid"/>
+        <INDEX NAME="claimed" UNIQUE="false" FIELDS="claimed"/>
+        <INDEX NAME="batchid" UNIQUE="false" FIELDS="batchid"/>
+        <INDEX NAME="submission_code" UNIQUE="true" FIELDS="submission_code"/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="block_coupon_cohorts" COMMENT="block_coupon_cohorts table retrofitted from MySQL">
       <FIELDS>

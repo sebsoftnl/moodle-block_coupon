@@ -132,7 +132,7 @@ $string['label:use_alternative_email_help'] = 'Indien aangevinkt wordt het e-mai
 $string['label:max_coupons'] = 'Maximum coupons';
 $string['label:max_coupons_desc'] = 'Aantal coupons dat in 1 keer aangemaakt kan worden.';
 $string['label:coupon_code_length'] = 'Code length';
-$string['label:coupon_code_length_desc'] = 'Aantal karakters van de Couponcode.';
+$string['label:coupon_code_length_help'] = 'Aantal karakters van de Couponcode.';
 
 $string['label:selected_groups'] = 'Geselecteerde groep(en)';
 $string['label:selected_courses'] = 'Geselecteerde cursussen';
@@ -184,6 +184,8 @@ $string['view:reports-unused:title'] = 'Rapportage - Ongebruikte coupons';
 $string['view:reports-unused:heading'] = 'Rapportage - Ongebruikte coupons';
 $string['view:reports-used:title'] = 'Rapportage - Gebruikte coupons';
 $string['view:reports-used:heading'] = 'Rapportage - Gebruikte coupons';
+$string['view:reports-personal:title'] = 'Rapportage - Gepersonaliseerde Coupons';
+$string['view:reports-personal:heading'] = 'Rapportage - Gepersonaliseerde Coupons';
 $string['view:api:heading'] = 'Coupon API';
 $string['view:api:title'] = 'Coupon API';
 $string['view:api_docs:heading'] = 'Coupon API Documentatie';
@@ -534,6 +536,9 @@ $string['findusers:noselectionstring'] = 'geen gebruiker geselecteerd';
 $string['findusers:placeholder'] = '... selecteer gebruiker ...';
 $string['findcourses:noselectionstring'] = 'Geen cursus(sen) geselecteerd';
 $string['findcourses:placeholder'] = '... selecteer cursus(sen) ...';
+$string['findcohorts:noselectionstring'] = 'Geen sitegroep(en) geselecteerd';
+$string['findcohorts:placeholder'] = '... selecteer sitegroep(en) ...';
+$string['findcohortcourses:noselectionstring'] = 'Nog geen selectie gemaakt';
 $string['coupon:user:heading'] = 'Gebruikersconfiguratie voor {$a->firstname} {$a->lastname}';
 $string['coupon:user:info'] = 'Gebruik onderstaand formulier om aan te geven welke opties en voor welke cursussen de gebruiker coupons kan/mag aanvragen';
 $string['knowncourses'] = 'Bekende cursussen';
@@ -597,12 +602,12 @@ $string['label:generatecodesonly'] = 'Alleen codes genereren';
 $string['label:generatecodesonly_help'] = 'Wanneer je deze optie inschakelt, worden er geen PDFs gemaakt en geen emails verstuurd!';
 
 $string['generator:export:mail:subject'] = 'Coupons klaar voor download';
-$string['generator:export:mail:body'] = 'Beste {$a->to_name},<br /><br />
+$string['generator:export:mail:body'] = 'Beste {$a->fullname},<br /><br />
 Je ontvangt deze email omdat er nieuwe coupons zijn gegenereerd.<br/>
 De coupons kunnen gedownload worden vanaf {$a->downloadlink} (vereist inloggen in Moodle).<br />
 Let er aub op dat deze link slechts 1 maal kan worden gebruikt. Wanneer de coupons zijn gedownload, is deze link niet langer bruikbaar.<br />
 Met vriendelijke groet,<br /><br />
-{$a->from_name}';
+{$a->signoff}';
 
 $string['error:already-enrolled-in-courses'] = 'Je bent al in alle cursussen aangemeld';
 $string['error:already-enrolled-in-cohorts'] = 'Je bent al in alle sitegroepen aangemeld';
@@ -663,3 +668,15 @@ $string['str:request:details'] = 'Details couponverzoek';
 $string['err:not-a-requestuser'] = 'Je hebt onvoldoende rechten om deze pagina te bezoeken';
 
 $string['privacy:metadata:block_coupon'] = 'Het coupon blok slaat coupon/voucher codes op en eventuele koppelingen met gebruikers die een code hebben geclaimed';
+$string['label:personalsendpdf'] = 'Verzend PDF bij persoonlijke coupons?';
+$string['label:personalsendpdf_help'] = 'Indien ingeschakeld zal dit een PDF met de coupon meesturen als bijlage.<br/>
+Merk aub op dat wanneer deze optie niet in ingeschakeld, de e-mail voor ontvangers van persoonlijke coupons minimaal een <i>coupon code</i> veld of template variabele moet bevatten.<br/>
+Als deze template variabele mist en er wordt geen PDF meegestuurd, zal de ontvanger ook niet weten welke coupon code ingevuld moet worden.
+';
+$string['label:seperatepersonalcoupontab'] = 'Aparte tab toevoegen voor persoonlijke coupons?';
+$string['label:seperatepersonalcoupontab_help'] = 'Indien ingeschakeld zal dit een eigen tab toevoegen naast de gebruikte/ongebruikte coupons tabs.<br/>
+De gebruikte/ongebruikte coupons tabs zullen poer definitie altijd aanwezig zijn en gepersonaliseerde coupons zullen <i>altijd</i> beschikbaar zijn op die tabs.<br/>
+Deze instelling heeft dus inhoudelijk geen effect op de gebruikte/ongebruikte coupons tabs.
+';
+$string['tab:personalcoupons'] = 'Gepersonaliseerde coupons';
+$string['err:codesize:left'] = 'Code lengte fout: voor {$a->want} coupons van {$a->size} karakters hebben we slechts {$a->left} codes over (met de huidige karakterset)!';

@@ -16,7 +16,7 @@
 /**
  * Courses selector field.
  *
- * File         findcourses.php
+ * File         findcohortcourses.php
  * Encoding     UTF-8
  *
  * @package     block_coupon
@@ -30,6 +30,7 @@ namespace block_coupon\forms\element;
 defined('MOODLE_INTERNAL') || die();
 
 use MoodleQuickForm_autocomplete;
+use block_coupon\helper;
 global $CFG;
 
 require_once($CFG->libdir . '/form/autocomplete.php');
@@ -43,33 +44,28 @@ require_once($CFG->libdir . '/form/autocomplete.php');
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class findcourses extends MoodleQuickForm_autocomplete {
+class findcohortcourses extends findcourses {
 
     /**
-     * Display only visible courses?
-     * @var bool
+     * Cohort ID we're looking up potential courses for.
+     * @var int
      */
-    protected $onlyvisible = true;
-
-    /**
-     * Has setValue() already been called already?
-     *
-     * @var bool
-     */
-    protected $selectedset = false;
+    private $cohortid = null;
 
     /**
      * Constructor.
      *
      * @param string $elementname Element name
      * @param mixed $elementlabel Label(s) for an element
+     * @param int $cohortid cohort we're searching non connected courses for
      * @param array $options Options to control the element's display
      *                       Valid options are:
      *                       - multiple bool Whether or not the field accepts more than one values.
      */
-    public function __construct($elementname = null, $elementlabel = null, $options = array()) {
+    public function __construct($elementname = null, $elementlabel = null, $cohortid = null, $options = array()) {
+        $this->cohortid = $cohortid;
         $validattributes = array(
-            'ajax' => 'block_coupon/findcourses',
+            'ajax' => 'block_coupon/findcohortcourses',
             'multiple' => true
         );
         if (!empty($options['multiple'])) {
@@ -81,9 +77,10 @@ class findcourses extends MoodleQuickForm_autocomplete {
         $validattributes['tags'] = false;
         $validattributes['casesensitive'] = false;
         $validattributes['placeholder'] = get_string('findcourses:placeholder', 'block_coupon');
-        $validattributes['noselectionstring'] = get_string('findcourses:noselectionstring', 'block_coupon');
+        $validattributes['noselectionstring'] = get_string('findcohortcourses:noselectionstring', 'block_coupon');
         $validattributes['showsuggestions'] = true;
-        parent::__construct($elementname, $elementlabel, array(), $validattributes);
+        $validattributes['data-cohortid'] = $this->cohortid;
+        MoodleQuickForm_autocomplete::__construct($elementname, $elementlabel, array(), $validattributes);
     }
 
     /**
@@ -93,7 +90,6 @@ class findcourses extends MoodleQuickForm_autocomplete {
      * @return boolean
      */
     public function setValue($value) { // @codingStandardsIgnoreLine Can't change parent behaviour.
-        global $DB;
         // The following lines SEEM to fix the issues around the autocomplete...
         // When e.g. postback of form introduces a server side validation error.
         // The result is that when this method has been called before, selection is reset to NOTHING.
@@ -117,18 +113,32 @@ class findcourses extends MoodleQuickForm_autocomplete {
         }
         // Logic here is simulating API.
         $toselect = array();
-        list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'param');
-        $courses = $DB->get_records_select('course', 'id '.$insql, $inparams);
-        foreach ($courses as $course) {
-            if ($this->onlyvisible && !$course->visible) {
-                continue;
-            }
-            $optionname = $course->shortname . (empty($course->idnumber) ? '' : ' ('.$course->idnumber.')');
-            $this->addOption($optionname, $course->id, ['selected' => 'selected']);
-            array_push($toselect, $course->id);
+        $courses = $this->load_courses();
+        foreach ($courses as $id => $coursefullname) {
+            $optionname = $coursefullname;
+            $this->addOption($optionname, $id, ['selected' => 'selected']);
+            array_push($toselect, $id);
         }
         $rs = $this->setSelected($toselect);
         return $rs;
+    }
+
+    /**
+     * Load courses based on cohorot setting.
+     *
+     * @return array
+     */
+    private function load_courses() {
+        // Collect not connected courses.
+        $unconnectedcourses = helper::get_unconnected_cohort_courses($this->cohortid);
+        // If we have not connected courses we'll display them.
+        $courses = [];
+        if ($unconnectedcourses) {
+            foreach ($unconnectedcourses as $course) {
+                $courses[$course->id] = $course->fullname;
+            }
+        }
+        return $courses;
     }
 
 }

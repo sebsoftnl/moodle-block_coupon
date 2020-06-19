@@ -65,7 +65,12 @@ class page1 extends \moodleform {
      * form definition
      */
     public function definition() {
+        global $CFG;
         $mform = & $this->_form;
+
+        // Register element.
+        $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcohorts.php';
+        \MoodleQuickForm::registerElementType('findcohorts', $path, '\block_coupon\forms\element\findcohorts');
 
         list($this->generatoroptions) = $this->_customdata;
 
@@ -101,11 +106,9 @@ class page1 extends \moodleform {
             $arrcohortselect[$cohort->id] = $cohort->name;
         }
 
-        $attributes = array('size' => min(20, count($arrcohortselect)));
-        // Cohort id.
-        $selectcohorts = &$mform->addElement('select', 'coupon_cohorts',
-                get_string('label:coupon_cohorts', 'block_coupon'), $arrcohortselect, $attributes);
-        $selectcohorts->setMultiple($multiselect);
+        $options = ['multiple' => true, 'onlyvisible' => true];
+        $mform->addElement('findcohorts', 'coupon_cohorts',
+                get_string('label:coupon_cohorts', 'block_coupon'), $options);
         $mform->addRule('coupon_cohorts', get_string('error:required', 'block_coupon'), 'required', null, 'client');
         $mform->addHelpButton('coupon_cohorts', 'label:coupon_cohorts', 'block_coupon');
 

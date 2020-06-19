@@ -85,4 +85,15 @@ class eventobservers
         $DB->delete_records_list('block_coupon_groups', 'couponid', $deletecouponids);
     }
 
+    /**
+     * Handle user deleted event
+     *
+     * @param \core\event\user_deleted $event
+     */
+    public static function user_deleted(\core\event\user_deleted $event) {
+        global $DB;
+        $DB->delete_records('block_coupon_rusers', array('userid' => $event->objectid));
+        $DB->delete_records('block_coupon_requests', array('userid' => $event->objectid));
+    }
+
 }

@@ -30,6 +30,8 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once("$CFG->libdir/externallib.php");
 
+use block_coupon\helper;
+
 /**
  * Webservices implementation for block_coupon
  *
@@ -709,6 +711,148 @@ class block_coupon_external extends external_api {
             new external_single_structure(
                 array(
                     'id' => new external_value(PARAM_INT, 'course id'),
+                    'name' => new external_value(PARAM_TEXT, 'name'),
+                )
+            )
+        );
+    }
+
+    /**
+     * Returns potential cohort courses based on search query.
+     *
+     * @param int $cohortid cohort id we're locating unconnected courses for
+     * @param string $query search string
+     * @return array $courses
+     */
+    public static function find_potential_cohort_courses($cohortid, $query) {
+        global $DB;
+
+        // Exclusions.
+        $excludeids = helper::get_unconnected_cohort_courses($cohortid, true);
+        $excludeids[] = SITEID;
+        list($idnotinsql, $qparams) = $DB->get_in_or_equal($excludeids, SQL_PARAMS_QM, 'unused', true, 0);
+
+        $where = array();
+        $where[] = "c.id {$idnotinsql}";
+
+        $query = "%{$query}%";
+        $qwhere = [];
+        $qwhere[] = $DB->sql_like('c.shortname', '?', false, false);
+        $qparams[] = $query;
+
+        $qwhere[] = $DB->sql_like('c.fullname', '?', false, false);
+        $qparams[] = $query;
+
+        $qwhere[] = $DB->sql_like('c.idnumber', '?', false, false);
+        $qparams[] = $query;
+
+        $where[] = '('.implode(' OR ', $qwhere).')';
+
+        $sql = "SELECT id, shortname, fullname, idnumber FROM {course} c
+             WHERE ".implode(" AND ", $where).
+             " ORDER BY fullname ASC";
+        $rs = $DB->get_recordset_sql($sql, $qparams);
+        $courses = [];
+        foreach ($rs as $course) {
+            $courses[] = (object)[
+                'id' => $course->id,
+                'name' => $course->fullname . (empty($course->idnumber) ? '' : ' ('.$course->idnumber.')')
+                ];
+        }
+        $rs->close();
+
+        return $courses;
+    }
+
+    /**
+     * Is find_courses() allowed from AJAX?
+     * @return bool
+     */
+    public static function find_potential_cohort_courses_is_allowed_from_ajax() {
+        return true;
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function find_potential_cohort_courses_parameters() {
+        return new external_function_parameters(array(
+            'cohortid' => new external_value(PARAM_INT,
+                    'cohort id to search for', VALUE_REQUIRED, null, NULL_NOT_ALLOWED),
+            'query' => new external_value(PARAM_TEXT,
+                    'search string', VALUE_REQUIRED, null, NULL_NOT_ALLOWED),
+        ));
+    }
+
+    /**
+     * Returns description of method return parameters
+     *
+     * @return external_value
+     */
+    public static function find_potential_cohort_courses_returns() {
+        return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'id' => new external_value(PARAM_INT, 'course id'),
+                    'name' => new external_value(PARAM_TEXT, 'name'),
+                )
+            )
+        );
+    }
+
+    /**
+     * Returns cohorts based on search query.
+     *
+     * @param string $query search string
+     * @return array $cohorts
+     */
+    public static function find_cohorts($query) {
+        global $CFG;
+        require_once($CFG->dirroot . '/cohort/lib.php');
+        $rs = cohort_get_all_cohorts(0, 0, $query);
+        $cohorts = [];
+        foreach ($rs['cohorts'] as $cohort) {
+            $cohorts[] = (object)[
+                'id' => $cohort->id,
+                'name' => $cohort->name . (empty($cohort->idnumber) ? '' : ' ('.$cohort->idnumber.')')
+            ];
+        }
+
+        return $cohorts;
+    }
+
+    /**
+     * Is find_cohorts() allowed from AJAX?
+     * @return bool
+     */
+    public static function find_cohorts_is_allowed_from_ajax() {
+        return true;
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function find_cohorts_parameters() {
+        return new external_function_parameters(array(
+            'query' => new external_value(PARAM_TEXT,
+                    'search string', VALUE_REQUIRED, null, NULL_NOT_ALLOWED),
+        ));
+    }
+
+    /**
+     * Returns description of method return parameters
+     *
+     * @return external_value
+     */
+    public static function find_cohorts_returns() {
+        return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'id' => new external_value(PARAM_INT, 'cohort id'),
                     'name' => new external_value(PARAM_TEXT, 'name'),
                 )
             )

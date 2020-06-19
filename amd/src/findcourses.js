@@ -19,13 +19,13 @@
  * This module is compatible with core/form-autocomplete.
  *
  * @package    block_coupon
- * @copyright  2016 Frédéric Massart - FMCorz.net
+ * @copyright  2019 R.J. van Dongen <rogier@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notification) {
 
-    return /** @alias module:block_coupon/findusers */ {
+    return /** @alias module:block_coupon/findcourses */ {
 
         /**
          * List users.

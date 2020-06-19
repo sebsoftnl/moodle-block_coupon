@@ -122,7 +122,7 @@ class course extends \moodleform {
 
         // Generate_pdf checkbox.
         if ($this->get_option($this->options, 'allowselectseperatepdf', false)) {
-            $mform->addElement('checkbox', 'generate_pdf', get_string('label:generate_pdfs', 'block_coupon'));
+            $mform->addElement('advcheckbox', 'generate_pdf', get_string('label:generate_pdfs', 'block_coupon'));
             $mform->addHelpButton('generate_pdf', 'label:generate_pdfs', 'block_coupon');
         } else {
             $mform->addElement('hidden', 'generate_pdf');

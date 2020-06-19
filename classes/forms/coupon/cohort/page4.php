@@ -69,6 +69,9 @@ class page4 extends \moodleform {
 
         list($this->generatoroptions) = $this->_customdata;
 
+        // Nasty++.
+        \MoodleQuickForm::registerRule('positiveint', 'regex', '/(^\d\d*$)/');
+
         if (!$strinfo = get_config('block_coupon', 'info_coupon_confirm')) {
             $strinfo = get_string('missing_config_info', 'block_coupon');
         }
@@ -143,6 +146,17 @@ class page4 extends \moodleform {
 
         // Custom validate.
         if ($this->generatoroptions->generatormethod == 'amount') {
+            // Validate code size!! Since this can possibly lead to infinite looping.
+            if (!empty($data['codesize'])) {
+                list($max, $have) = \block_coupon\coupon\codegenerator::calc_max_codes_for_size((int)$data['codesize']);
+                $want = (int) $data['coupon_amount'];
+                $a = (object)[
+                    'want' => $want, 'have' => $have, 'max' => $max, 'size' => (int)$data['codesize'], 'left' => ($max - $have)
+                ];
+                if ($want >= ($max - $have)) {
+                    $errors['codesize'] = get_string('err:codesize:left', 'block_coupon', $a);
+                }
+            }
             // Max amount of coupons.
             $maxcouponsamount = get_config('block_coupon', 'max_coupons');
             if (empty($data['generatecodesonly'])) {

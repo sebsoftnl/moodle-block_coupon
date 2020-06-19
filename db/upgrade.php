@@ -276,5 +276,39 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
     }
 
+    if ($oldversion < 2020010805) {
+        // Add INDICES field to coupon table. Can't believe I never saw this!
+        // Then again the original developer Menno always forgot indices... _sigh_.
+        $table = new xmldb_table('block_coupon');
+        $index = new xmldb_index('idx-userid', XMLDB_INDEX_NOTUNIQUE, ['userid']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        $index = new xmldb_index('idx-ownerid', XMLDB_INDEX_NOTUNIQUE, ['ownerid']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        $index = new xmldb_index('idx-logoid', XMLDB_INDEX_NOTUNIQUE, ['logoid']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        $index = new xmldb_index('idx-claimed', XMLDB_INDEX_NOTUNIQUE, ['claimed']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        $index = new xmldb_index('idx-batchid', XMLDB_INDEX_NOTUNIQUE, ['batchid']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        $index = new xmldb_index('idx-submission_code', XMLDB_INDEX_UNIQUE, ['submission_code']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Block_coupon savepoint reached.
+        upgrade_block_savepoint(true, 2020010805, 'coupon');
+
+    }
+
     return true;
 }

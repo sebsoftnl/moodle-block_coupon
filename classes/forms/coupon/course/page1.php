@@ -65,7 +65,12 @@ class page1 extends \moodleform {
      * form definition
      */
     public function definition() {
+        global $CFG;
         $mform = & $this->_form;
+
+        // Register element.
+        $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcourses.php';
+        \MoodleQuickForm::registerElementType('findcourses', $path, '\block_coupon\forms\element\findcourses');
 
         list($this->generatoroptions) = $this->_customdata;
 
@@ -101,11 +106,9 @@ class page1 extends \moodleform {
             $arrcoursesselect[$course->id] = $course->fullname;
         }
 
-        $attributes = array('size' => min(20, count($arrcoursesselect)));
-        // Course id.
-        $selectcourse = &$mform->addElement('select', 'coupon_courses',
-                get_string('label:coupon_courses', 'block_coupon'), $arrcoursesselect, $attributes);
-        $selectcourse->setMultiple($multiselect);
+        $options = ['multiple' => true, 'onlyvisible' => true];
+        $mform->addElement('findcourses', 'coupon_courses',
+                get_string('label:coupon_courses', 'block_coupon'), $options);
         $mform->addRule('coupon_courses', get_string('error:required', 'block_coupon'), 'required', null, 'client');
         $mform->addHelpButton('coupon_courses', 'label:coupon_courses', 'block_coupon');
 
