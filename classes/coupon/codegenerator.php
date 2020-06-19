@@ -219,13 +219,14 @@ final class codegenerator {
 
         while (true && (strlen($token) < $size)) {
             $n = $func(0, $max - 1);
+            $appendcharacter = $codealphabet[$n];
             if (strlen($token) == 0) {
                 // Do not use number as first char.
-                if (!is_numeric($codealphabet{$n})) {
-                    $token .= $codealphabet{$n};
+                if (!is_numeric($appendcharacter)) {
+                    $token .= $appendcharacter;
                 }
             } else {
-                $token .= $codealphabet{$n};
+                $token .= $appendcharacter;
             }
         }
 

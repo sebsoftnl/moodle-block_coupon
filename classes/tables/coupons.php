@@ -147,7 +147,6 @@ class coupons extends \table_sql {
         $this->ownerid = (int)$ownerid;
         $this->filter = (int)$filter;
         $this->sortable(true, 'c.senddate', 'DESC');
-//        $this->no_sorting('owner');
         $this->no_sorting('course');
         $this->no_sorting('cohorts');
         $this->no_sorting('groups');

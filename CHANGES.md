@@ -9,6 +9,8 @@ Version 4.0.6 (build 2020010806)
 * Added user/claimed_on columns for personalised coupons.
 * Fixed langstring 'coupon_notification_content'.
 * Fixed get_string variables (in helper).
+* Fixed "Curly brace syntax for accessing array elements and string offsets has
+   been deprecated in PHP 7.4. Found: $codealphabet{$n}" in codegenerator.
 
 ----------
 
