@@ -1,4 +1,4 @@
-image: moodlehq/moodle-php-apache:7.3
+image: moodlehq/moodle-php-apache:7.3-stretch
 
 cache:
  paths:
