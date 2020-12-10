@@ -256,7 +256,7 @@ class block_coupon_external extends external_api {
         $status = block_coupon\helper::mail_coupons($coupons, $email, $generatesinglepdfs,
                 false, false, $generatoroptions->batchid);
 
-        return $status;
+        return $status[0];
     }
 
     /**
@@ -365,7 +365,7 @@ class block_coupon_external extends external_api {
         $status = block_coupon\helper::mail_coupons($coupons, $email, $generatesinglepdfs,
                 false, false, $generatoroptions->batchid);
 
-        return $status;
+        return $status[0];
     }
 
     /**
