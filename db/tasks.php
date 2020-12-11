@@ -47,4 +47,13 @@ $tasks = array(
         'dayofweek' => '*',
         'month' => '*'
     ),
+    array(
+        'classname' => 'block_coupon\task\unenrolcohorts',
+        'blocking' => 0,
+        'minute' => '*/15', // every 15 minutes.
+        'hour' => '*',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ),
 );

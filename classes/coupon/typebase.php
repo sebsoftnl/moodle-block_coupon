@@ -90,7 +90,7 @@ abstract class typebase {
      */
     public function assert_not_claimed() {
         if ((bool)$this->coupon->claimed) {
-            get_string('error:coupon_already_used', 'block_coupon');
+            throw new exception('error:coupon_already_used');
         }
     }
 

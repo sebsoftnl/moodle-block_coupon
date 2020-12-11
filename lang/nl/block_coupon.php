@@ -680,3 +680,4 @@ Deze instelling heeft dus inhoudelijk geen effect op de gebruikte/ongebruikte co
 ';
 $string['tab:personalcoupons'] = 'Gepersonaliseerde coupons';
 $string['err:codesize:left'] = 'Code lengte fout: voor {$a->want} coupons van {$a->size} karakters hebben we slechts {$a->left} codes over (met de huidige karakterset)!';
+$string['task:unenrolcohorts'] = 'Verlopen coupon aanmeldingen voor cohorten verwijderen';

@@ -268,15 +268,7 @@ class block_coupon_renderer extends plugin_renderer_base {
     /**
      * Renders an action_icon.
      *
-     * This function uses the {@link core_renderer::action_link()} method for the
-     * most part. What it does different is prepare the icon as HTML and use it
-     * as the link text.
-     *
-     * Theme developers: If you want to change how action links and/or icons are rendered,
-     * consider overriding function {@link core_renderer::render_action_link()} and
-     * {@link core_renderer::render_pix_icon()}.
-     *
-     * @param string|moodle_url $url A string URL or moodel_url
+     * @param string|moodle_url $url A string URL or moodle_url
      * @param pix_icon $pixicon
      * @param component_action $action
      * @param array $attributes associative array of html link attributes + disabled

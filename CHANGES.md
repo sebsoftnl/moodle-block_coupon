@@ -1,3 +1,14 @@
+Version 4.0.7 (build 2020010808)
+* Fixed main assert_not_claimed function: reinstated exception
+* Added component to generic error (input_coupon.php)
+
+Version 4.0.7 (build 2020010807)
+* Added task to remove cohort members (i.e. take care of cohort unenrolment).
+* Fixed webservice call return for generate_coupons_for_cohorts.
+* Fixed webservice call return for generate_coupons_for_course.
+
+----------
+
 Version 4.0.6 (build 2020010806)
 * Added autocompletes for cohort/cohort courses.
 * Added user_deleted observer.

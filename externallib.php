@@ -253,7 +253,7 @@ class block_coupon_external extends external_api {
         $generatedcodes = $generator->get_generated_couponcodes();
         // Get coupons and send off.
         $coupons = $DB->get_records_list('block_coupon', 'submission_code', $generatedcodes);
-        $status = block_coupon\helper::mail_coupons($coupons, $email, $generatesinglepdfs,
+        list($status, $batchid, $ts) = block_coupon\helper::mail_coupons($coupons, $email, $generatesinglepdfs,
                 false, false, $generatoroptions->batchid);
 
         return $status;
@@ -362,7 +362,7 @@ class block_coupon_external extends external_api {
         $generatedcodes = $generator->get_generated_couponcodes();
         // Get coupons and send off.
         $coupons = $DB->get_records_list('block_coupon', 'submission_code', $generatedcodes);
-        $status = block_coupon\helper::mail_coupons($coupons, $email, $generatesinglepdfs,
+        list($status, $batchid, $ts) = block_coupon\helper::mail_coupons($coupons, $email, $generatesinglepdfs,
                 false, false, $generatoroptions->batchid);
 
         return $status;

@@ -1148,8 +1148,8 @@ class helper {
      * Mimicing Moodle here and storing the results.
      * We keep on getting issues with mail not being sent, so we decided to log EVERYTHING.
      *
-     * @param stdClass $user  A {@link $USER} object
-     * @param stdClass $from A {@link $USER} object
+     * @param stdClass $user  A user record
+     * @param stdClass $from A user record
      * @param string $subject plain text subject line of the email
      * @param string $messagetext plain text version of the message
      * @param string $messagehtml complete html version of the message (optional)

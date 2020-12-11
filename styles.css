@@ -68,7 +68,8 @@
     width: 100%;
     height: 100%;
 }
-.block-coupon-container .mform .form-inline .form-control, .block-coupon-container .mform .form-inline .custom-select {
+.block-coupon-container .mform .form-inline .form-control,
+.block-coupon-container .mform .form-inline .custom-select {
     width: 100%; /*oid; do not use 100% due to autocomplete elements!!!!*/
 }
 .block-coupon-container .mform .form-inline[data-fieldtype="autocomplete"] input.form-control {

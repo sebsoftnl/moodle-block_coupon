@@ -707,3 +707,4 @@ Hence, this setting does not affect the used/unused coupons tabs.
 ';
 $string['tab:personalcoupons'] = 'Personalised coupons';
 $string['err:codesize:left'] = 'Codesize error: for {$a->want} coupons of {$a->size} characters we have {$a->left} slots left (given the current character options)';
+$string['task:unenrolcohorts'] = 'Remove expired coupon enrolments from cohorts';
