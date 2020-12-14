@@ -103,7 +103,7 @@ class enrolext extends typebase implements icoupontype {
                 $endenrolment = $existing->timeend + $this->coupon->enrolperiod;
             }
             // This takes care of updates as well.
-            $enrol->enrol_user($instance, $foruserid, null, $existing->timestart, $endenrolment);
+            $enrol->enrol_user($instance, $foruserid, null, $existing->timestart, $endenrolment, ENROL_USER_ACTIVE);
 
             // Mark the context for cache refresh.
             $context->mark_dirty();

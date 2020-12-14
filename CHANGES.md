@@ -1,6 +1,14 @@
+Version 4.0.7 (build 2020010809)
+* Fixed coupon type enrolment extension. Status is now forced to ACTIVE (Thanks Hiro Nakamura).
+* Changed some language strings (EN only) so the period character does not end up outside of the containing paragraph.
+
+----------
+
 Version 4.0.7 (build 2020010808)
 * Fixed main assert_not_claimed function: reinstated exception
 * Added component to generic error (input_coupon.php)
+
+----------
 
 Version 4.0.7 (build 2020010807)
 * Added task to remove cohort members (i.e. take care of cohort unenrolment).

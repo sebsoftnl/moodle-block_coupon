@@ -202,10 +202,10 @@ $string['and'] = 'and';
 
 $string['coupons_generated'] = '<p>Your coupon(s) have been generated.<br/>
 You should have received an e-mail containing the link to download the generated coupons.<br/>
-You can also choose to download your coupons directly by clicking {$a}</p>.';
+You can also choose to download your coupons directly by clicking {$a}.</p>';
 $string['coupons_generated_codes_only'] = '<p>Your couponcode(s) have been generated.<br/>
 Because you have opted to only generate the codes, you will not recieve an email<br/>
-You can use the overview for (un)used coupons with a specific filter on the batch ID to download an overview of the generated codes</p>.';
+You can use the overview for (un)used coupons with a specific filter on the batch ID to download an overview of the generated codes.</p>';
 $string['coupons_sent'] = 'Your coupon(s) have been generated. Within several minutes you will receive an email with the Coupons in the attachments.';
 $string['coupons_ready_to_send'] = 'Your coupon(s) has/have been generated and will be send at the entered date.<br />
     You will receive a confirmation email message when all the coupons have been sent.';
