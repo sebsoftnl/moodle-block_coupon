@@ -1,105 +1,88 @@
-image: moodlehq/moodle-php-apache:7.3-stretch
+services:
+  - mysql:5.7
 
 cache:
- paths:
-  - $HOME/.composer/cache
-  - $HOME/.npm
+  paths:
+    - $HOME/.composer/cache
+    - $HOME/.npm
 
 variables:
- DB: "mariadb"
- MYSQL_ROOT_PASSWORD: "hg67u5ignrfusdn"
-  
+  DB: "mysqli"
+  MYSQL_ROOT_PASSWORD: "superrootpass"
+  TRAVIS_BUILD_DIR: "$CI_PROJECT_DIR"
+  MOODLE_DIR: "/var/www/html/moodle"
+  # If we want to ignore some templates, provide them here.
+  #MUSTACHE_IGNORE_NAMES: "<file>.mustache, <file2>.mustache, ..., <filen>.mustache"
+
 before_script:
- - mkdir plugin
- - mv -vf * plugin || true
- - apt-get update
- - apt-get install -y git mariadb-client mariadb-server python2.7 unzip
- - service mysql start
- - curl -o /usr/local/bin/phpunit https://phar.phpunit.de/phpunit.phar
- - chmod +x /usr/local/bin/phpunit
- - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
- - source $HOME/.nvm/nvm.sh
- - nvm install 14.4
- - nvm use 14.4
- - curl -sS https://getcomposer.org/installer | php
- - mv composer.phar /usr/local/bin/composer
- - composer create-project -n --no-dev --prefer-dist blackboard-open-source/moodle-plugin-ci ci ^2
- - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
- - moodle-plugin-ci install --db-user=root --db-pass=hg67u5ignrfusdn --db-host=localhost --plugin plugin -vvv --no-ansi
+  # Update packages and install git, mysql-client and npm.
+  - apt update && apt install -y git default-mysql-client npm
+  # Install old version of openjdk-8 in due of MDLSITE-5739.
+  - mkdir -p /usr/share/man/man1 #https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
+  - apt install -y software-properties-common
+  - add-apt-repository --yes 'deb http://security.debian.org/debian-security stretch/updates main'
+  - apt update && apt install -y openjdk-8-jdk-headless
+  - java -version
+  # Install nvm and NodeJS.
+  - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
+  - source $HOME/.nvm/nvm.sh
+  - nvm install 14.2.0
+  # Install composer.
+  - curl -sS https://getcomposer.org/installer | php
+  - mv composer.phar /usr/local/bin/composer
+  # Install Moodle CI plugin
+  # Hint: moodle-plugin-ci already exists but has some missing commands, therefore we re-install it.
+  - cd $HOME && rm -rf ci
+  - composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^3
+  - export PATH="$(cd $HOME/ci/bin; pwd):$(cd $HOME/ci/vendor/bin; pwd):$PATH"
+  - chmod u+x $HOME/ci/bin/moodle-plugin-ci
+  - chmod u+x $HOME/ci/bin/*
+  - umask u+x
+  - cd $CI_PROJECT_DIR/..
+  - moodle-plugin-ci install --moodle=$MOODLE_DIR --db-user=root --db-pass=superrootpass --db-host=mysql -vvv
 
 .job_template: &job_definition
- script:  
-  - moodle-plugin-ci phplint 
+  allow_failure: true
+  image: moodlehq/moodle-php-apache:7.4
+  script:
+    - moodle-plugin-ci phplint
+    - moodle-plugin-ci phpcpd
+    - moodle-plugin-ci phpmd
+    - moodle-plugin-ci codechecker
+    - moodle-plugin-ci validate
+    - moodle-plugin-ci savepoints
+    - moodle-plugin-ci mustache
+    - moodle-plugin-ci grunt
+    - moodle-plugin-ci phpdoc || true
+    - moodle-plugin-ci phpunit
+    - moodle-plugin-ci behat
 
+Moodle 3.10:
+  <<: *job_definition
+  variables:
+    MOODLE_BRANCH: "MOODLE_310_STABLE"
+    
+Moodle 3.9:
+  <<: *job_definition
+  variables:
+    MOODLE_BRANCH: "MOODLE_39_STABLE"
+    
+Moodle 3.8:
+  <<: *job_definition
+  variables:
+    MOODLE_BRANCH: "MOODLE_38_STABLE" 
 
-phplint:
- <<: *job_definition
- image: php:7.3
- variables:
-  MOODLE_BRANCH: "MOODLE_37_STABLE"
- script:  
-  - moodle-plugin-ci phplint 
-  
-phpcpd:
- <<: *job_definition
- image: php:7.3
- variables:
-  MOODLE_BRANCH: "MOODLE_37_STABLE"
- script:  
-  - moodle-plugin-ci phpcpd 
-  
-codechecker:
- <<: *job_definition
- image: php:7.3
- variables:
-  MOODLE_BRANCH: "MOODLE_37_STABLE"
- script:  
-  - moodle-plugin-ci codechecker 
-  
-savepoints:
- <<: *job_definition
- image: php:7.3
- variables:
-  MOODLE_BRANCH: "MOODLE_37_STABLE"
- script:  
-  - moodle-plugin-ci savepoints 
-  
-mustache:
- <<: *job_definition
- image: php:7.3
- variables:
-  MOODLE_BRANCH: "MOODLE_37_STABLE"
- script:  
-  - moodle-plugin-ci mustache 
-  
-grunt:
- <<: *job_definition
- image: php:7.3
- variables:
-  MOODLE_BRANCH: "MOODLE_37_STABLE"
- script:  
-  - moodle-plugin-ci grunt 
-  
-validate:
- <<: *job_definition
- image: php:7.3
- variables:
-  MOODLE_BRANCH: "MOODLE_37_STABLE"
- script:  
-  - moodle-plugin-ci validate 
-  
-phpunit:
- <<: *job_definition
- image: php:7.3
- variables:
-  MOODLE_BRANCH: "MOODLE_37_STABLE"
- script:  
-  - moodle-plugin-ci phpunit 
-  
-behat:
- <<: *job_definition
- image: php:7.3
- variables:
-  MOODLE_BRANCH: "MOODLE_37_STABLE"
- script:  
-  - moodle-plugin-ci behat 
+Moodle 3.7:
+  <<: *job_definition
+  variables:
+    MOODLE_BRANCH: "MOODLE_37_STABLE" 
+
+Moodle 3.6:
+  <<: *job_definition
+  variables:
+    MOODLE_BRANCH: "MOODLE_36_STABLE" 
+
+Moodle 3.5:
+  <<: *job_definition
+  variables:
+    MOODLE_BRANCH: "MOODLE_35_STABLE" 
