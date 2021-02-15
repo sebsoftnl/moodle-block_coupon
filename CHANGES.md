@@ -1,3 +1,10 @@
+Version 4.0.8 (build 2020010810)
+* Fixed error notification with usage in qr code.
+* Fixed error notification(s) if coupon is already used.
+
+----------
+
+
 Version 4.0.7 (build 2020010809)
 * Fixed coupon type enrolment extension. Status is now forced to ACTIVE (Thanks Hiro Nakamura).
 * Changed some language strings (EN only) so the period character does not end up outside of the containing paragraph.

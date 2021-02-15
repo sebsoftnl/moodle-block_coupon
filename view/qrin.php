@@ -61,6 +61,6 @@ try {
 } catch (block_coupon\exception $e) {
     \core\notification::error($e->getMessage());
 } catch (\Exception $ex) {
-    \core\notification::error(get_string('err:coupon:generic'));
+    \core\notification::error(get_string('err:coupon:generic', 'block_coupon'));
 }
 redirect($CFG->wwwroot . '/my');
