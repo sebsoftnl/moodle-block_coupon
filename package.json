@@ -6,7 +6,6 @@
     "grunt": "^1.0.3",
     "grunt-contrib-clean": "*",
     "grunt-contrib-jshint": "^2.1.0",
-    "grunt-contrib-less": "^2.0.0",
     "grunt-contrib-sass": "*",
     "grunt-contrib-uglify": "^4.0.0",
     "grunt-contrib-watch": "^1.1.0",
