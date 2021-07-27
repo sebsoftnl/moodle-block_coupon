@@ -68,7 +68,7 @@ class block_coupon extends block_base {
         $this->content->footer = '';
 
         if (empty($this->instance)) {
-            throw new \moodle_exception('No instance','block_coupon');
+            throw new \moodle_exception('No instance', 'block_coupon');
         }
 
         $arrparams = array();

@@ -297,7 +297,7 @@ class helper {
      *
      * @return stdClass
      */
-    static public function get_dummy_user_record($email, $firstname, $lastname, $username = 'noreply', $id = -500) {
+    public static function get_dummy_user_record($email, $firstname, $lastname, $username = 'noreply', $id = -500) {
         $dummyuser = new \stdClass();
         $dummyuser->id = $id;
         $dummyuser->email = $email;
