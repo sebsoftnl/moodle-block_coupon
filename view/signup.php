@@ -33,7 +33,7 @@ if (!$authplugin = signup_is_enabled()) {
         $CFG->registerauth = 'email';
         $authplugin = signup_is_enabled();
     } else {
-        print_error('notlocalisederrormessage', 'error', '', 'Sorry, you may not use this page (signup is not enabled).');
+        throw new \moodle_exception('notlocalisederrormessage','error','','Sorry, you may not use this page (signup is not enabled).');
     }
 }
 

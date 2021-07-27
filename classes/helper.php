@@ -59,7 +59,7 @@ class helper {
      * @param int $cohortid cohortid
      * @return bool false if no courses are connected or an array of course records
      */
-    final static public function get_courses_by_cohort($cohortid) {
+    final public static function get_courses_by_cohort($cohortid) {
         global $DB;
 
         $sql = "
@@ -80,7 +80,7 @@ class helper {
      * @param bool $idsonly if true, only returns list of IDs
      * @return array
      */
-    final static public function get_unconnected_cohort_courses($cohortid, $idsonly = false) {
+    final public static function get_unconnected_cohort_courses($cohortid, $idsonly = false) {
         global $DB;
 
         $sql = "
@@ -107,7 +107,7 @@ class helper {
      * @param string $fields the fields to get
      * @return array
      */
-    static public final function get_cohorts($fields = 'id,name,idnumber') {
+    final public static function get_cohorts($fields = 'id,name,idnumber') {
         global $DB;
         $cohorts = $DB->get_records('cohort', null, 'name ASC', $fields);
         return (!empty($cohorts)) ? $cohorts : false;
@@ -119,7 +119,7 @@ class helper {
      * @param string $fields the fields to get
      * @return array
      */
-    static public final function get_visible_courses($fields = 'id,shortname,fullname,idnumber') {
+    final public static function get_visible_courses($fields = 'id,shortname,fullname,idnumber') {
         global $DB;
         $select = "id != 1 AND visible = 1";
         $courses = $DB->get_records_select('course', $select, null, 'fullname ASC', $fields);
@@ -134,7 +134,7 @@ class helper {
      * @param int|null $ownerid
      * @return array
      */
-    static public final function get_coupons_by_owner($ownerid = null) {
+    final public static function get_coupons_by_owner($ownerid = null) {
         global $DB;
 
         $params = array();
@@ -153,7 +153,7 @@ class helper {
      *
      * @return array
      */
-    public static final function get_coupons_to_send() {
+    final public static function get_coupons_to_send() {
         global $DB;
         $senddate = time();
         $sql = "
@@ -171,7 +171,7 @@ class helper {
      * @param int $timecreated
      * @return bool
      */
-    public static final function has_sent_all_coupons($ownerid, $timecreated) {
+    final public static function has_sent_all_coupons($ownerid, $timecreated) {
         global $DB;
         $conditions = array(
             'issend' => 0,
@@ -206,7 +206,7 @@ class helper {
      * @param bool $initiatedbycron whether or not this method was called by cron
      * @param string|null $batchid batch ID
      */
-    public static final function mail_coupons($coupons, $emailto, $generatesinglepdfs = false,
+    final public static function mail_coupons($coupons, $emailto, $generatesinglepdfs = false,
             $emailbody = false, $initiatedbycron = false, $batchid = null) {
         global $DB, $CFG;
         raise_memory_limit(MEMORY_HUGE);
@@ -221,7 +221,7 @@ class helper {
         list($filename, $relativefilename) = static::generate_coupons($coupons,
                 $generatesinglepdfs, $batchid, $ts);
 
-        // Try mailing...
+        // Attempt to send email...
         global $USER;
         if ($initiatedbycron) {
             $supportuser = \core_user::get_support_user();
@@ -297,7 +297,7 @@ class helper {
      *
      * @return stdClass
      */
-    public static function get_dummy_user_record($email, $firstname, $lastname, $username = 'noreply', $id = -500) {
+    static public function get_dummy_user_record($email, $firstname, $lastname, $username = 'noreply', $id = -500) {
         $dummyuser = new \stdClass();
         $dummyuser->id = $id;
         $dummyuser->email = $email;
@@ -325,7 +325,7 @@ class helper {
      * @param int $timecreated
      * @return bool
      */
-    public static final function confirm_coupons_sent($ownerid, $batchid, $timecreated) {
+    final public static function confirm_coupons_sent($ownerid, $batchid, $timecreated) {
         // TODO: DEPRECATE: replaced by notifications :).
         global $DB;
 
@@ -347,7 +347,7 @@ class helper {
      * @param object $user User object from database
      * @param object $cinfo Course object from database
      */
-    public static final function load_course_completioninfo($user, $cinfo) {
+    final public static function load_course_completioninfo($user, $cinfo) {
         global $DB, $CFG;
         static $cstatus, $completioninfo = array();
 
@@ -432,7 +432,7 @@ class helper {
      * @param bool $inctime
      * @return string user date
      */
-    final static public function render_date($time, $inctime = true) {
+    final public static function render_date($time, $inctime = true) {
         return userdate($time, get_string($inctime ? 'report:dateformat' : 'report:dateformatymd', 'block_coupon'));
     }
 
@@ -459,7 +459,7 @@ class helper {
      * @param string $delimiter
      * @return boolean|\stdClass
      */
-    public static final function get_recipients_from_csv($recipientsstr, $delimiter = ',') {
+    final public static function get_recipients_from_csv($recipientsstr, $delimiter = ',') {
 
         $recipients = array();
         $count = 0;
@@ -521,7 +521,7 @@ class helper {
      * @param string $delimiter
      * @return array|true true if valid, array or error messages if invalid
      */
-    public static final function validate_coupon_recipients($csvdata, $delimiter) {
+    final public static function validate_coupon_recipients($csvdata, $delimiter) {
 
         $error = false;
         $maxcoupons = get_config('block_coupon', 'max_coupons');
@@ -1075,7 +1075,7 @@ class helper {
      * @param coupon\generatoroptions $generatoroptions
      * @param string $extramessage
      */
-    public static final function mail_requested_coupons($user, $coupons, $generatoroptions, $extramessage = '') {
+    final public static function mail_requested_coupons($user, $coupons, $generatoroptions, $extramessage = '') {
         global $DB, $CFG;
         raise_memory_limit(MEMORY_HUGE);
 
@@ -1269,7 +1269,7 @@ class helper {
      *
      * @param \stdClass $coupon A personalized coupon
      */
-    public static final function mail_personalized_coupon($coupon) {
+    final public static function mail_personalized_coupon($coupon) {
         global $DB, $CFG;
         raise_memory_limit(MEMORY_HUGE);
 
@@ -1295,7 +1295,7 @@ class helper {
         $firstname = $parts[0];
         $lastname = empty($parts[1]) ? '' : $parts[1];
 
-        // Try mailing...
+        // Attempt to send email.
         $supportuser = \core_user::get_support_user();
         $username = $supportuser->username;
         $mailformat = $CFG->defaultpreference_mailformat;
@@ -1344,7 +1344,7 @@ class helper {
      * @param stdClass $coupon
      * @return array [(full) filename, relativefilename]
      */
-    static public function generate_personalized_coupon($coupon) {
+    public static function generate_personalized_coupon($coupon) {
         global $CFG;
         $identifier = uniqid($coupon->id);
         // Generate the PDF.

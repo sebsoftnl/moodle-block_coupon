@@ -57,6 +57,11 @@ before_script:
     - moodle-plugin-ci phpunit
     - moodle-plugin-ci behat
 
+Moodle 3.11:
+  <<: *job_definition
+  variables:
+    MOODLE_BRANCH: "MOODLE_311_STABLE"
+
 Moodle 3.10:
   <<: *job_definition
   variables:

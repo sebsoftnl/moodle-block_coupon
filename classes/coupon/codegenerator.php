@@ -73,7 +73,7 @@ final class codegenerator {
      * @param array $exclude characters to exclude
      * @return string guaranteed unique coupon code
      */
-    static public function generate_unique_code($size, $flags = self::ALL, $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
+    public static function generate_unique_code($size, $flags = self::ALL, $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
         global $DB;
 
         $vcode = self::generate_code($size, $flags = self::ALL, $exclude);
@@ -91,7 +91,7 @@ final class codegenerator {
      * @param int $flags generator flags
      * @param array $exclude characters to exclude
      */
-    static private function generate_code($size, $flags = self::ALL, $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
+    private static function generate_code($size, $flags = self::ALL, $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
         return static::get_token($size, $flags, $exclude);
     }
 
@@ -102,7 +102,7 @@ final class codegenerator {
      * @param int $flag specific flag
      * @return bool
      */
-    static private function is_flag($value, $flag) {
+    private static function is_flag($value, $flag) {
         return (($value & $flag) === $flag);
     }
 
@@ -114,7 +114,7 @@ final class codegenerator {
      * @param array $exclude characters to exclude
      * @return array [maximum, have]
      */
-    static public function calc_max_codes_for_size($size, $flags = self::ALL,
+    public static function calc_max_codes_for_size($size, $flags = self::ALL,
             $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
         global $DB;
 
@@ -135,7 +135,7 @@ final class codegenerator {
      * @param int $flags generator flags
      * @param array $exclude characters to exclude
      */
-    static private function get_char_str($flags = self::ALL,
+    private static function get_char_str($flags = self::ALL,
             $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
         $chars = '';
         if (self::is_flag($flags, self::NUMERIC)) {
@@ -159,7 +159,7 @@ final class codegenerator {
      * @param int $max
      * @return int
      */
-    static protected function crypto_mt_rand($min, $max) {
+    protected static function crypto_mt_rand($min, $max) {
         static $seeded;
         if (empty($seeded)) {
             mt_srand();
@@ -177,7 +177,7 @@ final class codegenerator {
      * @param int $max
      * @return int
      */
-    static protected function crypto_rand_secure($min, $max) {
+    protected static function crypto_rand_secure($min, $max) {
         $range = $max - $min;
         if ($range < 1) {
             return $min; // Not so random...
@@ -203,7 +203,7 @@ final class codegenerator {
      * @param array $exclude characters to exclude
      * @return string
      */
-    static protected function get_token($size, $flags = self::ALL, $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
+    protected static function get_token($size, $flags = self::ALL, $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
         $codealphabet = static::get_char_str($flags, $exclude);
         $token = '';
         $max = strlen($codealphabet);

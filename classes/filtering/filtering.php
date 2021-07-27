@@ -138,7 +138,7 @@ abstract class filtering {
      * Return all default filter names and advanced status
      * @return array
      */
-    public abstract function get_fields();
+    abstract public function get_fields();
 
     /**
      * Creates known user filter if present

@@ -231,7 +231,7 @@ class generatoroptions {
     public static function validate_session() {
         global $SESSION;
         if (!isset($SESSION->generatoroptions)) {
-            print_error("error:sessions-expired", 'block_coupon');
+            throw new \moodle_exception("error:sessions-expired", 'block_coupon');
         }
     }
 

@@ -73,7 +73,7 @@ class tempfile {
      * @param string $relativefilename relative path
      * @return string
      */
-    static public function get_storage_path($relativefilename = '') {
+    public static function get_storage_path($relativefilename = '') {
         global $CFG;
         $basedir = $CFG->tempdir . '/coupontmp';
         if (!check_dir_exists($basedir, true, true)) {

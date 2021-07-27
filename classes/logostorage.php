@@ -223,7 +223,7 @@ class logostorage {
      * @param int $fileid
      * @return \block_coupon\tempfile
      */
-    static public function get_tempfile_for($fileid) {
+    public static function get_tempfile_for($fileid) {
         $fs = get_file_storage();
         $file = $fs->get_file_by_id($fileid);
         $fn = $file->get_filename();
@@ -238,7 +238,7 @@ class logostorage {
      * @param int $fileid
      * @return \stored_file
      */
-    static public function get_file($fileid) {
+    public static function get_file($fileid) {
         $fs = get_file_storage();
         return $fs->get_file_by_id($fileid);
     }

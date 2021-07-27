@@ -190,7 +190,7 @@ class block_coupon_external extends external_api {
      * @param array $groups Array of IDs of all groups the users will be added to after using a Coupon.
      * @return array $coupon_codes Array of coupon codes.
      */
-    static public function request_coupon_codes_for_course($amount, $courses, $groups = null) {
+    public static function request_coupon_codes_for_course($amount, $courses, $groups = null) {
         // Get to work and have generator and options.
         list($generator, $unused) = static::_request_coupon_codes_for_course($amount, $courses, $groups);
         // We made it, so return the generated codes.
@@ -305,7 +305,7 @@ class block_coupon_external extends external_api {
      * @param array $cohorts Array of IDs of the cohorts the coupons will be generated for.
      * @return array $coupon_codes Array of coupon codes.
      */
-    static public function request_coupon_codes_for_cohorts($amount, $cohorts) {
+    public static function request_coupon_codes_for_cohorts($amount, $cohorts) {
         // Get to work and have generator and options.
         list($generator, $unused) = static::_request_coupon_codes_for_cohorts($amount, $cohorts);
         // We made it, so return the generated IDs.
@@ -354,7 +354,7 @@ class block_coupon_external extends external_api {
      * @param bool $generatesinglepdfs Will generate one PDF file for each coupon if true.
      * @return boolean $result
      */
-    static public function generate_coupons_for_cohorts($email, $amount, $cohorts, $generatesinglepdfs = false) {
+    public static function generate_coupons_for_cohorts($email, $amount, $cohorts, $generatesinglepdfs = false) {
         global $DB;
 
         // Let our other method do the magic of generating.
@@ -413,7 +413,7 @@ class block_coupon_external extends external_api {
      *          If given this should be passed in American format (yyyy-mm-dd)
      * @return array $reports
      */
-    static public function get_coupon_reports($type = 'all', $ownerid = null, $fromdate = null, $todate = null) {
+    public static function get_coupon_reports($type = 'all', $ownerid = null, $fromdate = null, $todate = null) {
         global $DB;
         $reports = array();
 
@@ -867,7 +867,7 @@ class block_coupon_external extends external_api {
      * @param array $groups Array of IDs of all groups the users will be added to after using a Coupon.
      * @return array array containing generator instance and generator options.
      */
-    static private function _request_coupon_codes_for_course($amount, $courses, $groups = null) {
+    private static function _request_coupon_codes_for_course($amount, $courses, $groups = null) {
         global $USER;
 
         // Get max length for the coupon code.
@@ -916,7 +916,7 @@ class block_coupon_external extends external_api {
      * @param array $cohorts Array of IDs of the cohorts the coupons will be generated for.
      * @return array array containing generator instance and generator options.
      */
-    static private function _request_coupon_codes_for_cohorts($amount, $cohorts) {
+    private static function _request_coupon_codes_for_cohorts($amount, $cohorts) {
         global $USER;
 
         // Get max length for the coupon code.
