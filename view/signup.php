@@ -29,7 +29,7 @@ require_once($CFG->libdir . '/authlib.php');
 require_once($CFG->dirroot . '/login/lib.php');
 
 if (!$authplugin = signup_is_enabled()) {
-    if (get_config('block_coupon', 'useloginlayoutonsignup')) {
+    if (get_config('block_coupon', 'forceenableemailregistration')) {
         $CFG->registerauth = 'email';
         $authplugin = signup_is_enabled();
     } else {

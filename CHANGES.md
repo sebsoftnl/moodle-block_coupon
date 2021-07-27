@@ -1,3 +1,8 @@
+Version 4.0.9.1 (build 2020010814)
+* Fixed bug in new function introduced in 4.0.9.
+
+----------
+
 Version 4.0.9 (build 2020010813)
 * Fixed part of code checker compliance.
 * Added method to allow signup, even when no signups are allowed in the site (disabled by default).
