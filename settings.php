@@ -99,6 +99,12 @@ if ($ADMIN->fulltree) {
             get_string('label:useloginlayoutonsignup_help', 'block_coupon'),
             1
         ));
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/forceenableemailregistration',
+            get_string('label:forceenableemailregistration', 'block_coupon'),
+            get_string('label:forceenableemailregistration_help', 'block_coupon'),
+            0
+    ));
 
     // Task settings.
     $settings->add(new admin_setting_heading('block_coupon_tasksettings',

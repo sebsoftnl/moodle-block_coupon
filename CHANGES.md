@@ -1,3 +1,8 @@
+Version 4.0.9 (build 2020010812)
+* Added method to allow signup, even when no signups are allowed in the site (disabled by default).
+
+----------
+
 Version 4.0.8 (build 2020010810)
 * Fixed error notification with usage in qr code.
 * Fixed error notification(s) if coupon is already used.

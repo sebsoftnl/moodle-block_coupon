@@ -619,6 +619,8 @@ $string['str:signuphelp'] = 'Use the link below to create a new account <i>with<
 $string['label:useloginlayoutonsignup'] = 'Use \'login\' page layout on internal signup?';
 $string['label:useloginlayoutonsignup_help'] = 'If enabled, this will use the default \'login\' page layout on the internal signup page.<br/>
 This means the signup page is stripped of all headers and footers, and only provides the signup form itself.';
+$string['label:forceenableemailregistration'] = 'Force enable self registration via email';
+$string['label:forceenableemailregistration_help'] = 'If enabled, this will allow people to register via email authentication, even if this is disabled as self registration method.';
 $string['label:batchid'] = 'Batch name';
 $string['label:batchid_help'] = 'You can provide a custom name for this batch, so it can be identified later<br/>
 Naming a batch will help you identify a group of generated coupons later.<br/>

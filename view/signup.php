@@ -29,7 +29,12 @@ require_once($CFG->libdir . '/authlib.php');
 require_once($CFG->dirroot . '/login/lib.php');
 
 if (!$authplugin = signup_is_enabled()) {
-    print_error('notlocalisederrormessage', 'error', '', 'Sorry, you may not use this page (signup is not enabled).');
+    if (get_config('block_coupon', 'useloginlayoutonsignup')) {
+        $CFG->registerauth = 'email';
+        $authplugin = signup_is_enabled();
+    } else {
+        print_error('notlocalisederrormessage', 'error', '', 'Sorry, you may not use this page (signup is not enabled).');
+    }
 }
 
 $PAGE->set_url('/blocks/coupon/view/signup.php');
