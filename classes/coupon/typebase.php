@@ -51,6 +51,15 @@ abstract class typebase {
     protected $coupon;
 
     /**
+     * Get coupon record
+     *
+     * @return \stdClass
+     */
+    public function get_coupon() {
+        return $this->coupon;
+    }
+
+    /**
      * Create a new instance
      * @param \stdClass $coupon record from database
      */

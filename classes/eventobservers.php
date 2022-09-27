@@ -40,8 +40,7 @@ defined('MOODLE_INTERNAL') || die();
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class eventobservers
-{
+class eventobservers {
 
     /**
      * Handle course deleted event

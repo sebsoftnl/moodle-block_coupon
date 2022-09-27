@@ -994,10 +994,10 @@ class block_coupon_external extends external_api {
             self::validate_context(\context_system::instance());
 
             // Try and claim the coupon code.
-//            helper::claim_coupon($code);
             $instance = block_coupon\coupon\typebase::get_type_instance($code);
+            $coupon = $instance->get_coupon();
             // Validate (for the time being, we'll allow course/enrolextensions only!).
-            switch ($this->coupon->typ) {
+            switch ($coupon->typ) {
                 case \block_coupon\coupon\generatoroptions::COHORT:
                 case \block_coupon\coupon\generatoroptions::COURSEGROUPING:
                     throw new exception('invalid-coupon-type');
@@ -1009,7 +1009,7 @@ class block_coupon_external extends external_api {
 
             // We WILL change this proces at some point.
             // For the time being, we'll return the "first course ID".
-            $couponcourses = $DB->get_records('block_coupon_courses', array('couponid' => $this->coupon->id));
+            $couponcourses = $DB->get_records('block_coupon_courses', array('couponid' => $coupon->id));
             $firstcourse = reset($couponcourses);
 
             return (object)[

@@ -52,10 +52,7 @@ class report extends filtering {
         return array(
             'timeexpired' => 0,
             'timemodified' => 1,
-            //'senddate' => 1,
-            //'sent' => 0,
             'couponcode' => 1,
-            //'context' => 1,
             'cohortid' => 1,
             'courseid' => 1,
             'course' => 1,
@@ -77,20 +74,6 @@ class report extends filtering {
             case 'timeexpired':
                 return new \user_filter_date('timeexpired',
                         get_string('report:timeexpired', 'block_coupon'), $advanced, 'c.timeexpired');
-/*
-            case 'senddate':
-                return new \user_filter_date('senddate',
-                        get_string('report:senddate', 'block_coupon'), $advanced, 'c.senddate');
-            case 'sent':
-                return new \user_filter_yesno('sent',
-                        get_string('report:issend', 'block_coupon'), $advanced, 'c.issend');
-            case 'for_user_email':
-                return new \user_filter_text('for_user_email',
-                        get_string('report:for_user_email', 'block_coupon'), $advanced, 'c.for_user_email');
-            case 'for_user_name':
-                return new \user_filter_text('for_user_name',
-                        get_string('report:for_user_name', 'block_coupon'), $advanced, 'c.for_user_name');
-*/
             case 'couponcode':
                 return new \user_filter_text('couponcode',
                         get_string('report:coupon_code', 'block_coupon'), $advanced, 'c.submission_code');
