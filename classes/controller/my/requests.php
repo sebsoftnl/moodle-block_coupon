@@ -24,11 +24,10 @@
  *
  * @copyright   Sebsoft.nl
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
- * @author      Sebastian Berm <sebastian@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_coupon\controller;
+namespace block_coupon\controller\my;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -44,7 +43,7 @@ use html_writer;
  * @author      Sebastian Berm <sebastian@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class myrequests {
+class requests {
 
     /**
      * @var \moodle_page
@@ -105,11 +104,13 @@ class myrequests {
         $table = new \block_coupon\tables\myrequests();
         $table->baseurl = new \moodle_url($this->page->url->out());
 
-        $newurl = $this->get_url(['action' => 'newrequest']);
-
         echo $this->output->header();
-        echo $this->renderer->get_my_requests_tabs($this->page->context, 'myrequests', $this->page->url->params());
-        echo \html_writer::link($newurl, get_string('str:request:add', 'block_coupon'));
+        echo $this->renderer->get_my_tabs($this->page->context, 'myrequests', $this->page->url->params());
+        echo '<div class="block_coupon-requestactions">';
+        echo '<span class="mr-1">';
+        echo implode('</span><span class="mr-1">', $this->determine_requestable_coupon_links());
+        echo '</span>';
+        echo '</div>';
         echo '<br/>';
         echo $table->render(25);
         echo $this->output->footer();
@@ -127,7 +128,7 @@ class myrequests {
         echo $this->output->header();
         echo html_writer::start_div('block-coupon-container');
         echo html_writer::start_div();
-        echo $this->renderer->get_my_requests_tabs($this->page->context, 'cpmybatches', $this->page->url->params());
+        echo $this->renderer->get_my_tabs($this->page->context, 'cpmybatches', $this->page->url->params());
         echo html_writer::end_div();
         echo $table->render(999999);
         echo html_writer::end_div();
@@ -152,6 +153,7 @@ class myrequests {
         $user = \core_user::get_user($instance->userid);
         // Assert correct user.
         $this->assert_user($user->id);
+        $this->assert_not_final($instance);
 
         $options = [
             get_string('delete:request:header', 'block_coupon', $user),
@@ -168,7 +170,7 @@ class myrequests {
             redirect($redirect);
         }
         echo $this->output->header();
-        echo $this->renderer->get_my_requests_tabs($this->page->context, 'delete', $this->page->url->params());
+        echo $this->renderer->get_my_tabs($this->page->context, 'delete', $this->page->url->params());
         $mform->display();
         echo $this->output->footer();
     }
@@ -177,13 +179,29 @@ class myrequests {
      * Process edit requestuser instance
      */
     protected function process_new_request() {
+        $coupontype = required_param('t', PARAM_ALPHA);
+
+        switch ($coupontype) {
+            case 'course':
+                $this->process_new_request_course();
+                break;
+            case 'cohort':
+                $this->process_new_request_cohort();
+                break;
+        }
+    }
+
+    /**
+     * Process request for new course coupons
+     */
+    protected function process_new_request_course() {
         global $DB, $USER;
         $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
             $redirect = $this->get_url(['action' => 'list']);
         }
 
-        $params = array('action' => 'newrequest');
+        $params = array('action' => 'newrequest', 't' => 'course');
         $url = $this->get_url($params);
 
         $instance = $DB->get_record('block_coupon_rusers', ['userid' => $USER->id]);
@@ -213,6 +231,9 @@ class myrequests {
             $record->id = 0;
             $record->userid = $instance->userid;
             $record->configuration = serialize($generatoroptions);
+            $record->clientref = $data->clientref;
+            $record->denied = 0;
+            $record->finalized = 0;
             $record->timecreated = time();
             $record->timemodified = $record->timecreated;
             $record->id = $DB->insert_record('block_coupon_requests', $record);
@@ -222,7 +243,63 @@ class myrequests {
         }
 
         echo $this->output->header();
-        echo $this->renderer->get_my_requests_tabs($this->page->context, 'newrequest', $this->page->url->params());
+        echo $this->renderer->get_my_tabs($this->page->context, 'newrequest', $this->page->url->params());
+        echo $mform->render();
+        echo $this->output->footer();
+    }
+
+    /**
+     * Process request for new course coupons
+     */
+    protected function process_new_request_cohort() {
+        global $DB, $USER;
+        $redirect = optional_param('redirect', null, PARAM_LOCALURL);
+        if (empty($redirect)) {
+            $redirect = $this->get_url(['action' => 'list']);
+        }
+
+        $params = array('action' => 'newrequest', 't' => 'cohort');
+        $url = $this->get_url($params);
+
+        $instance = $DB->get_record('block_coupon_rusers', ['userid' => $USER->id]);
+
+        $mform = new \block_coupon\forms\coupon\request\cohort($url, [$instance, $USER]);
+
+        if ($mform->is_cancelled()) {
+            redirect($redirect);
+        } else if ($data = $mform->get_data()) {
+            $generatoroptions = new \block_coupon\coupon\generatoroptions();
+            $generatoroptions->type = \block_coupon\coupon\generatoroptions::COHORT;
+            $generatoroptions->amount = $data->coupon_amount;
+            $generatoroptions->ownerid = $instance->userid;
+            $generatoroptions->enrolperiod = $data->enrolment_period;
+            $generatoroptions->cohorts = $data->coupon_cohorts;
+            if ($data->use_alternative_email) {
+                $generatoroptions->emailto = $data->alternative_email;
+            } else {
+                $generatoroptions->emailto = $USER->email;
+            }
+            $generatoroptions->generatesinglepdfs = (bool) $data->generate_pdf;
+            $generatoroptions->logoid = $data->logo;
+            $generatoroptions->renderqrcode = (bool) $data->renderqrcode;
+
+            $record = new \stdClass();
+            $record->id = 0;
+            $record->userid = $instance->userid;
+            $record->configuration = serialize($generatoroptions);
+            $record->clientref = $data->clientref;
+            $record->denied = 0;
+            $record->finalized = 0;
+            $record->timecreated = time();
+            $record->timemodified = $record->timecreated;
+            $record->id = $DB->insert_record('block_coupon_requests', $record);
+
+            // SUCCESS!
+            redirect($redirect);
+        }
+
+        echo $this->output->header();
+        echo $this->renderer->get_my_tabs($this->page->context, 'newrequest', $this->page->url->params());
         echo $mform->render();
         echo $this->output->footer();
     }
@@ -239,7 +316,7 @@ class myrequests {
         $this->assert_user($user->id);
 
         echo $this->output->header();
-        echo $this->renderer->get_my_requests_tabs($this->page->context, 'details', $this->page->url->params());
+        echo $this->renderer->get_my_tabs($this->page->context, 'details', $this->page->url->params());
         echo $this->renderer->requestdetails($instance);
         echo $this->output->footer();
     }
@@ -277,6 +354,49 @@ class myrequests {
         if ($USER->id != $userid) {
             throw new \block_coupon\exception('error:myrequests:user');
         }
+    }
+
+    /**
+     * Asser the intended user is the current user.
+     *
+     * We DO allow site administrators and anyone with the coupon administration capability.
+     *
+     * @param stdClass $instance
+     * @throws \block_coupon\exception
+     */
+    protected function assert_not_final($instance) {
+        if (is_siteadmin()) {
+            // We'll allow site admins to do everything.
+            return;
+        }
+        if (has_capability('block/coupon:administration', $this->page->context)) {
+            // We will also allow anyone with administration rights.
+            return;
+        }
+        if ((bool)$instance->finalized) {
+            throw new \block_coupon\exception('error:myrequests:finalized');
+        }
+    }
+
+    /**
+     * Determine and return the various links for coupons requests.
+     *
+     * @return array (of string)
+     */
+    protected function determine_requestable_coupon_links() {
+        global $DB, $USER;
+        $instance = $DB->get_record('block_coupon_rusers', ['userid' => $USER->id]);
+        $options = json_decode($instance->configuration);
+        $links = [];
+        if (!empty($options->courses)) {
+            $links[] = html_writer::link($this->get_url(['action' => 'newrequest', 't' => 'course']),
+                    get_string('str:request:coursecoupons', 'block_coupon'));
+        }
+        if (!empty($options->cohorts)) {
+            $links[] = html_writer::link($this->get_url(['action' => 'newrequest', 't' => 'cohort']),
+                    get_string('str:request:cohortcoupons', 'block_coupon'));
+        }
+        return $links;
     }
 
 }

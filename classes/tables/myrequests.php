@@ -109,8 +109,12 @@ class myrequests extends \table_sql {
         // Generate SQL.
         $fields = 'cr.*, NULL as action';
         $from = '{block_coupon_requests} cr ';
-        $where = array('cr.userid = :userid');
-        $params = array('userid' => $USER->id);
+
+        $where = [
+            'cr.userid = :userid',
+            'finalized = 0'
+        ];
+        $params = ['userid' => $USER->id];
         // Add filtering rules.
         if (!empty($this->filtering)) {
             list($fsql, $fparams) = $this->filtering->get_sql_filter();
@@ -118,11 +122,6 @@ class myrequests extends \table_sql {
                 $where[] = $fsql;
                 $params += $fparams;
             }
-        }
-
-        if (empty($where)) {
-            // Prevent bugs.
-            $where[] = '1 = 1';
         }
 
         parent::set_sql($fields, $from, implode(' AND ', $where), $params);

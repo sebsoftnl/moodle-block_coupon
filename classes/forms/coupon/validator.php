@@ -56,7 +56,7 @@ class validator extends \moodleform {
         $mform->addElement('text', 'coupon_code', get_string('label:coupon_code', 'block_coupon'));
         $mform->addRule('coupon_code', get_string('error:required', 'block_coupon'), 'required', null, 'client');
         $mform->addRule('coupon_code', get_string('error:required', 'block_coupon'), 'required', null, 'server');
-        $mform->setType('coupon_code', PARAM_ALPHANUM);
+        $mform->setType('coupon_code', \block_coupon\helper::get_code_param_type());
         $mform->addHelpButton('coupon_code', 'label:coupon_code', 'block_coupon');
 
         $this->add_action_buttons(false, get_string('button:submit_coupon_code', 'block_coupon'));

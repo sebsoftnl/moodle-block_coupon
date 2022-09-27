@@ -33,12 +33,35 @@ if ($ADMIN->fulltree) {
     // Logo.
     $image = '<a href="http://www.sebsoft.nl" target="_new"><img src="' .
             $OUTPUT->image_url('logo', 'block_coupon') . '" /></a>&nbsp;&nbsp;&nbsp;';
-    $donate = '<a href="https://customerpanel.sebsoft.nl/sebsoft/donate/intro.php" target="_new"><img src="' .
-            $OUTPUT->image_url('donate', 'block_coupon') . '" /></a>';
-    $header = '<div class="block-selectrss-logopromo">' . $image . $donate . '</div>';
+    $donate = '<a href="https://customerpanel.sebsoft.nl/sebsoft/donate/intro.php" target="_new">' .
+            '<img src="' . $OUTPUT->image_url('donate', 'block_coupon') . '" /></a>';
+    $header = '<div class="block-coupon-logopromo">' . $image . $donate . '</div>';
     $settings->add(new admin_setting_heading('block_coupon_logopromo',
             get_string('promo', 'block_coupon'),
             get_string('promodesc', 'block_coupon', $header)));
+
+
+    $settings->add(new admin_setting_configselect(
+            'block_coupon/buttonclass',
+            get_string('label:buttonclass', 'block_coupon'),
+            get_string('label:buttonclass_desc', 'block_coupon'),
+            'btn-primary',
+            ['none' => '', 'btn btn-primary' => 'btn-primary', 'btn btn-secondary' => 'btn-secondary']
+        ));
+
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/personalsendpdf',
+            get_string('label:personalsendpdf', 'block_coupon'),
+            get_string('label:personalsendpdf_help', 'block_coupon'),
+            0
+        ));
+
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/seperatepersonalcoupontab',
+            get_string('label:seperatepersonalcoupontab', 'block_coupon'),
+            get_string('label:seperatepersonalcoupontab_help', 'block_coupon'),
+            0
+        ));
 
     $settings->add(new admin_setting_configcheckbox(
             'block_coupon/use_alternative_email',
@@ -106,6 +129,23 @@ if ($ADMIN->fulltree) {
             0
     ));
 
+    // Settings for request users.
+    $settings->add(new admin_setting_heading('block_coupon_requestusersettings',
+            get_string('requestusersettings', 'block_coupon'),
+            get_string('requestusersettings_desc', 'block_coupon', $header)));
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/enablemycouponsforru',
+            get_string('label:enablemycouponsforru', 'block_coupon'),
+            get_string('label:enablemycouponsforru_help', 'block_coupon'),
+            1
+        ));
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/enablemyprogressforru',
+            get_string('label:enablemyprogressforru', 'block_coupon'),
+            get_string('label:enablemyprogressforru_help', 'block_coupon'),
+            1
+        ));
+
     // Task settings.
     $settings->add(new admin_setting_heading('block_coupon_tasksettings',
             get_string('tasksettings', 'block_coupon'),
@@ -121,6 +161,14 @@ if ($ADMIN->fulltree) {
             get_string('label:cleanupage', 'block_coupon'),
             get_string('label:cleanupage_help', 'block_coupon'),
             30 * 86400, 86400
+        ));
+
+    // Settings related to coursegrouping.
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/groupingselectactiveonly',
+            get_string('label:groupingselectactiveonly', 'block_coupon'),
+            get_string('label:groupingselectactiveonly_help', 'block_coupon'),
+            0
         ));
 
     // Information fields, to be displayed above each form.
@@ -168,28 +216,6 @@ if ($ADMIN->fulltree) {
             get_string('label:info_imageupload', 'block_coupon'),
             get_string('label:info_desc', 'block_coupon'),
             ''
-        ));
-
-    $settings->add(new admin_setting_configselect(
-            'block_coupon/buttonclass',
-            get_string('label:buttonclass', 'block_coupon'),
-            get_string('label:buttonclass_desc', 'block_coupon'),
-            'btn-primary',
-            ['none' => '', 'btn btn-primary' => 'btn-primary', 'btn btn-secondary' => 'btn-secondary']
-        ));
-
-    $settings->add(new admin_setting_configcheckbox(
-            'block_coupon/personalsendpdf',
-            get_string('label:personalsendpdf', 'block_coupon'),
-            get_string('label:personalsendpdf_help', 'block_coupon'),
-            0
-        ));
-
-    $settings->add(new admin_setting_configcheckbox(
-            'block_coupon/seperatepersonalcoupontab',
-            get_string('label:seperatepersonalcoupontab', 'block_coupon'),
-            get_string('label:seperatepersonalcoupontab_help', 'block_coupon'),
-            0
         ));
 
 }

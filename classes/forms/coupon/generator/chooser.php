@@ -48,6 +48,7 @@ class chooser extends \moodleform {
      * form definition
      */
     public function definition() {
+        global $DB;
         $mform = & $this->_form;
 
         $mform->addElement('header', 'header', get_string('heading:coupon_type', 'block_coupon'));
@@ -61,6 +62,14 @@ class chooser extends \moodleform {
         $mform->addElement('radio', 'coupon_type[type]', get_string('label:coupon_type', 'block_coupon'),
                 get_string('label:type_course', 'block_coupon'), 0);
         $mform->addElement('radio', 'coupon_type[type]', '', get_string('label:type_cohorts', 'block_coupon'), 1);
+
+        $cgattributes = [];
+        $label = get_string('label:type_coursegrouping', 'block_coupon');
+        if (!$DB->record_exists('block_coupon_coursegroupings', [])) {
+            $cgattributes['disabled'] = true;
+            $label = \html_writer::span($label, 'dimmed_text');
+        }
+        $mform->addElement('radio', 'coupon_type[type]', '', $label, 2, $cgattributes);
         $mform->setDefault('coupon_type[type]', 0);
         $mform->addRule('coupon_type[type]', get_string('error:required', 'block_coupon'), 'required', null, 'client');
 

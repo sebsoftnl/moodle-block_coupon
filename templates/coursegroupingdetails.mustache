@@ -1,0 +1,25 @@
+<div>
+{{#str}}coursegrouping-details, block_coupon, {{name}}{{/str}}
+<div class="row" style="padding: 0.75rem 0">
+    <div class="col-sm-3"><b>{{#str}}name{{/str}}</b></div>
+    <div class="col-sm-9">{{#actions}}{{{.}}} {{/actions}}{{name}}</div>
+</div>
+{{#idnumber}}
+<div class="row" style="padding: 0.75rem 0">
+    <div class="col-sm-3"><b>{{#str}}idnumber{{/str}}</b></div>
+    <div class="col-sm-9">{{idnumber}}</div>
+</div>
+{{/idnumber}}
+<div class="row" style="padding: 0.75rem 0">
+    <div class="col-sm-3"><b>{{#str}}courses{{/str}}</b></div>
+    <div class="col-sm-9">
+{{#courses}}
+{{#deleteaction}}{{{.}}} {{/deleteaction}}{{{fullname}}}
+{{/courses}}
+    </div>
+</div>
+<div class="row" style="padding: 0.75rem 0">
+    <div class="col-sm-3"><b>{{#str}}numcourses, block_coupon{{/str}}</b></div>
+    <div class="col-sm-9">{{maxamount}}</div>
+</div>
+</div>

@@ -83,6 +83,9 @@ if ($mform->is_cancelled()) {
         case 1:
             $generatoroptions->type = generatoroptions::COHORT;
             break;
+        case 2:
+            $generatoroptions->type = generatoroptions::COURSEGROUPING;
+            break;
     }
     // Serialize generatoroptions to session.
     $generatoroptions->to_session();
@@ -94,6 +97,10 @@ if ($mform->is_cancelled()) {
             break;
         case generatoroptions::COHORT:
             $redirect = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/cohort.php',
+                    ['id' => $id]);
+            break;
+        case generatoroptions::COURSEGROUPING:
+            $redirect = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/coursegrouping.php',
                     ['id' => $id]);
             break;
         default:

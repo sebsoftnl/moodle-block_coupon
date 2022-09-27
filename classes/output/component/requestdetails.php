@@ -70,6 +70,8 @@ class requestdetails implements \renderable, \templatable {
 
         $data->generatoroptions = json_decode(json_encode($generatoroptions));
 
+        $data->clientref = $this->instance->clientref;
+
         $data->amount = $generatoroptions->amount;
         $data->codesize = $generatoroptions->codesize;
         $data->emailto = $generatoroptions->emailto;
@@ -104,7 +106,7 @@ class requestdetails implements \renderable, \templatable {
             $data->courses = array_values($DB->get_records_list('course', 'id',
                     $generatoroptions->courses, 'fullname ASC', 'id,shortname,fullname,idnumber'));
         } else {
-            $data->type = get_string('label:type_cohort', 'block_coupon');
+            $data->type = get_string('label:type_cohorts', 'block_coupon');
             $data->cohorts = array_values($DB->get_records_list('cohort', 'id',
                     $generatoroptions->cohorts, 'name ASC', 'id,name,idnumber'));
             $data->hascohorts = true;

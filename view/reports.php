@@ -29,8 +29,6 @@
  */
 require_once(dirname(__FILE__) . '/../../../config.php');
 
-use block_coupon\helper;
-
 $id = required_param('id', PARAM_INT);
 
 $instance = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
@@ -57,11 +55,8 @@ $PAGE->set_context($context);
 $PAGE->set_course($course);
 $PAGE->set_pagelayout('standard');
 
-// Make sure the moodle editmode is off.
-helper::force_no_editing_mode();
-
 require_capability('block/coupon:viewreports', $context);
-$renderer = $PAGE->get_renderer('block_coupon');
 
-$owner = (has_capability('block/coupon:viewallreports', $context) ? 0 : $USER->id);
-echo $renderer->page_report($id, $owner);
+$renderer = $PAGE->get_renderer('block_coupon');
+$controller = new block_coupon\controller\reports($PAGE, $OUTPUT, $renderer);
+$controller->execute_request();

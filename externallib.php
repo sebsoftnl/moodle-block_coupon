@@ -188,11 +188,12 @@ class block_coupon_external extends external_api {
      * @param int $amount Amount of coupons to be generated.
      * @param int $courses Array of IDs of the courses the coupons will be generated for.
      * @param array $groups Array of IDs of all groups the users will be added to after using a Coupon.
+     * @param int $enrolperiod enrolment period in SECONDS.
      * @return array $coupon_codes Array of coupon codes.
      */
-    public static function request_coupon_codes_for_course($amount, $courses, $groups = null) {
+    public static function request_coupon_codes_for_course($amount, $courses, $groups = null, $enrolperiod = 0) {
         // Get to work and have generator and options.
-        list($generator, $unused) = static::_request_coupon_codes_for_course($amount, $courses, $groups);
+        list($generator, $unused) = static::p_request_coupon_codes_for_course($amount, $courses, $groups, $enrolperiod);
         // We made it, so return the generated codes.
         return $generator->get_generated_couponcodes();
     }
@@ -221,6 +222,7 @@ class block_coupon_external extends external_api {
                     '', VALUE_DEFAULT, array()
                     // We MUST default to an array. The webservice validation implementation is LACKING nullability.
                 ),
+            'enrolperiod' => new external_value(PARAM_INT, 'enrolment period in SECONDS', VALUE_DEFAULT, 0, NULL_NOT_ALLOWED)
         ));
     }
 
@@ -243,18 +245,23 @@ class block_coupon_external extends external_api {
      * @param array $courses Array of IDs of the courses the coupons will be generated for.
      * @param array $groups Array of IDs of all groups the users will be added to after using a Coupon.
      * @param bool $generatesinglepdfs Will generate one PDF file for each coupon if true.
+     * @param int $enrolperiod enrolment period in SECONDS
+     * @param string $font the font to apply with the PDF
+     *
      * @return boolean $result
      */
-    public static function generate_coupons_for_course($email, $amount, $courses, $groups = null, $generatesinglepdfs = false) {
+    public static function generate_coupons_for_course($email, $amount, $courses,
+            $groups = null, $generatesinglepdfs = false, $enrolperiod = 0, $font = 'helvetica') {
         global $DB;
 
         // Let our other method do the magic of generating.
-        list($generator, $generatoroptions) = static::_request_coupon_codes_for_course($amount, $courses, $groups);
+        list($generator, $generatoroptions) = static::p_request_coupon_codes_for_course($amount,
+                $courses, $groups, $enrolperiod, $font);
         $generatedcodes = $generator->get_generated_couponcodes();
         // Get coupons and send off.
         $coupons = $DB->get_records_list('block_coupon', 'submission_code', $generatedcodes);
         list($status, $batchid, $ts) = block_coupon\helper::mail_coupons($coupons, $email, $generatesinglepdfs,
-                false, false, $generatoroptions->batchid);
+                false, false, $generatoroptions->batchid, $generatoroptions->font);
 
         return $status;
     }
@@ -286,6 +293,9 @@ class block_coupon_external extends external_api {
                 ),
             'generatesinglepdfs' => new external_value(PARAM_BOOL,
                     'will generate one PDF file for each coupon if true', VALUE_DEFAULT, false, NULL_NOT_ALLOWED),
+            'enrolperiod' => new external_value(PARAM_INT, 'enrolment period in SECONDS', VALUE_DEFAULT, 0, NULL_NOT_ALLOWED),
+            'font' => new external_value(PARAM_TEXT,
+                    'font to use for the PDF', VALUE_DEFAULT, 'helvetica', NULL_NOT_ALLOWED),
         ));
     }
 
@@ -307,7 +317,7 @@ class block_coupon_external extends external_api {
      */
     public static function request_coupon_codes_for_cohorts($amount, $cohorts) {
         // Get to work and have generator and options.
-        list($generator, $unused) = static::_request_coupon_codes_for_cohorts($amount, $cohorts);
+        list($generator, $unused) = static::p_request_coupon_codes_for_cohorts($amount, $cohorts);
         // We made it, so return the generated IDs.
         return $generator->get_generated_couponcodes();
     }
@@ -352,18 +362,21 @@ class block_coupon_external extends external_api {
      * @param int $amount Amount of coupons to be generated.
      * @param array $cohorts Array of IDs of the cohorts the coupons will be generated for.
      * @param bool $generatesinglepdfs Will generate one PDF file for each coupon if true.
+     * @param string $font the font to apply with the PDF
+     *
      * @return boolean $result
      */
-    public static function generate_coupons_for_cohorts($email, $amount, $cohorts, $generatesinglepdfs = false) {
+    public static function generate_coupons_for_cohorts($email, $amount, $cohorts,
+            $generatesinglepdfs = false, $font = 'helvetica') {
         global $DB;
 
         // Let our other method do the magic of generating.
-        list($generator, $generatoroptions) = static::_request_coupon_codes_for_cohorts($amount, $cohorts);
+        list($generator, $generatoroptions) = static::p_request_coupon_codes_for_cohorts($amount, $cohorts, $font);
         $generatedcodes = $generator->get_generated_couponcodes();
         // Get coupons and send off.
         $coupons = $DB->get_records_list('block_coupon', 'submission_code', $generatedcodes);
         list($status, $batchid, $ts) = block_coupon\helper::mail_coupons($coupons, $email, $generatesinglepdfs,
-                false, false, $generatoroptions->batchid);
+                false, false, $generatoroptions->batchid, $generatoroptions->font);
 
         return $status;
     }
@@ -563,7 +576,7 @@ class block_coupon_external extends external_api {
 
         $where = array();
         $qparams = array();
-        // Never include site gusts.
+        // Never include site guests.
         $where[] = 'u.id <> '.$CFG->siteguest;
         // Do not include admins.
         $where[] = 'u.id NOT IN ('.$CFG->siteadmins.')';
@@ -585,7 +598,7 @@ class block_coupon_external extends external_api {
 
         $where[] = '('.implode(' OR ', $qwhere).')';
 
-        $sql = "SELECT id, username, ". get_all_user_name_fields(true, 'u')." FROM {user} u
+        $sql = "SELECT id, username, ". \block_coupon\helper::get_all_user_name_fields(true, 'u')." FROM {user} u
              WHERE ".implode(" AND ", $where).
              " ORDER BY firstname ASC";
         $rs = $DB->get_recordset_sql($sql, $qparams);
@@ -846,7 +859,7 @@ class block_coupon_external extends external_api {
     /**
      * Returns description of method return parameters
      *
-     * @return external_value
+     * @return external_multiple_structure
      */
     public static function find_cohorts_returns() {
         return new external_multiple_structure(
@@ -865,9 +878,13 @@ class block_coupon_external extends external_api {
      * @param int $amount Amount of coupons to be generated.
      * @param int $courses Array of IDs of the courses the coupons will be generated for.
      * @param array $groups Array of IDs of all groups the users will be added to after using a Coupon.
+     * @param int $enrolperiod enrolment period in SECONDS
+     * @param string $font the font to apply with the PDF
+     *
      * @return array array containing generator instance and generator options.
      */
-    private static function _request_coupon_codes_for_course($amount, $courses, $groups = null) {
+    private static function p_request_coupon_codes_for_course($amount, $courses, $groups = null,
+            $enrolperiod = 0, $font = 'helvetica') {
         global $USER;
 
         // Get max length for the coupon code.
@@ -885,15 +902,16 @@ class block_coupon_external extends external_api {
         $generatoroptions->csvrecipients = [];
         $generatoroptions->emailbody = '';
         $generatoroptions->emailto = '';
-        $generatoroptions->enrolperiod = 0;// TODO: add enrolperiod?
+        $generatoroptions->enrolperiod = $enrolperiod;
         $generatoroptions->extendusers = [];
         $generatoroptions->generatesinglepdfs = true;
         $generatoroptions->groups = (empty($groups) ? array() : $groups);
-        $generatoroptions->logoid = 0; // Use default.
+        $generatoroptions->logoid = 0;
         $generatoroptions->ownerid = $USER->id;
         $generatoroptions->recipients = [];
         $generatoroptions->redirecturl = null; // Leave empty; default is my dashboard page.
         $generatoroptions->senddate = 0;
+        $generatoroptions->font = $font;
 
         // Generate.
         $generator = new \block_coupon\coupon\generator();
@@ -914,9 +932,11 @@ class block_coupon_external extends external_api {
      *
      * @param int $amount Amount of coupons to be generated.
      * @param array $cohorts Array of IDs of the cohorts the coupons will be generated for.
+     * @param string $font the font to apply with the PDF
+     *
      * @return array array containing generator instance and generator options.
      */
-    private static function _request_coupon_codes_for_cohorts($amount, $cohorts) {
+    private static function p_request_coupon_codes_for_cohorts($amount, $cohorts, $font = 'helvetica') {
         global $USER;
 
         // Get max length for the coupon code.
@@ -936,11 +956,12 @@ class block_coupon_external extends external_api {
         $generatoroptions->extendusers = [];
         $generatoroptions->generatesinglepdfs = true;
         $generatoroptions->groups = [];
-        $generatoroptions->logoid = 0; // Use default.
+        $generatoroptions->logoid = 0;
         $generatoroptions->ownerid = $USER->id;
         $generatoroptions->recipients = [];
         $generatoroptions->redirecturl = null; // Leave empty; default is my dashboard page.
         $generatoroptions->senddate = 0;
+        $generatoroptions->font = $font;
 
         // Generate.
         $generator = new \block_coupon\coupon\generator();
@@ -956,5 +977,77 @@ class block_coupon_external extends external_api {
         return [$generator, $generatoroptions];
     }
 
+    /**
+     * Claim a coupon code.
+     *
+     * @param string $code
+     */
+    public static function claim_coupon($code) {
+        global $USER, $CFG, $DB;
+        try {
+            // We always must pass webservice params through validate_parameters.
+            $params = self::validate_parameters(
+                self::claim_coupon_parameters(), ['code' => $code]
+            );
+
+            // We always must call validate_context in a webservice.
+            self::validate_context(\context_system::instance());
+
+            // Try and claim the coupon code.
+//            helper::claim_coupon($code);
+            $instance = block_coupon\coupon\typebase::get_type_instance($code);
+            // Validate (for the time being, we'll allow course/enrolextensions only!).
+            switch ($this->coupon->typ) {
+                case \block_coupon\coupon\generatoroptions::COHORT:
+                case \block_coupon\coupon\generatoroptions::COURSEGROUPING:
+                    throw new exception('invalid-coupon-type');
+                default:
+                    break;
+            }
+
+            $instance->claim($USER->id);
+
+            // We WILL change this proces at some point.
+            // For the time being, we'll return the "first course ID".
+            $couponcourses = $DB->get_records('block_coupon_courses', array('couponid' => $this->coupon->id));
+            $firstcourse = reset($couponcourses);
+
+            return (object)[
+                'result' => true,
+                'message' => get_string('success:coupon_used', 'block_coupon'),
+                'courseid' => $firstcourse->id
+            ];
+        } catch (Exception $ex) {
+            return (object)[
+                'result' => false,
+                'message' => $ex->getMessage()
+            ];
+        }
+    }
+
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     */
+    public static function claim_coupon_parameters() {
+        return new external_function_parameters([
+            'code' => new external_value(helper::get_code_param_type(), 'Coupon/voucher code')
+        ]);
+    }
+
+    /**
+     * Returns description of method return parameters
+     *
+     * @return external_single_structure
+     */
+    public static function claim_coupon_returns() {
+        return new external_single_structure([
+            'result' => new external_value(PARAM_BOOL, 'Result of claim'),
+            'message' => new external_value(PARAM_TEXT, 'Message depending on service result (success or error message)'),
+            'courseid' => new external_value(PARAM_INT, 'Resulting course ID, can be used to redirect', VALUE_OPTIONAL)
+        ]);
+    }
 
 }

@@ -83,7 +83,7 @@ class page2 extends \moodleform {
 
             // Collect data.
             if (!$course = $this->db()->get_record('course', array('id' => $courseid))) {
-                print_error('error:course-not-found', 'block_coupon');
+                throw new \moodle_exception('error:course-not-found', 'block_coupon');
             }
             $groups = $this->db()->get_records("groups", array('courseid' => $courseid));
             if (empty($groups)) {

@@ -50,6 +50,10 @@ class logostorage {
      * @var int
      */
     const AREA_ITEM_ID = 1;
+    /**
+     * @var int
+     */
+    const MAX_FILES = -1;
 
     /**
      * Add the form elements.
@@ -64,7 +68,7 @@ class logostorage {
             'subdirs' => 0,
             'maxbytes' => $maxbytes,
             'areamaxbytes' => 10485760,
-            'maxfiles' => 10,
+            'maxfiles' => static::MAX_FILES,
             'accepted_types' => array('image'),
         );
         $mform->addElement('filemanager', 'logos', '', null, $options);
@@ -92,7 +96,7 @@ class logostorage {
      */
     public static function prepare_draftarea(&$draftitemid) {
         $context = \context_system::instance();
-        $options = array('subdirs' => 0, 'maxfiles' => 10);
+        $options = array('subdirs' => 0, 'maxfiles' => static::MAX_FILES);
         file_prepare_draft_area($draftitemid, $context->id, 'block_coupon',
                 self::FILE_AREA, self::AREA_ITEM_ID, $options);
         return $draftitemid;
@@ -105,7 +109,7 @@ class logostorage {
      */
     public static function store_draft_files($draftitemid) {
         $context = \context_system::instance();
-        $options = array('subdirs' => 0, 'maxfiles' => 10);
+        $options = array('subdirs' => 0, 'maxfiles' => static::MAX_FILES);
         $text = null;
         return file_save_draft_area_files($draftitemid, $context->id, 'block_coupon',
                 self::FILE_AREA, self::AREA_ITEM_ID, $options, $text);

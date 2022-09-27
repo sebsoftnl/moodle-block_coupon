@@ -59,7 +59,7 @@ class coupons extends \table_sql {
     /**
      * Filter to display all coupons
      */
-    const ALL = 3;
+    const ALL = 4;
     /**
      * Do we render the history or the current status?
      *
@@ -89,6 +89,13 @@ class coupons extends \table_sql {
      * @var \block_coupon\filtering\filtering
      */
     protected $filtering;
+
+    /**
+     * Should we render actions at all?
+     *
+     * @var bool
+     */
+    protected $noactions = false;
 
     /**
      * Should we use an action menu for the actions?
@@ -136,6 +143,17 @@ class coupons extends \table_sql {
     }
 
     /**
+     * Set whtewhr or not to display actions
+     *
+     * @param bool $noactions
+     * @return $this
+     */
+    public function set_noactions($noactions) {
+        $this->noactions = $noactions;
+        return $this;
+    }
+
+    /**
      * Create a new instance of the logtable
      *
      * @param int $ownerid if set, display only coupons from given owner
@@ -147,6 +165,7 @@ class coupons extends \table_sql {
         $this->ownerid = (int)$ownerid;
         $this->filter = (int)$filter;
         $this->sortable(true, 'c.senddate', 'DESC');
+        $this->no_sorting('owner');
         $this->no_sorting('course');
         $this->no_sorting('cohorts');
         $this->no_sorting('groups');
@@ -174,13 +193,9 @@ class coupons extends \table_sql {
     }
 
     /**
-     * Display the general status log table.
-     *
-     * @param int $pagesize
-     * @param bool $useinitialsbar
+     * Define headers and columns.
      */
-    public function render($pagesize, $useinitialsbar = true) {
-        global $DB;
+    protected function define_headers_and_columns() {
         $columns = array('owner', 'for_user_email', 'senddate',
             'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'roleid', 'batchid', 'issend');
         $headers = array(
@@ -196,7 +211,7 @@ class coupons extends \table_sql {
             get_string('th:batchid', 'block_coupon'),
             get_string('th:issend', 'block_coupon')
         );
-        if ($this->is_downloading() == '') {
+        if ($this->is_downloading() == '' &&!$this->noactions) {
             $columns[] = 'action';
             $headers[] = get_string('th:action', 'block_coupon');
         }
@@ -214,8 +229,20 @@ class coupons extends \table_sql {
         $this->define_columns($columns);
         $this->define_headers($headers);
 
+    }
+
+    /**
+     * Display the general status log table.
+     *
+     * @param int $pagesize
+     * @param bool $useinitialsbar
+     */
+    public function render($pagesize, $useinitialsbar = true) {
+        global $DB;
+        // Define headers/columns.
+        $this->define_headers_and_columns();
         // Generate SQL.
-        $fields = 'c.*, ' . get_all_user_name_fields(true, 'u', '', 'owner_') .
+        $fields = 'c.*, ' . \block_coupon\helper::get_all_user_name_fields(true, 'u', '', 'owner_') .
                 ', ' . $DB->sql_fullname('u.firstname', 'u.lastname') . ' AS owner' .
                 ', NULL as action';
         $from = '{block_coupon} c ';
@@ -230,7 +257,7 @@ class coupons extends \table_sql {
         switch ($this->filter) {
             case self::USED:
                 $where[] = 'claimed = 1';
-                $fields .= ', ' . get_all_user_name_fields(true, 'u1');
+                $fields .= ', ' . \block_coupon\helper::get_all_user_name_fields(true, 'u1');
                 $fields .= ', ' . $DB->sql_fullname('u1.firstname', 'u1.lastname') . ' AS usedby';
                 $from .= ' JOIN {user} u1 ON c.userid=u1.id';
                 break;
@@ -239,7 +266,7 @@ class coupons extends \table_sql {
                 break;
             case self::PERSONAL:
                 $where[] = 'for_user_email IS NOT NULL';
-                $fields .= ', ' . get_all_user_name_fields(true, 'u1');
+                $fields .= ', ' . \block_coupon\helper::get_all_user_name_fields(true, 'u1');
                 $fields .= ', ' . $DB->sql_fullname('u1.firstname', 'u1.lastname') . ' AS usedby';
                 $from .= ' LEFT JOIN {user} u1 ON c.userid=u1.id';
                 break;
@@ -263,6 +290,27 @@ class coupons extends \table_sql {
         }
         parent::set_sql($fields, $from, implode(' AND ', $where), $params);
         $this->out($pagesize, $useinitialsbar);
+    }
+
+    /**
+     * Render visual representation of the 'usedby' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string time string
+     */
+    public function col_usedby($row) {
+        global $CFG;
+        // Nasty modification. Does moodle support better methods here at all??
+        $obj = new \stdClass();
+        foreach ($row as $k => $v) {
+            if (stristr($k, 'user_') !== false) {
+                $nk = str_replace('user_', '', $k);
+                $obj->{$nk} = $v;
+            }
+        }
+
+        $url = new \moodle_url($CFG->wwwroot . '/user/profile.php', ['id' => $row->userid]);
+        return \html_writer::link($url, fullname($obj));
     }
 
     /**
@@ -294,7 +342,6 @@ class coupons extends \table_sql {
      *
      * @param \stdClass $row
      * @return string time string
-     */
     public function col_usedby($row) {
         // This is a nasty hack, but it works.
         $mrow = new \stdClass;
@@ -309,6 +356,7 @@ class coupons extends \table_sql {
         $this->useridfield = $old;
         return $fullname;
     }
+     */
 
     /**
      * Render visual representation of the 'enrolperiod' column for use in the table

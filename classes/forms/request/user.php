@@ -53,9 +53,11 @@ class user extends \moodleform {
 
         list($instance, $user) = $this->_customdata;
 
-        // Register element.
+        // Register elements.
         $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcourses.php';
         \MoodleQuickForm::registerElementType('findcourses', $path, '\block_coupon\forms\element\findcourses');
+        $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcohorts.php';
+        \MoodleQuickForm::registerElementType('findcohorts', $path, '\block_coupon\forms\element\findcohorts');
 
         $mform->addElement('header', 'header', get_string('coupon:user:heading', 'block_coupon', $user));
         $mform->addElement('static', 'info', '', get_string('coupon:user:info', 'block_coupon', $user));
@@ -63,7 +65,10 @@ class user extends \moodleform {
         // Select courses that can be accessed.
         $mform->addElement('findcourses', 'course', get_string('course'));
         $mform->addHelpButton('course', 'findcourses', 'block_coupon');
-        $mform->addRule('course', null, 'required', null, 'client');
+
+        // Select cohorts that can be accessed.
+        $mform->addElement('findcohorts', 'cohort', get_string('crcohorts', 'block_coupon'));
+        $mform->addHelpButton('cohort', 'crcohorts', 'block_coupon');
 
         // Now for some other options and settings...
         $mform->addElement('static', '_xother', '', get_string('othersettings', 'block_coupon') . '<hr/>');
@@ -138,8 +143,9 @@ class user extends \moodleform {
      */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
-        if (empty($data['course'])) {
-            $errors['course'] = get_string('required');
+        if (empty($data['course']) && empty($data['cohort'])) {
+            $errors['course'] = get_string('required:atleastonecohortorcourse', 'block_coupon');
+            $errors['cohort'] = get_string('required:atleastonecohortorcourse', 'block_coupon');
         }
         if (!(bool)$data['allowselectrole'] && empty($data['role'])) {
             $errors['role'] = get_string('required') . '<br/>' . get_string('forcerole_exp', 'block_coupon');

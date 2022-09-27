@@ -475,6 +475,7 @@ Alle gebruikers hebben reeds een permanente aanmelding of er zijn geen gebruiker
 $string['coupon:type:course'] = 'Cursusaanmelding';
 $string['coupon:type:cohort'] = 'Sitegroep aanmelding';
 $string['coupon:type:enrolext'] = 'Aanmeldingsverlenging';
+$string['coupon:type:coursegrouping'] = 'Cursusgroepering aanmelding';
 $string['recipient:selected:users'] = 'Geselecteerde deelnemers';
 $string['recipient:none'] = 'Geen';
 $string['coupon:senddate:instant'] = 'Direct';
@@ -649,6 +650,46 @@ Je zou een email moeten hebben ontvangen met de details en download link.<br />
 Je kunt ook direct de coupon(s) downloaden door {$a->downloadlink} te klikken.</p>
 ';
 $string['coupons:cleaned'] = '{$a} coupons zijn opgeschoond / verwijderd.';
+$string['err:download-not-exists'] = 'The archive you want to download no longer exists<br/>
+Most likely you have already downloaded the archive.<br/>
+If you are absolutely sure you have <i>not</i> downloaded the generated coupons yourself, please contact the system administrator.';
+
+$string['label:type_coursegrouping'] = 'Cursusgroepering (kies X uit Y aanmeldingen in cursus)';
+$string['tab:wzcoupongroupings'] = 'Beheer cursusgroeperingen';
+$string['view:coursegroupings:admin:title'] = 'Cursusgroeperingen';
+$string['view:coursegroupings:admin:heading'] = 'Beheer cursusgroeperingen';
+$string['action:coursegrouping:delete'] = 'Groepering verwijderen';
+$string['action:coursegrouping:edit'] = 'Groepering bewerken';
+$string['action:coursegrouping:details'] = 'Details bekijken';
+$string['str:coursegroupings:add'] = 'Nieuwe groepering toevoegen';
+$string['numcourses'] = 'Maximum aantal te selecteren cursussen';
+$string['coupon:coursegrouping:heading'] = 'Cursusgroepering configureren';
+$string['coursegrouping-details'] = 'Cursusgroepering details';
+$string['delete:coursegrouping:header'] = 'Bevestig verwijderen van cursusgroepering';
+$string['delete:coursegrouping:confirmmessage'] = 'Ik wil deze groepering verwijderen';
+$string['delete:coursegrouping:successmsg'] = 'Cursusgroepering succesvul verwijderd';
+$string['delete:coursegrouping:successmsg'] = 'Coursegrouping successfully deleted';
+$string['coursegrouping'] = 'Cursusgroepering';
+$string['view:generator:coursegroupings:heading'] = 'Coupons tbv cursusgroepering genereren';
+$string['view:generator:coursegroupings:title'] = 'generator tbv cursusgroepering(en)';
+$string['error:grouping-not-found'] = 'Groepering niet gevonden';
+$string['error:validate-groupings'] = 'Groeperingsvalidatie fouten:<br/>{$a}';
+$string['error:coupon:generator'] = 'Er hebben zich fouten voorgedaan tijdens het genereren:<br/>{$a}';
+$string['view:selectcourses:title'] = 'Kies cursus(sen)';
+$string['view:selectcourses:heading'] = 'Kies cursus(sen) om op aan te melden';
+$string['choose:courses:explain'] = 'Kies hieronder de cursus(sen) waarop je je wenst aan te melden.<br/>
+Met deze coupon kun je maximaal {$a->maxamount} cursus(sen) kiezen.';
+$string['err:choose:maxamount'] = 'Je mag maximaal {$a} cursus(sen) kiezen';
+$string['err:choose:atleastone'] = 'Kies aub een cursus';
+$string['heading:coursegroupingandvars'] = 'Selecteer coupon variabelen, cursusgroepering en aanmeldingsvariabelen';
+$string['batchidselect'] = 'Batch ID';
+$string['error:no-more-course-choices'] = 'Er zijn geen cursussen meer waaruit je kunt selecteren.<br/>
+Het lijkt erop dat je al bent aangemeld in alle cursussen waar deze coupon voor geldt.<br/>
+<br/>Als je denkt dat dit niet klopt, neem dan a.u.b. contact op met de systeembeheerder.';
+$string['label:groupingselectactiveonly'] = 'Alleen active aanmeldingen?';
+$string['label:groupingselectactiveonly_help'] = 'Wanneer niet aangevinkt, worden alle cursussen waaruit men kan kiezen gecontroleerd op aanmelding, ook niet actieve aanmeldingen.<br/>
+Dit betekent dat zelfs inactieve en reeds verlopen cursusaanmeldingen meetellen in de cursussen waaruit men kan kiezen bij het claimen van een coupon.<br/>
+Alle cursussen waaruit een persoon kan kiezen worden gecompenseerd voor diegene waar men al in is aangemeld.';
 $string['err:coupon:generic'] = 'Er is iets foutgegaan. Neem aub contant op met de systeembeheerder';
 $string['err:download-not-exists'] = 'Het archief dat je wilt downloaden betaat niet meer<br/>
 Waarschijnlijk heb je deze al een keer gedownload en is deze daarna verwijderd.<br/>
@@ -681,3 +722,22 @@ Deze instelling heeft dus inhoudelijk geen effect op de gebruikte/ongebruikte co
 $string['tab:personalcoupons'] = 'Gepersonaliseerde coupons';
 $string['err:codesize:left'] = 'Code lengte fout: voor {$a->want} coupons van {$a->size} karakters hebben we slechts {$a->left} codes over (met de huidige karakterset)!';
 $string['task:unenrolcohorts'] = 'Verlopen coupon aanmeldingen voor cohorten verwijderen';
+$string['err:myrequests:finalized'] = 'Dit coupon verzoek is reeds gefinaliseerd.';
+$string['clientref'] = 'Klant referentie';
+$string['label:font'] = 'Lettertype voor PDF';
+$string['label:font_help'] = 'Selecteer het lettertype dat gebruikt wordt bij het genereren van de PDF. De standaardinstelling is meestal voldoende.<br/>
+Wanneer je echter speciale tekens nodig hebt (cyrillisch, arabisch, farsi, etc), kun je hier een ander font aangeven dat wordt gebruikt.
+';
+$string['required:atleastonecohortorcourse'] = 'Minimaal 1 cursus of cohort dient te worden ingegeven!';
+$string['str:request:cohortcoupons'] = 'Sitegroep coupons aanvragen';
+$string['str:request:coursecoupons'] = 'Cursus coupons aanvragen';
+$string['tab:cpmycoupons'] = 'Mijn coupons';
+
+$string['requestusersettings'] = 'Instellingen coupon verzoeken';
+$string['requestusersettings_desc'] = 'Dit onderdeel heeft een aantal instellingen waarmee de gebruikersinterface van de gebruikers voor coupon verzoeken kunnen worden gelimiteerd.<br/>
+De instellingen zijn specifiek ingezet om eventuele GDPR/AVG problemen te voorkomen.';
+$string['label:enablemycouponsforru'] = '"mijn coupons" inschakelen?';
+$string['label:enablemycouponsforru_help'] = 'Hiermee wordt de tab/tabel ten behoeve van de coupons die behoren tot een couponverzoek gebruiker inzichtelijk gemaakt.<br/>
+De tabel toont o.a. de status van de gegenereerde coupons.';
+$string['label:enablemycouponsforru'] = '"mijn voortgangsrapportage" inschakelen?';
+$string['label:enablemycouponsforru_help'] = 'Hiermee wordt de tab/tabel ten behoeve van de voortgangsrapportage voor coupons die behoren tot een couponverzoek gebruiker inzichtelijk gemaakt.';

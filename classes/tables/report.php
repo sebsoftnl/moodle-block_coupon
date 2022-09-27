@@ -88,6 +88,24 @@ class report extends \table_sql {
     }
 
     /**
+     * Define headers and columns.
+     */
+    protected function define_headers_and_columns() {
+        $columns = array(
+            'fullname',
+            'submission_code',
+            'typ',
+            'coursename',
+            'cohortname',
+            'status',
+            'datestart',
+            'datecomplete',
+            'grade'
+        );
+        $this->define_table_columns($columns);
+    }
+
+    /**
      * Display the general status log table.
      *
      * @param int $pagesize
@@ -95,9 +113,7 @@ class report extends \table_sql {
      */
     public function render($pagesize, $useinitialsbar = true) {
         $this->useridfield = 'userid';
-        $columns = array('fullname', 'submission_code', 'typ', 'coursename',
-            'cohortname', 'status', 'datestart', 'datecomplete', 'grade');
-        $this->define_table_columns($columns);
+        $this->define_headers_and_columns();
         // We won't be able to sort by most columns.
         $this->no_sorting('status');
         $this->no_sorting('datestart');
@@ -131,9 +147,10 @@ class report extends \table_sql {
         global $DB;
         $q1params = array();
         $q2params = array();
+        $q3params = array();
         $fields = $DB->sql_concat('c.id', '\'-\'', 'bc.id') . ' as idx,
                bc.*, c.id as courseid, c.fullname as coursename,
-               ' . get_all_user_name_fields(true, 'u');
+               ' . helper::get_all_user_name_fields(true, 'u');
         $q1 = 'SELECT ' . $fields . '
                , null as cohortname
                FROM {block_coupon} bc
@@ -163,7 +180,22 @@ class report extends \table_sql {
             $q2 .= ' AND bc.ownerid = :ownerid2';
             $q2params['ownerid2'] = $this->ownerid;
         }
-        return array("$q1 UNION DISTINCT $q2", array_merge($q1params, $q2params));
+
+        $q3 = 'SELECT ' . $fields . '
+               , null as cohortname
+               FROM {block_coupon} bc
+               JOIN {block_coupon_cgucourses} cc ON cc.couponid=bc.id
+               JOIN {user} u ON bc.userid=u.id
+               LEFT JOIN {course} c ON cc.courseid=c.id
+               WHERE bc.userid IS NOT NULL
+               AND claimed = 1
+               ';
+        if ($this->ownerid > 0) {
+            $q3 .= ' AND bc.ownerid = :ownerid1';
+            $q3params['ownerid1'] = $this->ownerid;
+        }
+
+        return array("{$q1} UNION DISTINCT {$q2} UNION DISTINCT {$q3}", array_merge($q1params, $q2params, $q3params));
     }
 
     /**

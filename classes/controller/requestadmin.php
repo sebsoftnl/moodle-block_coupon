@@ -184,6 +184,10 @@ class requestadmin {
             if (!empty($data->course)) {
                 $this->merge_options($options, 'courses', $data->course, true, true);
             }
+            // Merge allowed cohorts.
+            if (!empty($data->cohort)) {
+                $this->merge_options($options, 'cohorts', $data->cohort, true, true);
+            }
             // Merge other options.
             $this->merge_options($options, 'allowselectlogo', $data->allowselectlogo, false, true);
             if (!empty($data->logo)) {
@@ -221,6 +225,11 @@ class requestadmin {
             $configuration->course = $configuration->courses;
         } else {
             $configuration->course = [];
+        }
+        if (!empty($configuration->cohorts)) {
+            $configuration->cohort = $configuration->cohorts;
+        } else {
+            $configuration->cohort = [];
         }
         $mform->set_data($configuration);
 
@@ -348,7 +357,11 @@ class requestadmin {
         if ($mform->is_cancelled()) {
             redirect($redirect);
         } else if ($data = $mform->get_data()) {
-            $DB->delete_records('block_coupon_requests', ['id' => $itemid]);
+            // We no longer delete the requests, but mark it with statuses.
+            $instance->denied = 0;
+            $instance->finalized = 1;
+            $DB->update_record('block_coupon_requests', $instance);
+
             // Send message if applicable.
             $from = \core_user::get_noreply_user();
             $subject = get_string('request:deny:subject', 'block_coupon');
@@ -395,7 +408,10 @@ class requestadmin {
                 $generator = new \block_coupon\coupon\generator();
                 $generator->generate_coupons($options);
 
-                $DB->delete_records('block_coupon_requests', ['id' => $record->id]);
+                // We no longer delete the requests, but mark it with statuses.
+                $record->denied = 0;
+                $record->finalized = 1;
+                $DB->update_record('block_coupon_requests', $record);
 
                 // Generate and send off.
                 $coupons = $DB->get_records_list('block_coupon', 'id', $generator->get_generated_couponids());

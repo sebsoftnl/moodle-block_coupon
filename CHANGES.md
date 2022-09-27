@@ -1,3 +1,39 @@
+Version 4.2.1 (build 2022080100)
+* Changed dependency to Moodle 3.10+
+
+
+Version 4.2.0 (build 2020010816)
+* Added exclusion of courses already enrolled for coursegrouping coupon types
+* Added coursegrouping coupon types (choose x out of y courses)
+* Added SPONSORS.md to specifically state our gratitude apart from mentioning them in the README.
+* Special thanks goes out to eLearn Solutions with Boston Connect (a subsidiary of Boston City Campus)
+  as a sponsor of this plugin!
+* Added webservice call to claim coupon code. Bear in mind this is ONLY applicable
+  at the moment to course type coupons. Refinement is needed (as well as an overhaul of the plugin and services).
+
+----------
+
+Version 4.1.0 (build 2021011000)
+* Added tabs + settings for coupon request users (coupons / progressreport).
+* Fixed #1: no QR code in the generated PDF (think this was fixed before, just confirming again)
+* Fixed #4: Not possible to confirm account with self-registration auth method disabled (see Version 4.0.9 (build 2020010813); this is a workaround)
+* Fixed #3: Extend webservices with enrolment period. Course coupons ONLY.
+* Renderer moved to /classes/output
+* 2 remaining renderer "full page reports" were now moved to their own controllers.
+
+----------
+
+Version 4.0.10 (build 2020010815)
+* Added font selection for PDF for more language support. RTL might still be an issue (fixed #5).
+* Extended PDF preview with "current" font selection and current QR setting.
+* Added clientreference field when requesting coupons.
+* Coupon requests are no longer removed upon denial/approval, but marked as denied/finalized.
+* Coupon requestability is now also implemented for cohorts.
+* Implemented a helper to support \core_user\fields but also serve the old method (for Moodle pre 3.11)
+* Removed maximum of 10 logo files, it is now set to -1 (unlimited).
+
+----------
+
 Version 4.0.9.1 (build 2020010814)
 * Fixed bug in new function introduced in 4.0.9.
 

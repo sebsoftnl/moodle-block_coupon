@@ -123,7 +123,7 @@ class coupons {
         $table = new \block_coupon\tables\coupons($ownerid, $filter);
         $table->baseurl = $this->page->url;
 
-        $filtering = new \block_coupon\tablefilters\coupons($this->page->url);
+        $filtering = new \block_coupon\tablefilters\coupons($this->page->url, [], [], ['mybatchselect' => 1]);
         $table->set_filtering($filtering);
 
         $table->is_downloadable(true);

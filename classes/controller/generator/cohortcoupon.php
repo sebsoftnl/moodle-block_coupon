@@ -252,6 +252,9 @@ class cohortcoupon {
             // These settings are always the same.
             $generatoroptions->redirecturl = (empty($data->redirect_url)) ? null : $data->redirect_url;
             $generatoroptions->renderqrcode = (isset($data->renderqrcode) && $data->renderqrcode) ? true : false;
+            if (isset($data->font)) {
+                $generatoroptions->font = $data->font;
+            }
 
             if ($generatoroptions->generatormethod == 'csv') {
                 $generatoroptions->csvdelimitername = $data->csvdelimiter;
@@ -306,7 +309,8 @@ class cohortcoupon {
                     // Generate and send off.
                     $coupons = $DB->get_records_list('block_coupon', 'id', $generator->get_generated_couponids());
                     list($rs, $batchid, $ts) = helper::mail_coupons($coupons, $generatoroptions->emailto,
-                            $generatoroptions->generatesinglepdfs, false, false, $generatoroptions->batchid);
+                            $generatoroptions->generatesinglepdfs, false, false, $generatoroptions->batchid,
+                            $generatoroptions->font);
 
                     $dlurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php', ['bid' => $batchid, 't' => $ts]);
                     $dllink = \html_writer::link($dlurl, get_string('here', 'block_coupon'));

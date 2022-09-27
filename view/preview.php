@@ -61,6 +61,7 @@ try {
 $roleid = optional_param('roleid', $options->roleid, PARAM_INT);
 $logoid = optional_param('logoid', $options->logoid, PARAM_INT);
 $renderqrcode = optional_param('qr', $options->renderqrcode, PARAM_INT);
+$font = optional_param('font', $options->font, PARAM_TEXT);
 
 // Create fake coupon instance.
 $coupon = new stdClass;
@@ -89,6 +90,8 @@ $coupon->timeclaimed = null;
 
 // Generate the PDF.
 $pdfgen = new block_coupon\coupon\pdf(get_string('pdf:titlename', 'block_coupon'));
+// Set default font.
+$pdfgen->set_defaultfont($font);
 // Fill the coupon with text.
 $pdfgen->set_templatemain(get_string('default-coupon-page-template-main', 'block_coupon'));
 $pdfgen->set_templatebotleft(get_string('default-coupon-page-template-botleft', 'block_coupon'));

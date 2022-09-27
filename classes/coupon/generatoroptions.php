@@ -53,6 +53,10 @@ class generatoroptions {
      * ENROLEXTENSION type generator
      */
     const ENROLEXTENSION = 'enrolext';
+    /**
+     * COURSEGROUPING type generator
+     */
+    const COURSEGROUPING = 'coursegrouping';
 
     /**
      * generator type
@@ -114,6 +118,11 @@ class generatoroptions {
      * @var array
      */
     public $groups = array();
+    /**
+     * Grouping IDS the coupons are generated for (only applicable for coursegrouping type)
+     * @var array
+     */
+    public $groupings = array();
 
     /**
      * Recipient's emailaddress to either send a status to, or the coupons itself
@@ -179,6 +188,13 @@ class generatoroptions {
      * @var string
      */
     public $csvdelimitername = ',';
+
+    /**
+     * Font used for the PDF
+     *
+     * @var string
+     */
+    public $font = 'helvetica';
 
     /**
      * create a new instance

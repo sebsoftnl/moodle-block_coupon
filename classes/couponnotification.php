@@ -138,8 +138,8 @@ class couponnotification {
         $recipient = \core_user::get_user($userid);
         $course = $site;
         $contextname = get_string('pluginname', 'block_coupon');
-        $contexturl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php',
-                ['id' => helper::find_block_instance_id(), 'action' => 'batchlist']);
+        $contexturl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/batches.php',
+                ['id' => helper::find_block_instance_id()]);
 
         $downloadurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php', ['bid' => $batchid, 't' => $ts]);
 

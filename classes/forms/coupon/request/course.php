@@ -153,6 +153,9 @@ class course extends \moodleform {
             $mform->setConstant('enrolment_period', $this->get_option($this->options, 'enrolperioddefault'));
         }
 
+        $mform->addElement('text', 'clientref', get_string('clientref', 'block_coupon'));
+        $mform->setType('clientref', PARAM_TEXT);
+
         $this->add_action_buttons(true, get_string('request:coupons', 'block_coupon'));
     }
 

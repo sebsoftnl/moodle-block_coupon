@@ -190,13 +190,16 @@ class extendenrolmentcoupon {
             $generatoroptions->enrolperiod = $data->enrolperiod;
             $generatoroptions->generatesinglepdfs = $data->generate_pdf;
             $generatoroptions->renderqrcode = (isset($data->renderqrcode) && $data->renderqrcode) ? true : false;
+            if (isset($data->font)) {
+                $generatoroptions->font = $data->font;
+            }
             $generatoroptions->redirecturl = $data->redirect_url;
             $generatoroptions->emailto = (!empty($data->use_alternative_email)) ? $data->alternative_email : null;
             if (empty($data->use_alternative_email)) {
                 $generatoroptions->emailto = null;
                 // Load recipients!
                 $generatoroptions->recipients = [];
-                $fields = 'id, email, ' . get_all_user_name_fields(true);
+                $fields = 'id, email, ' . \block_coupon\helper::get_all_user_name_fields(true);
                 $users = $DB->get_records_list('user', 'id', $data->extendusers, '', $fields);
                 foreach ($users as $user) {
                     $generatoroptions->recipients[] = (object) array(
@@ -264,7 +267,8 @@ class extendenrolmentcoupon {
                 // Generate and send off.
                 $coupons = $DB->get_records_list('block_coupon', 'id', $generator->get_generated_couponids());
                 list($rs, $batchid, $ts) = helper::mail_coupons($coupons, $generatoroptions->emailto,
-                        $generatoroptions->generatesinglepdfs, false, false, $generatoroptions->batchid);
+                        $generatoroptions->generatesinglepdfs, false, false, $generatoroptions->batchid,
+                        $generatoroptions->font);
 
                 $dlurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php', ['bid' => $batchid, 't' => $ts]);
                 $dllink = \html_writer::link($dlurl, get_string('here', 'block_coupon'));

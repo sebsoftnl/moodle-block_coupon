@@ -310,5 +310,106 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
     }
 
+    if ($oldversion < 2020010815) {
+        // Add some fields to coupon requests.
+        $table = new xmldb_table('block_coupon_requests');
+        $field = new xmldb_field('clientref', XMLDB_TYPE_CHAR, 100, null, null, null, null, 'configuration');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('denied', XMLDB_TYPE_INTEGER, 1, null, XMLDB_NOTNULL, null, '0', 'clientref');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('finalized', XMLDB_TYPE_INTEGER, 1, null, XMLDB_NOTNULL, null, '0', 'denied');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $index = new xmldb_index('idx-denied', XMLDB_INDEX_NOTUNIQUE, ['denied']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+        $index = new xmldb_index('idx-finalized', XMLDB_INDEX_NOTUNIQUE, ['finalized']);
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Block_coupon savepoint reached.
+        upgrade_block_savepoint(true, 2020010815, 'coupon');
+
+    }
+
+    if ($oldversion < 2020010816) {
+        // Add course groupings table.
+        $table = new xmldb_table('block_coupon_coursegroupings');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('idnumber', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'name');
+        $table->add_field('maxamount', XMLDB_TYPE_INTEGER, '4', null, null, null, null, 'idnumber');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'maxamount');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
+        // Add KEYS.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Add coupon/grouping link table.
+        $table = new xmldb_table('block_coupon_groupings');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('couponid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('coursegroupingid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'couponid');
+        // Add keys.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        // Add indices.
+        $table->add_index('idx-couponid', XMLDB_INDEX_NOTUNIQUE, ['couponid']);
+        $table->add_index('idx-coursegroupingid', XMLDB_INDEX_NOTUNIQUE, ['coursegroupingid']);
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Add grouping/course link table.
+        $table = new xmldb_table('block_coupon_cgcourses');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('coursegroupingid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'coursegroupingid');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'courseid');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
+        // Add keys.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        // Add indices.
+        $table->add_index('idx-coursegroupingid', XMLDB_INDEX_NOTUNIQUE, ['coursegroupingid']);
+        $table->add_index('idx-courseid', XMLDB_INDEX_NOTUNIQUE, ['courseid']);
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        // Add coupon/course link table (tracks users choice).
+        $table = new xmldb_table('block_coupon_cgucourses');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('couponid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'couponid');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'courseid');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
+        // Add keys.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        // Add indices.
+        $table->add_index('idx-couponid', XMLDB_INDEX_NOTUNIQUE, ['couponid']);
+        $table->add_index('idx-courseid', XMLDB_INDEX_NOTUNIQUE, ['courseid']);
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Install default of new setting.
+        set_config('groupingselectactiveonly', 0, 'block_coupon');
+
+        // Block_coupon savepoint reached.
+        upgrade_block_savepoint(true, 2020010816, 'coupon');
+    }
+
     return true;
 }

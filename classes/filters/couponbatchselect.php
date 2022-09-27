@@ -46,14 +46,20 @@ require_once($CFG->dirroot.'/user/filters/lib.php');
 class couponbatchselect extends \user_filter_type {
     /** @var string */
     protected $fieldid;
+    /**
+     * @var bool
+     */
+    protected $limitowneronly = false;
 
     /**
      * Constructor
      * @param boolean $advanced advanced form element flag
      * @param string $fieldid identifier for the field in the query
+     * @param bool $limitowneronly true to limit to coupon owner
      */
-    public function __construct($advanced, $fieldid = 'id') {
+    public function __construct($advanced, $fieldid = 'id', $limitowneronly = false) {
         $this->fieldid = $fieldid;
+        $this->limitowneronly = $limitowneronly;
         parent::__construct('batchselect', get_string('batchidselect', 'block_coupon'), $advanced);
     }
 
@@ -72,8 +78,14 @@ class couponbatchselect extends \user_filter_type {
      * @return array of cohorts
      */
     public function get_batchmenu() {
-        global $DB;
-        return array(0 => '...') + $DB->get_records_sql_menu('select distinct batchid as id, batchid as name from {block_coupon}');
+        global $DB, $USER;
+        $sql = 'SELECT distinct batchid AS id, batchid AS name FROM {block_coupon}';
+        $params = [];
+        if ($this->limitowneronly) {
+            $sql .= ' WHERE ownerid = ?';
+            $params[] = $USER->id;
+        }
+        return array(0 => '...') + $DB->get_records_sql_menu($sql, $params);
     }
 
     /**
@@ -113,7 +125,7 @@ class couponbatchselect extends \user_filter_type {
         $operator = $field.'_op';
 
         if (array_key_exists($operator, $formdata)) {
-            if (empty($formdata->$field)) {
+            if ($formdata->$operator != 5 and $formdata->$field == '') {
                 // No data - no change except for empty filter.
                 return false;
             }

@@ -497,6 +497,7 @@ Users may either all be enrolled indefinitely or no users are found for this cou
 $string['coupon:type:course'] = 'Course enrolment';
 $string['coupon:type:cohort'] = 'Cohort enrolment';
 $string['coupon:type:enrolext'] = 'Enrolment extension';
+$string['coupon:type:coursegrouping'] = 'Coursegrouping enrolment';
 $string['recipient:selected:users'] = 'Selected users';
 $string['recipient:none'] = 'None';
 $string['coupon:senddate:instant'] = 'Instant';
@@ -631,12 +632,12 @@ $string['label:generatecodesonly_help'] = 'If you enable this option, only codes
 This means the complete mailing option and creating PDFs will be skipped!';
 
 $string['generator:export:mail:subject'] = 'Coupons ready for download';
-$string['generator:export:mail:body'] = 'Dear {$a->fullname},<br /><br />
+$string['generator:export:mail:body'] = 'Dear {$a->to_name},<br /><br />
 You are receiving this message because there have been newly generated coupons.<br/>
 The coupons can be downloaded from {$a->downloadlink} (requires logging in to Moodle).<br />
 Please note this link can only be used once. After you\'ve downloaded the generated coupons, this link can no longer be used.<br />
 With kind regards,<br /><br />
-{$a->signoff}';
+{$a->from_name}';
 
 $string['error:already-enrolled-in-courses'] = 'You have already been enrolled in all courses';
 $string['error:already-enrolled-in-cohorts'] = 'You have already been enrolled in all cohorts';
@@ -682,6 +683,42 @@ $string['err:coupon:generic'] = 'Something went wrong. Please contact the system
 $string['err:download-not-exists'] = 'The archive you want to download no longer exists<br/>
 Most likely you have already downloaded the archive.<br/>
 If you are absolutely sure you have <i>not</i> downloaded the generated coupons yourself, please contact the system administrator.';
+
+$string['label:type_coursegrouping'] = 'Course grouping (choose X out of Y courses to enrol in)';
+$string['tab:wzcoupongroupings'] = 'Manage course groupings';
+$string['view:coursegroupings:admin:title'] = 'Course groupings';
+$string['view:coursegroupings:admin:heading'] = 'Manage course groupings';
+$string['action:coursegrouping:delete'] = 'Delete grouping';
+$string['action:coursegrouping:edit'] = 'Edit grouping';
+$string['action:coursegrouping:details'] = 'View grouping details';
+$string['str:coursegroupings:add'] = 'Add coursegrouping';
+$string['numcourses'] = 'Max amount of courses to select';
+$string['coupon:coursegrouping:heading'] = 'Configure course grouping';
+$string['coursegrouping-details'] = 'Course grouping details';
+$string['delete:coursegrouping:header'] = 'Confirm deletion of coursegrouping';
+$string['delete:coursegrouping:confirmmessage'] = 'I want to delete this course grouping';
+$string['delete:coursegrouping:successmsg'] = 'Coursegrouping successfully deleted';
+$string['coursegrouping'] = 'Course grouping';
+$string['view:generator:coursegroupings:heading'] = 'Generate coupons for course grouping(s)';
+$string['view:generator:coursegroupings:title'] = 'coursegrouping coupon generator';
+$string['error:grouping-not-found'] = 'Grouping not found';
+$string['error:validate-groupings'] = 'Grouping validation errors:<br/>{$a}';
+$string['error:coupon:generator'] = 'Errors occured in the generator:<br/>{$a}';
+$string['view:selectcourses:title'] = 'Choose course(s)';
+$string['view:selectcourses:heading'] = 'Choose course(s) to enrol in';
+$string['choose:courses:explain'] = 'Choose the course(s) you wish to enrol yourself in below.<br/>
+This coupon allows you to choose {$a->maxamount} course(s).';
+$string['err:choose:maxamount'] = 'You\'re only allowed to choose {$a} course(s) in total';
+$string['err:choose:atleastone'] = 'Please select a course';
+$string['heading:coursegroupingandvars'] = 'Select coupon variables, course grouping and enrolment variables';
+$string['batchidselect'] = 'Batch ID';
+$string['error:no-more-course-choices'] = 'You have no more courses to choose from.<br/>
+It looks like you\'re already enrolled in all courses this coupon is valid for.<br/>
+<br/>If you feel this is incorrect, please contact the system administrator.';
+$string['label:groupingselectactiveonly'] = 'Only active enrolments?';
+$string['label:groupingselectactiveonly_help'] = 'If not checked, all courses will be checked for enrolments, including active ones.<br/>
+This means that even inactive / expired enrolments will count towards the courses the user redeeming the coupon is enrolled in.<br/>
+All courses the redeeming person can select will be compensated for courses he or she is alreay enrolled in';
 $string['tab:downloadbatchlist'] = 'Batch archives';
 $string['view:downloadbatches:title'] = 'Downloadable batch archives';
 $string['th:tid'] = 'Time ID';
@@ -710,3 +747,30 @@ Hence, this setting does not affect the used/unused coupons tabs.
 $string['tab:personalcoupons'] = 'Personalised coupons';
 $string['err:codesize:left'] = 'Codesize error: for {$a->want} coupons of {$a->size} characters we have {$a->left} slots left (given the current character options)';
 $string['task:unenrolcohorts'] = 'Remove expired coupon enrolments from cohorts';
+$string['err:myrequests:finalized'] = 'This coupon request has already been finalized.';
+$string['clientref'] = 'Client reference';
+$string['label:font'] = 'Font to use for PDF';
+$string['label:font_help'] = 'Select the font to use when generating the PDF. In most cases the default settings is sufficient.<br/>
+If you require special language support (cyrillic, arab, farsi, etc), you may want to select a different font.
+';
+$string['crcohorts'] = 'Selectable cohorts';
+$string['crcohorts_help'] = 'Select the cohorts here that a request user can request coupons for.<br/>
+Please be aware of what is configured here! Setting cohorts means the request user can request cohort coupons to be generated.<br/>
+';
+$string['required:atleastonecohortorcourse'] = 'At least one course or cohort is required!';
+$string['str:request:cohortcoupons'] = 'Request cohort coupons';
+$string['str:request:coursecoupons'] = 'Request course coupons';
+$string['tab:cpmycoupons'] = 'My coupons';
+
+$string['requestusersettings'] = 'Request user settings';
+$string['requestusersettings_desc'] = 'This section has options to limit coupon request users interfaces.<br/>
+These settings have been specifically introduced to limit what request users can see.<br/>
+For GDPR compliance you may wish to disable some of these options.';
+$string['err:tab:enablemycouponsforru'] = '"my coupons" is not enabled for display.';
+$string['label:enablemycouponsforru'] = 'Enable "my coupons"';
+$string['label:enablemycouponsforru_help'] = 'This setting enables/disables a table for request users where they can see the coupons along
+with their status (used/unused) and other info';
+$string['err:tab:enablemyprogressforru'] = 'Enable "my progress"';
+$string['label:enablemyprogressforru'] = 'Enable "my progress"';
+$string['label:enablemyprogressforru_help'] = 'This setting enables/disables a progress report for request users for coupon codes
+that are owned by them.';

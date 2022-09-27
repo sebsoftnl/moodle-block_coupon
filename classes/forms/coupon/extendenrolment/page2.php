@@ -122,6 +122,11 @@ class page2 extends \moodleform {
             $mform->addHelpButton('generate_pdf', 'label:generate_pdfs', 'block_coupon');
             $mform->disabledIf('generate_pdf', 'use_alternative_email', 'notchecked');
 
+            $fonts = \block_coupon\helper::get_font_list();
+            $mform->addElement('select', 'font', get_string('label:font', 'block_coupon'), $fonts);
+            $mform->addHelpButton('font', 'label:font', 'block_coupon');
+            $mform->setDefault('font', 'helvetica');
+
             // Render QR code checkbox.
             $mform->addElement('checkbox', 'renderqrcode', get_string('label:renderqrcode', 'block_coupon'));
             $mform->addHelpButton('renderqrcode', 'label:renderqrcode', 'block_coupon');
@@ -171,7 +176,7 @@ class page2 extends \moodleform {
                 $params[] = 'manual';
             }
             $sql = "select u.id, u.deleted, u.suspended, u.email, u.username, " .
-                get_all_user_name_fields(true, 'u') . ",
+                \block_coupon\helper::get_all_user_name_fields(true, 'u') . ",
                 ue.timeend
                 FROM {user_enrolments} ue
                 JOIN {enrol} e ON (e.id=ue.enrolid{$extsql})

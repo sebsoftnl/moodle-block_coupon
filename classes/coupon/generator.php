@@ -59,6 +59,11 @@ class generator implements icoupongenerator {
      * @var array
      */
     protected $cohorts;
+    /**
+     * Groupings (each element has id, name)
+     * @var array
+     */
+    protected $groupings;
 
     /**
      * list of errors messages
@@ -158,6 +163,14 @@ class generator implements icoupongenerator {
                 }
                 // Validate cohorts.
                 $this->validate_cohorts($options->cohorts);
+                break;
+
+            case generatoroptions::COURSEGROUPING:
+                if (empty($options->groupings)) {
+                    throw new exception('err:no-groupings');
+                }
+                // Validate groupings.
+                $this->validate_groupings($options->groupings);
                 break;
 
             default:
@@ -299,6 +312,10 @@ class generator implements icoupongenerator {
                     $result = $this->insert_coupon_cohorts($objcoupon, $inserterrors);
                     break;
 
+                case generatoroptions::COURSEGROUPING:
+                    $result = $this->insert_coupon_groupings($objcoupon, $inserterrors);
+                    break;
+
                 default:
                     // Should never happen due to earlier checks.
                     $errors[] = "Invalid generator type '{$options->type}'.";
@@ -420,6 +437,52 @@ class generator implements icoupongenerator {
             // And insert in db.
             if (!$DB->insert_record('block_coupon_cohorts', $record)) {
                 $errors[] = 'Failed to create cohort link ' . $cohort->id . ' record for coupon id ' . $coupon->id . '.';
+            }
+        }
+        return !empty($errors);
+    }
+
+    /**
+     * Validate the configured groupings
+     *
+     * @param array $groupingids
+     * @throws exception
+     */
+    protected function validate_groupings($groupingids) {
+        global $DB;
+        // Load groupings.
+        $this->groupings = $DB->get_records_list('block_coupon_coursegroupings', 'id', $groupingids, 'id ASC', 'id, name');
+        $errors = array();
+        foreach ($groupingids as $grouping) {
+            if (!isset($this->groupings[$grouping])) {
+                $errors[] = get_string('error:grouping-not-found', 'block_coupon') . ' (id = ' . $grouping . ')';
+            }
+        }
+        // Do we have errors?
+        if (!empty($errors)) {
+            throw new exception('error:validate-groupings', '', implode('<br/>', $errors));
+        }
+    }
+
+    /**
+     * Insert coupon links for groupings
+     *
+     * @param \stdClass $coupon coupon record
+     * @param array $errors
+     * @return bool true if valid, false if there's errors
+     */
+    protected function insert_coupon_groupings($coupon, &$errors) {
+        global $DB;
+        $errors = array();
+        foreach ($this->groupings as $grouping) {
+            // An object for each added cohort.
+            $record = (object) array(
+                'couponid' => $coupon->id,
+                'coursegroupingid' => $grouping->id
+            );
+            // And insert in db.
+            if (!$DB->insert_record('block_coupon_groupings', $record)) {
+                $errors[] = 'Failed to create grouping link ' . $grouping->id . ' record for coupon id ' . $coupon->id . '.';
             }
         }
         return !empty($errors);

@@ -16,12 +16,25 @@
 /**
  * Preview modal implementation.
  *
- * @package    block_coupon
  * @copyright  2019 R.J. van Dongen <rogier@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 define(['jquery', 'core/str', 'core/notification'], function($, Str, Notification) {
+
+    /**
+     * Encode uri parameters.
+     *
+     * @param {Object} data
+     * @return {String}
+     */
+    var encodeQueryParams = function (data) {
+        const ret = [];
+        for (let d in data) {
+            ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]));
+        }
+        return ret.join('&');
+    };
 
     /**
      * Constructor
@@ -59,7 +72,6 @@ define(['jquery', 'core/str', 'core/notification'], function($, Str, Notificatio
 
     /**
      * Close handler
-     * @param {Event} e
      */
     CouponPreview.prototype.closeHandler = function() {
         this.destroy();
@@ -77,9 +89,24 @@ define(['jquery', 'core/str', 'core/notification'], function($, Str, Notificatio
 
     /**
      * Handler to setup the modal
-     * @param {Event} e
      */
     CouponPreview.prototype.setupHandler = function() {
+        var url = this.url, extraparams = {}, el = null;
+        el = document.getElementById('id_font');
+        if (el !== undefined) {
+            extraparams.font = el.options[el.options.selectedIndex].text;
+        }
+        el = document.getElementById('id_renderqrcode');
+        if (el !== undefined && el.checked) {
+            extraparams.qr = 1;
+        }
+        if (Object.keys(extraparams).length) {
+            if (url.indexOf('?') >= 0) {
+                url += '&' + encodeQueryParams(extraparams);
+            } else {
+                url += '?' + encodeQueryParams(extraparams);
+            }
+        }
         // Create container.
         var html = '<div id="block-coupon-modal"><div class="block-coupon-modal-content">';
         html += '<div class="block-coupon-modal-header">';
@@ -87,7 +114,7 @@ define(['jquery', 'core/str', 'core/notification'], function($, Str, Notificatio
         html += '<h2>' + this.title + '</h2>';
         html += '</div>';
         html += '<div class="block-coupon-modal-body">';
-        html += '<iframe src="' + this.url + '"></iframe>';
+        html += '<iframe src="' + url + '"></iframe>';
         html += '</div>';
         html += '</div></div>';
         this.modal = $(html);

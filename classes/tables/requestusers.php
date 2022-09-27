@@ -127,7 +127,8 @@ class requestusers extends \table_sql {
         $this->define_table_columns($columns);
 
         // Generate SQL.
-        $fields = 'cu.id, cu.userid, ' . get_all_user_name_fields(true, 'u') . ', NULL as action';
+        $fields = 'cu.id, cu.userid, ' .
+                \block_coupon\helper::get_all_user_name_fields(true, 'u') . ', NULL as action';
         $from = '{block_coupon_rusers} cu ';
         $from .= 'JOIN {user} u ON cu.userid=u.id ';
         $where = array();

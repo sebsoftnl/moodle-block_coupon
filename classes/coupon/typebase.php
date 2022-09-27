@@ -137,7 +137,7 @@ abstract class typebase {
         $conditions = array(
             'submission_code' => $couponcode
         );
-        $coupon = $DB->get_record('block_coupon', $conditions, '*');
+        $coupon = $DB->get_record('block_coupon', $conditions, '*', MUST_EXIST);
         // Base validation.
         if (empty($coupon)) {
             throw new exception('error:invalid_coupon_code');

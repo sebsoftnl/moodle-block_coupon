@@ -60,12 +60,17 @@ abstract class filtering {
      * @param string $baseurl base url used for submission/return, null if the same of current page
      * @param array $extraparams extra page parameters
      * @param array $fieldnames array of visible user fields
+     * @param array $hidefields array of fields to HIDE.
      */
-    public function __construct($baseurl = null, $extraparams = null, $fieldnames = null) {
+    public function __construct($baseurl = null, $extraparams = null, $fieldnames = null, $hidefields = null) {
         global $SESSION;
 
         if (!isset($SESSION->coupon_report_filtering)) {
             $SESSION->coupon_report_filtering = array();
+        }
+
+        if (empty($hidefields)) {
+            $hidefields = []; // Prevent errors.
         }
 
         if (empty($fieldnames)) {
@@ -74,6 +79,9 @@ abstract class filtering {
             $tmp = array();
             $fields = $this->get_fields();
             foreach ($fieldnames as $k => $v) {
+                if (!empty($hidefields[$k])) {
+                    continue;
+                }
                 if (isset($fields[$k])) {
                     $tmp[$k] = $v;
                 }

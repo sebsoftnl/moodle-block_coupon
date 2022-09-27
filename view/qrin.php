@@ -28,7 +28,7 @@
  */
 require_once('../../../config.php');
 
-$code = required_param('c', PARAM_ALPHANUMEXT);
+$code = required_param('c', block_coupon\helper::get_code_param_type());
 $hash = required_param('h', PARAM_ALPHANUMEXT);
 
 // And process the coupon code.

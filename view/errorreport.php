@@ -58,22 +58,8 @@ $PAGE->set_context($context);
 $PAGE->set_course($course);
 $PAGE->set_pagelayout('standard');
 
-// Make sure the moodle editmode is off.
-helper::force_no_editing_mode();
-
 require_capability('block/coupon:viewreports', $context);
-$renderer = $PAGE->get_renderer('block_coupon');
 
-switch ($action) {
-    case 'delete':
-        require_sesskey();
-        $itemid = required_param('itemid', PARAM_INT);
-        $DB->delete_records('block_coupon_errors', array('id' => $itemid));
-        redirect($PAGE->url);
-        break;
-    case 'list':
-    default:
-        $owner = (has_capability('block/coupon:viewallreports', $context) ? 0 : $USER->id);
-        echo $renderer->page_error_report($id, $owner);
-        break;
-}
+$renderer = $PAGE->get_renderer('block_coupon');
+$controller = new block_coupon\controller\errorreports($PAGE, $OUTPUT, $renderer);
+$controller->execute_request();

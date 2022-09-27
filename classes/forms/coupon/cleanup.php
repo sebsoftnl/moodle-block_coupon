@@ -85,7 +85,7 @@ class cleanup extends \moodleform {
         // Date selection.
         $dateoptions = array(
             'startyear' => 1970,
-            'stopyear'  => 2020,
+            'stopyear'  => date('Y') + 1,
             'timezone'  => 99,
             'optional'  => true
         );

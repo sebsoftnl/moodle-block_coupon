@@ -147,4 +147,12 @@ $functions = array(
         'type' => 'read',
         'ajax' => true
     ),
+    'block_coupon_claim_coupon' => array(
+        'classname' => 'block_coupon_external',
+        'methodname' => 'claim_coupon',
+        'classpath' => 'blocks/coupon/externallib.php',
+        'description' => 'Claim coupon code',
+        'type' => 'write',
+        'ajax' => true
+    ),
 );

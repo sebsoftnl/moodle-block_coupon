@@ -46,12 +46,12 @@ if ($course === false) {
 
 require_login($course, true);
 
-$title = 'view:userrequest:title';
-$heading = 'view:userrequest:heading';
+$title = 'view:generator:coursegroupings:title';
+$heading = 'view:generator:coursegroupings:heading';
 
 $PAGE->navbar->add(get_string($title, 'block_coupon'));
 
-$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php', array('id' => $id));
+$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/coursegrouping.php', array('id' => $id));
 $PAGE->set_url($url);
 
 $PAGE->set_title(get_string($title, 'block_coupon'));
@@ -60,14 +60,11 @@ $PAGE->set_context($context);
 $PAGE->set_course($course);
 $PAGE->set_pagelayout('standard');
 
-// If you're no request user, deny access.
-if (!$DB->record_exists('block_coupon_rusers', ['userid' => $USER->id])) {
-    throw new \block_coupon\exception('err:not-a-requestuser');
-}
-
 // Make sure the moodle editmode is off.
 helper::force_no_editing_mode();
+require_capability('block/coupon:generatecoupons', $context);
 $renderer = $PAGE->get_renderer('block_coupon');
 
-$controller = new \block_coupon\controller\myrequests($PAGE, $OUTPUT, $renderer);
-$controller->execute_request();
+// Using a manager.
+$requestcontroller = new \block_coupon\controller\generator\coursegroupingcoupon($PAGE, $OUTPUT, $renderer);
+$requestcontroller->execute_request();

@@ -32,6 +32,7 @@
         "enrolperiod": "Enrolment period",
         "type": "Coupon type",
         "hascourses": "Whether ot not we have courses",
+        "clientref": "clientreference",
         "courses":[{
             "fullname": "Course full name",
             "idnumber": "Optional ID number"
@@ -46,6 +47,7 @@
 <table>
 <tr><td>{{#str}}th:owner, block_coupon{{/str}}</td><td>{{ownerfullname}}</td></tr>
 <tr><td>{{#str}}email{{/str}}</td><td>{{emailto}}</td></tr>
+<tr><td>{{#str}}clientref, block_coupon{{/str}}</td><td>{{clientref}}</td></tr>
 <tr><td>{{#str}}label:coupon_amount, block_coupon{{/str}}</td><td>{{amount}}</td></tr>
 <tr><td>{{#str}}label:coupon_code_length, block_coupon{{/str}}</td><td>{{codesize}}</td></tr>
 <tr><td>{{#str}}label:redirect_url, block_coupon{{/str}}</td><td>{{redirecturl}}</td></tr>
@@ -64,7 +66,7 @@
 {{#hascohorts}}
 <tr><td>{{#str}}label:coupon_cohorts, block_coupon{{/str}}</td><td>
 {{#cohorts}}
-{{name}}{{#idnumber}}{{idnumber}}){{/idnumber}}<br/>
+{{name}}{{#idnumber}} ({{idnumber}}){{/idnumber}}<br/>
 {{/cohorts}}
 </td></tr>
 {{/hascohorts}}

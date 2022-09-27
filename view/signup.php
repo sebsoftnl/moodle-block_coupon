@@ -106,7 +106,7 @@ if ($mformsignup->is_cancelled()) {
     exit; // Never reached.
 }
 
-$submissioncode = optional_param('submissioncode', '', PARAM_ALPHANUMEXT);
+$submissioncode = optional_param('submissioncode', '', block_coupon\helper::get_code_param_type());
 $mformsignup->set_data(array('submissioncode' => $submissioncode));
 
 $newaccount = get_string('newaccount');

@@ -112,6 +112,13 @@ class pdf extends \pdf {
     protected $previewcourses = null;
 
     /**
+     * Default font to use.
+     *
+     * @var string
+     */
+    protected $defaultfont = 'helvetica';
+
+    /**
      * Get main text template
      *
      * @return string main template
@@ -251,6 +258,26 @@ class pdf extends \pdf {
     }
 
     /**
+     * Return default font name.
+     *
+     * @return string
+     */
+    public function get_defaultfont() {
+        return empty($this->defaultfont) ? 'helvetica' : $this->defaultfont;
+    }
+
+    /**
+     * Set default font to use.
+     *
+     * @param string $defaultfont
+     * @return $this
+     */
+    public function set_defaultfont($defaultfont) {
+        $this->defaultfont = $defaultfont;
+        return $this;
+    }
+
+    /**
      * Is the PDF already rendered?
      *
      * @var boolean
@@ -292,7 +319,7 @@ class pdf extends \pdf {
         $this->generatordate = date('Y-m-d', time());
         parent::__construct('P', 'mm', 'A4', true, 'UTF-8');
 
-        $this->SetFont('helvetica', '', 12);
+        $this->SetFont($this->get_defaultfont(), '', 12);
         $this->SetCreator('PDF Generator build 1.0');
         $this->SetAuthor('Sebsoft PDF Generator build 1.0');
 
@@ -422,7 +449,7 @@ class pdf extends \pdf {
             $txtbotright = $this->compile_botright();
 
             $this->startPage();
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont($this->get_defaultfont(), '', 10);
 
             // Load advanced offsets.
             $offsets = $this->get_bot_offsets();

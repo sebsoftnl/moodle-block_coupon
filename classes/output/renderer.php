@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Renderer for the coupon block.
+ * Renderer class
  *
  * File         renderer.php
  * Encoding     UTF-8
@@ -26,7 +26,26 @@
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die;
+
+namespace block_coupon\output;
+
+defined('MOODLE_INTERNAL') || die();
+
+use plugin_renderer_base;
+use html_writer;
+use pix_icon;
+use moodle_url;
+use component_action;
+
+/**
+ * block_coupon\output\renderer
+ *
+ * @package     block_coupon
+ *
+ * @copyright   Sebsoft.nl
+ * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 /**
  * Renderer for the coupon block.
@@ -37,7 +56,7 @@ defined('MOODLE_INTERNAL') || die;
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class block_coupon_renderer extends plugin_renderer_base {
+class renderer extends plugin_renderer_base {
 
     /**
      * Return rendered request details
@@ -55,77 +74,6 @@ class block_coupon_renderer extends plugin_renderer_base {
     public function render_requestdetails(\block_coupon\output\component\requestdetails $widget) {
         $context = $widget->export_for_template($this);
         return $this->render_from_template('block_coupon/requestdetails', $context);
-    }
-
-    /**
-     * Render report page (including header / footer).
-     *
-     * @param int $id block instance id
-     * @param int $ownerid the owner id of the coupons. Set 0 or NULL to see all.
-     * @return string
-     */
-    public function page_report($id, $ownerid = null) {
-        // Table instance.
-        $table = new \block_coupon\tables\report($ownerid);
-        $table->baseurl = $this->page->url;
-
-        $filtering = new \block_coupon\tablefilters\report($this->page->url);
-        $table->set_filtering($filtering);
-
-        $table->is_downloadable(true);
-        $table->show_download_buttons_at(array(TABLE_P_BOTTOM, TABLE_P_TOP));
-        $download = optional_param('download', '', PARAM_ALPHA);
-        if (!empty($download)) {
-            $table->is_downloading($download, 'couponreport', 'couponreport');
-            $table->render(25, true);
-            exit;
-        }
-
-        $out = '';
-        $out .= $this->header();
-        $out .= html_writer::start_div('block-coupon-container');
-        $out .= html_writer::start_div();
-        $out .= $this->get_tabs($this->page->context, 'cpreport', array('id' => $id));
-        $out .= html_writer::end_div();
-        ob_start();
-        $filtering->display_add();
-        $filtering->display_active();
-        $table->render(25);
-        $out .= ob_get_clean();
-        $out .= html_writer::end_div();
-        $out .= $this->footer();
-        return $out;
-    }
-
-    /**
-     * Render error report page (including header / footer).
-     *
-     * @param int $id block instance id
-     * @param int $ownerid the owner id of the coupons. Set 0 or NULL to see all.
-     * @return string
-     */
-    public function page_error_report($id, $ownerid = null) {
-        // Table instance.
-        $table = new \block_coupon\tables\errorreport($ownerid);
-        $table->baseurl = $this->page->url;
-
-        $filtering = new \block_coupon\tablefilters\errorreport($this->page->url);
-        $table->set_filtering($filtering);
-
-        $out = '';
-        $out .= $this->header();
-        $out .= html_writer::start_div('block-coupon-container');
-        $out .= html_writer::start_div();
-        $out .= $this->get_tabs($this->page->context, 'cperrorreport', array('id' => $id));
-        $out .= html_writer::end_div();
-        ob_start();
-        $filtering->display_add();
-        $filtering->display_active();
-        $table->render(25);
-        $out .= ob_get_clean();
-        $out .= html_writer::end_div();
-        $out .= $this->footer();
-        return $out;
     }
 
     /**
@@ -166,6 +114,10 @@ class block_coupon_renderer extends plugin_renderer_base {
         $tabs[] = $this->create_pictab('wzcouponimage', 'e/insert_edit_image', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/managelogos.php', $params),
                 get_string('tab:wzcouponimage', 'block_coupon'));
+        $coursegroupingstab = $this->create_pictab('cpcoursegroupings', '', '',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/coursegroupings/index.php', $params),
+                get_string('tab:wzcoupongroupings', 'block_coupon'));
+        $tabs[] = $coursegroupingstab;
 
         $requesttab = $this->create_pictab('cprequestadmin', 'i/checkpermissions', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', $params),
@@ -221,49 +173,71 @@ class block_coupon_renderer extends plugin_renderer_base {
      * @param string $selected selected tab
      * @param array $params any paramaters needed for the base url
      */
-    public function get_my_requests_tabs($context, $selected, $params = array()) {
+    public function get_my_tabs($context, $selected, $params = array()) {
         global $CFG;
         $tabs = array();
 
+        $config = get_config('block_coupon');
+
         $requesttab = $this->create_pictab('cpmyrequests', 'i/checkpermissions', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php', $params),
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php', $params),
                 get_string('tab:requests', 'block_coupon'));
         $requesttab->subtree[] = $this->create_pictab('myrequests', null, '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php',
                         $params + ['action' => 'list']),
                 get_string('tab:listrequests', 'block_coupon'));
         switch ($selected) {
             case 'newrequest':
                 $requesttab->subtree[] = $this->create_pictab('newrequest', null, '',
-                        new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php',
+                        new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php',
                                 $params + ['action' => 'newrequest']),
                         get_string('str:request:add', 'block_coupon'));
                 break;
             case 'delete':
                 $requesttab->subtree[] = $this->create_pictab('delete', null, '',
-                        new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php',
+                        new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php',
                                 $params + ['action' => 'delete']),
                         get_string('delete:request:header', 'block_coupon'));
                 break;
             case 'details':
                 $requesttab->subtree[] = $this->create_pictab('details', null, '',
-                        new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php',
+                        new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php',
                                 $params + ['action' => 'details']),
                         get_string('str:request:details', 'block_coupon'));
                 break;
         }
         $tabs[] = $requesttab;
 
+        if (!empty($config->enablemycouponsforru)) {
+            $couponstab = $this->create_pictab('cpmycoupons', 'i/print', '',
+                    new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/coupons.php', $params),
+                    get_string('tab:cpmycoupons', 'block_coupon'));
+            $couponstab->subtree[] = $this->create_pictab('mycoupons-used', null, '',
+                    new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/coupons.php',
+                            $params + ['action' => 'used']),
+                    get_string('tab:used', 'block_coupon'));
+            $couponstab->subtree[] = $this->create_pictab('mycoupons-unused', null, '',
+                    new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/coupons.php',
+                            $params + ['action' => 'unused']),
+                    get_string('tab:unused', 'block_coupon'));
+            $tabs[] = $couponstab;
+        }
+
+        if (!empty($config->enablemyprogressforru)) {
+            $reportstab = $this->create_pictab('cpmyreports', 'i/report', '',
+                    new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/reports.php', $params),
+                    get_string('tab:report', 'block_coupon'));
+            $tabs[] = $reportstab;
+        }
+
         $batchlisttab = $this->create_pictab('cpmybatches', 'i/down', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/batches.php',
                         $params + ['action' => 'batchlist']),
                 get_string('tab:downloadbatchlist', 'block_coupon'));
         $tabs[] = $batchlisttab;
 
         return $this->tabtree($tabs, $selected);
     }
-
-
 
     /**
      * Renders an action_icon.

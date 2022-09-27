@@ -163,7 +163,7 @@ class block_coupon extends block_base {
 
         // Add link to ability to request coupons if applicable.
         if ($DB->record_exists('block_coupon_rusers', ['userid' => $USER->id])) {
-            $urlrequestcoupon = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/userrequest.php', $baseparams);
+            $urlrequestcoupon = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php', $baseparams);
             $menuitems[] = html_writer::link($urlrequestcoupon,
                     get_string('request:coupons', 'block_coupon'), ['class' => $btnclass]);
         }

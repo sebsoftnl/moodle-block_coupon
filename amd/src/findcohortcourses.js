@@ -18,7 +18,6 @@
  *
  * This module is compatible with core/form-autocomplete.
  *
- * @package    block_coupon
  * @copyright  2019 R.J. van Dongen <rogier@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -74,7 +73,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
         transport: function(selector, query, callback) {
             // Find cohortid.
             var cohortid = $(selector).closest('[data-fieldtype="autocomplete"]').find('select[data-cohortid]').data('cohortid');
-            this.list({
+            return this.list({
                 cohortid: cohortid,
                 query: query
             }).then(callback);
