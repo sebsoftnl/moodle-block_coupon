@@ -52,7 +52,7 @@ if (empty($SESSION->wantsurl)) {
     }
 }
 
-if (isloggedin() and !isguestuser()) {
+if (isloggedin() && !isguestuser()) {
     // Prevent signing up when already logged in.
     echo $OUTPUT->header();
     echo $OUTPUT->box_start();

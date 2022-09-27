@@ -123,7 +123,7 @@ abstract class filtering {
             if (!empty($adddata->removeall)) {
                 $SESSION->coupon_report_filtering = array();
 
-            } else if (!empty($adddata->removeselected) and !empty($adddata->filter)) {
+            } else if (!empty($adddata->removeselected) && !empty($adddata->filter)) {
                 foreach ($adddata->filter as $fname => $instances) {
                     foreach ($instances as $i => $val) {
                         if (empty($val)) {

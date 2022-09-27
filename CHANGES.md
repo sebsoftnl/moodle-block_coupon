@@ -1,6 +1,9 @@
 Version 4.2.1 (build 2022080100)
 * Changed dependency to Moodle 3.10+
+* Fixed date selector on cleanup page.
+* Fix a range of PHPCS issues (not resolving "Unexpected MOODLE_INTERNAL check" yet).
 
+----------
 
 Version 4.2.0 (build 2020010816)
 * Added exclusion of courses already enrolled for coursegrouping coupon types

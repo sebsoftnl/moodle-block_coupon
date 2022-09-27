@@ -83,7 +83,7 @@ function block_coupon_pluginfile($course, $birecordorcm, $context, $filearea, $a
         $filepath = ($args ? '/' . implode('/', $args) . '/' : '/');
     }
 
-    if (!$file = $fs->get_file($context->id, 'block_coupon', $filearea, $itemid, $filepath, $filename) or $file->is_directory()) {
+    if (!$file = $fs->get_file($context->id, 'block_coupon', $filearea, $itemid, $filepath, $filename) || $file->is_directory()) {
         send_file_not_found();
     }
 

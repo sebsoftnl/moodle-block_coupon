@@ -128,7 +128,7 @@ class coursechooser extends \moodleform {
     public function get_data() {
         $data = parent::get_data();
 
-        if (!$this->is_cancelled() and $this->is_submitted() and $this->is_validated()) {
+        if (!$this->is_cancelled() && $this->is_submitted() && $this->is_validated()) {
             $courses = [];
             if ($this->coursegrouping->maxamount == 1) {
                 if (isset($data->course)) {

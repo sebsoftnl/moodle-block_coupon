@@ -125,7 +125,7 @@ class couponbatchselect extends \user_filter_type {
         $operator = $field.'_op';
 
         if (array_key_exists($operator, $formdata)) {
-            if ($formdata->$operator != 5 and $formdata->$field == '') {
+            if ($formdata->$operator != 5 && $formdata->$field == '') {
                 // No data - no change except for empty filter.
                 return false;
             }
