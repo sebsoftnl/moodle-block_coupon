@@ -57,6 +57,17 @@ before_script:
     - moodle-plugin-ci phpunit
     - moodle-plugin-ci behat
 
+Moodle 4.1:
+  <<: *job_definition
+  variables:
+    MOODLE_BRANCH: "master"
+    MOODLE_VERSION: 410
+
+Moodle 4.0:
+  <<: *job_definition
+  variables:
+    MOODLE_BRANCH: "MOODLE_400_STABLE"
+
 Moodle 3.11:
   <<: *job_definition
   variables:
@@ -66,28 +77,3 @@ Moodle 3.10:
   <<: *job_definition
   variables:
     MOODLE_BRANCH: "MOODLE_310_STABLE"
-    
-Moodle 3.9:
-  <<: *job_definition
-  variables:
-    MOODLE_BRANCH: "MOODLE_39_STABLE"
-    
-Moodle 3.8:
-  <<: *job_definition
-  variables:
-    MOODLE_BRANCH: "MOODLE_38_STABLE" 
-
-Moodle 3.7:
-  <<: *job_definition
-  variables:
-    MOODLE_BRANCH: "MOODLE_37_STABLE" 
-
-Moodle 3.6:
-  <<: *job_definition
-  variables:
-    MOODLE_BRANCH: "MOODLE_36_STABLE" 
-
-Moodle 3.5:
-  <<: *job_definition
-  variables:
-    MOODLE_BRANCH: "MOODLE_35_STABLE" 
