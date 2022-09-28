@@ -29,8 +29,6 @@
 
 namespace block_coupon\tables;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * block_coupon\tables\coupons
  *

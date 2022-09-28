@@ -29,8 +29,6 @@
 
 namespace block_coupon\controller\generator;
 
-defined('MOODLE_INTERNAL') || die();
-
 use moodle_url;
 use html_writer;
 use block_coupon\helper;

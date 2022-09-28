@@ -29,8 +29,6 @@
 
 namespace block_coupon\privacy;
 
-defined('MOODLE_INTERNAL') || die;
-
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\approved_contextlist;

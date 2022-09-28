@@ -29,8 +29,6 @@
 
 namespace block_coupon\controller;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * block_coupon\manager\coursegroupings
  *
@@ -266,7 +264,7 @@ class coursegroupings {
         $gcourseids = $DB->get_fieldset_select('block_coupon_cgcourses', 'courseid', 'coursegroupingid = ?', [$instance->id]);
         $courses = $DB->get_records_list('course', 'id', $gcourseids, '', 'id, shortname, fullname');
         foreach ($courses as $course) {
-            $course->deleteaction = false; // TODO!!
+            $course->deleteaction = false;
             $instance->courses[] = $course;
         }
         $instance->actions = [];

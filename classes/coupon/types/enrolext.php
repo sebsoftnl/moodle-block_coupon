@@ -29,8 +29,6 @@
 
 namespace block_coupon\coupon\types;
 
-defined('MOODLE_INTERNAL') || die();
-
 use block_coupon\coupon\icoupontype;
 use block_coupon\coupon\typebase;
 use block_coupon\exception;

@@ -54,15 +54,6 @@ class block_coupon_external extends external_api {
     }
 
     /**
-     * Is get_courses() allowed from AJAX?
-     *
-     * @return bool
-     */
-    public static function get_courses_is_allowed_from_ajax() {
-        return false;
-    }
-
-    /**
      * Returns description of method parameters
      *
      * @return external_function_parameters
@@ -97,15 +88,6 @@ class block_coupon_external extends external_api {
     public static function get_cohorts() {
         $rs = \block_coupon\helper::get_cohorts('id,name,idnumber');
         return array_values($rs);
-    }
-
-    /**
-     * Is get_cohorts() allowed from AJAX?
-     *
-     * @return bool
-     */
-    public static function get_cohorts_is_allowed_from_ajax() {
-        return false;
     }
 
     /**
@@ -145,14 +127,6 @@ class block_coupon_external extends external_api {
         require_once($CFG->libdir . '/grouplib.php');
         $rs = groups_get_all_groups($courseid, 0, 0, 'g.id, g.name');
         return array_values($rs);
-    }
-
-    /**
-     * Is get_course_groups() allowed from AJAX?
-     * @return bool
-     */
-    public static function get_course_groups_is_allowed_from_ajax() {
-        return false;
     }
 
     /**
@@ -196,14 +170,6 @@ class block_coupon_external extends external_api {
         list($generator, $unused) = static::p_request_coupon_codes_for_course($amount, $courses, $groups, $enrolperiod);
         // We made it, so return the generated codes.
         return $generator->get_generated_couponcodes();
-    }
-
-    /**
-     * Is request_coupon_codes_for_course() allowed from AJAX?
-     * @return bool
-     */
-    public static function request_coupon_codes_for_course_is_allowed_from_ajax() {
-        return false;
     }
 
     /**
@@ -267,14 +233,6 @@ class block_coupon_external extends external_api {
     }
 
     /**
-     * Is generate_coupons_for_course() allowed from AJAX?
-     * @return bool
-     */
-    public static function generate_coupons_for_course_is_allowed_from_ajax() {
-        return false;
-    }
-
-    /**
      * Returns description of method parameters
      *
      * @return external_function_parameters
@@ -320,14 +278,6 @@ class block_coupon_external extends external_api {
         list($generator, $unused) = static::p_request_coupon_codes_for_cohorts($amount, $cohorts);
         // We made it, so return the generated IDs.
         return $generator->get_generated_couponcodes();
-    }
-
-    /**
-     * Is request_coupon_codes_for_cohorts() allowed from AJAX?
-     * @return bool
-     */
-    public static function request_coupon_codes_for_cohorts_is_allowed_from_ajax() {
-        return false;
     }
 
     /**
@@ -379,14 +329,6 @@ class block_coupon_external extends external_api {
                 false, false, $generatoroptions->batchid, $generatoroptions->font);
 
         return $status;
-    }
-
-    /**
-     * Is generate_coupons_for_cohorts() allowed from AJAX?
-     * @return bool
-     */
-    public static function generate_coupons_for_cohorts_is_allowed_from_ajax() {
-        return false;
     }
 
     /**
@@ -483,10 +425,10 @@ class block_coupon_external extends external_api {
                     $cids = $DB->get_fieldset_select('block_coupon_cohorts', 'cohortid', 'couponid = ?', array($coupon->id));
                     $report->cohorts = array();
                     foreach ($cids as $cohortid) {
-                        if (!isset($cohortid[$cohortid])) {
+                        if (!isset($cohorts[$cohortid])) {
                             continue;
                         }
-                        $reportcohort = clone $cohortid[$cohortid];
+                        $reportcohort = clone $cohorts[$cohortid];
                         // Unset cohort pkey.
                         unset($reportcohort->id);
                         $report->cohorts[] = $reportcohort;
@@ -500,14 +442,6 @@ class block_coupon_external extends external_api {
         }
 
         return $reports;
-    }
-
-    /**
-     * Is get_coupon_reports() allowed from AJAX?
-     * @return bool
-     */
-    public static function get_coupon_reports_is_allowed_from_ajax() {
-        return false;
     }
 
     /**
@@ -615,14 +549,6 @@ class block_coupon_external extends external_api {
     }
 
     /**
-     * Is find_users() allowed from AJAX?
-     * @return bool
-     */
-    public static function find_users_is_allowed_from_ajax() {
-        return true;
-    }
-
-    /**
      * Returns description of method parameters
      *
      * @return external_function_parameters
@@ -692,14 +618,6 @@ class block_coupon_external extends external_api {
         $rs->close();
 
         return $courses;
-    }
-
-    /**
-     * Is find_courses() allowed from AJAX?
-     * @return bool
-     */
-    public static function find_courses_is_allowed_from_ajax() {
-        return true;
     }
 
     /**
@@ -778,14 +696,6 @@ class block_coupon_external extends external_api {
     }
 
     /**
-     * Is find_courses() allowed from AJAX?
-     * @return bool
-     */
-    public static function find_potential_cohort_courses_is_allowed_from_ajax() {
-        return true;
-    }
-
-    /**
      * Returns description of method parameters
      *
      * @return external_function_parameters
@@ -834,14 +744,6 @@ class block_coupon_external extends external_api {
         }
 
         return $cohorts;
-    }
-
-    /**
-     * Is find_cohorts() allowed from AJAX?
-     * @return bool
-     */
-    public static function find_cohorts_is_allowed_from_ajax() {
-        return true;
     }
 
     /**
@@ -983,7 +885,7 @@ class block_coupon_external extends external_api {
      * @param string $code
      */
     public static function claim_coupon($code) {
-        global $USER, $CFG, $DB;
+        global $USER, $DB;
         try {
             // We always must pass webservice params through validate_parameters.
             $params = self::validate_parameters(
@@ -994,7 +896,7 @@ class block_coupon_external extends external_api {
             self::validate_context(\context_system::instance());
 
             // Try and claim the coupon code.
-            $instance = block_coupon\coupon\typebase::get_type_instance($code);
+            $instance = block_coupon\coupon\typebase::get_type_instance($params['code']);
             $coupon = $instance->get_coupon();
             // Validate (for the time being, we'll allow course/enrolextensions only!).
             switch ($coupon->typ) {

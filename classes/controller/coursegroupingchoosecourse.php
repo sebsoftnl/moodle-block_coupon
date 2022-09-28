@@ -29,8 +29,6 @@
 
 namespace block_coupon\controller;
 
-defined('MOODLE_INTERNAL') || die();
-
 use block_coupon\exception;
 use block_coupon\coupon\typebase;
 

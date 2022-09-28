@@ -29,8 +29,6 @@
 
 namespace block_coupon\task;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * block_coupon\task\unenrolcohorts
  *

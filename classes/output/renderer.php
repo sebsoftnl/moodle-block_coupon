@@ -29,8 +29,6 @@
 
 namespace block_coupon\output;
 
-defined('MOODLE_INTERNAL') || die();
-
 use plugin_renderer_base;
 use html_writer;
 use pix_icon;

@@ -1,9 +1,11 @@
 Version 4.2.1 (build 2022080100)
-* Changed dependency to Moodle 3.10+
-* Added gitlab CI up to Moodle 4.2
-* Removed Moodle 3.5 up to 3.9 Moodle from gitlab CI
+* Changed dependency to Moodle 4.0+
+* Added gitlab CI up to Moodle 4.1
+* Removed Moodle versions up to 4.0 from gitlab CI
 * Fixed date selector on cleanup page.
-* Fix a range of PHPCS issues (not resolving "Unexpected MOODLE_INTERNAL check" yet).
+* Resolved MOODLE_INTERNAL checks.
+* Clean up SOME unused vars.
+* Removed the long deprecated "is_allowed_from_ajax()" calls in externallib.php
 
 ----------
 

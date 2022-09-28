@@ -30,8 +30,6 @@
 
 namespace block_coupon\task;
 
-defined('MOODLE_INTERNAL') || die();
-
 use block_coupon\helper;
 
 /**

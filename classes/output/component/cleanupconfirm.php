@@ -30,8 +30,6 @@
 
 namespace block_coupon\output\component;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * block_coupon\manager\cleanupconfirm
  *

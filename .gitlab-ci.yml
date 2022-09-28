@@ -1,10 +1,5 @@
-services:
-  - mysql:5.7
-
-cache:
-  paths:
-    - $HOME/.composer/cache
-    - $HOME/.npm
+stages:
+  - test
 
 variables:
   DB: "mysqli"
@@ -13,49 +8,46 @@ variables:
   MOODLE_DIR: "/var/www/html/moodle"
   # If we want to ignore some templates, provide them here.
   #MUSTACHE_IGNORE_NAMES: "<file>.mustache, <file2>.mustache, ..., <filen>.mustache"
-
-before_script:
-  # Update packages and install git, mysql-client and npm.
-  - apt update && apt install -y git default-mysql-client npm
-  # Install old version of openjdk-8 in due of MDLSITE-5739.
-  - mkdir -p /usr/share/man/man1 #https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
-  - apt install -y software-properties-common
-  - add-apt-repository --yes 'deb http://security.debian.org/debian-security stretch/updates main'
-  - apt update && apt install -y openjdk-8-jdk-headless
-  - java -version
-  # Install nvm and NodeJS.
-  - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
-  - source $HOME/.nvm/nvm.sh
-  - nvm install 14.2.0
-  # Install composer.
-  - curl -sS https://getcomposer.org/installer | php
-  - mv composer.phar /usr/local/bin/composer
-  # Install Moodle CI plugin
-  # Hint: moodle-plugin-ci already exists but has some missing commands, therefore we re-install it.
-  - cd $HOME && rm -rf ci
-  - composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^3
-  - export PATH="$(cd $HOME/ci/bin; pwd):$(cd $HOME/ci/vendor/bin; pwd):$PATH"
-  - chmod u+x $HOME/ci/bin/moodle-plugin-ci
-  - chmod u+x $HOME/ci/bin/*
-  - umask u+x
-  - cd $CI_PROJECT_DIR/..
-  - moodle-plugin-ci install --moodle=$MOODLE_DIR --db-user=root --db-pass=superrootpass --db-host=mysql -vvv
+  PLUGIN: 'block_coupon'
+  PATHNAME: 'blocks/coupon'
+  REPOURL: 'https://github.com/sebsoftnl/moodle-block_coupon'
+  REPOSYS: 'git'
+  # Moodle auto format = 0, Markdown = 4, Flat txt = 2
+  RELEASENOTEFORMAT: '0'
 
 .job_template: &job_definition
-  allow_failure: true
-  image: moodlehq/moodle-php-apache:7.4
+  stage: test
+  services:
+    - mysql:5.7
+  cache:
+    paths:
+      - $HOME/.composer/cache
+      - $HOME/.npm
+  allow_failure: false
+  image: git.sebsoft.nl:5050/sebsoft/open-source/moodle-cidocker:latest
   script:
-    - moodle-plugin-ci phplint
-    - moodle-plugin-ci phpcpd || true
-    - moodle-plugin-ci phpmd
-    - moodle-plugin-ci codechecker
-    - moodle-plugin-ci validate
-    - moodle-plugin-ci savepoints
-    - moodle-plugin-ci mustache
-    - moodle-plugin-ci grunt
-    - moodle-plugin-ci phpdoc || true
-    - moodle-plugin-ci phpunit
-    - moodle-plugin-ci behat
+    - cd /root/
+    - umask u+x
+    - cd $CI_PROJECT_DIR/..
+    - source /root/.nvm/nvm.sh
+    - /root/ci/bin/moodle-plugin-ci install --moodle=$MOODLE_DIR --db-user=root --db-pass=superrootpass --db-host=mysql -vvv
+    # Start actually running the CI now.
+    - exit_code+=(0)
+    - failures=()
+    - /root/ci/bin/moodle-plugin-ci phplint || failures+=("PHPLINT")
+    - /root/ci/bin/moodle-plugin-ci phpcpd || true
+    - /root/ci/bin/moodle-plugin-ci phpmd || failures+=("PHPMD")
+    - /root/ci/bin/moodle-plugin-ci codechecker || failures+=("CODECHECKER")
+    - /root/ci/bin/moodle-plugin-ci validate || failures+=("VALIDATE")
+    - /root/ci/bin/moodle-plugin-ci savepoints || failures+=("SAVEPOINTS")
+    - /root/ci/bin/moodle-plugin-ci mustache || failures+=("MUSTACHE")
+    - /root/ci/bin/moodle-plugin-ci grunt || failures+=("GRUNT")
+    - /root/ci/bin/moodle-plugin-ci phpdoc || failures+=("PHPDOC")
+    - /root/ci/bin/moodle-plugin-ci phpunit || failures+=("PHPUNIT")
+    - /root/ci/bin/moodle-plugin-ci behat || failures+=("GRUNT")
+    # Dump results..
+    - for i in ${failures[@]}; do echo "$i -- FAIL"; done;
+    - if [ "${#failures[@]}" -gt "0" ]; then echo "${#failures[@]} jobs failed"; exit 1; fi;
 
 Moodle 4.1:
   <<: *job_definition
@@ -67,13 +59,3 @@ Moodle 4.0:
   <<: *job_definition
   variables:
     MOODLE_BRANCH: "MOODLE_400_STABLE"
-
-Moodle 3.11:
-  <<: *job_definition
-  variables:
-    MOODLE_BRANCH: "MOODLE_311_STABLE"
-
-Moodle 3.10:
-  <<: *job_definition
-  variables:
-    MOODLE_BRANCH: "MOODLE_310_STABLE"

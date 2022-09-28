@@ -30,9 +30,6 @@
 
 namespace block_coupon\controller;
 
-defined('MOODLE_INTERNAL') || die();
-
-use moodle_url;
 use html_writer;
 
 /**

@@ -31,7 +31,6 @@ namespace block_coupon\tables;
 
 defined('MOODLE_INTERNAL') || die();
 
-use block_coupon\helper;
 require_once($CFG->libdir . '/tablelib.php');
 
 /**
@@ -127,7 +126,6 @@ class maillog extends \table_sql {
      * @return array array consisting of query and parameters
      */
     protected function get_query($forcount = false) {
-        global $DB;
         $where = array('errortype = :type');
         $params = array('type' => 'debugemail');
         $fields = 'e.*, null as action';

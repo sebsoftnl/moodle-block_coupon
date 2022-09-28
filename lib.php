@@ -26,7 +26,6 @@
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die;
 
 /**
  * Add items to course navigation
@@ -43,8 +42,7 @@ function block_coupon_extend_navigation_course(navigation_node $parentnode, stdC
     if (empty($biid)) {
         return;
     }
-    $icon = new \pix_icon('coupon', get_string('coupon:extendenrol', 'block_coupon'), 'block_coupon');
-    $icon = null;
+    $icon = new \pix_icon('coupons', get_string('coupon:extendenrol', 'block_coupon'), 'block_coupon');
     $conditions = array('cid' => $course->id, 'id' => $biid);
     $action = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/extendenrolment.php', $conditions);
     $parentnode->add(get_string('coupon:extendenrol', 'block_coupon'), $action, navigation_node::TYPE_CUSTOM,

@@ -29,8 +29,6 @@
 
 namespace block_coupon\controller\my;
 
-defined('MOODLE_INTERNAL') || die();
-
 use html_writer;
 
 /**

@@ -29,8 +29,6 @@
 
 namespace block_coupon\tablefilters;
 
-defined('MOODLE_INTERNAL') || die();
-
 use \block_coupon\filtering\filtering;
 
 /**

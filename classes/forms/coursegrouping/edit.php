@@ -53,7 +53,7 @@ class edit extends \moodleform {
      * form definition
      */
     public function definition() {
-        global $CFG, $DB;
+        global $CFG;
         $mform = & $this->_form;
 
         list($this->instance) = $this->_customdata;

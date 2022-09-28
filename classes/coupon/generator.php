@@ -28,7 +28,6 @@
  * */
 
 namespace block_coupon\coupon;
-defined('MOODLE_INTERNAL') || die();
 
 use block_coupon\coupon\codegenerator;
 use block_coupon\coupon\icoupongenerator;

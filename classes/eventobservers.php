@@ -29,8 +29,6 @@
 
 namespace block_coupon;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * block_coupon\eventobservers
  *

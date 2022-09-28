@@ -29,8 +29,6 @@
 
 namespace block_coupon\controller;
 
-defined('MOODLE_INTERNAL') || die();
-
 use html_writer;
 use block_coupon\forms\logo;
 

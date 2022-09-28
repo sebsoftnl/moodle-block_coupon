@@ -29,8 +29,6 @@
 
 namespace block_coupon\coupon;
 
-defined('MOODLE_INTERNAL') || die();
-
 use block_coupon\coupon\generatoroptions;
 use block_coupon\exception;
 
