@@ -1,4 +1,4 @@
-Version 4.2.1 (build 2022080100)
+Version 4.2.1 (build 2022090100)
 * Changed dependency to Moodle 4.0+
 * Added gitlab CI up to Moodle 4.1
 * Removed Moodle versions up to 4.0 from gitlab CI
