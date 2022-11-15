@@ -334,12 +334,12 @@ $string['default-coupon-page-template-botright'] = '<ol>
 <li>Happy learning!</li>
 </ol>';
 
-$string['coupon_mail_content'] = '<p>Dear {$a->to_name},</p>
+$string['coupon_mail_content'] = '<p>Dear {$a->fullname},</p>
 <p>You are receiving this message because there have been newly generated coupons.<br/>
 The coupons are available for download on the e-learning environment.<br /><br />
 Please click {$a->downloadlink} to get your coupons</p>
 <p>With kind regards,<br /><br />
-{$a->from_name}</p>';
+{$a->signoff}</p>';
 
 $string['coupon_mail_csv_content'] = '
 Dear ##to_gender## ##to_name##,<br /><br />
@@ -632,12 +632,12 @@ $string['label:generatecodesonly_help'] = 'If you enable this option, only codes
 This means the complete mailing option and creating PDFs will be skipped!';
 
 $string['generator:export:mail:subject'] = 'Coupons ready for download';
-$string['generator:export:mail:body'] = 'Dear {$a->to_name},<br /><br />
+$string['generator:export:mail:body'] = 'Dear {$a->fullname},<br /><br />
 You are receiving this message because there have been newly generated coupons.<br/>
 The coupons can be downloaded from {$a->downloadlink} (requires logging in to Moodle).<br />
 Please note this link can only be used once. After you\'ve downloaded the generated coupons, this link can no longer be used.<br />
 With kind regards,<br /><br />
-{$a->from_name}';
+{$a->signoff}';
 
 $string['error:already-enrolled-in-courses'] = 'You have already been enrolled in all courses';
 $string['error:already-enrolled-in-cohorts'] = 'You have already been enrolled in all cohorts';
