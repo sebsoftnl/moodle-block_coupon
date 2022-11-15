@@ -95,7 +95,7 @@ class page2 extends \moodleform {
             if ($cohortcourses) {
                 $headingstr = array();
                 foreach ($cohortcourses as $course) {
-                    $headingstr[] = $course->fullname;
+                    $headingstr[] = format_string($course->fullname);
                 }
                 $mform->addElement('static', 'connected_courses',
                         get_string('label:connected_courses', 'block_coupon'), implode('<br/>', $headingstr));

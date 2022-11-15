@@ -75,7 +75,7 @@ class course extends \moodleform {
         $courses = $DB->get_records_list('course', 'id', $this->get_option($this->options, 'courses', []));
         $arrcoursesselect = array();
         foreach ($courses as $course) {
-            $arrcoursesselect[$course->id] = $course->fullname;
+            $arrcoursesselect[$course->id] = format_string($course->fullname);
         }
 
         $attributes = array('size' => min(20, count($arrcoursesselect)));

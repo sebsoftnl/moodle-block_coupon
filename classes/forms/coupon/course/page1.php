@@ -103,7 +103,7 @@ class page1 extends \moodleform {
         // And create data for multiselect.
         $arrcoursesselect = array();
         foreach ($courses as $course) {
-            $arrcoursesselect[$course->id] = $course->fullname;
+            $arrcoursesselect[$course->id] = format_string($course->fullname);
         }
 
         $options = ['multiple' => true, 'onlyvisible' => true];

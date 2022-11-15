@@ -370,7 +370,7 @@ class generator implements icoupongenerator {
 
             $coursenames = array();
             foreach ($this->courses as $course) {
-                $coursenames[] = $course->fullname;
+                $coursenames[] = format_string($course->fullname);
             }
 
             $arrreplace[] = '##course_fullnames##';

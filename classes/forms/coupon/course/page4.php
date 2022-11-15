@@ -101,9 +101,9 @@ class page4 extends \moodleform {
         $mform->addRule('redirect_url', get_string('required'), 'required');
         $mform->addHelpButton('redirect_url', 'label:redirect_url', 'block_coupon');
 
-        // Course fullname.
+        // Course fullnames.
         list($cinsql, $cparams) = $this->db()->get_in_or_equal($this->generatoroptions->courses);
-        $courses = implode('<br/>', $this->db()->get_fieldset_select('course', 'fullname', 'id ' . $cinsql, $cparams));
+        $courses = implode('<br/>', array_map('format_string', $this->db()->get_fieldset_select('course', 'fullname', 'id ' . $cinsql, $cparams)));
         $mform->addElement('static', 'coupon_courses', get_string('label:selected_courses', 'block_coupon'), $courses);
 
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'));

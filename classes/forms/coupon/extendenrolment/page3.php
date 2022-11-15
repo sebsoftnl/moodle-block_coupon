@@ -62,7 +62,7 @@ class page3 extends \moodleform {
         $a->duration = format_time($generatoroptions->enrolperiod);
         $a->courses = [];
         foreach ($courses as $course) {
-            $a->courses[] = $course->fullname;
+            $a->courses[] = format_string($course->fullname);
         }
         $a->courses = implode('<br/>', $a->courses);
         if (!empty($generatoroptions->emailto)) {
