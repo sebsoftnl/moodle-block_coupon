@@ -335,12 +335,12 @@ $string['default-coupon-page-template-botright'] = '<ol>
 <li>Veel leerplezier!</li>
 </ol>';
 
-$string['coupon_mail_content'] = '<p>Beste {$a->to_name},</p>
+$string['coupon_mail_content'] = '<p>Beste {$a->fullname},</p>
 <p>U ontvangt dit bericht omdat er zojuist nieuwe Coupons zijn gegenereered.<br/>
 De coupons zijn als download beschikbaar gemaakt binnen de leeromgeving.<br /><br />
 Klik a.u.b {$a->downloadlink} om je coupons op te halen.</p>
 <p>Met vriendelijke groet,<br /><br />
-{$a->from_name}</p>';
+{$a->signoff}</p>';
 
 $string['coupon_mail_csv_content'] = '
 Beste ##to_gender## ##to_name##,<br /><br />
