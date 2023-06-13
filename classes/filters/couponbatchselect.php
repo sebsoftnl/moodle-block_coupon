@@ -85,7 +85,7 @@ class couponbatchselect extends \user_filter_type {
             $sql .= ' WHERE ownerid = ?';
             $params[] = $USER->id;
         }
-        return array(0 => '...') + $DB->get_records_sql_menu($sql, $params);
+        return array('' => '...') + $DB->get_records_sql_menu($sql, $params);
     }
 
     /**
