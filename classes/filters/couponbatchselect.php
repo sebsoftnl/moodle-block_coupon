@@ -57,10 +57,10 @@ class couponbatchselect extends \user_filter_type {
      * @param string $fieldid identifier for the field in the query
      * @param bool $limitowneronly true to limit to coupon owner
      */
-    public function __construct($advanced, $fieldid = 'id', $limitowneronly = false) {
+    public function __construct($label, $advanced, $fieldid = 'id', $limitowneronly = false) {
         $this->fieldid = $fieldid;
         $this->limitowneronly = $limitowneronly;
-        parent::__construct('batchselect', get_string('batchidselect', 'block_coupon'), $advanced);
+        parent::__construct('batchselect', $label, $advanced);
     }
 
     /**
@@ -85,7 +85,7 @@ class couponbatchselect extends \user_filter_type {
             $sql .= ' WHERE ownerid = ?';
             $params[] = $USER->id;
         }
-        return array(0 => '...') + $DB->get_records_sql_menu($sql, $params);
+        return array('' => '...') + $DB->get_records_sql_menu($sql, $params);
     }
 
     /**
@@ -124,7 +124,7 @@ class couponbatchselect extends \user_filter_type {
         $field    = $this->_name;
         $operator = $field.'_op';
 
-        if (array_key_exists($operator, $formdata)) {
+        if (array_key_exists($operator, (array)$formdata)) {
             if ($formdata->$operator != 5 && $formdata->$field == '') {
                 // No data - no change except for empty filter.
                 return false;
