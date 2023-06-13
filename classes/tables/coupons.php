@@ -299,18 +299,8 @@ class coupons extends \table_sql {
      * @return string time string
      */
     public function col_usedby($row) {
-        global $CFG;
-        // Nasty modification. Does moodle support better methods here at all??
-        $obj = new \stdClass();
-        foreach ($row as $k => $v) {
-            if (stristr($k, 'user_') !== false) {
-                $nk = str_replace('user_', '', $k);
-                $obj->{$nk} = $v;
-            }
-        }
-
-        $url = new \moodle_url($CFG->wwwroot . '/user/profile.php', ['id' => $row->userid]);
-        return \html_writer::link($url, fullname($obj));
+        $url = new \moodle_url('/user/profile.php', ['id' => $row->userid]);
+        return \html_writer::link($url, fullname($row));
     }
 
     /**
