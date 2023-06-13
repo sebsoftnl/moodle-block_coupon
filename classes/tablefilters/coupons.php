@@ -50,7 +50,7 @@ class coupons extends filtering {
         return array(
             'timeexpired' => 0,
             'batchselect' => 0,
-            'mybatchselect' => 0,
+            //'mybatchselect' => 0,
             'batchid' => 1,
             'timemodified' => 1,
             'senddate' => 1,
@@ -92,9 +92,9 @@ class coupons extends filtering {
                 return new \user_filter_text('batchid',
                         get_string('label:batchid', 'block_coupon'), $advanced, 'c.batchid');
             case 'batchselect':
-                return new \block_coupon\filters\couponbatchselect($advanced, 'c.batchid', false);
+                return new \block_coupon\filters\couponbatchselect(get_string('batchidselect', 'block_coupon'), $advanced, 'c.batchid', false);
             case 'mybatchselect':
-                return new \block_coupon\filters\couponbatchselect($advanced, 'c.batchid', true);
+                return new \block_coupon\filters\couponbatchselect(get_string('mybatchidselect', 'block_coupon'), $advanced, 'c.batchid', true);
             case 'for_user_email':
                 return new \user_filter_text('for_user_email',
                         get_string('report:for_user_email', 'block_coupon'), $advanced, 'c.for_user_email');
