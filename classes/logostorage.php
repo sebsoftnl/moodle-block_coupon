@@ -82,8 +82,8 @@ class logostorage {
      * @param \HTML_QuickForm $mform
      */
     public static function add_select_form_elements(&$mform) {
-        $mform->addElement('static', '_logo', '', get_string('select:logo:desc', 'block_coupon'));
         $mform->addElement('select', 'logo', get_string('select:logo', 'block_coupon'), static::get_file_menu());
+        $mform->addHelpButton('logo', 'select:logo', 'block_coupon');
     }
 
     /**

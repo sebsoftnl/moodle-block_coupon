@@ -160,8 +160,8 @@ class couponcohortselect extends \user_filter_type {
         }
 
         $sql = "{$this->fieldid} IN (SELECT couponid
-                         FROM {block_coupon_cohorts} cc
-                         WHERE $res)";
+                FROM {block_coupon_cohorts} cc
+                WHERE $res)";
 
         return array($sql, $params);
     }

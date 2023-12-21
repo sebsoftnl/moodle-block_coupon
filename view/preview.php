@@ -23,33 +23,31 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+// Login_check is done in couponpage class.
+// @codingStandardsIgnoreLine
 require_once(dirname(__FILE__) . '/../../../config.php');
 
-use block_coupon\helper;
 use block_coupon\coupon\codegenerator;
+use block_coupon\couponpage;
 
-$id = required_param('id', PARAM_INT);
+$title = get_string('preview-pdf', 'block_coupon');
+$heading = get_string('preview-pdf', 'block_coupon');
 
-$instance = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
-$context       = \context_block::instance($instance->id);
-$coursecontext = $context->get_course_context(false);
-$course = false;
-if ($coursecontext !== false) {
-    $course = $DB->get_record("course", array("id" => $coursecontext->instanceid));
-}
-if ($course === false) {
-    $course = get_site();
-}
-
-require_login($course, true);
-
-// Make sure the moodle editmode is off.
-helper::force_no_editing_mode();
-require_capability('block/coupon:generatecoupons', $context);
+$page = couponpage::setup(
+    'block_coupon_view_preview',
+    $title,
+    couponpage::get_view_url('preview.php'),
+    'block/coupon:generatecoupons',
+    \context_system::instance(),
+    [
+        'pagelayout' => 'embedded',
+        'title' => $title,
+        'heading' => $heading
+    ]
+);
 
 // Prepare.
 try {
@@ -62,6 +60,7 @@ $roleid = optional_param('roleid', $options->roleid, PARAM_INT);
 $logoid = optional_param('logoid', $options->logoid, PARAM_INT);
 $renderqrcode = optional_param('qr', $options->renderqrcode, PARAM_INT);
 $font = optional_param('font', $options->font, PARAM_TEXT);
+$templateid = optional_param('templateid', $options->templateid, PARAM_INT);
 
 // Create fake coupon instance.
 $coupon = new stdClass;
@@ -88,17 +87,26 @@ $coupon->timemodified = time();
 $coupon->timeexpired = null;
 $coupon->timeclaimed = null;
 
-// Generate the PDF.
-$pdfgen = new block_coupon\coupon\pdf(get_string('pdf:titlename', 'block_coupon'));
-// Set default font.
-$pdfgen->set_defaultfont($font);
-// Fill the coupon with text.
-$pdfgen->set_templatemain(get_string('default-coupon-page-template-main', 'block_coupon'));
-$pdfgen->set_templatebotleft(get_string('default-coupon-page-template-botleft', 'block_coupon'));
-$pdfgen->set_templatebotright(get_string('default-coupon-page-template-botright', 'block_coupon'));
-// Set preview mode.
-$pdfgen->set_preview(true, $options->courses);
-// Generate it.
-$pdfgen->generate($coupon);
-// And display.
-$pdfgen->Output();
+error_reporting(0);
+ini_set('display_errors', 0);
+
+if (!empty($templateid)) {
+    $tplrec = $DB->get_record('block_coupon_templates', ['id' => $templateid]);
+    $template = new block_coupon\template($tplrec);
+    $template->generate_pdf([$coupon], true);
+} else {
+    // Generate the PDF.
+    $pdfgen = new block_coupon\coupon\pdf(get_string('pdf:titlename', 'block_coupon'));
+    // Set default font.
+    $pdfgen->set_defaultfont($font);
+    // Fill the coupon with text.
+    $pdfgen->set_templatemain(get_string('default-coupon-page-template-main', 'block_coupon'));
+    $pdfgen->set_templatebotleft(get_string('default-coupon-page-template-botleft', 'block_coupon'));
+    $pdfgen->set_templatebotright(get_string('default-coupon-page-template-botright', 'block_coupon'));
+    // Set preview mode.
+    $pdfgen->set_preview(true, $options->courses);
+    // Generate it.
+    $pdfgen->generate($coupon);
+    // And display.
+    $pdfgen->Output();
+}

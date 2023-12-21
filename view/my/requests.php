@@ -26,34 +26,28 @@
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+// Login_check is done in couponpage class.
+// @codingStandardsIgnoreLine
 require_once(dirname(__FILE__) . '/../../../../config.php');
 
-$id = required_param('id', PARAM_INT);
-$instance = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
-$context       = \context_block::instance($instance->id);
-$coursecontext = $context->get_course_context(false);
-$course = false;
-if ($coursecontext !== false) {
-    $course = $DB->get_record("course", array("id" => $coursecontext->instanceid));
-}
-if ($course === false) {
-    $course = get_site();
-}
+use block_coupon\couponpage;
 
-require_login($course, true);
+$title = get_string('view:userrequest:title', 'block_coupon');
+$heading = get_string('view:userrequest:heading', 'block_coupon');
 
-$title = 'view:userrequest:title';
-$heading = 'view:userrequest:heading';
-
-$PAGE->navbar->add(get_string($title, 'block_coupon'));
-
-$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php', array('id' => $id));
-$PAGE->set_url($url);
-$PAGE->set_title(get_string($title, 'block_coupon'));
-$PAGE->set_heading(get_string($heading, 'block_coupon'));
-$PAGE->set_context($context);
-$PAGE->set_course($course);
-$PAGE->set_pagelayout('standard');
+$url = couponpage::get_view_url('my/requests.php');
+$page = couponpage::setup(
+    'block_coupon_view_my_requests',
+    $title,
+    $url,
+    [],
+    \context_system::instance(),
+    [
+        'pagelayout' => 'report',
+        'title' => $title,
+        'heading' => $heading
+    ]
+);
 
 // If you're no request user, deny access.
 if (!$DB->record_exists('block_coupon_rusers', ['userid' => $USER->id])) {

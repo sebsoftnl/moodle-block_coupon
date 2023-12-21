@@ -927,7 +927,6 @@ class block_coupon_external extends external_api {
         }
     }
 
-
     /**
      * Returns description of method parameters
      *

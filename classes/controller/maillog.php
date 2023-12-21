@@ -75,7 +75,6 @@ class maillog {
      */
     public function execute_request() {
         global $CFG;
-        $id = required_param('id', PARAM_INT);
         $tab = 'maillog';
         $action = optional_param('action', $tab, PARAM_ALPHA);
         $title = 'view:reports-' . $tab . ':title';
@@ -83,7 +82,7 @@ class maillog {
 
         $this->page->navbar->add(get_string($title, 'block_coupon'));
 
-        $url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/maillog.php', array('id' => $id, 'tab' => $tab));
+        $url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/maillog.php', array('tab' => $tab));
         $this->page->set_url($url);
         $this->page->set_title(get_string($title, 'block_coupon'));
         $this->page->set_heading(get_string($heading, 'block_coupon'));
@@ -118,12 +117,10 @@ class maillog {
             exit;
         }
 
-        $id = $this->page->url->param('id');
-
         echo $this->output->header();
         echo html_writer::start_div('block-coupon-container');
         echo html_writer::start_div();
-        echo $this->renderer->get_tabs($this->page->context, 'cpmaillog', array('id' => $id));
+        echo $this->renderer->get_tabs($this->page->context, 'cpmaillog');
         echo html_writer::end_div();
         $filtering->display_add();
         $filtering->display_active();

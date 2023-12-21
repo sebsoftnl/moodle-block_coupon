@@ -23,7 +23,6 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -277,7 +276,6 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
     if ($oldversion < 2020010805) {
         // Add INDICES field to coupon table. Can't believe I never saw this!
-        // Then again the original developer Menno always forgot indices... _sigh_.
         $table = new xmldb_table('block_coupon');
         $index = new xmldb_index('idx-userid', XMLDB_INDEX_NOTUNIQUE, ['userid']);
         if (!$dbman->index_exists($table, $index)) {
@@ -408,6 +406,107 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2020010816, 'coupon');
+    }
+
+    if ($oldversion < 2023110300) {
+        // Add activity link table.
+        $table = new xmldb_table('block_coupon_activities');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('couponid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('cmid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'couponid');
+        // Add keys.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        // Add indices.
+        $table->add_index('idx-couponid', XMLDB_INDEX_NOTUNIQUE, ['couponid']);
+        $table->add_index('idx-cmid', XMLDB_INDEX_NOTUNIQUE, ['cmid']);
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Add templates table.
+        $table = new xmldb_table('block_coupon_templates');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('contextid', XMLDB_TYPE_INTEGER, '18', null, null, null, null, 'name');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'contextid');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
+        // Add KEYS.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        // Add indices.
+        $table->add_index('idx-contextid', XMLDB_INDEX_NOTUNIQUE, array('contextid'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Add template pages table.
+        $table = new xmldb_table('block_coupon_pages');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('templateid', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('width', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0', 'templateid');
+        $table->add_field('height', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0', 'width');
+        $table->add_field('leftmargin', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0', 'height');
+        $table->add_field('rightmargin', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, '0', 'leftmargin');
+        $table->add_field('sequence', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'rightmargin');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'sequence');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
+        // Add KEYS.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        // Add indices.
+        $table->add_index('idx-templateid', XMLDB_INDEX_NOTUNIQUE, array('templateid'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Add page elements table.
+        $table = new xmldb_table('block_coupon_elements');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('pageid', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('name', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null, 'pageid');
+        $table->add_field('element', XMLDB_TYPE_TEXT, 'long', null, XMLDB_NOTNULL, null, null, 'name');
+        $table->add_field('data', XMLDB_TYPE_TEXT, 'long', null, null, null, null, 'element');
+        $table->add_field('font', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'data');
+        $table->add_field('fontsize', XMLDB_TYPE_INTEGER, '11', null, null, null, null, 'font');
+        $table->add_field('colour', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'fontsize');
+        $table->add_field('posx', XMLDB_TYPE_INTEGER, '18', null, null, null, null, 'colour');
+        $table->add_field('posy', XMLDB_TYPE_INTEGER, '18', null, null, null, null, 'posx');
+        $table->add_field('width', XMLDB_TYPE_INTEGER, '18', null, null, null, null, 'posy');
+        $table->add_field('refpoint', XMLDB_TYPE_INTEGER, '4', null, null, null, null, 'width');
+        $table->add_field('sequence', XMLDB_TYPE_INTEGER, '18', null, null, null, null, 'refpoint');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'sequence');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
+        // Add KEYS.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        // Add indices.
+        $table->add_index('idx-pageid', XMLDB_INDEX_NOTUNIQUE, array('pageid'));
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Add mail templates table.
+        $table = new xmldb_table('block_coupon_mailtemplates');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '200', null, XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('subject', XMLDB_TYPE_CHAR, '200', null, XMLDB_NOTNULL, null, null, 'name');
+        $table->add_field('body', XMLDB_TYPE_TEXT, 'medium', null, XMLDB_NOTNULL, null, null, 'subject');
+        $table->add_field('bodyformat', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, 0, 'body');
+        $table->add_field('usercreated', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'bodyformat');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'usercreated');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'timecreated');
+        // Add keys.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        // Add indices.
+        $table->add_index('idx-usercreated', XMLDB_INDEX_NOTUNIQUE, ['usercreated']);
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Block_coupon savepoint reached.
+        upgrade_block_savepoint(true, 2023110300, 'coupon');
     }
 
     return true;

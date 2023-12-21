@@ -26,11 +26,13 @@
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+// Login_check is done in couponpage class.
+// @codingStandardsIgnoreLine
 require_once(dirname(__FILE__) . '/../../../../config.php');
-use block_coupon\helper;
+
+use block_coupon\couponpage;
 
 $cid = optional_param('cid', null, PARAM_INT);
-$id = required_param('id', PARAM_INT);
 
 if (empty($cid)) {
     $course = get_site();
@@ -40,27 +42,24 @@ if (empty($cid)) {
     $context = \context_course::instance($cid);
 }
 
-require_login($course, true);
+$title = get_string('view:extendenrolment:title', 'block_coupon');
+$heading = get_string('view:extendenrolment:heading', 'block_coupon');
 
-$title = 'view:extendenrolment:title';
-$heading = 'view:extendenrolment:heading';
-
-$PAGE->navbar->add(get_string($title, 'block_coupon'));
-
-$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/extendenrolment.php', array('id' => $id, 'cid' => $cid));
-$PAGE->set_url($url);
-
-$PAGE->set_title(get_string($title, 'block_coupon'));
-$PAGE->set_heading(get_string($heading, 'block_coupon'));
-$PAGE->set_context($context);
-$PAGE->set_course($course);
-$PAGE->set_pagelayout('standard');
-
-// Make sure the moodle editmode is off.
-helper::force_no_editing_mode();
-require_capability('block/coupon:extendenrolments', $context);
-$renderer = $PAGE->get_renderer('block_coupon');
+$url = couponpage::get_view_url('generator/extendenrolment.php');
+$page = couponpage::setup(
+    'block_coupon_view_generator_extendenrolment',
+    $title,
+    $url,
+    'block/coupon:extendenrolments',
+    $context,
+    [
+        'pagelayout' => 'report',
+        'title' => $title,
+        'heading' => $heading
+    ]
+);
 
 // Using a manager.
+$renderer = $PAGE->get_renderer('block_coupon');
 $requestcontroller = new \block_coupon\controller\generator\extendenrolmentcoupon($PAGE, $OUTPUT, $renderer);
 $requestcontroller->execute_request();

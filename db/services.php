@@ -43,6 +43,7 @@ $services = array(
             'block_coupon_find_courses',
             'block_coupon_find_potential_cohort_courses',
             'block_coupon_find_cohorts',
+            'block_coupon_claim_coupon',
         ),
         'requiredcapability' => '',
         'restrictedusers' => 0,
@@ -152,6 +153,57 @@ $functions = array(
         'methodname' => 'claim_coupon',
         'classpath' => 'blocks/coupon/externallib.php',
         'description' => 'Claim coupon code',
+        'type' => 'write',
+        'ajax' => true
+    ),
+
+    'block_coupon_delete_mailtemplate' => array(
+        'classname' => '\\block_coupon\\external\\mailtemplates',
+        'methodname' => 'delete_template',
+        'description' => 'delete_template',
+        'type' => 'write',
+        'ajax' => true
+    ),
+    'block_coupon_duplicate_mailtemplate' => array(
+        'classname' => '\\block_coupon\\external\\mailtemplates',
+        'methodname' => 'duplicate_template',
+        'description' => 'duplicate_template',
+        'type' => 'write',
+        'ajax' => true
+    ),
+
+    'block_coupon_delete_template' => array(
+        'classname' => '\\block_coupon\\external\\templates',
+        'methodname' => 'delete_template',
+        'description' => 'delete_template',
+        'type' => 'write',
+        'ajax' => true
+    ),
+    'block_coupon_duplicate_template' => array(
+        'classname' => '\\block_coupon\\external\\templates',
+        'methodname' => 'duplicate_template',
+        'description' => 'duplicate_template',
+        'type' => 'write',
+        'ajax' => true
+    ),
+    'block_coupon_update_element_positions' => array(
+        'classname' => '\\block_coupon\\external\\templates',
+        'methodname' => 'update_element_positions',
+        'description' => 'update_element_positions',
+        'type' => 'write',
+        'ajax' => true
+    ),
+    'block_coupon_save_element' => array(
+        'classname' => '\\block_coupon\\external\\templates',
+        'methodname' => 'save_element',
+        'description' => 'save_element',
+        'type' => 'write',
+        'ajax' => true
+    ),
+    'block_coupon_get_element_html' => array(
+        'classname' => '\\block_coupon\\external\\templates',
+        'methodname' => 'get_element_html',
+        'description' => 'get_element_html',
         'type' => 'write',
         'ajax' => true
     ),

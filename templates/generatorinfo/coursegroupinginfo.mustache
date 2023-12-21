@@ -1,0 +1,179 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_coupon/generatyorinfo/coursegroupinginfo
+
+    Rearrange area.
+
+    Example context (json):
+    {
+        "owner": {
+            "id": 1,
+            "fullname": "Admin user"
+        },
+        "role": {
+            "id": 1,
+            "name": "Role name"
+        },
+        "batchid": "12345",
+        "groupings": [{
+            "id": 1,
+            "name": "groupingname"
+        }],
+        "enrolmentperiod": 0,
+        "redirecturl": "/my",
+        "codesize": 16,
+        "flagstr": "",
+        "excludechars": "0,1,i,I,l,o,O",
+        "amount": 1,
+        "expirystr": "",
+        "generatecodesonly": false,
+        "pdftemplated": true,
+        "template": {
+            "id": 1,
+            "name": "template name"
+        },
+        "logo": "logo name",
+        "font": "font name",
+        "renderqrcode": true,
+        "pdfcombinestr": "single pdf",
+        "generatormethod": "course",
+        "recipients": ["recipient1", "recipient2"],
+        "mailtemplate": "Email template body",
+        "senddate": "2023-12-20"
+    }
+}}
+<div class="d-flex">
+<table class="table flexible table-hover">
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{#str}}th:owner, block_coupon{{/str}}</td>
+            <td>{{owner.fullname}}</td>
+        </tr>
+        <tr>
+            <td>{{#str}}th:batchid, block_coupon{{/str}}</td>
+            <td>{{batchid}}</td>
+        </tr>
+        <tr>
+            <th colspan="2">{{#str}}confirm:coursegroupinginfo, block_coupon{{/str}}</th>
+        </tr>
+        <tr>
+            <td>{{#str}}coursegroupings{{/str}}</td>
+            <td><ul class="list-unstyled">
+                {{#groupings}}
+                <li>{{{name}}}</li>
+                {{/groupings}}
+            </ul></td>
+        </tr>
+        <tr>
+            <td>{{#str}}role{{/str}}</td>
+            <td>{{role.name}}</td>
+        </tr>
+        <tr>
+            <td>{{#str}}enrolperiod, enrol{{/str}}</td>
+            <td>{{enrolmentperiod}}</td>
+        </tr>
+        <tr>
+            <td>{{#str}}label:redirect_url, block_coupon{{/str}}</td>
+            <td>{{redirecturl}}</td>
+        </tr>
+        <tr>
+            <th colspan="2">{{#str}}generatorsettings, block_coupon{{/str}}</th>
+        </tr>
+        <tr>
+            <td>{{#str}}label:coupon_code_length, block_coupon{{/str}}</td>
+            <td>{{codesize}} ({{flagstr}} {{#str}}excluding, block_coupon, {{excludechars}}{{/str}})</td>
+        </tr>
+        <tr>
+            <td>{{#str}}label:coupon_amount, block_coupon{{/str}}</td>
+            <td>{{amount}}</td>
+        </tr>
+        <tr>
+            <td>{{#str}}report:timeexpired, block_coupon{{/str}}</td>
+            <td>{{expirystr}}</td>
+        </tr>
+        <tr>
+            <th colspan="2">{{#str}}pdfsettings, block_coupon{{/str}}</th>
+        </tr>
+        {{#generatecodesonly}}
+        <tr>
+            <td></td>
+            <td>{{#str}}label:generatecodesonly, block_coupon{{/str}}</td>
+        </tr>
+        {{/generatecodesonly}}
+        {{^generatecodesonly}}
+            {{#pdftemplated}}
+            <tr>
+                <td>{{#str}}template, block_coupon{{/str}}</td>
+                <td>{{template.name}}</td>
+            </tr>
+            {{/pdftemplated}}
+            {{^pdftemplated}}
+            <tr>
+                <td>{{#str}}label:logo, block_coupon{{/str}}</td>
+                <td>{{logo}}</td>
+            </tr>
+            <tr>
+                <td>{{#str}}font, block_coupon{{/str}}</td>
+                <td>{{font}}</td>
+            </tr>
+            <tr>
+                <td>{{#str}}label:renderqrcode, block_coupon{{/str}}</td>
+                <td>{{#renderqrcode}}{{#str}}yes{{/str}}{{/renderqrcode}}{{^renderqrcode}}{{#str}}no{{/str}}{{/renderqrcode}}</td>
+            </tr>
+            {{/pdftemplated}}
+            <tr>
+                <td>{{#str}}pdfmerge, block_coupon{{/str}}</td>
+                <td>{{pdfcombinestr}}</td>
+            </tr>
+        {{/generatecodesonly}}
+        <tr>
+            <th colspan="2">{{#str}}recipients, block_coupon{{/str}}</th>
+        </tr>
+        <tr>
+            <td>{{#str}}generatortype, block_coupon{{/str}}</td>
+            <td>{{generatormethod}}</td>
+        </tr>
+        <tr>
+            <td>{{#str}}recipients, block_coupon{{/str}}</td>
+            <td><ul class="list-unstyled">
+                {{#recipients}}
+                <li>{{{.}}}</li>
+                {{/recipients}}
+            </ul></td>
+        </tr>
+        {{#mailtemplate}}
+        <tr>
+            <td>{{#str}}emailbody, block_coupon{{/str}}</td>
+            <td>{{{.}}}</td>
+        </tr>
+        {{/mailtemplate}}
+        {{#senddate}}
+        <tr>
+            <td>{{#str}}report:senddate, block_coupon{{/str}}</td>
+            <td>{{{.}}}</td>
+        </tr>
+        {{/senddate}}
+    </tbody>
+</table>
+</div>

@@ -61,7 +61,9 @@ class chooser extends \moodleform {
         // Only create first element with label.
         $mform->addElement('radio', 'coupon_type[type]', get_string('label:coupon_type', 'block_coupon'),
                 get_string('label:type_course', 'block_coupon'), 0);
-        $mform->addElement('radio', 'coupon_type[type]', '', get_string('label:type_cohorts', 'block_coupon'), 1);
+        if ($DB->count_records('cohort', null) > 0) {
+            $mform->addElement('radio', 'coupon_type[type]', '', get_string('label:type_cohorts', 'block_coupon'), 1);
+        }
 
         $cgattributes = [];
         $label = get_string('label:type_coursegrouping', 'block_coupon');

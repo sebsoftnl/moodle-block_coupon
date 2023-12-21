@@ -1,3 +1,26 @@
+Version 4.3.0 (build 2023110300)
+* Fixed some bugs
+* Added templating
+* Revised webservices
+* Massive code overhaul to facilitate PDF templates
+* Massive overhaul in "wizard" pages for better logic and navigation
+
+----------
+
+Version 4.2.3 (build 2023090101)
+* Added generator flags configuration
+* Added generator flags selection/limiting in coupon forms
+* Fixed long existing unintended generator flags bug
+
+----------
+
+Version 4.2.2 (build 2022090101)
+* Fixed issue where coupon users aren't displayed in tables.
+* Finally re-added the long long long lost coupon expiry.
+* Small changes in codegenerator (pre-work)
+
+----------
+
 Version 4.2.1 (build 2022090100)
 * Changed dependency to Moodle 4.0+
 * Added gitlab CI up to Moodle 4.1

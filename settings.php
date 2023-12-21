@@ -23,7 +23,6 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -39,7 +38,6 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_heading('block_coupon_logopromo',
             get_string('promo', 'block_coupon'),
             get_string('promodesc', 'block_coupon', $header)));
-
 
     $settings->add(new admin_setting_configselect(
             'block_coupon/buttonclass',
@@ -92,6 +90,19 @@ if ($ADMIN->fulltree) {
             get_string('label:coupon_code_length_help', 'block_coupon'),
             16,
             $maxcodelengthchoices
+        ));
+
+    $generatorchoices = array(
+        1 => get_string('numeric', 'block_coupon'),
+        2 => get_string('letters', 'block_coupon'),
+        4 => get_string('capitals', 'block_coupon'),
+    );
+    $settings->add(new admin_setting_configmulticheckbox(
+            'block_coupon/coupon_code_flags',
+            get_string('label:coupon_code_flags', 'block_coupon'),
+            get_string('label:coupon_code_flags_help', 'block_coupon'),
+            [1 => 1, 2 => 1, 4 => 1],
+            $generatorchoices
         ));
 
     $settings->add(new admin_setting_configtext(
@@ -170,6 +181,23 @@ if ($ADMIN->fulltree) {
             get_string('label:groupingselectactiveonly_help', 'block_coupon'),
             0
         ));
+
+    // Template settings.
+    $settings->add(new admin_setting_heading('block_coupon_templatesettings',
+            get_string('templatesettings', 'block_coupon'), ''));
+
+    $settings->add(new admin_setting_configcheckbox('block_coupon/showposxy',
+        get_string('showposxy', 'block_coupon'),
+        get_string('showposxy_desc', 'block_coupon'),
+        1));
+
+    $settings->add(new \block_coupon\admin_setting_link('block_coupon/managetemplates',
+        get_string('managetemplates', 'block_coupon'), get_string('managetemplatesdesc', 'block_coupon'),
+        get_string('managetemplates', 'block_coupon'), new moodle_url('/blocks/coupon/view/templates/index.php'), ''));
+
+    $settings->add(new \block_coupon\admin_setting_link('block_coupon/uploadimage',
+        get_string('uploadimage', 'block_coupon'), get_string('uploadimagedesc', 'block_coupon'),
+        get_string('uploadimage', 'block_coupon'), new moodle_url('/blocks/coupon/view/templates/upload_image.php'), ''));
 
     // Information fields, to be displayed above each form.
     $settings->add(new admin_setting_heading('block_coupon_textsettings',
