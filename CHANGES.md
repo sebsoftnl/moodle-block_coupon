@@ -1,3 +1,8 @@
+Version 4.3.1 (build 2023110301)
+* Fixed reported issue in upgrade process
+
+----------
+
 Version 4.3.0 (build 2023110300)
 * Fixed some bugs
 * Added templating
