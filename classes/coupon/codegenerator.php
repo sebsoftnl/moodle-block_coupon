@@ -23,7 +23,6 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * */
@@ -36,7 +35,6 @@ namespace block_coupon\coupon;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -69,14 +67,17 @@ final class codegenerator {
      * @param int $size code size
      * @param int $flags generator flags
      * @param array $exclude characters to exclude
+     * @param string $prefix coupon code prefix
+     * @param string $postfix coupon code postfix
      * @return string guaranteed unique coupon code
      */
-    public static function generate_unique_code($size, $flags = self::ALL, $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
+    public static function generate_unique_code($size, $flags = self::ALL,
+            $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O'), $prefix = '', $postfix = '') {
         global $DB;
 
-        $vcode = self::generate_code($size, $flags = self::ALL, $exclude);
+        $vcode = $prefix . self::generate_code($size, $flags, $exclude) . $postfix;
         while ($DB->get_record('block_coupon', array('submission_code' => $vcode))) {
-            $vcode = self::generate_code($size, $flags = self::ALL, $exclude);
+            $vcode = $prefix . self::generate_code($size, $flags, $exclude) . $postfix;
         }
 
         return $vcode;

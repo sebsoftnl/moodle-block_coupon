@@ -26,46 +26,32 @@
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+// Login_check is done in couponpage class.
+// @codingStandardsIgnoreLine
 require_once(dirname(__FILE__) . '/../../../../config.php');
 
-use block_coupon\helper;
+use block_coupon\couponpage;
 use block_coupon\coupon\generatoroptions;
 use block_coupon\forms\coupon\generator\chooser;
 
-$id = required_param('id', PARAM_INT);
+$title = get_string('view:generate_coupon:title', 'block_coupon');
+$heading = get_string('view:generate_coupon:heading', 'block_coupon');
 
-$instance = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
-$context = \context_block::instance($instance->id);
-$coursecontext = $context->get_course_context(false);
-$course = false;
-if ($coursecontext !== false) {
-    $course = $DB->get_record("course", array("id" => $coursecontext->instanceid));
-}
-if ($course === false) {
-    $course = get_site();
-}
+$url = couponpage::get_view_url('generator/index.php');
+$page = couponpage::setup(
+    'block_coupon_view_generator_index',
+    $title,
+    $url,
+    'block/coupon:generatecoupons',
+    \context_system::instance(),
+    [
+        'pagelayout' => 'report',
+        'title' => $title,
+        'heading' => $heading
+    ]
+);
 
-require_login($course, true);
-
-$title = 'view:generate_coupon:title';
-$heading = 'view:generate_coupon:heading';
-
-$PAGE->navbar->add(get_string($title, 'block_coupon'));
-
-$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/index.php', array('id' => $id));
-$PAGE->set_url($url);
-
-$PAGE->set_title(get_string($title, 'block_coupon'));
-$PAGE->set_heading(get_string($heading, 'block_coupon'));
-$PAGE->set_context($context);
-$PAGE->set_course($course);
-$PAGE->set_pagelayout('standard');
-
-// Make sure the moodle editmode is off.
-helper::force_no_editing_mode();
-require_capability('block/coupon:generatecoupons', $context);
 $renderer = $PAGE->get_renderer('block_coupon');
-
 $mform = new chooser($url);
 if ($mform->is_cancelled()) {
     generatoroptions::clean_session();
@@ -92,21 +78,18 @@ if ($mform->is_cancelled()) {
     // And redirect user to next page.
     switch ($generatoroptions->type) {
         case generatoroptions::COURSE:
-            $redirect = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/course.php',
-                    ['id' => $id]);
+            $redirect = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/course.php');
             break;
         case generatoroptions::COHORT:
-            $redirect = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/cohort.php',
-                    ['id' => $id]);
+            $redirect = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/cohort.php');
             break;
         case generatoroptions::COURSEGROUPING:
-            $redirect = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/coursegrouping.php',
-                    ['id' => $id]);
+            $redirect = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/coursegrouping.php');
             break;
         default:
             // Try autodetect.
             $redirect = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/' .
-                    $generatoroptions->type . '.php', ['id' => $id]);
+                    $generatoroptions->type . '.php');
             break;
     }
     redirect($redirect);

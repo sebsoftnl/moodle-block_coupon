@@ -26,34 +26,28 @@
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+// Login_check is done in couponpage class.
+// @codingStandardsIgnoreLine
 require_once(dirname(__FILE__) . '/../../../../config.php');
 
-use block_coupon\helper;
+use block_coupon\couponpage;
 
-$id = required_param('id', PARAM_INT);
-
-$instance = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
-$context       = \context_block::instance($instance->id);
-$coursecontext = $context->get_course_context(false);
-$course = false;
-if ($coursecontext !== false) {
-    $course = $DB->get_record("course", array("id" => $coursecontext->instanceid));
-}
-if ($course === false) {
-    $course = get_site();
-}
-
-require_login($course, true);
-
-$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/batches.php', array('id' => $id));
-$PAGE->set_url($url);
 $title = get_string('tab:downloadbatchlist', 'block_coupon');
-$PAGE->navbar->add($title);
-$PAGE->set_title($title);
-$PAGE->set_heading($title);
-$PAGE->set_context($context);
-$PAGE->set_course($course);
-$PAGE->set_pagelayout('standard');
+$heading = get_string('tab:downloadbatchlist', 'block_coupon');
+
+$url = couponpage::get_view_url('my/batches.php');
+$page = couponpage::setup(
+    'block_coupon_view_my_batches',
+    $title,
+    $url,
+    [],
+    \context_system::instance(),
+    [
+        'pagelayout' => 'report',
+        'title' => $title,
+        'heading' => $heading
+    ]
+);
 
 // If you're no request user, deny access.
 if (!$DB->record_exists('block_coupon_rusers', ['userid' => $USER->id])) {

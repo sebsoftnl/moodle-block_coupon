@@ -151,22 +151,19 @@ class report extends \table_sql {
         $fields = $DB->sql_concat('c.id', '\'-\'', 'bc.id') . ' as idx,
                bc.*, c.id as courseid, c.fullname as coursename,
                ' . helper::get_all_user_name_fields(true, 'u');
-        $q1 = 'SELECT ' . $fields . '
-               , null as cohortname
-               FROM {block_coupon} bc
-               JOIN {block_coupon_courses} cc ON cc.couponid=bc.id
-               JOIN {user} u ON bc.userid=u.id
-               LEFT JOIN {course} c ON cc.courseid=c.id
-               WHERE bc.userid IS NOT NULL
-               AND claimed = 1
-               ';
+        $q1 = 'SELECT ' . $fields . ', null as cohortname ' .
+               'FROM {block_coupon} bc ' .
+               'JOIN {block_coupon_courses} cc ON cc.couponid=bc.id ' .
+               'JOIN {user} u ON bc.userid=u.id ' .
+               'LEFT JOIN {course} c ON cc.courseid=c.id ' .
+               'WHERE bc.userid IS NOT NULL ' .
+               'AND claimed = 1';
         if ($this->ownerid > 0) {
             $q1 .= ' AND bc.ownerid = :ownerid1';
             $q1params['ownerid1'] = $this->ownerid;
         }
 
-        $q2 = 'SELECT ' . $fields . '
-               , coh.name as cohortname
+        $q2 = 'SELECT ' . $fields . ', coh.name as cohortname
                FROM {block_coupon} bc
                JOIN {block_coupon_cohorts} cc ON cc.couponid=bc.id
                JOIN {cohort} coh ON cc.cohortid=coh.id
@@ -181,8 +178,7 @@ class report extends \table_sql {
             $q2params['ownerid2'] = $this->ownerid;
         }
 
-        $q3 = 'SELECT ' . $fields . '
-               , null as cohortname
+        $q3 = 'SELECT ' . $fields . ', null as cohortname
                FROM {block_coupon} bc
                JOIN {block_coupon_cgucourses} cc ON cc.couponid=bc.id
                JOIN {user} u ON bc.userid=u.id

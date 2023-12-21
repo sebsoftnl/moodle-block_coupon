@@ -137,9 +137,8 @@ class errorreport extends \table_sql {
         }
         $fields = $DB->sql_concat('c.id', '\'-\'', 'e.id') . ' as idx,
                c.submission_code as coupon, c.batchid, e.*, null as action';
-        $sql = 'SELECT ' . $fields . '
-               FROM {block_coupon} c
-               JOIN {block_coupon_errors} e ON e.couponid=c.id';
+        $sql = 'SELECT ' . $fields . ' FROM {block_coupon} c ' .
+               'JOIN {block_coupon_errors} e ON e.couponid=c.id';
 
         // Add filtering rules.
         if (!empty($this->filtering)) {

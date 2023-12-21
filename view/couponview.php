@@ -23,39 +23,30 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+// Login_check is done in couponpage class.
+// @codingStandardsIgnoreLine
 require_once(dirname(__FILE__) . '/../../../config.php');
+use block_coupon\couponpage;
 
-use block_coupon\helper;
+$title = get_string('tab:used', 'block_coupon');
+$heading = get_string('tab:used', 'block_coupon');
 
-$id = required_param('id', PARAM_INT);
+$page = couponpage::setup(
+    'block_coupon_view_couponview',
+    $title,
+    couponpage::get_view_url('couponview.php'),
+    'block/coupon:viewreports',
+    \context_system::instance(),
+    [
+        'pagelayout' => 'report',
+        'title' => $title,
+        'heading' => $heading
+    ]
+);
 
-$instance = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
-$context       = \context_block::instance($instance->id);
-$coursecontext = $context->get_course_context(false);
-$course = false;
-if ($coursecontext !== false) {
-    $course = $DB->get_record("course", array("id" => $coursecontext->instanceid));
-}
-if ($course === false) {
-    $course = get_site();
-}
-
-require_login($course, true);
-
-$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php', array('id' => $id));
-$PAGE->set_url($url);
-$PAGE->set_context($context);
-$PAGE->set_course($course);
-$PAGE->set_pagelayout('standard');
-
-// Make sure the moodle editmode is off.
-helper::force_no_editing_mode();
-require_capability('block/coupon:viewreports', $context);
 $renderer = $PAGE->get_renderer('block_coupon');
-
 $controller = new block_coupon\controller\coupons($PAGE, $OUTPUT, $renderer);
 $controller->execute_request();

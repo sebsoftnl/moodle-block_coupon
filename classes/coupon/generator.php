@@ -259,7 +259,9 @@ class generator implements icoupongenerator {
             // An object for the coupon itself.
             $objcoupon = new \stdClass();
             $objcoupon->ownerid = $options->ownerid;
-            $objcoupon->submission_code = codegenerator::generate_unique_code($options->codesize);
+            $objcoupon->submission_code = codegenerator::generate_unique_code($options->codesize,
+                    $options->generatorflags, $options->generatorexcludechars,
+                    $options->ccprefix, $options->ccpostfix);
             $objcoupon->timecreated = $generatortime;
             $objcoupon->timeexpired = null;
             $objcoupon->email_body = null;
@@ -278,6 +280,9 @@ class generator implements icoupongenerator {
             }
             // Add batch id.
             $objcoupon->batchid = $options->batchid;
+
+            // Expiry.
+            $objcoupon->timeexpired = $options->expiresat;
 
             // If coupons are personal, set recipient data.
             if (!empty($options->recipients)) {

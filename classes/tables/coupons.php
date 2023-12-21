@@ -257,7 +257,7 @@ class coupons extends \table_sql {
         switch ($this->filter) {
             case self::USED:
                 $where[] = 'claimed = 1';
-                $fields .= ', ' . \block_coupon\helper::get_all_user_name_fields(true, 'u1');
+                $fields .= ', ' . \block_coupon\helper::get_all_user_name_fields(true, 'u1', '', 'user_');
                 $fields .= ', ' . $DB->sql_fullname('u1.firstname', 'u1.lastname') . ' AS usedby';
                 $from .= ' JOIN {user} u1 ON c.userid=u1.id';
                 break;
@@ -266,7 +266,7 @@ class coupons extends \table_sql {
                 break;
             case self::PERSONAL:
                 $where[] = 'for_user_email IS NOT NULL';
-                $fields .= ', ' . \block_coupon\helper::get_all_user_name_fields(true, 'u1');
+                $fields .= ', ' . \block_coupon\helper::get_all_user_name_fields(true, 'u1', '', 'user_');
                 $fields .= ', ' . $DB->sql_fullname('u1.firstname', 'u1.lastname') . ' AS usedby';
                 $from .= ' LEFT JOIN {user} u1 ON c.userid=u1.id';
                 break;

@@ -73,7 +73,6 @@ class errorreports {
      * Execute page request
      */
     public function execute_request() {
-        $id = required_param('id', PARAM_INT);
         $action = optional_param('action', 'list', PARAM_ALPHANUM);
 
         switch ($action) {
@@ -101,12 +100,11 @@ class errorreports {
 
         $filtering = new \block_coupon\tablefilters\errorreport($this->page->url);
         $table->set_filtering($filtering);
-        $id = $this->page->url->param('id');
 
         echo $this->output->header();
         echo html_writer::start_div('block-coupon-container');
         echo html_writer::start_div();
-        echo $this->renderer->get_tabs($this->page->context, 'cperrorreport', array('id' => $id));
+        echo $this->renderer->get_tabs($this->page->context, 'cperrorreport');
         echo html_writer::end_div();
         $filtering->display_add();
         $filtering->display_active();

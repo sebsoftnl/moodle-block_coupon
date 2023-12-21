@@ -23,48 +23,33 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+// Login_check is done in couponpage class.
+// @codingStandardsIgnoreLine
 require_once(dirname(__FILE__) . '/../../../../config.php');
 
-use block_coupon\helper;
+use block_coupon\couponpage;
 
-$id = required_param('id', PARAM_INT);
+$title = get_string('view:generator:coursegroupings:title', 'block_coupon');
+$heading = get_string('view:generator:coursegroupings:heading', 'block_coupon');
 
-$instance = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
-$context       = \context_block::instance($instance->id);
-$coursecontext = $context->get_course_context(false);
-$course = false;
-if ($coursecontext !== false) {
-    $course = $DB->get_record("course", array("id" => $coursecontext->instanceid));
-}
-if ($course === false) {
-    $course = get_site();
-}
-
-require_login($course, true);
-
-$title = 'view:generator:coursegroupings:title';
-$heading = 'view:generator:coursegroupings:heading';
-
-$PAGE->navbar->add(get_string($title, 'block_coupon'));
-
-$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/coursegrouping.php', array('id' => $id));
-$PAGE->set_url($url);
-
-$PAGE->set_title(get_string($title, 'block_coupon'));
-$PAGE->set_heading(get_string($heading, 'block_coupon'));
-$PAGE->set_context($context);
-$PAGE->set_course($course);
-$PAGE->set_pagelayout('standard');
-
-// Make sure the moodle editmode is off.
-helper::force_no_editing_mode();
-require_capability('block/coupon:generatecoupons', $context);
-$renderer = $PAGE->get_renderer('block_coupon');
+$url = couponpage::get_view_url('generator/coursegrouping.php');
+$page = couponpage::setup(
+    'block_coupon_view_generator_coursegrouping',
+    $title,
+    $url,
+    'block/coupon:generatecoupons',
+    \context_system::instance(),
+    [
+        'pagelayout' => 'report',
+        'title' => $title,
+        'heading' => $heading
+    ]
+);
 
 // Using a manager.
+$renderer = $PAGE->get_renderer('block_coupon');
 $requestcontroller = new \block_coupon\controller\generator\coursegroupingcoupon($PAGE, $OUTPUT, $renderer);
 $requestcontroller->execute_request();
