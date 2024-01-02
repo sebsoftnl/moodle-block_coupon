@@ -1,3 +1,9 @@
+Version 4.3.2 (build 2024010200)
+* Fixed issues while installing module
+* Fixed issues while claiming coupons
+
+----------
+
 Version 4.3.1 (build 2023110302)
 * Fixed reported issue in upgrade process
 
