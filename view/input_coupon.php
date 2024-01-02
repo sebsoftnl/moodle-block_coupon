@@ -31,6 +31,7 @@
 require_once(dirname(__FILE__) . '/../../../config.php');
 
 use block_coupon\couponpage;
+use block_coupon\forms\coupon\validator;
 
 $title = get_string('view:input_coupon:title', 'block_coupon');
 $heading = get_string('view:input_coupon:heading', 'block_coupon');
@@ -50,7 +51,7 @@ $page = couponpage::setup(
 
 // Include the form.
 try {
-    $mform = new validator($url);
+    $mform = new validator();
     if ($mform->is_cancelled()) {
         redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $course->id)));
     } else if ($data = $mform->get_data()) {
