@@ -1,6 +1,7 @@
 Version 4.3.2 (build 2024010200)
 * Fixed issues while installing module
 * Fixed issues while claiming coupons
+* Merged in changes by Rob Joyce in default translation files
 
 ----------
 
