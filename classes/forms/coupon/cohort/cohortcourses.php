@@ -77,7 +77,14 @@ class cohortcourses extends baseform {
             if ($cohortcourses) {
                 $headingstr = array();
                 foreach ($cohortcourses as $course) {
-                    $headingstr[] = $course->fullname;
+                    $headingstr[] = format_string(
+                        $course->fullname,
+                        true,
+                        [
+                            'filter' => true,
+                            'context' => \context_course::instance($course->id)
+                        ]
+                    );
                 }
                 $mform->addElement('static', 'connected_courses',
                         get_string('label:connected_courses', 'block_coupon'), implode('<br/>', $headingstr));

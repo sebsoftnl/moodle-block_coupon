@@ -64,7 +64,14 @@ class coursevars extends baseform {
         // And create data for multiselect.
         $arrcoursesselect = array();
         foreach ($courses as $course) {
-            $arrcoursesselect[$course->id] = $course->fullname;
+            $arrcoursesselect[$course->id] = format_string(
+                $course->fullname,
+                true,
+                [
+                    'filter' => true,
+                    'context' => \context_course::instance($course->id)
+                ]
+            );
         }
 
         $attributes = array('size' => min(20, count($arrcoursesselect)));

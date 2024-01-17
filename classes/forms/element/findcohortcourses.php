@@ -115,7 +115,14 @@ class findcohortcourses extends findcourses {
         $toselect = array();
         $courses = $this->load_courses();
         foreach ($courses as $id => $coursefullname) {
-            $optionname = $coursefullname;
+            $optionname = format_string(
+                $coursefullname,
+                true,
+                [
+                    'filter' => true,
+                    'context' => \context_course::instance($id)
+                ]
+            );
             $this->addOption($optionname, $id, ['selected' => 'selected']);
             array_push($toselect, $id);
         }
@@ -124,7 +131,7 @@ class findcohortcourses extends findcourses {
     }
 
     /**
-     * Load courses based on cohorot setting.
+     * Load courses based on cohort setting.
      *
      * @return array
      */

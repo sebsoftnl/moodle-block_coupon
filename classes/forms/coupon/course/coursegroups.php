@@ -73,11 +73,19 @@ class coursegroups extends baseform {
             }
 
             // Build up groups.
-            if (!isset($groupoptions[$course->fullname])) {
-                $groupoptions[$course->fullname] = array();
+            $fullname = format_string(
+                $course->fullname,
+                true,
+                [
+                    'filter' => true,
+                    'context' => \context_course::instance($course->id)
+                ]
+            );
+            if (!isset($groupoptions[$fullname])) {
+                $groupoptions[$fullname] = array();
             }
             foreach ($groups as $group) {
-                $groupoptions[$course->fullname][$group->id] = $group->name;
+                $groupoptions[$fullname][$group->id] = $group->name;
             }
         }
 

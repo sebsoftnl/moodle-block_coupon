@@ -74,11 +74,27 @@ class coursechooser extends \moodleform {
         // Add choices.
         if ($this->coursegrouping->maxamount == 1) {
             foreach ($this->courses as $course) {
-                $mform->addElement('radio', 'course', '', $course->fullname, $course->id);
+                $fullname = format_string(
+                    $course->fullname,
+                    true,
+                    [
+                        'filter' => true,
+                        'context' => \context_course::instance($course->id)
+                    ]
+                );
+                $mform->addElement('radio', 'course', '', $fullname, $course->id);
             }
         } else {
             foreach ($this->courses as $course) {
-                $mform->addElement('advcheckbox', "course[{$course->id}]", '', $course->fullname);
+                $fullname = format_string(
+                    $course->fullname,
+                    true,
+                    [
+                        'filter' => true,
+                        'context' => \context_course::instance($course->id)
+                    ]
+                );
+                $mform->addElement('advcheckbox', "course[{$course->id}]", '', $fullname);
             }
         }
 

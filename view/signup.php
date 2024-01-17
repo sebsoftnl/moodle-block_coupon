@@ -100,7 +100,14 @@ if ($mformsignup->is_cancelled()) {
     $emailconfirm = get_string('emailconfirm');
     $PAGE->navbar->add($emailconfirm);
     $PAGE->set_title($emailconfirm);
-    $PAGE->set_heading($PAGE->course->fullname);
+    $PAGE->set_heading(format_string(
+        $PAGE->course->fullname,
+        true,
+        [
+            'filter' => true,
+            'context' => \context_course::instance($PAGE->course->id)
+        ]
+    ));
     echo $OUTPUT->header();
     notice(get_string('emailconfirmsent', '', $user->email), "$CFG->wwwroot/index.php");
     exit; // Never reached.

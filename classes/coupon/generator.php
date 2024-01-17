@@ -375,7 +375,14 @@ class generator implements icoupongenerator {
 
             $coursenames = array();
             foreach ($this->courses as $course) {
-                $coursenames[] = $course->fullname;
+                $coursenames[] = format_string(
+                    $course->fullname,
+                    true,
+                    [
+                        'filter' => true,
+                        'context' => \context_course::instance($course->id)
+                    ]
+                );
             }
 
             $arrreplace[] = '##course_fullnames##';

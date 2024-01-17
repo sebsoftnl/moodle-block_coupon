@@ -30,6 +30,7 @@
 
 namespace block_coupon\output\component;
 
+
 /**
  * block_coupon\manager\cleanupconfirm
  *
@@ -96,7 +97,14 @@ class cleanupconfirm implements \renderable, \templatable {
                 if (!empty($this->data->course)) {
                     $records = $DB->get_records_list('course', 'id', $this->data->course, 'fullname ASC', 'id,fullname');
                     foreach ($records as $record) {
-                        $data->deletestrings[] = $record->fullname;
+                        $data->deletestrings[] = format_string(
+                            $record->fullname,
+                            true,
+                            [
+                                'filter' => true,
+                                'context' => \context_course::instance($record->id)
+                            ]
+                        );
                     }
                 }
                 break;

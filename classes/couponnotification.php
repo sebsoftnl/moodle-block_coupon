@@ -29,6 +29,7 @@
 
 namespace block_coupon;
 
+
 /**
  * block_coupon\couponnotification
  *
@@ -95,7 +96,14 @@ class couponnotification {
 
         $a = new \stdClass();
         $a->fullname = fullname($recipient);
-        $a->course = $course->fullname;
+        $a->course = format_string(
+            $course->fullname,
+            true,
+            [
+                'filter' => true,
+                'context' => \context_course::instance($course->id)
+            ]
+        );
         $a->signoff = generate_email_signoff();
         $a->batchid = $batchid;
         $a->downloadlink = \html_writer::link($downloadurl, get_string('here', 'block_coupon'));
@@ -143,7 +151,14 @@ class couponnotification {
 
         $a = new \stdClass();
         $a->fullname = fullname($recipient);
-        $a->course = $course->fullname;
+        $a->course = format_string(
+            $course->fullname,
+            true,
+            [
+                'filter' => true,
+                'context' => \context_course::instance($course->id)
+            ]
+        );
         $a->signoff = generate_email_signoff();
         $a->batchid = $batchid;
         $a->downloadlink = \html_writer::link($downloadurl, get_string('here', 'block_coupon'));
@@ -191,7 +206,14 @@ class couponnotification {
 
         $a = new \stdClass();
         $a->fullname = fullname($recipient);
-        $a->course = $course->fullname;
+        $a->course = format_string(
+            $course->fullname,
+            true,
+            [
+                'filter' => true,
+                'context' => \context_course::instance($course->id)
+            ]
+        );
         $a->signoff = generate_email_signoff();
         $a->timecreated = userdate($timeexecuted, get_string('strftimedate', 'langconfig'));
         $a->batchid = $batchid;
