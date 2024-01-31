@@ -112,7 +112,7 @@ class couponcourseselect extends \user_filter_type {
         $field    = $this->_name;
         $operator = $field.'_op';
 
-        if (array_key_exists($operator, $formdata)) {
+        if (array_key_exists($operator, (array)$formdata)) {
             if (empty($formdata->$field)) {
                 // No data - no change except for empty filter.
                 return false;

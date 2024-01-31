@@ -115,7 +115,7 @@ class couponcoursegroupid extends \user_filter_type {
         $operator = $field.'_op';
         $selectfield = $field.'_fld';
 
-        if (array_key_exists($operator, $formdata) && array_key_exists($selectfield, $formdata)) {
+        if (array_key_exists($operator, (array)$formdata) && array_key_exists($selectfield, (array)$formdata)) {
             if ($formdata->$operator != 5 && $formdata->$field == '') {
                 // No data - no change except for empty filter.
                 return false;

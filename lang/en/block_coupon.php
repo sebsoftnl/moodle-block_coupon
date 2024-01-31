@@ -712,6 +712,7 @@ $string['err:choose:maxamount'] = 'You\'re only allowed to choose {$a} course(s)
 $string['err:choose:atleastone'] = 'Please select a course';
 $string['heading:coursegroupingandvars'] = 'Select coupon variables, course grouping and enrolment variables';
 $string['batchidselect'] = 'Batch ID';
+$string['mybatchidselect'] = 'My Batch ID';
 $string['error:no-more-course-choices'] = 'You have no more courses to choose from.<br/>
 It looks like you\'re already enrolled in all courses this coupon is valid for.<br/>
 <br/>If you feel this is incorrect, please contact the system administrator.';
