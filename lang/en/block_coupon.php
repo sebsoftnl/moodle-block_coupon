@@ -622,6 +622,9 @@ $string['label:useloginlayoutonsignup_help'] = 'If enabled, this will use the de
 This means the signup page is stripped of all headers and footers, and only provides the signup form itself.';
 $string['label:forceenableemailregistration'] = 'Force enable self registration via email';
 $string['label:forceenableemailregistration_help'] = 'If enabled, this will allow people to register via email authentication, even if this is disabled as self registration method.';
+$string['label:courses_to_show_in_findcourses_dropdown'] = 'Courses to show in courses dropdown';
+$string['label:courses_to_show_in_findcourses_dropdown_help'] = 'Type the ids of the courses you want to show in the dropdown. Separate multiple ids with a comma.<br><br>
+<b>Example:</b> 123,2,1,5,45';
 $string['label:batchid'] = 'Batch name';
 $string['label:batchid_help'] = 'You can provide a custom name for this batch, so it can be identified later<br/>
 Naming a batch will help you identify a group of generated coupons later.<br/>

@@ -140,6 +140,13 @@ if ($ADMIN->fulltree) {
             0
     ));
 
+    $settings->add(new admin_setting_configtextarea(
+        'block_coupon/courses_to_show_in_findcourses_dropdown',
+        get_string('label:courses_to_show_in_findcourses_dropdown', 'block_coupon'),
+        get_string('label:courses_to_show_in_findcourses_dropdown_help', 'block_coupon'),
+        '', PARAM_TEXT
+    ));
+
     // Settings for request users.
     $settings->add(new admin_setting_heading('block_coupon_requestusersettings',
             get_string('requestusersettings', 'block_coupon'),

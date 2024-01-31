@@ -587,6 +587,16 @@ class block_coupon_external extends external_api {
 
         $where = array();
         $qparams = array();
+
+        // Get courses to show in dropdown.
+        $courses_to_show_in_findcourses_dropdown = get_config('block_coupon', 'courses_to_show_in_findcourses_dropdown') ?? '';
+        $courses_to_show_in_findcourses_dropdown = explode(',', $courses_to_show_in_findcourses_dropdown);
+        if (!empty($courses_to_show_in_findcourses_dropdown)) {
+            [$in_sql, $in_params] = $DB->get_in_or_equal($courses_to_show_in_findcourses_dropdown);
+            $where[] = "c.id {$in_sql}";
+            $qparams = [...$qparams, ...$in_params];
+        }
+
         // Dont include the SITE.
         $where[] = 'c.id <> ' . SITEID;
         $where[] = 'c.visible = 1';
