@@ -21,27 +21,31 @@
 
     Example context (json):
     {
-        "hasstartdate": "Whether or not there is a startdate",
-        "startdate": "Date indicating cleanup after",
-        "hasenddate": "Whether or not there is an enddate",
-        "enddate": "Date indicating cleanup before",
+        "hasstartdate": true,
+        "startdate": "2023-01-01",
+        "hasenddate": true,
+        "enddate": "2024-01-01",
         "usedtypestr": "String indicating cleanup of used coupon(s)",
         "typestr": "Coupon type to cleanup",
-        "hasdeletestrings": "Whether or not we have deletion info",
-        "deletestrings": "Deletion information (array of string)",
-        "deletecount": "Deletion counter"
+        "hasdeletestrings": true,
+        "deletestrings": [
+            "Deletion information 1",
+            "Deletion information 2"
+        ],
+        "deletecount": 2
     }
 }}
-<div>
-{{#hasstartdate}}{{#str}}timebefore, block_coupon{{/str}}: {{startdate}}<br/>{{/hasstartdate}}
-{{#hasenddate}}{{#str}}timeafter, block_coupon{{/str}}: {{enddate}}<br/>{{/hasenddate}}
-{{#str}}coupon:used, block_coupon{{/str}}: {{usedtypestr}}<br/>
-{{#str}}coupon:type, block_coupon{{/str}}: {{typestr}}<br/>
-{{#hasdeletestrings}}
-{{#str}}with-names, block_coupon{{/str}}:
-<ul>
-{{#deletestrings}}<li>{{{.}}}</li>{{/deletestrings}}
-</ul>
-{{/hasdeletestrings}}
-{{#str}}remove-count, block_coupon, {{deletecount}}{{/str}}
+<div class="d-flex flex-column">
+    {{#hasstartdate}}<div>{{#str}}timebefore, block_coupon{{/str}}: {{startdate}}</div>{{/hasstartdate}}
+    {{#hasenddate}}<div>{{#str}}timeafter, block_coupon{{/str}}: {{enddate}}</div>{{/hasenddate}}
+    <div>{{#str}}coupon:used, block_coupon{{/str}}: {{usedtypestr}}</div>
+    <div>{{#str}}coupon:type, block_coupon{{/str}}: {{typestr}}</div>
+    {{#hasdeletestrings}}
+    <div>{{#str}}with-names, block_coupon{{/str}}:
+        <ul>
+        {{#deletestrings}}<li>{{{.}}}</li>{{/deletestrings}}
+        </ul>
+    </div>
+    {{/hasdeletestrings}}
+    <div>{{#str}}remove-count, block_coupon, {{deletecount}}{{/str}}</div>
 </div>

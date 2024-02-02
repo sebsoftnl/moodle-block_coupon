@@ -23,7 +23,6 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -335,12 +334,12 @@ $string['default-coupon-page-template-botright'] = '<ol>
 <li>Veel leerplezier!</li>
 </ol>';
 
-$string['coupon_mail_content'] = '<p>Beste {$a->to_name},</p>
+$string['coupon_mail_content'] = '<p>Beste {$a->fullname},</p>
 <p>U ontvangt dit bericht omdat er zojuist nieuwe Coupons zijn gegenereered.<br/>
 De coupons zijn als download beschikbaar gemaakt binnen de leeromgeving.<br /><br />
 Klik a.u.b {$a->downloadlink} om je coupons op te halen.</p>
 <p>Met vriendelijke groet,<br /><br />
-{$a->from_name}</p>';
+{$a->signoff}</p>';
 
 $string['coupon_mail_csv_content'] = '
 Beste ##to_gender## ##to_name##,<br /><br />
@@ -741,3 +740,8 @@ $string['label:enablemycouponsforru_help'] = 'Hiermee wordt de tab/tabel ten beh
 De tabel toont o.a. de status van de gegenereerde coupons.';
 $string['label:enablemycouponsforru'] = '"mijn voortgangsrapportage" inschakelen?';
 $string['label:enablemycouponsforru_help'] = 'Hiermee wordt de tab/tabel ten behoeve van de voortgangsrapportage voor coupons die behoren tot een couponverzoek gebruiker inzichtelijk gemaakt.';
+$string['import:voucher:desc'] = 'Importeer alle beschikbare en relevante gegevens uit block_voucher.<br/>
+We zullen proberen om alle vouchers, gekoppelde cursus-/sitegroepgegevens, email templates en PDF templates te importeren,
+hoewel we <i>niet</i> kunnen garanderen dat dit resulteert in een volle import zonder foutieve gegevens.<br/>
+Desondanks zal de import van vouchers en daarbij horende koppelingen waarschijnlijk geen problemen geven.';
+$string['import:voucher:confirm'] = 'Importeer gegevens uit block_voucher';

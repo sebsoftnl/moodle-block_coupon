@@ -23,7 +23,6 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -127,7 +126,7 @@ $string['label:coupon_code_help'] = 'The coupon code is the unique code which is
 $string['label:enter_coupon_code'] = 'Please enter your coupon code here';
 $string['label:alternative_email'] = 'Alternative email';
 $string['label:alternative_email_help'] = 'Send coupons by default to this email address.';
-$string['label:use_alternative_email'] = 'Use alternative email';
+$string['label:use_alternative_email'] = 'Send to alternative email';
 $string['label:use_alternative_email_help'] = 'When checked it will by default use the email address provided in the Alternative email field.';
 $string['label:max_coupons'] = 'Maximum coupons';
 $string['label:max_coupons_desc'] = 'Amount of coupons that can be created in one time.';
@@ -227,7 +226,7 @@ $string['report:heading:datecomplete'] = 'Date completed';
 $string['report:heading:grade'] = 'Grade';
 $string['report:owner'] = 'Owner';
 $string['report:senddate'] = 'Send date';
-$string['report:enrolperiod'] = 'Owner';
+$string['report:enrolperiod'] = 'Enrolment period';
 $string['report:coupon_code'] = 'Subscription code';
 $string['report:cohorts'] = 'Cohort';
 $string['report:issend'] = 'Is sent';
@@ -335,12 +334,12 @@ $string['default-coupon-page-template-botright'] = '<ol>
 <li>Happy learning!</li>
 </ol>';
 
-$string['coupon_mail_content'] = '<p>Dear {$a->to_name},</p>
+$string['coupon_mail_content'] = '<p>Dear {$a->fullname},</p>
 <p>You are receiving this message because there have been newly generated coupons.<br/>
 The coupons are available for download on the e-learning environment.<br /><br />
 Please click {$a->downloadlink} to get your coupons</p>
 <p>With kind regards,<br /><br />
-{$a->from_name}</p>';
+{$a->signoff}</p>';
 
 $string['coupon_mail_csv_content'] = '
 Dear ##to_gender## ##to_name##,<br /><br />
@@ -465,6 +464,7 @@ $string['logo:default'] = 'Default logo';
 $string['url:couponsignup'] = 'Signup with a coupon code';
 $string['url:managelogos'] = 'Manage coupon images';
 $string['select:logo'] = 'Select template logo';
+$string['select:logo_help'] = 'Select a template logo.<br/>This will only be used when a PDF will be generated for coupons.';
 $string['select:logo:desc'] = 'Select a template logo.<br/>This will only be used when a PDF will be generated for coupons.';
 $string['logomanager:desc'] = 'Use the logomanager below to manage the logos that can be used on the coupon PDFs.<br/>
 Beware what type of images you upload!<br/>
@@ -622,6 +622,9 @@ $string['label:useloginlayoutonsignup_help'] = 'If enabled, this will use the de
 This means the signup page is stripped of all headers and footers, and only provides the signup form itself.';
 $string['label:forceenableemailregistration'] = 'Force enable self registration via email';
 $string['label:forceenableemailregistration_help'] = 'If enabled, this will allow people to register via email authentication, even if this is disabled as self registration method.';
+$string['label:courses_to_show_in_findcourses_dropdown'] = 'Courses to show in courses dropdown';
+$string['label:courses_to_show_in_findcourses_dropdown_help'] = 'Type the ids of the courses you want to show in the dropdown. Separate multiple ids with a comma.<br><br>
+<b>Example:</b> 123,2,1,5,45';
 $string['label:batchid'] = 'Batch name';
 $string['label:batchid_help'] = 'You can provide a custom name for this batch, so it can be identified later<br/>
 Naming a batch will help you identify a group of generated coupons later.<br/>
@@ -632,12 +635,12 @@ $string['label:generatecodesonly_help'] = 'If you enable this option, only codes
 This means the complete mailing option and creating PDFs will be skipped!';
 
 $string['generator:export:mail:subject'] = 'Coupons ready for download';
-$string['generator:export:mail:body'] = 'Dear {$a->to_name},<br /><br />
+$string['generator:export:mail:body'] = 'Dear {$a->fullname},<br /><br />
 You are receiving this message because there have been newly generated coupons.<br/>
 The coupons can be downloaded from {$a->downloadlink} (requires logging in to Moodle).<br />
 Please note this link can only be used once. After you\'ve downloaded the generated coupons, this link can no longer be used.<br />
 With kind regards,<br /><br />
-{$a->from_name}';
+{$a->signoff}';
 
 $string['error:already-enrolled-in-courses'] = 'You have already been enrolled in all courses';
 $string['error:already-enrolled-in-cohorts'] = 'You have already been enrolled in all cohorts';
@@ -775,3 +778,222 @@ $string['err:tab:enablemyprogressforru'] = 'Enable "my progress"';
 $string['label:enablemyprogressforru'] = 'Enable "my progress"';
 $string['label:enablemyprogressforru_help'] = 'This setting enables/disables a progress report for request users for coupon codes
 that are owned by them.';
+$string['heading:expiration_settings'] = 'Expiration settings';
+$string['coupon:expirationmethod'] = 'Expiration method';
+$string['coupon:expirationmethod_help'] = 'Expiration method indicates how to apply expiuration for the generated coupons.<br/>
+The following options are available:<ul>
+<li>None: the coupons do not expire</li>
+<li>Date: Set the expiry date</li>
+<li>Duration: coupons expire after the indicated amout of time (relative to the date of creation)</li>
+</ul>
+Please be aware expired coupons will be removed automatically when the expration date has passed.
+No history or any archiving will be done (in other words: full delete without any possibility to get the removed entries restored).
+';
+$string['expiration:none'] = 'None';
+$string['expiration:date'] = 'Date';
+$string['expiration:duration'] = 'Duration';
+$string['coupon:expiresat'] = 'Coupons expire at';
+$string['coupon:expiresin'] = 'Coupons expire after';
+$string['err:expiration:date'] = 'Expiration date is invalid (must be after {$a})';
+$string['numeric'] = 'Numbers';
+$string['letters'] = 'Lower case letters';
+$string['capitals'] = 'Upper case letters/capitals';
+$string['label:coupon_code_flags'] = 'Code generator flags';
+$string['label:coupon_code_flags_help'] = 'Choose the default characterset to use when generating coupon codes';
+$string['err:flags:nonumericonly'] = 'Numbers only coupon codes not allowed';
+
+// TEMPLATES.
+$string['templatesettings'] = 'Template settings';
+$string['element:image'] = 'Image';
+$string['alphachannel'] = 'Alpha channel';
+$string['alphachannel_help'] = 'This value determines how transparent the image is. You can set the alpha channel from 0 (fully transparent) to 1 (fully opaque).';
+$string['courseimage'] = 'Course image: {$a}';
+$string['image'] = 'Image';
+$string['systemimage'] = 'Site image: {$a}';
+
+$string['element:bgimage'] = 'Background image';
+$string['element:border'] = 'Border';
+$string['element:code'] = 'Coupon code';
+$string['element:date'] = 'Date';
+$string['currentdate'] = 'Current date';
+$string['expirydate'] = 'Expiry date';
+$string['dateformat'] = 'Date format';
+$string['dateformat_help'] = 'This is the format of the date that will be displayed';
+$string['dateitem'] = 'Date item';
+$string['dateitem_help'] = 'This will be the date that is printed on the template';
+$string['numbersuffix_nd_as_in_second'] = 'nd';
+$string['numbersuffix_rd_as_in_third'] = 'rd';
+$string['numbersuffix_st_as_in_first'] = 'st';
+$string['userdateformat'] = 'User date format';
+
+$string['element:qrcode'] = 'QR Code';
+$string['element:personname'] = '(Person) name';
+$string['element:text'] = 'Text';
+$string['text'] = 'Text';
+$string['text_help'] = 'This is the text that will display on the PDF.';
+
+$string['addpage'] = 'Add page';
+$string['addelement'] = 'Add element';
+$string['aligncenter'] = 'Centered';
+$string['alignleft'] = 'Left alignment';
+$string['alignment'] = 'Alignment';
+$string['alignment_help'] = 'This property sets the horizontal alignment of the element. Some elements may not support this, while the behaviour of others may differ.';
+$string['alignright'] = 'Right alignment';
+$string['close'] = 'Close';
+$string['copy'] = 'Copy';
+$string['createtemplate'] = 'Create template';
+$string['deletecertpage'] = 'Delete page';
+$string['deleteconfirm'] = 'Delete confirmation';
+$string['deleteelement'] = 'Delete element';
+$string['deleteelementconfirm'] = 'Are you sure you want to delete this element?';
+$string['deleteissuedcertificates'] = 'Delete issued certificates';
+$string['deletepageconfirm'] = 'Are you sure you want to delete this page?';
+$string['deletetemplateconfirm'] = 'Are you sure you want to delete this template?';
+$string['description'] = 'Description';
+$string['duplicate'] = 'Duplicate';
+$string['duplicateconfirm'] = 'Duplicate confirmation';
+$string['duplicatetemplateconfirm'] = 'Are you sure you want to duplicate this template?';
+$string['editelement'] = 'Edit element';
+$string['edittemplate'] = 'Edit template';
+$string['elementheight'] = 'Height';
+$string['elementheight_help'] = 'Specify the height of the element. If \'0\' is allowed it is automatically calculated.';
+$string['elementname'] = 'Element name';
+$string['elementname_help'] = 'This will be the name used to identify this element when editing a certificate. Note: this will not displayed on the PDF.';
+$string['elementplugins'] = 'Element plugins';
+$string['elements'] = 'Elements';
+$string['elements_help'] = 'This is the list of elements that will be displayed on the certificate.
+
+Please note: The elements are rendered in this order. The order can be changed by using the arrows next to each element.';
+$string['elementwidth'] = 'Width';
+$string['elementwidth_help'] = 'Specify the width of the element. If \'0\' is allowed it is automatically calculated.';
+$string['eventelementcreated'] = 'Template element created';
+$string['eventelementdeleted'] = 'Template element deleted';
+$string['eventelementupdated'] = 'Template element updated';
+$string['eventpagecreated'] = 'Template page created';
+$string['eventpagedeleted'] = 'Template page deleted';
+$string['eventpageupdated'] = 'Template page updated';
+$string['eventtemplatecreated'] = 'Template created';
+$string['eventtemplatedeleted'] = 'Template deleted';
+$string['eventtemplateupdated'] = 'Template updated';
+$string['exampledatawarning'] = 'Some of these values may just be an example to ensure positioning of the elements is possible.';
+$string['font'] = 'Font';
+$string['font_help'] = 'The font used when generating this element.';
+$string['fontcolour'] = 'Colour';
+$string['fontcolour_help'] = 'The colour of the font.';
+$string['fontsize'] = 'Size';
+$string['fontsize_help'] = 'The size of the font in points.';
+$string['height'] = 'Height';
+$string['height_help'] = 'This is the height of the PDF in mm. For reference an A4 piece of paper is 297mm high and a letter is 279mm high.';
+$string['invalidcode'] = 'Invalid code supplied.';
+$string['invalidcolour'] = 'Invalid colour chosen, please enter a valid HTML colour name, or a six-digit, or three-digit hexadecimal colour.';
+$string['invalidelementwidthorheightnotnumber'] = 'Please enter a valid number.';
+$string['invalidelementwidthorheightzeroallowed'] = 'Please enter a number greater than or equal to 0.';
+$string['invalidelementwidthorheightzeronotallowed'] = 'Please enter a number greater than 0.';
+$string['invalidposition'] = 'Please select a positive number for position {$a}.';
+$string['invalidheight'] = 'The height has to be a valid number greater than 0.';
+$string['invalidmargin'] = 'The margin has to be a valid number greater than 0.';
+$string['invalidwidth'] = 'The width has to be a valid number greater than 0.';
+$string['landscape'] = 'Landscape';
+$string['leftmargin'] = 'Left margin';
+$string['leftmargin_help'] = 'This is the left margin of the PDF in mm.';
+$string['load'] = 'Load';
+$string['loadtemplate'] = 'Load template';
+$string['loadtemplatemsg'] = 'Are you sure you wish to load this template? This will remove any existing pages and elements for this certificate.';
+$string['managetemplates'] = 'Manage templates';
+$string['managetemplatesdesc'] = 'This link will take you to a new screen where you will be able to manage templates used by Template activities in courses.';
+$string['modify'] = 'Modify';
+$string['name'] = 'Name';
+$string['nametoolong'] = 'You have exceeded the maximum length allowed for the name';
+$string['noimage'] = 'No image';
+$string['notemplates'] = 'No templates';
+$string['options'] = 'Options';
+$string['page'] = 'Page {$a}';
+$string['portrait'] = 'Portrait';
+$string['posx'] = 'Position X';
+$string['posx_help'] = 'This is the position in mm from the top left corner you wish the element\'s reference point to locate in the x direction.';
+$string['posy'] = 'Position Y';
+$string['posy_help'] = 'This is the position in mm from the top left corner you wish the element\'s reference point to locate in the y direction.';
+$string['print'] = 'Print';
+$string['rearrangeelements'] = 'Reposition elements';
+$string['rearrangeelementsheading'] = 'Drag and drop elements to change where they are positioned on the certificate.';
+$string['refpoint'] = 'Reference point location';
+$string['refpoint_help'] = 'The reference point is the location of an element from which its x and y coordinates are determined. It is indicated by the \'+\' that appears in the centre or corners of the element.';
+$string['replacetemplate'] = 'Replace';
+$string['requiredtimenotmet'] = 'You must spend at least a minimum of {$a->requiredtime} minutes in the course before you can access this certificate.';
+$string['rightmargin'] = 'Right margin';
+$string['rightmargin_help'] = 'This is the right margin of the PDF in mm.';
+$string['save'] = 'Save';
+$string['saveandclose'] = 'Save and close';
+$string['saveandcontinue'] = 'Save and continue';
+$string['savechangespreview'] = 'Save changes and preview';
+$string['savetemplate'] = 'Save template';
+$string['setprotection'] = 'Set protection';
+$string['setprotection_help'] = 'Choose the actions you wish to prevent users from performing on this certificate.';
+$string['showposxy'] = 'Show position X and Y';
+$string['showposxy_desc'] = 'This will show the X and Y position when editing of an element, allowing the user to accurately specify the location.
+
+This isn\'t required if you plan on solely using the drag and drop interface for this purpose.';
+$string['template'] = 'Template';
+$string['templates'] = 'Templates';
+$string['templatename'] = 'Template name';
+$string['templatenameexists'] = 'That template name is currently in use, please choose another.';
+$string['topcenter'] = 'Center';
+$string['topleft'] = 'Top left';
+$string['topright'] = 'Top right';
+$string['type'] = 'Type';
+$string['uploadimage'] = 'Upload image';
+$string['uploadimagedesc'] = 'This link will take you to a new screen where you will be able to upload images. Images uploaded using
+this method will be available throughout your site to all users who are able to create a certificate.';
+$string['width'] = 'Width';
+$string['width_help'] = 'This is the width of the PDF in mm. For reference an A4 piece of paper is 210mm wide and a letter is 216mm wide.';
+
+$string['userlanguage'] = 'Use user preferences';
+$string['languageoptions'] = 'Force Language';
+$string['userlanguage_help'] = 'You can force the language of the template to override the user\'s language preferences.';
+$string['generatorsettings'] = 'Code generator settings';
+$string['pdfsettings'] = 'PDF settings';
+$string['usetype'] = 'PDF method';
+$string['generator:usetemplate'] = 'Create PDF from a template';
+$string['generator:uselogo'] = 'Create PDF using a logo (and static texts)';
+$string['indefinite'] = 'Indefinite';
+$string['excluding'] = 'excluding {$a}';
+$string['pdfmerge'] = 'PDF output';
+$string['separatepdfs'] = 'Generate seperate PDF\'s';
+$string['combinedpdf'] = 'Generate single PDF';
+$string['confirm:courseinfo'] = 'Course info';
+$string['recipients'] = 'Recipients';
+$string['generatortype'] = 'Source method';
+$string['emailbody'] = 'Email body';
+$string['confirm:coursegroupinginfo'] = 'Course grouping info';
+$string['confirm:cohortinfo'] = 'Cohort info';
+$string['err:idnumber-not-unique'] = 'IDNumber must be unique';
+$string['generator:extendenrolment:invalidcourse'] = 'Invalid course';
+$string['error:group-not-found'] = 'Group not found';
+$string['error:cohort-not-found'] = 'Cohort not found';
+$string['err:template:delete'] = 'Template could not be deleted';
+$string['success:template:delete'] = 'Template deleted';
+$string['err:template:duplicate'] = 'Template could not be duplicated';
+$string['success:template:duplicate'] = 'Template duplicated';
+$string['event:coupon:used'] = 'Coupon was claimed';
+$string['view:index.php:title'] = 'Coupon generator';
+$string['element:text:templatevars'] = 'Define your text block below. You can use the following optional templated variables:{$a}';
+$string['extendusers:recipient'] = 'Recipients';
+$string['extendusers:recipient_help'] = 'This setting indicates who will receive the coupon codes or files';
+$string['extendusers:recipient:users'] = 'Indicated user(s)';
+$string['extendusers:recipient:me'] = 'Myself';
+$string['recipient:name'] = 'Recipient name';
+$string['email:templatevars'] = 'Define your email contents below. You can use the following optional templated variables:{$a}';
+$string['recipient:gender'] = 'Gender';
+$string['heading:extendenrolment'] = 'Enrolment extention';
+$string['coupon:generator:processing'] = 'Generating coupons. Please stand by, this page will automatically refresh.';
+$string['view:mailtemplates'] = 'E-mail templates';
+$string['mailtemplates:title'] = 'Manage e-mail templates';
+$string['mailtemplates'] = 'Manage e-mail templates';
+$string['heading:mailsettings'] = 'E-mail settings';
+$string['load_mailtemplate'] = 'Mail template';
+$string['load_mailtemplate_help'] = 'Select a mail template. Beware: this will refresh the page to load the mail template contents';
+$string['import:voucher:desc'] = 'Import all available and applicable voucher data from block_voucher.<br/>
+We\'ll (try to) import all vouchers, linked course/cohort data, email templates and PDF templates, although
+we can <i>not</i> guarantee a full import without errors.<br/>
+However, importing the basic voucher codes and linked data is most likely to succeed without issues.';
+$string['import:voucher:confirm'] = 'Import data from block_voucher';

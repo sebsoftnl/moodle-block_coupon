@@ -79,8 +79,7 @@ class downloadbatches {
 
         $this->page->navbar->add(get_string($title, 'block_coupon'));
 
-        $url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/batchlist.php',
-                array('id' => $this->page->url->param('id'), 'tab' => 'cpbatchlist'));
+        $url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/batchlist.php', array('tab' => 'cpbatchlist'));
         $this->page->set_url($url);
 
         $this->page->set_title(get_string($title, 'block_coupon'));
@@ -106,12 +105,10 @@ class downloadbatches {
         $table = new \block_coupon\tables\downloadbatchlist($this->page->context, $ownerid);
         $table->baseurl = $this->page->url;
 
-        $id = $this->page->url->param('id');
-
         echo $this->output->header();
         echo html_writer::start_div('block-coupon-container');
         echo html_writer::start_div();
-        echo $this->renderer->get_tabs($this->page->context, 'cpbatchlist', array('id' => $id));
+        echo $this->renderer->get_tabs($this->page->context, 'cpbatchlist');
         echo html_writer::end_div();
         echo $table->render(999999);
         echo html_writer::end_div();

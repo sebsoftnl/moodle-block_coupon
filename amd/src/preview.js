@@ -20,86 +20,92 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['jquery', 'core/str', 'core/notification'], function($, Str, Notification) {
+import $ from 'jquery';
+import * as Str from 'core/str';
+import * as Notification from 'core/notification';
 
+/**
+ * Encode uri parameters.
+ *
+ * @param {Object} data
+ * @return {String}
+ */
+const encodeQueryParams = function (data) {
+    const ret = [];
+    for (let d in data) {
+        ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]));
+    }
+    return ret.join('&');
+};
+
+class CouponPreview {
     /**
-     * Encode uri parameters.
+     * RearrangeArea class.
      *
-     * @param {Object} data
-     * @return {String}
-     */
-    var encodeQueryParams = function (data) {
-        const ret = [];
-        for (let d in data) {
-            ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]));
-        }
-        return ret.join('&');
-    };
-
-    /**
-     * Constructor
-     * @param {string} clickselector
+     * @param {String} selector
      * @param {string} url
      */
-    var CouponPreview = function(clickselector, url) {
-        this.selector = clickselector;
+    constructor(selector, url) {
+        this.selector = selector;
         this.url = url;
         Str.get_string('preview-pdf', 'block_coupon').then(function(title) {
             this.title = title;
             this.setupHandlers();
         }.bind(this)).fail(Notification.exception);
-    };
+    }
 
     /**
      * @var {string} modal title
      */
-    CouponPreview.prototype.title = null;
+    title = null;
 
     /**
      * @var {string} preview loader url
      */
-    CouponPreview.prototype.url = null;
+    url = null;
 
     /**
      * @var {Object} modal
      */
-    CouponPreview.prototype.modal = null;
+    modal = null;
 
     /**
      * @var {string} click selector opening the modal
      */
-    CouponPreview.prototype.selector = null;
+    selector = null;
 
     /**
      * Close handler
      */
-    CouponPreview.prototype.closeHandler = function() {
+    closeHandler() {
         this.destroy();
-    };
+    }
 
     /**
      * Out of bounds click handler handler
      * @param {Event} e
      */
-    CouponPreview.prototype.clickOutHandler = function(e) {
+    clickOutHandler(e) {
         if ($(e.target) == this.modal) {
             this.destroy();
         }
-    };
+    }
 
     /**
      * Handler to setup the modal
+     * @param {Event} e
      */
-    CouponPreview.prototype.setupHandler = function() {
-        var url = this.url, extraparams = {}, el = null;
-        el = document.getElementById('id_font');
-        if (el !== undefined) {
-            extraparams.font = el.options[el.options.selectedIndex].text;
+    setupHandler(e) {
+        var url = this.url, extraparams = {};
+        var el = e.currentTarget;
+        if (el.dataset.templated) {
+            extraparams.templateid = el.dataset.templateid;
+        } else {
+            extraparams.font = el.dataset.font;
+            extraparams.logoid = el.dataset.logo;
+            extraparams.qr = el.dataset.qr;
         }
-        el = document.getElementById('id_renderqrcode');
-        if (el !== undefined && el.checked) {
-            extraparams.qr = 1;
-        }
+
         if (Object.keys(extraparams).length) {
             if (url.indexOf('?') >= 0) {
                 url += '&' + encodeQueryParams(extraparams);
@@ -123,31 +129,31 @@ define(['jquery', 'core/str', 'core/notification'], function($, Str, Notificatio
         $('#block-modal-close').on('click', this.destroy.bind(this));
         $('body').on('click', this.clickOutHandler.bind(this));
         this.modal.show();
-    };
+    }
 
     /**
      * Setup external handlers
      */
-    CouponPreview.prototype.setupHandlers = function() {
+    setupHandlers() {
         $(this.selector).on('click', this.setupHandler.bind(this));
-    };
+    }
 
     /**
      * Destroy the modal
      */
-    CouponPreview.prototype.destroy = function() {
+    destroy() {
         // Destroy some handlers.
         $('#block-modal-close').off('click');
         $('body').off('click');
         // Destroy modal container.
         this.modal.hide();
         this.modal.remove();
-    };
+    }
 
-    return /** @alias module:block_coupon/preview */ {
-        init: function(clickselector, url) {
-            new CouponPreview(clickselector, url);
-        }
-    };
+}
 
-});
+export default {
+    init: function(clickselector, url) {
+        new CouponPreview(clickselector, url);
+    }
+};

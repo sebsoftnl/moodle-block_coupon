@@ -23,47 +23,35 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+// Login_check is done in couponpage class.
+// @codingStandardsIgnoreLine
 require_once(dirname(__FILE__) . '/../../../config.php');
 
-use block_coupon\helper;
+use block_coupon\couponpage;
 use block_coupon\forms\coupon\validator;
 
-$id = required_param('id', PARAM_INT);
+$title = get_string('view:input_coupon:title', 'block_coupon');
+$heading = get_string('view:input_coupon:heading', 'block_coupon');
 
-$instance = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
-$context       = \context_block::instance($instance->id);
-$coursecontext = $context->get_course_context(false);
-$course = false;
-if ($coursecontext !== false) {
-    $course = $DB->get_record("course", array("id" => $coursecontext->instanceid));
-}
-if ($course === false) {
-    $course = get_site();
-}
+$page = couponpage::setup(
+    'block_coupon_view_input_coupon',
+    $title,
+    couponpage::get_view_url('inputcoupons.php'),
+    'block/coupon:inputcoupons',
+    \context_system::instance(),
+    [
+        'pagelayout' => 'standard',
+        'title' => $title,
+        'heading' => $heading
+    ]
+);
 
-require_login($course, true);
-
-$PAGE->navbar->add(get_string('view:input_coupon:title', 'block_coupon'));
-
-$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/input_coupon.php', array('id' => $id));
-$PAGE->set_url($url);
-
-$PAGE->set_title(get_string('view:input_coupon:title', 'block_coupon'));
-$PAGE->set_heading(get_string('view:input_coupon:heading', 'block_coupon'));
-$PAGE->set_context($context);
-$PAGE->set_pagelayout('standard');
-
-// Make sure the moodle editmode is off.
-helper::force_no_editing_mode();
-
-require_capability('block/coupon:inputcoupons', $context);
 // Include the form.
 try {
-    $mform = new validator($url);
+    $mform = new validator();
     if ($mform->is_cancelled()) {
         redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $course->id)));
     } else if ($data = $mform->get_data()) {

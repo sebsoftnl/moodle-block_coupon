@@ -23,36 +23,25 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+// Login_check is done in couponpage class.
+// @codingStandardsIgnoreLine
 require_once(dirname(__FILE__) . '/../../../config.php');
+use block_coupon\couponpage;
 
-use block_coupon\helper;
+$title = get_string('view:index.php:title', 'block_coupon');
+$page = couponpage::setup(
+    'block_coupon_view_index',
+    $title,
+    couponpage::get_view_url('index.php'),
+    'block/coupon:administration',
+    \context_system::instance(),
+    [
+        'pagelayout' => 'report',
+        'title' => $title
+    ]
+);
 
-$id = required_param('id', PARAM_INT);
-
-$instance = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
-$context       = \context_block::instance($instance->id);
-$coursecontext = $context->get_course_context(false);
-$course = false;
-if ($coursecontext !== false) {
-    $course = $DB->get_record("course", array("id" => $coursecontext->instanceid));
-}
-if ($course === false) {
-    $course = get_site();
-}
-
-require_login($course, true);
-
-$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/index.php', array('id' => $id));
-$PAGE->set_url($url);
-$PAGE->set_context($context);
-$PAGE->set_title(get_string('view:index.php:title', 'block_coupon'));
-$PAGE->set_heading(get_string('view:index.php:heading', 'block_coupon'));
-$PAGE->set_pagelayout('standard');
-
-// Make sure the moodle editmode is off.
-helper::force_no_editing_mode();
-require_capability('block/coupon:administration', $context);
+// This is an empty page.

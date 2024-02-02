@@ -86,18 +86,12 @@ class extendenrolmentcoupon {
     protected function process_generator() {
         $page = optional_param('page', 1, PARAM_INT);
 
-        switch ($page) {
-            case 3:
-                $this->process_page_3();
-                break;
-            case 2:
-                $this->process_page_2();
-                break;
-            case 1:
-                $this->process_page_1();
-            default:
-                break;
+        $func = "process_page_{$page}";
+        if (!method_exists($this, $func)) {
+            throw new \InvalidArgumentException("Page {$page} does not exist");
         }
+
+        $this->{$func}();
     }
 
     /**
@@ -120,7 +114,7 @@ class extendenrolmentcoupon {
             $generatoroptions->type = generatoroptions::ENROLEXTENSION;
             $generatoroptions->courses = array($courseid);
             $generatoroptions->to_session();
-            $redirect = $this->get_url(['page' => '2']);
+            $redirect = $this->get_url(['page' => 1]);
             redirect($redirect);
         }
 
@@ -129,7 +123,7 @@ class extendenrolmentcoupon {
         // Load generator options.
         $generatoroptions = generatoroptions::from_session();
         // Create form.
-        $mform = new \block_coupon\forms\coupon\extendenrolment\page1($url,
+        $mform = new \block_coupon\forms\coupon\extendenrolment\coursevars($url,
                 ['generatoroptions' => $generatoroptions, 'coursemultiselect' => false]);
 
         if ($mform->is_cancelled()) {
@@ -144,6 +138,8 @@ class extendenrolmentcoupon {
             if (!is_array($generatoroptions->courses)) {
                 $generatoroptions->courses = [$generatoroptions->courses];
             }
+            $generatoroptions->enrolperiod = $data->enrolperiod;
+
             // Serialize generatoroptions to session.
             $generatoroptions->to_session();
             // And redirect user to next page.
@@ -151,7 +147,6 @@ class extendenrolmentcoupon {
             redirect($redirect);
         }
 
-        generatoroptions::clean_session();
         $this->start_page();
         echo $mform->render();
         $this->end_page();
@@ -162,16 +157,19 @@ class extendenrolmentcoupon {
      */
     protected function process_page_2() {
         global $CFG, $DB;
-        $url = $this->get_url(['page' => '2']);
+        $url = $this->get_url(['page' => 2]);
 
         // Make sure sessions are still alive.
         generatoroptions::validate_session();
         // Load generator options.
         $generatoroptions = generatoroptions::from_session();
         // Create form.
-        $mform = new \block_coupon\forms\coupon\extendenrolment\page2($url, ['generatoroptions' => $generatoroptions]);
+        $mform = new \block_coupon\forms\coupon\extendenrolment\courseusers($url, ['generatoroptions' => $generatoroptions]);
 
-        if ($mform->is_cancelled()) {
+        if ($mform->is_previous()) {
+            $redirecturl = $this->get_url(['page' => 1]);
+            redirect($redirecturl);
+        } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
             redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
         } else if ($data = $mform->get_data()) {
@@ -180,43 +178,15 @@ class extendenrolmentcoupon {
                 redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
                 exit; // Never reached.
             }
-            // Set logo.
-            $generatoroptions->logoid = $data->logo;
             // Set user(s).
             $generatoroptions->amount = count($data->extendusers);
             $generatoroptions->extendusers = $data->extendusers;
-            $generatoroptions->enrolperiod = $data->enrolperiod;
-            $generatoroptions->generatesinglepdfs = $data->generate_pdf;
-            $generatoroptions->renderqrcode = (isset($data->renderqrcode) && $data->renderqrcode) ? true : false;
-            if (isset($data->font)) {
-                $generatoroptions->font = $data->font;
-            }
-            $generatoroptions->redirecturl = $data->redirect_url;
-            $generatoroptions->emailto = (!empty($data->use_alternative_email)) ? $data->alternative_email : null;
-            if (empty($data->use_alternative_email)) {
-                $generatoroptions->emailto = null;
-                // Load recipients!
-                $generatoroptions->recipients = [];
-                $fields = 'id, email, ' . \block_coupon\helper::get_all_user_name_fields(true);
-                $users = $DB->get_records_list('user', 'id', $data->extendusers, '', $fields);
-                foreach ($users as $user) {
-                    $generatoroptions->recipients[] = (object) array(
-                        'email' => $user->email,
-                        'name' => fullname($user),
-                        'gender' => '',
-                    );
-                }
-                // Force seperate coupons!
-                $generatoroptions->generatesinglepdfs = true;
-            } else {
-                $generatoroptions->emailto = $data->alternative_email;
-            }
-            $generatoroptions->emailbody = $data->email_body_manual['text'];
+            $generatoroptions->extendusersrecipient = $data->extendusersrecipient;
 
             // Serialize generatoroptions to session.
             $generatoroptions->to_session();
             // And redirect user to next page.
-            $redirect = $this->get_url(['page' => '3']);
+            $redirect = $this->get_url(['page' => 3]);
             redirect($redirect);
         }
 
@@ -226,28 +196,207 @@ class extendenrolmentcoupon {
     }
 
     /**
-     * Process page 3
+     * Process page 4
      */
     protected function process_page_3() {
-        global $CFG, $DB;
-        $url = $this->get_url(['page' => '3']);
+        global $CFG, $USER, $DB;
+        $url = $this->get_url(['page' => 3]);
 
-        // Make sure sessions are still alive.
-        generatoroptions::validate_session();
         // Load generator options.
         $generatoroptions = generatoroptions::from_session();
         // Create form.
-        $mform = new \block_coupon\forms\coupon\extendenrolment\page3($url, ['generatoroptions' => $generatoroptions]);
+        $mform = new \block_coupon\forms\coupon\generatorsettings($url, [$generatoroptions]);
 
-        if ($mform->is_cancelled()) {
+        if ($mform->is_previous()) {
+            $redirecturl = $this->get_url(['page' => 2]);
+            redirect($redirecturl);
+        } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            $conditions = array('id' => $this->page->course->id);
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', $conditions));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
         } else if ($data = $mform->get_data()) {
-            // Now that we've got all information we'll create the coupon objects.
+            // These settings are always the same.
+            if (!empty($data->batchid)) {
+                $generatoroptions->batchid = $data->batchid;
+            }
+            // This is pretty much where we MAY have campaign types supporting "single code fits N usages".
+            $generatoroptions->generatorflags = helper::make_generator_flags($data->flags);
+            $generatoroptions->codesize = $data->codesize;
+            $generatoroptions->redirecturl = (empty($data->redirect_url)) ? null : $data->redirect_url;
+            $generatoroptions->expirymethod = $data->expirationmethod;
+            $generatoroptions->expiresin = $data->expiresin ?? 0;
+            $generatoroptions->expiresat = helper::get_expiration_from_data($data);
+            $generatoroptions->generatecodesonly = $data->generatecodesonly;
+
+            // When generating codes only, skip the PDF settings page.
+            $nextpage = 4;
+            if ((bool)$generatoroptions->generatecodesonly) {
+                // Forced generator options to prevent failure/wrong behaviour.
+                $generatoroptions->templateid = null;
+                $generatoroptions->renderqrcode = false;
+                $generatoroptions->font = null;
+                $generatoroptions->logoid = null;
+                $nextpage = 5;
+            }
+
+            // Serialize generatoroptions to session.
+            $generatoroptions->to_session();
+            // And redirect user to next page.
+            $redirect = $this->get_url(['page' => $nextpage]);
+            redirect($redirect);
+        }
+
+        $this->start_page();
+        echo $mform->render();
+        $this->end_page();
+    }
+
+    /**
+     * Process page 5
+     */
+    protected function process_page_4() {
+        global $CFG;
+        $url = $this->get_url(['page' => '4']);
+
+        // Load generator options.
+        $generatoroptions = generatoroptions::from_session();
+        // Create form.
+        $mform = new \block_coupon\forms\coupon\pdfsettings($url, [$generatoroptions, ['']]);
+
+        if ($mform->is_previous()) {
+            $prevpage = 3;
+            $redirecturl = $this->get_url(['page' => $prevpage]);
+            redirect($redirecturl);
+        } else if ($mform->is_cancelled()) {
+            generatoroptions::clean_session();
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+        } else if ($data = $mform->get_data()) {
+            $generatoroptions->generatesinglepdfs = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
+            $generatoroptions->pdftype = $data->usetype;
+            if ($data->usetype == 'template') {
+                $generatoroptions->templateid = $data->templateid;
+                $generatoroptions->renderqrcode = false;
+                $generatoroptions->font = null;
+                $generatoroptions->logoid = null;
+            } else {
+                $generatoroptions->templateid = null;
+                $generatoroptions->renderqrcode = (isset($data->renderqrcode) && $data->renderqrcode) ? true : false;
+                if (isset($data->font)) {
+                    $generatoroptions->font = $data->font;
+                }
+                $generatoroptions->logoid = $data->logo;
+            }
+
+            // Serialize generatoroptions to session.
+            $generatoroptions->to_session();
+            // And redirect user to next page.
+            $redirect = $this->get_url(['page' => 5]);
+            redirect($redirect);
+        }
+
+        $this->start_page();
+        echo $mform->render();
+        $this->end_page();
+    }
+
+    /**
+     * Process page 5
+     */
+    protected function process_page_5() {
+        global $CFG, $DB, $USER;
+        $url = $this->get_url(['page' => 5]);
+
+        // Load generator options.
+        $generatoroptions = generatoroptions::from_session();
+        // Create form.
+        $mform = new \block_coupon\forms\coupon\extendenrolment\recips($url, [$generatoroptions]);
+
+        if ($mform->is_previous()) {
+            $prevpage = 4;
+            if ($generatoroptions->generatecodesonly) {
+                $prevpage = 3;
+            }
+            $redirecturl = $this->get_url(['page' => $prevpage]);
+            redirect($redirecturl);
+        } else if ($mform->is_cancelled()) {
+            generatoroptions::clean_session();
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+        } else if ($mform->no_submit_button_pressed()) {
+            $tplid = $mform->optional_param('tplload', 0, PARAM_INT);
+            if (!empty($tplid)) {
+                $mailtemplate = $DB->get_record('block_coupon_mailtemplates', ['id' => $tplid]);
+                $generatoroptions->emailbody = $mailtemplate->body;
+            } else {
+                $generatoroptions->emailbody = get_string('coupon_mail_extend_content', 'block_coupon');
+            }
+            // Serialize generatoroptions to session.
+            $generatoroptions->to_session();
+            // And reload page.
+            redirect($url);
+        } else if ($data = $mform->get_data()) {
+            if ($generatoroptions->extendusersrecipient == 'me') {
+                $generatoroptions->altemail = (bool)$data->use_alternative_email;
+                $generatoroptions->emailto = (!empty($data->use_alternative_email)) ? $data->alternative_email : $USER->email;
+            } else {
+                $generatoroptions->emailto = null;
+                // Load recipients.
+                $generatoroptions->recipients = [];
+                $fields = 'id, email, ' . \block_coupon\helper::get_all_user_name_fields(true);
+                $users = $DB->get_records_list('user', 'id', $generatoroptions->extendusers, '', $fields);
+                foreach ($users as $user) {
+                    $generatoroptions->recipients[] = (object) array(
+                        'email' => $user->email,
+                        'name' => fullname($user),
+                        'gender' => '',
+                    );
+                }
+                // Force seperate coupons!
+                $generatoroptions->generatesinglepdfs = true;
+                $generatoroptions->emailbody = $data->email_body_manual['text'];
+            }
+            $generatoroptions->senddate = $data->date_send_coupons_manual;
+
+            // Serialize generatoroptions to session.
+            $generatoroptions->to_session();
+            // And redirect user to next page.
+            $redirect = $this->get_url(['page' => 6]);
+            redirect($redirect);
+        }
+
+        $this->start_page();
+        echo $mform->render();
+        $this->end_page();
+    }
+
+    /**
+     * Process page 8
+     */
+    protected function process_page_6() {
+        global $CFG, $DB;
+        $url = $this->get_url(['page' => 6]);
+
+        // Set up preview stuff.
+        $previewurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/preview.php');
+        $args = ['#block-coupon-preview-btn', $previewurl->out()];
+        $this->page->requires->js_call_amd('block_coupon/preview', 'init', $args);
+
+        // Load generator options.
+        $generatoroptions = generatoroptions::from_session();
+        // Create form.
+        $mform = new \block_coupon\forms\coupon\confirm($url, [$generatoroptions]);
+
+        if ($mform->is_previous()) {
+            $redirecturl = $this->get_url(['page' => 5]);
+            redirect($redirecturl);
+        } else if ($mform->is_cancelled()) {
+            generatoroptions::clean_session();
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+        } else if ($data = $mform->get_data()) {
+            // There is no data, only processing.
+            $generatoroptions->to_session();
+
+            // Now that we've got all the coupons.
             $generator = new generator();
             $result = $generator->generate_coupons($generatoroptions);
-
             if ($result !== true) {
                 // Means we've got an error.
                 // Don't know yet what we're gonne do in this situation. Maybe mail to supportuser?
@@ -259,14 +408,16 @@ class extendenrolmentcoupon {
             // Finish.
             generatoroptions::clean_session();
             // We will only use direct sending if we're sending off to an alternative email address.
-            if (empty($generatoroptions->emailto)) {
+            if ($generatoroptions->extendusersrecipient == 'users') {
+                // Redirect; this is all handled by a task later on.
                 redirect(new moodle_url($CFG->wwwroot . '/my'), get_string('coupons_ready_to_send', 'block_coupon'));
-            } else {
+            }
+
+            // Only send if not opted to only generate the codes!
+            if (!$generatoroptions->generatecodesonly) {
                 // Generate and send off.
                 $coupons = $DB->get_records_list('block_coupon', 'id', $generator->get_generated_couponids());
-                list($rs, $batchid, $ts) = helper::mail_coupons($coupons, $generatoroptions->emailto,
-                        $generatoroptions->generatesinglepdfs, false, false, $generatoroptions->batchid,
-                        $generatoroptions->font);
+                list($rs, $batchid, $ts) = helper::mail_coupons($coupons, $generatoroptions, false, false);
 
                 $dlurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php', ['bid' => $batchid, 't' => $ts]);
                 $dllink = \html_writer::link($dlurl, get_string('here', 'block_coupon'));
@@ -275,11 +426,13 @@ class extendenrolmentcoupon {
                 } else {
                     $redirectmessage = get_string('coupons_generated', 'block_coupon', $dllink);
                 }
-                generatoroptions::clean_session();
-                // Force message ALSO as a notification.
-                \core\notification::success($redirectmessage);
-                redirect(new moodle_url($CFG->wwwroot . '/my'), $redirectmessage);
+            } else {
+                $redirectmessage = get_string('coupons_generated_codes_only', 'block_coupon');
             }
+            generatoroptions::clean_session();
+            // Force message as a notification.
+            \core\notification::success($redirectmessage);
+            redirect(new moodle_url($CFG->wwwroot . '/my'));
         }
 
         $this->start_page();

@@ -55,10 +55,6 @@ $PAGE->set_heading(get_string($heading, 'block_coupon'));
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('standard');
 
-// Make sure the moodle editmode is off.
-helper::force_no_editing_mode();
-$renderer = $PAGE->get_renderer('block_coupon');
-
 /**
  * Get download.
  *
@@ -86,15 +82,7 @@ function download($batchid, $timeid, $dodl = false) {
         $button = $OUTPUT->single_button($url, get_string('downloadcoupons:buttontext', 'block_coupon'), 'get');
         echo get_string('downloadcoupons:text', 'block_coupon', $button);
     } else {
-        header("Pragma: public");
-        header("Expires: 0");
-        header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-        header("Cache-Control: public");
-        header("Content-Description: File Transfer");
-        header("Content-type: application/octet-stream");
-        header("Content-Disposition: attachment; filename=\"" . basename($filename) . "\"");
-        header("Content-Transfer-Encoding: binary");
-        header("Content-Length: " . filesize($filename));
+        helper::dlh(basename($filename), filesize($filename));
         readfile($filename);
         unlink($filename);
     }

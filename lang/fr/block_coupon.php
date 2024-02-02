@@ -23,7 +23,6 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -304,13 +303,13 @@ $string['default-coupon-page-template-botright'] = '<ol>
 </ol>';
 
 $string['coupon_mail_content'] = '
-Cher {$a->to_name},<br /><br />
+Cher {$a->fullname},<br /><br />
 
 Vous recevez ce message car il y a eu de nouveaux coupons de générés. Les coupons ont été ajoutés dans la pièce jointe à ce message.<br /><br />
 
 Cordialement,<br /><br />
 
-{$a->from_name}';
+{$a->signoff}';
 
 $string['coupon_mail_csv_content'] = '
 Cher ##to_gender## ##to_name##,<br /><br />

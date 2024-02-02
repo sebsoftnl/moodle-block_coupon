@@ -26,46 +26,32 @@
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+// Login_check is done in couponpage class.
+// @codingStandardsIgnoreLine
 require_once(dirname(__FILE__) . '/../../../config.php');
 
-use block_coupon\helper;
+use block_coupon\couponpage;
 
-$id = required_param('id', PARAM_INT);
 $code = required_param('code', PARAM_ALPHANUM);
 $gpid = required_param('gpid', PARAM_INT);
 
-$instance = $DB->get_record('block_instances', array('id' => $id), '*', MUST_EXIST);
-$context       = \context_block::instance($instance->id);
-$coursecontext = $context->get_course_context(false);
-$course = false;
-if ($coursecontext !== false) {
-    $course = $DB->get_record("course", array("id" => $coursecontext->instanceid));
-}
-if ($course === false) {
-    $course = get_site();
-}
-
-require_login($course, true);
-
-$title = 'view:selectcourses:title';
-$heading = 'view:selectcourses:heading';
-
-$PAGE->navbar->add(get_string($title, 'block_coupon'));
-
-$url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/selectcourses.php',
-        array('id' => $id, 'code' => $code, 'gpid' => $gpid));
-$PAGE->set_url($url);
-
-$PAGE->set_title(get_string($title, 'block_coupon'));
-$PAGE->set_heading(get_string($heading, 'block_coupon'));
-$PAGE->set_context($context);
-$PAGE->set_course($course);
-$PAGE->set_pagelayout('standard');
-
-// Make sure the moodle editmode is off.
-helper::force_no_editing_mode();
-$renderer = $PAGE->get_renderer('block_coupon');
+$title = get_string('view:selectcourses:title', 'block_coupon');
+$heading = get_string('view:selectcourses:heading', 'block_coupon');
+$url = couponpage::get_view_url('selectcourses.php', ['code' => $code, 'gpid' => $gpid]);
+$page = couponpage::setup(
+    'block_coupon_view_selectcourses',
+    $title,
+    $url,
+    'block/coupon:generatecoupons',
+    \context_system::instance(),
+    [
+        'pagelayout' => 'report',
+        'title' => $title,
+        'heading' => $heading
+    ]
+);
 
 // Let's process this using a controller.
+$renderer = $PAGE->get_renderer('block_coupon');
 $controller = new \block_coupon\controller\coursegroupingchoosecourse($PAGE, $OUTPUT, $renderer);
 $controller->execute_request();

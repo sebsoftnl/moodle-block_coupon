@@ -1,0 +1,95 @@
+#page-blocks-coupon-view-templates-edit .deletebutton {
+    text-align: right;
+}
+
+#page-blocks-coupon-view-templates-edit .addpage {
+    border-top: 1px solid #f4f4f4;
+    text-align: right;
+}
+
+#page-blocks-coupon-view-templates-edit #id_replace {
+    margin-left: 10px;
+}
+
+#page-blocks-coupon-view-templates-report .centre {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#page-blocks-coupon-view-templates-rearrange .savepositionsbtn,
+#page-blocks-coupon-view-templates-rearrange .applypositionsbtn,
+#page-blocks-coupon-view-templates-rearrange .cancelbtn {
+    float: left;
+}
+
+#page-blocks-coupon-view-templates-rearrange .element {
+    display: inline-block;
+    position: absolute;
+    word-wrap: break-word;
+}
+
+#page-blocks-coupon-view-templates-rearrange .element:before {
+    /*background-image: url([[pix:block_coupon|target]]);*/
+    background-image: url('data:image/gif;base64,R0lGODlhCQAJAIABAAAAAP///yH5BAEKAAEALAAAAAAJAAkAAAIPjAOnuJfNHJh0qtfw0lcVADs=');
+    background-repeat: no-repeat;
+    content: "";
+    display: block;
+    float: left;
+    height: 9px;
+    width: 100%;
+}
+
+#page-blocks-coupon-view-templates-rearrange .element:hover {
+    cursor: move;
+}
+
+#page-blocks-coupon-view-templates-rearrange .element.refpoint-left:before {
+    background-position: left top;
+    margin: -4px -5px -5px -4px;
+}
+
+#page-blocks-coupon-view-templates-rearrange .element.refpoint-center:before {
+    background-position: center top;
+    margin: -4px 0 -5px 0;
+}
+
+#page-blocks-coupon-view-templates-rearrange .element.refpoint-right:before {
+    background-position: right top;
+    margin: -4px -5px -5px 4px;
+}
+
+#page-blocks-coupon-view-templates-rearrange .element.align-left {
+    text-align: left;
+}
+
+#page-blocks-coupon-view-templates-rearrange .element.align-center {
+    text-align: center;
+}
+
+#page-blocks-coupon-view-templates-rearrange .element.align-right {
+    text-align: right;
+}
+
+#page-blocks-coupon-view-templates-rearrange #pdf {
+    border-style: solid;
+    border-width: 1px;
+    clear: both;
+    position: relative;
+}
+
+#page-blocks-coupon-view-templates-rearrange div#leftmargin {
+    border-left: 1px dotted black;
+}
+
+#page-blocks-coupon-view-templates-rearrange div#rightmargin {
+    border-right: 1px dotted black;
+}
+
+/*
+    This is a hack - the fieldset being returned by the edit_element_form class contains
+    the CSS class 'hidden' which when shown in a dialogue hides the fieldset.
+*/
+.moodle-dialogue #editelementform fieldset.hidden {
+    display: block;
+}
+#pdf .isdragged{border: 1px dotted #aaa;}

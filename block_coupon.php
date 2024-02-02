@@ -23,7 +23,6 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -34,7 +33,6 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      Menno de Ridder <menno@sebsoft.nl>
  * @author      R.J. van Dongen <rogier@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -69,10 +67,6 @@ class block_coupon extends block_base {
             throw new \moodle_exception('No instance', 'block_coupon');
         }
 
-        $arrparams = array();
-        $arrparams['id'] = $this->instance->id;
-        $arrparams['courseid'] = $this->course->id;
-
         // We'll fill the array of menu items with everything the logged in user has permission to.
         $menuitems = array();
 
@@ -85,7 +79,7 @@ class block_coupon extends block_base {
             $linkseparator = '<br/>';
         }
         // Generate Coupon.
-        $baseparams = array('id' => $this->instance->id);
+        $baseparams = [];
         if (has_capability('block/coupon:generatecoupons', $this->context)) {
             $urlgeneratecoupons = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/index.php', $baseparams);
             $menuitems[] = html_writer::link($urlgeneratecoupons,
@@ -110,7 +104,7 @@ class block_coupon extends block_base {
         if (has_capability('block/coupon:viewreports', $this->context)) {
             $urlreports = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/reports.php', $baseparams);
             $urlunusedreports = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php',
-                    array('id' => $this->instance->id, 'tab' => 'unused'));
+                    array('tab' => 'unused'));
 
             $menuitems[] = html_writer::link($urlreports,
                     get_string('url:view_reports', 'block_coupon'), ['class' => $btnclass]);

@@ -51,16 +51,29 @@ variables:
     - for i in ${failures[@]}; do echo "$i -- FAIL"; done;
     - if [ "${#failures[@]}" -gt "0" ]; then echo "${#failures[@]} jobs failed"; exit 1; fi;
 
+Moodle 4.3:
+  <<: *job_definition
+  variables:
+    MOODLE_BRANCH: "MOODLE_403_STABLE"
+    MOODLE_VERSION: 403
+
+Moodle 4.2:
+  <<: *job_definition
+  variables:
+    MOODLE_BRANCH: "MOODLE_402_STABLE"
+    MOODLE_VERSION: 402
+
 Moodle 4.1:
   <<: *job_definition
   variables:
-    MOODLE_BRANCH: "master"
-    MOODLE_VERSION: 410
+    MOODLE_BRANCH: "MOODLE_401_STABLE"
+    MOODLE_VERSION: 401
 
 Moodle 4.0:
   <<: *job_definition
   variables:
     MOODLE_BRANCH: "MOODLE_400_STABLE"
+    MOODLE_VERSION: 400
 
 deploy.gitlab:
   stage: deploy
@@ -88,7 +101,7 @@ deploy.github:
     - git push -u github --tags
     - echo "Deploy to Github completed..."
   only:
-     - tags
+    - tags
 
 # After the deploy has been done, it's ready to be released to Moodle.org.
 release:

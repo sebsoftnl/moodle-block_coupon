@@ -75,7 +75,6 @@ class coupons {
      */
     public function execute_request() {
         global $CFG;
-        $id = required_param('id', PARAM_INT);
         $tab = optional_param('tab', null, PARAM_ALPHA);
         $action = optional_param('action', $tab, PARAM_ALPHA);
         $title = 'view:reports-' . $tab . ':title';
@@ -83,7 +82,7 @@ class coupons {
 
         $this->page->navbar->add(get_string($title, 'block_coupon'));
 
-        $url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php', array('id' => $id, 'tab' => $tab));
+        $url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php', array('tab' => $tab));
         $this->page->set_url($url);
         $this->page->set_title(get_string($title, 'block_coupon'));
         $this->page->set_heading(get_string($heading, 'block_coupon'));
@@ -146,12 +145,10 @@ class coupons {
                 break;
         }
 
-        $id = $this->page->url->param('id');
-
         echo $this->output->header();
         echo html_writer::start_div('block-coupon-container');
         echo html_writer::start_div();
-        echo $this->renderer->get_tabs($this->page->context, $selectedtab, array('id' => $id));
+        echo $this->renderer->get_tabs($this->page->context, $selectedtab);
         echo html_writer::end_div();
         $filtering->display_add();
         $filtering->display_active();

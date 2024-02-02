@@ -158,11 +158,11 @@ class downloadbatchlist extends \table_sql {
         // Loop through rows and find owners.
         list($insql, $params) = $DB->get_in_or_equal($batchids, SQL_PARAMS_NAMED, 'bid', true, 0);
 
-        $sql = "SELECT c.batchid, c.ownerid, " . \block_coupon\helper::get_all_user_name_fields(true, 'u') . "
-            FROM {block_coupon} c
-            JOIN {user} u ON u.id=c.ownerid
-            WHERE c.batchid {$insql}
-            GROUP BY c.batchid, c.ownerid";
+        $sql = "SELECT c.batchid, c.ownerid, " . \block_coupon\helper::get_all_user_name_fields(true, 'u') .
+            " FROM {block_coupon} c " .
+            "JOIN {user} u ON u.id=c.ownerid " .
+            "WHERE c.batchid {$insql} " .
+            "GROUP BY c.batchid, c.ownerid";
         $udata = $DB->get_records_sql($sql, $params);
         foreach ($rows as $row) {
             if (isset($udata[$row->batchid])) {

@@ -190,9 +190,9 @@ class couponcourseid extends \user_filter_type {
         }
 
         $sql = "{$this->fieldid} $not IN (SELECT couponid
-                         FROM {block_coupon_courses} cc
-                         JOIN {course} c ON cc.courseid=c.id
-                         WHERE $res)";
+                FROM {block_coupon_courses} cc
+                JOIN {course} c ON cc.courseid=c.id
+                WHERE $res)";
 
         return array($sql, $params);
     }

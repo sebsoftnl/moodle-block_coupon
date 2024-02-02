@@ -86,21 +86,12 @@ class coursegroupingcoupon {
     protected function process_generator() {
         $page = optional_param('page', 1, PARAM_INT);
 
-        switch ($page) {
-            case 4:
-                $this->process_page_4();
-                break;
-            case 3:
-                $this->process_page_3();
-                break;
-            case 2:
-                $this->process_page_2();
-                break;
-            case 1:
-                $this->process_page_1();
-            default:
-                break;
+        $func = "process_page_{$page}";
+        if (!method_exists($this, $func)) {
+            throw new \InvalidArgumentException("Page {$page} does not exist");
         }
+
+        $this->{$func}();
     }
 
     /**
@@ -113,19 +104,15 @@ class coursegroupingcoupon {
         // Load generator options.
         $generatoroptions = generatoroptions::from_session();
         // Create form.
-        $mform = new \block_coupon\forms\coupon\coursegrouping\page1($url, [$generatoroptions]);
+        $mform = new \block_coupon\forms\coupon\coursegrouping\cgvars($url, [$generatoroptions]);
 
         if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
             redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
         } else if ($data = $mform->get_data()) {
-            $generatoroptions->groupings = [$data->coursegroupingid];
             $generatoroptions->ownerid = $USER->id;
             $generatoroptions->type = generatoroptions::COURSEGROUPING;
-            $generatoroptions->logoid = $data->logo;
-            if (!empty($data->batchid)) {
-                $generatoroptions->batchid = $data->batchid;
-            }
+            $generatoroptions->groupings = [$data->coursegroupingid];
             $generatoroptions->roleid = $data->coupon_role;
             $generatoroptions->enrolperiod = (empty($data->enrolment_period)) ? null : $data->enrolment_period;
 
@@ -136,7 +123,6 @@ class coursegroupingcoupon {
             redirect($redirect);
         }
 
-        generatoroptions::clean_session();
         $this->start_page();
         echo $mform->render();
         $this->end_page();
@@ -146,19 +132,22 @@ class coursegroupingcoupon {
      * Process page 2
      */
     protected function process_page_2() {
-        global $CFG, $USER;
+        global $CFG;
         $url = $this->get_url(['page' => '2']);
 
         // Load generator options.
         $generatoroptions = generatoroptions::from_session();
         // Create form.
-        $mform = new \block_coupon\forms\coupon\coursegrouping\page2($url, [$generatoroptions]);
+        $mform = new \block_coupon\forms\coupon\campaigntype($url, [$generatoroptions]);
 
-        if ($mform->is_cancelled()) {
+        if ($mform->is_previous()) {
+            $redirecturl = $this->get_url(['page' => 1]);
+            redirect($redirecturl);
+        } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
             redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
         } else if ($data = $mform->get_data()) {
-            $generatoroptions->generatormethod = $generatoroptions->generatormethod;
+            $generatoroptions->generatormethod = $data->showform;
 
             // Serialize generatoroptions to session.
             $generatoroptions->to_session();
@@ -173,65 +162,267 @@ class coursegroupingcoupon {
     }
 
     /**
-     * Process page 3
+     * Process page 4
      */
     protected function process_page_3() {
         global $CFG, $USER, $DB;
         $url = $this->get_url(['page' => '3']);
 
+        // Load generator options.
+        $generatoroptions = generatoroptions::from_session();
+        // Create form.
+        $mform = new \block_coupon\forms\coupon\generatorsettings($url, [$generatoroptions]);
+
+        if ($mform->is_previous()) {
+            $redirecturl = $this->get_url(['page' => 2]);
+            redirect($redirecturl);
+        } else if ($mform->is_cancelled()) {
+            generatoroptions::clean_session();
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+        } else if ($data = $mform->get_data()) {
+            // These settings are always the same.
+            if (!empty($data->batchid)) {
+                $generatoroptions->batchid = $data->batchid;
+            }
+            // This is pretty much where we MAY have campaign types supporting "single code fits N usages".
+            $generatoroptions->generatorflags = helper::make_generator_flags($data->flags);
+            $generatoroptions->codesize = $data->codesize;
+            $generatoroptions->redirecturl = (empty($data->redirect_url)) ? null : $data->redirect_url;
+            $generatoroptions->expirymethod = $data->expirationmethod;
+            $generatoroptions->expiresin = $data->expiresin ?? 0;
+            $generatoroptions->expiresat = helper::get_expiration_from_data($data);
+            $generatoroptions->generatecodesonly = $data->generatecodesonly;
+
+            // When generating codes only, skip the PDF settings page.
+            $nextpage = 4;
+            if ((bool)$generatoroptions->generatecodesonly) {
+                // Forced generator options to prevent failure/wrong behaviour.
+                $generatoroptions->templateid = null;
+                $generatoroptions->renderqrcode = false;
+                $generatoroptions->font = null;
+                $generatoroptions->logoid = null;
+                $nextpage = 5;
+            }
+
+            // Serialize generatoroptions to session.
+            $generatoroptions->to_session();
+            // And redirect user to next page.
+            $redirect = $this->get_url(['page' => $nextpage]);
+            redirect($redirect);
+        }
+
+        $this->start_page();
+        echo $mform->render();
+        $this->end_page();
+    }
+
+    /**
+     * Process page 5
+     */
+    protected function process_page_4() {
+        global $CFG;
+        $url = $this->get_url(['page' => '4']);
+
+        // Load generator options.
+        $generatoroptions = generatoroptions::from_session();
+        // Create form.
+        $mform = new \block_coupon\forms\coupon\pdfsettings($url, [$generatoroptions]);
+
+        if ($mform->is_previous()) {
+            $prevpage = 3;
+            $redirecturl = $this->get_url(['page' => $prevpage]);
+            redirect($redirecturl);
+        } else if ($mform->is_cancelled()) {
+            generatoroptions::clean_session();
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+        } else if ($data = $mform->get_data()) {
+            $generatoroptions->generatesinglepdfs = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
+            $generatoroptions->pdftype = $data->usetype;
+            if ($data->usetype == 'template') {
+                $generatoroptions->templateid = $data->templateid;
+                $generatoroptions->renderqrcode = false;
+                $generatoroptions->font = null;
+                $generatoroptions->logoid = null;
+            } else {
+                $generatoroptions->templateid = null;
+                $generatoroptions->renderqrcode = (isset($data->renderqrcode) && $data->renderqrcode) ? true : false;
+                if (isset($data->font)) {
+                    $generatoroptions->font = $data->font;
+                }
+                $generatoroptions->logoid = $data->logo;
+            }
+
+            // Serialize generatoroptions to session.
+            $generatoroptions->to_session();
+            // And redirect user to next page.
+            $redirect = $this->get_url(['page' => 5]);
+            redirect($redirect);
+        }
+
+        $this->start_page();
+        echo $mform->render();
+        $this->end_page();
+    }
+
+    /**
+     * Process page 6
+     */
+    protected function process_page_5() {
+        global $CFG, $USER;
+        $url = $this->get_url(['page' => 5]);
+
+        // Load generator options.
+        $generatoroptions = generatoroptions::from_session();
+        // Create form.
+        $mform = new \block_coupon\forms\coupon\ctpage($url, [$generatoroptions]);
+
+        if ($mform->is_previous()) {
+            $prevpage = 4;
+            if ($generatoroptions->generatecodesonly) {
+                $prevpage = 3;
+            }
+            $redirecturl = $this->get_url(['page' => $prevpage]);
+            redirect($redirecturl);
+        } else if ($mform->is_cancelled()) {
+            generatoroptions::clean_session();
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+        } else if ($mform->no_submit_button_pressed()) {
+            $tplid = $mform->optional_param('tplload', 0, PARAM_INT);
+            if (!empty($tplid)) {
+                $mailtemplate = $DB->get_record('block_coupon_mailtemplates', ['id' => $tplid]);
+                $generatoroptions->emailbody = $mailtemplate->body;
+            } else {
+                $generatoroptions->emailbody = get_string('coupon_mail_csv_content', 'block_coupon');
+            }
+            // Serialize generatoroptions to session.
+            $generatoroptions->to_session();
+            // And reload page.
+            redirect($url);
+        } else if ($data = $mform->get_data()) {
+
+            // Get recipients.
+            switch ($generatoroptions->generatormethod) {
+                case 'csv':
+                    $generatoroptions->csvdelimitername = $data->csvdelimiter;
+                    $generatoroptions->senddate = $data->date_send_coupons;
+                    $filecontent = $mform->get_file_content('coupon_recipients');
+                    $delimiter = helper::get_delimiter($generatoroptions->csvdelimitername);
+                    $generatoroptions->csvrecipients = helper::get_recipients_from_csv($filecontent, $delimiter);
+                    $generatoroptions->emailbody = $data->email_body['text'];
+                    $nextpage = 6;
+                    break;
+                case 'manual':
+                    $generatoroptions->csvdelimitername = 'comma'; // Forced!
+                    $generatoroptions->senddate = $data->date_send_coupons_manual;
+                    $generatoroptions->emailbody = $data->email_body_manual['text'];
+                    // We'll get users right away.
+                    $delimiter = helper::get_delimiter($generatoroptions->csvdelimitername);
+                    $generatoroptions->recipients = helper::get_recipients_from_csv($data->coupon_recipients_manual, $delimiter);
+                    // Set amount, otherwise the generator won't do anything.
+                    $generatoroptions->amount = count($generatoroptions->recipients);
+                    $nextpage = 7;
+                    break;
+                case 'amount':
+                    // Save last settings in sessions.
+                    $generatoroptions->amount = $data->coupon_amount;
+                    $generatoroptions->altemail = empty($data->use_alternative_email) ? 0 : 1;
+                    $generatoroptions->emailto = (!empty($data->use_alternative_email)) ? $data->alternative_email : $USER->email;
+                    $nextpage = 7;
+                    break;
+            }
+
+            // Serialize generatoroptions to session.
+            $generatoroptions->to_session();
+            // And redirect user to next page.
+            $redirect = $this->get_url(['page' => $nextpage]);
+            redirect($redirect);
+        }
+
+        $this->start_page();
+        echo $mform->render();
+        $this->end_page();
+    }
+
+    /**
+     * Process page 5
+     */
+    protected function process_page_6() {
+        global $CFG, $DB;
+        $url = $this->get_url(['page' => 6]);
+
+        // Load generator options.
+        $generatoroptions = generatoroptions::from_session();
+        // Create form.
+        $mform = new \block_coupon\forms\coupon\csvrecips($url, [$generatoroptions]);
+
+        if ($mform->is_previous()) {
+            switch ($generatoroptions->generatormethod) {
+                default:
+                    $redirecturl = $this->get_url(['page' => 5]);
+                    break;
+            }
+            redirect($redirecturl);
+        } else if ($mform->is_cancelled()) {
+            generatoroptions::clean_session();
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+        } else if ($data = $mform->get_data()) {
+
+            // Get recipients.
+            if ($generatoroptions->generatormethod == 'csv') {
+                // Parse CSV.
+                $delimiter = helper::get_delimiter($generatoroptions->csvdelimitername);
+                $generatoroptions->csvrecipients = helper::get_recipients_from_csv($data->coupon_recipients, $delimiter);
+
+                // Serialize generatoroptions to session.
+                $generatoroptions->to_session();
+
+                // To the extra step.
+                $redirect = $this->get_url(['page' => 7]);
+                redirect($redirect);
+            }
+        }
+
+        $this->start_page();
+        echo $mform->render();
+        $this->end_page();
+    }
+
+    /**
+     * Process page 8
+     */
+    protected function process_page_7() {
+        global $CFG, $DB;
+        $url = $this->get_url(['page' => 7]);
+
         // Set up preview stuff.
-        $bid = helper::find_block_instance_id();
-        $previewurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/preview.php', ['id' => $bid]);
+        $previewurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/preview.php');
         $args = ['#block-coupon-preview-btn', $previewurl->out()];
         $this->page->requires->js_call_amd('block_coupon/preview', 'init', $args);
 
         // Load generator options.
         $generatoroptions = generatoroptions::from_session();
         // Create form.
-        $mform = new \block_coupon\forms\coupon\coursegrouping\page3($url, [$generatoroptions]);
+        $mform = new \block_coupon\forms\coupon\confirm($url, [$generatoroptions]);
 
-        if ($mform->is_cancelled()) {
+        if ($mform->is_previous()) {
+            switch ($generatoroptions->generatormethod) {
+                case 'csv':
+                    $redirecturl = $this->get_url(['page' => 6]);
+                    break;
+                case 'manual':
+                    $redirecturl = $this->get_url(['page' => 5]);
+                    break;
+                default:
+                    $redirecturl = $this->get_url(['page' => 5]);
+                    break;
+            }
+            redirect($redirecturl);
+        } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
             redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
         } else if ($data = $mform->get_data()) {
-            // These settings are always the same.
-            $generatoroptions->redirecturl = (empty($data->redirect_url)) ? null : $data->redirect_url;
-            $generatoroptions->renderqrcode = (isset($data->renderqrcode) && $data->renderqrcode) ? true : false;
-
-            if ($generatoroptions->generatormethod == 'csv') {
-                $generatoroptions->csvdelimitername = $data->csvdelimiter;
-                $generatoroptions->senddate = $data->date_send_coupons;
-                $generatoroptions->csvrecipients = $mform->get_file_content('coupon_recipients');
-                $generatoroptions->emailbody = $data->email_body['text'];
-
-                // Serialize generatoroptions to session.
-                $generatoroptions->to_session();
-
-                // To the extra step.
-                $redirect = $this->get_url(['page' => 4]);
-                redirect($redirect);
-            }
-
-            // If we're generating based on manual csv input.
-            if ($generatoroptions->generatormethod == 'manual') {
-                $generatoroptions->csvdelimitername = ','; // Forced!
-                $generatoroptions->senddate = $data->date_send_coupons_manual;
-                $generatoroptions->emailbody = $data->email_body_manual['text'];
-                // We'll get users right away.
-                $delimiter = helper::get_delimiter($generatoroptions->csvdelimitername);
-                $generatoroptions->recipients = helper::get_recipients_from_csv($data->coupon_recipients_manual, $delimiter);
-                // Set amount, otherwise the generator won't do anything.
-                $generatoroptions->amount = count($generatoroptions->recipients);
-            }
-
-            // If we're generating based on 'amount' of coupons.
-            if ($generatoroptions->generatormethod == 'amount') {
-                // Save last settings in sessions.
-                $generatoroptions->amount = $data->coupon_amount;
-                $generatoroptions->emailto = (!empty($data->use_alternative_email)) ? $data->alternative_email : $USER->email;
-                $generatoroptions->generatesinglepdfs = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
-                $generatoroptions->generatecodesonly = (isset($data->generatecodesonly) && $data->generatecodesonly) ? true : false;
-            }
+            // There is no data, only processing.
+            $generatoroptions->to_session();
 
             // Now that we've got all the coupons.
             $generator = new generator();
@@ -249,8 +440,7 @@ class coursegroupingcoupon {
                 if (!$generatoroptions->generatecodesonly) {
                     // Generate and send off.
                     $coupons = $DB->get_records_list('block_coupon', 'id', $generator->get_generated_couponids());
-                    list($rs, $batchid, $ts) = helper::mail_coupons($coupons, $generatoroptions->emailto,
-                            $generatoroptions->generatesinglepdfs, false, false, $generatoroptions->batchid);
+                    list($rs, $batchid, $ts) = helper::mail_coupons($coupons, $generatoroptions, false, false);
 
                     $dlurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php', ['bid' => $batchid, 't' => $ts]);
                     $dllink = \html_writer::link($dlurl, get_string('here', 'block_coupon'));
@@ -263,11 +453,12 @@ class coursegroupingcoupon {
                     $redirectmessage = get_string('coupons_generated_codes_only', 'block_coupon');
                 }
                 generatoroptions::clean_session();
-                // Force message ALSO as a notification.
+                // Force message as a notification.
                 \core\notification::success($redirectmessage);
                 redirect(new moodle_url($CFG->wwwroot . '/my'));
             } else {
                 $redirectmessage = get_string('coupons_ready_to_send', 'block_coupon');
+                \core\notification::success($redirectmessage);
                 redirect(new moodle_url($CFG->wwwroot . '/my'));
             }
         }
@@ -276,57 +467,6 @@ class coursegroupingcoupon {
         echo $mform->render();
         $this->end_page();
     }
-
-    /**
-     * Process page 4
-     */
-    protected function process_page_4() {
-        global $CFG, $USER;
-        $url = $this->get_url(['page' => '4']);
-
-        // Set up preview stuff.
-        $bid = helper::find_block_instance_id();
-        $previewurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/preview.php', ['id' => $bid]);
-        $args = ['#block-coupon-preview-btn', $previewurl->out()];
-        $this->page->requires->js_call_amd('block_coupon/preview', 'init', $args);
-
-        // Load generator options.
-        $generatoroptions = generatoroptions::from_session();
-        // Create form.
-        $mform = new \block_coupon\forms\coupon\coursegrouping\page4($url, [$generatoroptions]);
-
-        if ($mform->is_cancelled()) {
-            generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
-        } else if ($data = $mform->get_data()) {
-            // Get recipients.
-            $delimiter = helper::get_delimiter($generatoroptions->csvdelimitername);
-            $generatoroptions->recipients = helper::get_recipients_from_csv($data->coupon_recipients, $delimiter);
-
-            // Now that we've got all information we'll create the coupon objects.
-            $generator = new generator();
-            $result = $generator->generate_coupons($generatoroptions);
-
-            if ($result !== true) {
-                // Means we've got an error.
-                // Don't know yet what we're gonne do in this situation. Maybe mail to supportuser?
-                echo "<p>An error occured while trying to generate the coupons. Please contact support.</p>";
-                echo "<pre>" . implode("\n", $result) . "</pre>";
-                die();
-            }
-
-            // Finish.
-            generatoroptions::clean_session();
-            $redirectmessage = get_string('coupons_ready_to_send', 'block_coupon');
-            \core\notification::success($redirectmessage);
-            redirect(new moodle_url($CFG->wwwroot . '/my'));
-        }
-
-        $this->start_page();
-        echo $mform->render();
-        $this->end_page();
-    }
-
 
     /**
      * Start page output.

@@ -129,8 +129,7 @@ class maillog extends \table_sql {
         $where = array('errortype = :type');
         $params = array('type' => 'debugemail');
         $fields = 'e.*, null as action';
-        $sql = 'SELECT ' . $fields . '
-               FROM {block_coupon_errors} e';
+        $sql = 'SELECT ' . $fields . ' FROM {block_coupon_errors} e';
 
         // Add filtering rules.
         if (!empty($this->filtering)) {
