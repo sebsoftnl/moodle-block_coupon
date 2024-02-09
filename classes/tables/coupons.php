@@ -244,9 +244,11 @@ class coupons extends \table_sql {
         // Generate SQL.
         $fields = 'c.*, ' . \block_coupon\helper::get_all_user_name_fields(true, 'u', '', 'owner_') .
                 ', ' . $DB->sql_fullname('u.firstname', 'u.lastname') . ' AS owner' .
-                ', NULL as action';
+                ', NULL as action, ' . \block_coupon\helper::get_all_user_name_fields(true, 'u1', '', 'user_') .
+                ', ' . $DB->sql_fullname('u1.firstname', 'u1.lastname') . ' AS usedby';
         $from = '{block_coupon} c ';
         $from .= 'JOIN {user} u ON c.ownerid=u.id ';
+        $from .= 'LEFT JOIN {user} u1 ON c.userid=u1.id ';
         $from .= 'LEFT JOIN {role} r ON c.roleid=r.id ';
         $where = array();
         $params = array();
@@ -257,18 +259,12 @@ class coupons extends \table_sql {
         switch ($this->filter) {
             case self::USED:
                 $where[] = 'claimed = 1';
-                $fields .= ', ' . \block_coupon\helper::get_all_user_name_fields(true, 'u1', '', 'user_');
-                $fields .= ', ' . $DB->sql_fullname('u1.firstname', 'u1.lastname') . ' AS usedby';
-                $from .= ' JOIN {user} u1 ON c.userid=u1.id';
                 break;
             case self::UNUSED:
                 $where[] = 'claimed = 0';
                 break;
             case self::PERSONAL:
                 $where[] = 'for_user_email IS NOT NULL';
-                $fields .= ', ' . \block_coupon\helper::get_all_user_name_fields(true, 'u1', '', 'user_');
-                $fields .= ', ' . $DB->sql_fullname('u1.firstname', 'u1.lastname') . ' AS usedby';
-                $from .= ' LEFT JOIN {user} u1 ON c.userid=u1.id';
                 break;
             case self::ALL:
                 // Has no extra where clause.
@@ -300,7 +296,7 @@ class coupons extends \table_sql {
      */
     public function col_usedby($row) {
         $url = new \moodle_url('/user/profile.php', ['id' => $row->userid]);
-        return \html_writer::link($url, fullname($row));
+        return \html_writer::link($url, $row->usedby);
     }
 
     /**
@@ -326,27 +322,6 @@ class coupons extends \table_sql {
         $this->useridfield = $old;
         return $fullname;
     }
-
-    /**
-     * Render visual representation of the 'user' column for use in the table
-     *
-     * @param \stdClass $row
-     * @return string time string
-    public function col_usedby($row) {
-        // This is a nasty hack, but it works.
-        $mrow = new \stdClass;
-        $mrow->userid = $row->userid;
-        $match = null;
-        foreach ($row as $k => $v) {
-            $mrow->{$k} = $v;
-        }
-        $old = $this->useridfield;
-        $this->useridfield = 'userid';
-        $fullname = parent::col_fullname($mrow);
-        $this->useridfield = $old;
-        return $fullname;
-    }
-     */
 
     /**
      * Render visual representation of the 'enrolperiod' column for use in the table
