@@ -140,7 +140,7 @@ class ctpage extends baseform {
                 $mform->addRule('date_send_coupons_manual', get_string('required'), 'required');
                 $mform->addHelpButton('date_send_coupons_manual', 'label:date_send_coupons', 'block_coupon');
 
-                $recips = ['Email,Gender,Name'];
+                $recips = ['E-mail,Gender,Name'];
                 foreach ($this->generatoroptions->recipients as $data) {
                     $recips[] = "{$data->email},{$data->gender},{$data->name}";
                 }
