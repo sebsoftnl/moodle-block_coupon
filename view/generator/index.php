@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // Login_check is done in couponpage class.
@@ -47,7 +47,7 @@ $page = couponpage::setup(
     [
         'pagelayout' => 'report',
         'title' => $title,
-        'heading' => $heading
+        'heading' => $heading,
     ]
 );
 
@@ -55,7 +55,7 @@ $renderer = $PAGE->get_renderer('block_coupon');
 $mform = new chooser($url);
 if ($mform->is_cancelled()) {
     generatoroptions::clean_session();
-    redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $PAGE->course->id)));
+    redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $PAGE->course->id]));
 } else if ($data = $mform->get_data()) {
     // We will always force cleaning of generator options here.
     generatoroptions::clean_session();

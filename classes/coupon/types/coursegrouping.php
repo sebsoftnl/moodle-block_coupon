@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * */
 
@@ -39,7 +39,7 @@ use block_coupon\exception;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursegrouping extends typebase implements icoupontype {
@@ -157,7 +157,7 @@ class coursegrouping extends typebase implements icoupontype {
         $params = [
             'id' => \block_coupon\helper::find_block_instance_id(),
             'code' => $this->coupon->submission_code,
-            'gpid' => $grouping->id // NOT the coursegroupingid! We'll use this to validate later.
+            'gpid' => $grouping->id, // NOT the coursegroupingid! We'll use this to validate later.
         ];
         $redirect = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/selectcourses.php', $params);
         redirect($redirect);

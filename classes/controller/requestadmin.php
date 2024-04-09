@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @author      Sebastian Berm <sebastian@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -36,7 +36,7 @@ namespace block_coupon\controller;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @author      Sebastian Berm <sebastian@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -125,7 +125,7 @@ class requestadmin {
             $redirect = $this->get_url(['action' => 'users']);
         }
 
-        $params = array('action' => 'adduser');
+        $params = ['action' => 'adduser'];
         $url = $this->get_url($params);
 
         $mform = new \block_coupon\forms\request\adduser($url);
@@ -163,7 +163,7 @@ class requestadmin {
             $redirect = $this->get_url(['action' => 'users']);
         }
 
-        $params = array('action' => 'edituser', 'itemid' => $itemid);
+        $params = ['action' => 'edituser', 'itemid' => $itemid];
         $url = $this->get_url($params);
 
         $instance = $DB->get_record('block_coupon_rusers', ['id' => $itemid]);
@@ -243,8 +243,8 @@ class requestadmin {
      * @param \stdClass|array $options the options
      * @param string $key key in options
      * @param mixed $data data to merge
-     * @param bool $ismulti is this array based data?
-     * @param bool $makeunique are the data keys/values supposed to be unique?
+     * @param boolean $ismulti is this array based data?
+     * @param boolean $makeunique are the data keys/values supposed to be unique?
      */
     private function merge_options(&$options, $key, $data, $ismulti = false, $makeunique = true) {
         if (empty($options->{$key})) {
@@ -291,7 +291,7 @@ class requestadmin {
             $redirect = $this->get_url(['action' => 'users']);
         }
 
-        $params = array('action' => 'deleteuser', 'itemid' => $itemid);
+        $params = ['action' => 'deleteuser', 'itemid' => $itemid];
         $url = $this->get_url($params);
 
         $instance = $DB->get_record('block_coupon_rusers', ['id' => $itemid]);
@@ -300,7 +300,7 @@ class requestadmin {
         $options = [
             get_string('delete:requestuser:header', 'block_coupon', $user),
             get_string('delete:requestuser:description', 'block_coupon', $user),
-            get_string('delete:requestuser:confirmmessage', 'block_coupon', $user)
+            get_string('delete:requestuser:confirmmessage', 'block_coupon', $user),
         ];
         $mform = new \block_coupon\forms\confirmation($url, $options);
         if ($mform->is_cancelled()) {
@@ -341,7 +341,7 @@ class requestadmin {
             $redirect = $this->get_url(['action' => 'requests']);
         }
 
-        $params = array('action' => 'denyrequest', 'itemid' => $itemid);
+        $params = ['action' => 'denyrequest', 'itemid' => $itemid];
         $url = $this->get_url($params);
 
         $instance = $DB->get_record('block_coupon_requests', ['id' => $itemid]);
@@ -349,7 +349,7 @@ class requestadmin {
 
         $options = [
             get_string('request:deny:heading', 'block_coupon', $user),
-            $this->renderer->requestdetails($instance)
+            $this->renderer->requestdetails($instance),
         ];
         $mform = new \block_coupon\forms\request\deny($url, $options);
         if ($mform->is_cancelled()) {
@@ -385,7 +385,7 @@ class requestadmin {
             $redirect = $this->get_url(['action' => 'requests']);
         }
 
-        $params = array('action' => 'acceptrequest', 'itemid' => $itemid);
+        $params = ['action' => 'acceptrequest', 'itemid' => $itemid];
         $url = $this->get_url($params);
 
         $instance = $DB->get_record('block_coupon_requests', ['id' => $itemid]);
@@ -393,7 +393,7 @@ class requestadmin {
 
         $options = [
             get_string('request:accept:heading', 'block_coupon', $user),
-            $this->renderer->requestdetails($instance)
+            $this->renderer->requestdetails($instance),
         ];
         $mform = new \block_coupon\forms\request\accept($url, $options);
         if ($mform->is_cancelled()) {

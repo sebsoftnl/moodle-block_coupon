@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +38,7 @@ use block_coupon\exception;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class typebase {
@@ -117,15 +117,15 @@ abstract class typebase {
     protected function trigger_coupon_claimed() {
         // Trigger event.
         $event = \block_coupon\event\coupon_used::create(
-                        array(
-                            'objectid' => $this->coupon->id,
-                            'relateduserid' => $this->coupon->userid,
-                            'context' => \context_user::instance($this->coupon->userid),
-                            'other' => [
-                                'code' => $this->coupon->submission_code,
-                                'type' => $this->coupon->typ
-                            ]
-                        )
+            [
+                'objectid' => $this->coupon->id,
+                'relateduserid' => $this->coupon->userid,
+                'context' => \context_user::instance($this->coupon->userid),
+                'other' => [
+                    'code' => $this->coupon->submission_code,
+                    'type' => $this->coupon->typ,
+                ],
+            ]
         );
         $event->add_record_snapshot('block_coupon', $this->coupon);
         $event->trigger();
@@ -141,10 +141,8 @@ abstract class typebase {
     public static function get_type_instance($couponcode) {
         global $DB;
         // Get record.
-        $conditions = array(
-            'submission_code' => $couponcode
-        );
-        $coupon = $DB->get_record('block_coupon', $conditions, '*', MUST_EXIST);
+        $conditions = ['submission_code' => $couponcode];
+        $coupon = $DB->get_record('block_coupon', $conditions, '*', IGNORE_MISSING);
         // Base validation.
         if (empty($coupon)) {
             throw new exception('error:invalid_coupon_code');

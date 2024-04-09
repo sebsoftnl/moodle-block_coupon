@@ -57,7 +57,7 @@ if (isloggedin() && !isguestuser()) {
     echo $OUTPUT->header();
     echo $OUTPUT->box_start();
     $logout = new single_button(new moodle_url('/login/logout.php',
-        array('sesskey' => sesskey(), 'loginpage' => 1)), get_string('logout'), 'post');
+        ['sesskey' => sesskey(), 'loginpage' => 1]), get_string('logout'), 'post');
     $continue = new single_button(new moodle_url('/'), get_string('cancel'), 'get');
     echo $OUTPUT->confirm(get_string('cannotsignup', 'error', fullname($USER)), $logout, $continue);
     echo $OUTPUT->box_end();
@@ -100,14 +100,21 @@ if ($mformsignup->is_cancelled()) {
     $emailconfirm = get_string('emailconfirm');
     $PAGE->navbar->add($emailconfirm);
     $PAGE->set_title($emailconfirm);
-    $PAGE->set_heading($PAGE->course->fullname);
+    $PAGE->set_heading(format_string(
+        $PAGE->course->fullname,
+        true,
+        [
+            'filter' => true,
+            'context' => \context_course::instance($PAGE->course->id),
+        ]
+    ));
     echo $OUTPUT->header();
     notice(get_string('emailconfirmsent', '', $user->email), "$CFG->wwwroot/index.php");
     exit; // Never reached.
 }
 
 $submissioncode = optional_param('submissioncode', '', block_coupon\helper::get_code_param_type());
-$mformsignup->set_data(array('submissioncode' => $submissioncode));
+$mformsignup->set_data(['submissioncode' => $submissioncode]);
 
 $newaccount = get_string('newaccount');
 $login      = get_string('login');

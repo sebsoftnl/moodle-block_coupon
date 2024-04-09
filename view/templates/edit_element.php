@@ -18,7 +18,7 @@
  * Edit a element.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,7 +27,7 @@ require_once(dirname(__FILE__) . '/../../../../config.php');
 $tid = required_param('tid', PARAM_INT);
 $action = required_param('action', PARAM_ALPHA);
 
-$template = $DB->get_record('block_coupon_templates', array('id' => $tid), '*', MUST_EXIST);
+$template = $DB->get_record('block_coupon_templates', ['id' => $tid], '*', MUST_EXIST);
 
 // Set the template object.
 $template = new \block_coupon\template($template);
@@ -41,14 +41,16 @@ $title = $SITE->fullname;
 if ($action == 'edit') {
     // The id of the element must be supplied if we are currently editing one.
     $id = required_param('id', PARAM_INT);
-    $element = $DB->get_record('block_coupon_elements', array('id' => $id), '*', MUST_EXIST);
-    $pageurl = new moodle_url('/blocks/coupon/view/templates/edit_element.php', ['id' => $id, 'tid' => $tid, 'action' => $action]);
+    $element = $DB->get_record('block_coupon_elements', ['id' => $id], '*', MUST_EXIST);
+    $pageurl = new moodle_url('/blocks/coupon/view/templates/edit_element.php',
+            ['id' => $id, 'tid' => $tid, 'action' => $action]);
 } else { // Must be adding an element.
     // We need to supply what element we want added to what page.
     $pageid = required_param('pageid', PARAM_INT);
     $element = new stdClass();
     $element->element = required_param('element', PARAM_ALPHA);
-    $pageurl = new moodle_url('/blocks/coupon/view/templates/edit_element.php', ['tid' => $tid, 'element' => $element->element,
+    $pageurl = new moodle_url('/blocks/coupon/view/templates/edit_element.php',
+        ['tid' => $tid, 'element' => $element->element,
         'pageid' => $pageid, 'action' => $action]);
 }
 
@@ -76,14 +78,14 @@ if ($template->get_context()->contextlevel == CONTEXT_SYSTEM) {
         new moodle_url('/blocks/coupon/view/templates/manage_templates.php'));
 }
 $PAGE->navbar->add(get_string('edittemplate', 'block_coupon'), new moodle_url('/blocks/coupon/view/templates/edit.php',
-    array('tid' => $tid)));
+    ['tid' => $tid]));
 $PAGE->navbar->add(get_string('editelement', 'block_coupon'));
 
-$mform = new \block_coupon\template\edit_element_form($pageurl, array('element' => $element));
+$mform = new \block_coupon\template\edit_element_form($pageurl, ['element' => $element]);
 
 // Check if they cancelled.
 if ($mform->is_cancelled()) {
-    $url = new moodle_url('/blocks/coupon/view/templates/edit.php', array('tid' => $tid));
+    $url = new moodle_url('/blocks/coupon/view/templates/edit.php', ['tid' => $tid]);
     redirect($url);
 }
 
@@ -105,7 +107,7 @@ if ($data = $mform->get_data()) {
         \block_coupon\event\template_updated::create_from_template($template)->trigger();
     }
 
-    $url = new moodle_url('/blocks/coupon/view/templates/edit.php', array('tid' => $tid));
+    $url = new moodle_url('/blocks/coupon/view/templates/edit.php', ['tid' => $tid]);
     redirect($url);
 }
 
@@ -113,7 +115,7 @@ $renderer = $PAGE->get_renderer('block_coupon');
 echo $OUTPUT->header();
 echo html_writer::start_div('block-coupon-container');
 echo html_writer::start_div();
-echo $renderer->get_tabs($PAGE->context, 'cptpl', array('id' => $id));
+echo $renderer->get_tabs($PAGE->context, 'cptpl', ['id' => $id]);
 echo html_writer::end_div();
 $mform->display();
 echo html_writer::end_div();

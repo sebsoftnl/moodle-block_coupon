@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // Login_check is done in couponpage class.
@@ -31,16 +31,18 @@
 require_once(dirname(__FILE__) . '/../../../config.php');
 use block_coupon\couponpage;
 
+set_time_limit(0);
+
 $title = 'Import * from block_voucher';
 $page = couponpage::setup(
-    'block_coupon_view_index',
+    'block_coupon_view_importvoucher',
     $title,
-    couponpage::get_view_url('index.php'),
+    couponpage::get_view_url('importvouchers.php'),
     'block/coupon:administration',
     \context_system::instance(),
     [
         'pagelayout' => 'report',
-        'title' => $title
+        'title' => $title,
     ]
 );
 

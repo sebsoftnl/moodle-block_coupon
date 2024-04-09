@@ -22,7 +22,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace block_coupon\forms\element;
@@ -40,7 +40,7 @@ require_once($CFG->libdir . '/form/autocomplete.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class findcohorts extends MoodleQuickForm_autocomplete {
@@ -67,11 +67,11 @@ class findcohorts extends MoodleQuickForm_autocomplete {
      *                       Valid options are:
      *                       - multiple bool Whether or not the field accepts more than one values.
      */
-    public function __construct($elementname = null, $elementlabel = null, $options = array()) {
-        $validattributes = array(
+    public function __construct($elementname = null, $elementlabel = null, $options = []) {
+        $validattributes = [
             'ajax' => 'block_coupon/findcohorts',
-            'multiple' => true
-        );
+            'multiple' => true,
+        ];
         if (!empty($options['multiple'])) {
             $validattributes['multiple'] = 'multiple';
         }
@@ -83,7 +83,7 @@ class findcohorts extends MoodleQuickForm_autocomplete {
         $validattributes['placeholder'] = get_string('findcohorts:placeholder', 'block_coupon');
         $validattributes['noselectionstring'] = get_string('findcohorts:noselectionstring', 'block_coupon');
         $validattributes['showsuggestions'] = true;
-        parent::__construct($elementname, $elementlabel, array(), $validattributes);
+        parent::__construct($elementname, $elementlabel, [], $validattributes);
     }
 
     /**
@@ -105,7 +105,7 @@ class findcohorts extends MoodleQuickForm_autocomplete {
         $this->selectedset = true;
 
         $values = (array) $value;
-        $ids = array();
+        $ids = [];
         foreach ($values as $onevalue) {
             if (!empty($onevalue) && (!$this->optionExists($onevalue)) &&
                     ($onevalue !== '_qf__force_multiselect_submission')) {
@@ -116,7 +116,7 @@ class findcohorts extends MoodleQuickForm_autocomplete {
             return;
         }
         // Logic here is simulating API.
-        $toselect = array();
+        $toselect = [];
         list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'param');
         $cohorts = $DB->get_records_select('cohort', 'id '.$insql, $inparams);
         foreach ($cohorts as $cohort) {

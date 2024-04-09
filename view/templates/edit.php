@@ -18,7 +18,7 @@
  * Edit the template settings.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -36,7 +36,7 @@ $confirm = optional_param('confirm', 0, PARAM_INT);
 // Edit an existing template.
 if ($tid) {
     // Create the template object.
-    $template = $DB->get_record('block_coupon_templates', array('id' => $tid), '*', MUST_EXIST);
+    $template = $DB->get_record('block_coupon_templates', ['id' => $tid], '*', MUST_EXIST);
     $template = new block_coupon\template($template);
     // Set the context.
     $contextid = $template->get_contextid();
@@ -46,7 +46,7 @@ if ($tid) {
     // Need to supply the contextid.
     $contextid = required_param('contextid', PARAM_INT);
     // Set the page url.
-    $pageurl = new moodle_url('/blocks/coupon/view/templates/edit.php', array('contextid' => $contextid));
+    $pageurl = new moodle_url('/blocks/coupon/view/templates/edit.php', ['contextid' => $contextid]);
 }
 
 $context = context::instance_by_id($contextid);
@@ -119,13 +119,13 @@ if ($tid) {
                     // Create the link options.
                     $nourl = new moodle_url('/blocks/coupon/view/templates/edit.php', ['tid' => $tid]);
                     $yesurl = new moodle_url('/blocks/coupon/view/templates/edit.php',
-                        array(
+                        [
                             'tid' => $tid,
                             'action' => 'deletepage',
                             'aid' => $actionid,
                             'confirm' => 1,
-                            'sesskey' => sesskey()
-                        )
+                            'sesskey' => sesskey(),
+                        ]
                     );
                 }
                 break;
@@ -140,13 +140,13 @@ if ($tid) {
                     // Create the link options.
                     $nourl = new moodle_url('/blocks/coupon/view/templates/edit.php', ['tid' => $tid]);
                     $yesurl = new moodle_url('/blocks/coupon/view/templates/edit.php',
-                        array(
+                        [
                             'tid' => $tid,
                             'action' => 'deleteelement',
                             'aid' => $actionid,
                             'confirm' => 1,
-                            'sesskey' => sesskey()
-                        )
+                            'sesskey' => sesskey(),
+                        ]
                     );
                 }
                 break;
@@ -167,7 +167,7 @@ if ($deleting) {
 if ($tid) {
     $mform = new \block_coupon\template\edit_form($pageurl, ['tid' => $tid]);
     // Set the name for the form.
-    $mform->set_data(array('name' => $template->get_name()));
+    $mform->set_data(['name' => $template->get_name()]);
 } else {
     $mform = new \block_coupon\template\edit_form($pageurl);
 }
@@ -224,7 +224,7 @@ if ($data = $mform->get_data()) {
             $element = "element_" . $pageid;
             $element = $data->$element;
             // Create the URL to redirect to to add this element.
-            $params = array();
+            $params = [];
             $params['tid'] = $template->get_id();
             $params['action'] = 'add';
             $params['element'] = $element;

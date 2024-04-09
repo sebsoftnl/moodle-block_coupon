@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -46,7 +46,7 @@ use external_single_structure;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class templates extends external_api {
@@ -61,10 +61,10 @@ class templates extends external_api {
     public static function update_element_positions($tid, array $values = []) {
         global $DB;
 
-        $params = self::validate_parameters(self::update_element_positions_parameters(), array(
+        $params = self::validate_parameters(self::update_element_positions_parameters(), [
             'tid' => $tid,
             'values' => $values,
-        ));
+        ]);
 
         $template = $DB->get_record('block_coupon_templates', ['id' => $params['tid']]);
         $template = new \block_coupon\template($template);
@@ -99,7 +99,7 @@ class templates extends external_api {
         ]);
         return new external_function_parameters([
             'tid' => new external_value(PARAM_INT, 'template id'),
-            'values' => new external_multiple_structure($struct)
+            'values' => new external_multiple_structure($struct),
         ]);
     }
 
@@ -118,19 +118,16 @@ class templates extends external_api {
      * @return external_function_parameters
      */
     public static function save_element_parameters() {
-        return new external_function_parameters(
-            array(
+        return new external_function_parameters([
                 'templateid' => new external_value(PARAM_INT, 'The template id'),
                 'elementid' => new external_value(PARAM_INT, 'The element id'),
                 'values' => new external_multiple_structure(
-                    new external_single_structure(
-                        array(
-                            'name' => new external_value(PARAM_ALPHANUMEXT, 'The field to update'),
-                            'value' => new external_value(PARAM_RAW, 'The value of the field'),
-                        )
-                    )
-                )
-            )
+                    new external_single_structure([
+                        'name' => new external_value(PARAM_ALPHANUMEXT, 'The field to update'),
+                        'value' => new external_value(PARAM_RAW, 'The value of the field'),
+                    ])
+                ),
+            ]
         );
     }
 
@@ -145,15 +142,15 @@ class templates extends external_api {
     public static function save_element($templateid, $elementid, $values) {
         global $DB;
 
-        $params = array(
+        $params = [
             'templateid' => $templateid,
             'elementid' => $elementid,
-            'values' => $values
-        );
+            'values' => $values,
+        ];
         self::validate_parameters(self::save_element_parameters(), $params);
 
-        $template = $DB->get_record('block_coupon_templates', array('id' => $templateid), '*', MUST_EXIST);
-        $element = $DB->get_record('block_coupon_elements', array('id' => $elementid), '*', MUST_EXIST);
+        $template = $DB->get_record('block_coupon_templates', ['id' => $templateid], '*', MUST_EXIST);
+        $element = $DB->get_record('block_coupon_elements', ['id' => $elementid], '*', MUST_EXIST);
 
         // Set the template.
         $template = new \block_coupon\template($template);
@@ -195,12 +192,10 @@ class templates extends external_api {
      * @return external_function_parameters
      */
     public static function get_element_html_parameters() {
-        return new external_function_parameters(
-            array(
-                'templateid' => new external_value(PARAM_INT, 'The template id'),
-                'elementid' => new external_value(PARAM_INT, 'The element id'),
-            )
-        );
+        return new external_function_parameters([
+            'templateid' => new external_value(PARAM_INT, 'The template id'),
+            'elementid' => new external_value(PARAM_INT, 'The element id'),
+        ]);
     }
 
     /**
@@ -213,14 +208,14 @@ class templates extends external_api {
     public static function get_element_html($templateid, $elementid) {
         global $DB;
 
-        $params = array(
+        $params = [
             'templateid' => $templateid,
-            'elementid' => $elementid
-        );
+            'elementid' => $elementid,
+        ];
         self::validate_parameters(self::get_element_html_parameters(), $params);
 
-        $template = $DB->get_record('block_coupon_templates', array('id' => $templateid), '*', MUST_EXIST);
-        $element = $DB->get_record('block_coupon_elements', array('id' => $elementid), '*', MUST_EXIST);
+        $template = $DB->get_record('block_coupon_templates', ['id' => $templateid], '*', MUST_EXIST);
+        $element = $DB->get_record('block_coupon_elements', ['id' => $elementid], '*', MUST_EXIST);
 
         // Set the template.
         $template = new \block_coupon\template($template);
@@ -252,9 +247,7 @@ class templates extends external_api {
      */
     public static function delete_template_parameters(): external_function_parameters {
         $id = new external_value(PARAM_INT, 'Template ID');
-        return new external_function_parameters(array(
-            'id' => $id
-        ));
+        return new external_function_parameters(['id' => $id]);
     }
 
     /**
@@ -266,14 +259,12 @@ class templates extends external_api {
     public static function delete_template($id) {
         global $DB;
 
-        $params = self::validate_parameters(self::delete_template_parameters(), array(
-            'id' => $id
-        ));
+        $params = self::validate_parameters(self::delete_template_parameters(), ['id' => $id]);
 
         $context = \context_system::instance();
         require_capability('block/coupon:administration', $context);
 
-        $template = $DB->get_record('block_coupon_templates', array('id' => $params['id']), '*', MUST_EXIST);
+        $template = $DB->get_record('block_coupon_templates', ['id' => $params['id']], '*', MUST_EXIST);
         $template = new \block_coupon\template($template);
 
         try {
@@ -281,12 +272,12 @@ class templates extends external_api {
 
             return (object)[
                 'result' => true,
-                'message' => get_string('success:template:delete', 'block_coupon', (object)['id' => $id])
+                'message' => get_string('success:template:delete', 'block_coupon', (object)['id' => $id]),
             ];
         } catch (\Exception $e) {
             return (object)[
                 'result' => false,
-                'message' => get_string('err:template:delete', 'block_coupon') . $e->getMessage()
+                'message' => get_string('err:template:delete', 'block_coupon') . $e->getMessage(),
             ];
         }
     }
@@ -299,7 +290,7 @@ class templates extends external_api {
     public static function delete_template_returns() {
         return new external_single_structure([
             'result' => new external_value(PARAM_BOOL, 'Result of call'),
-            'message' => new external_value(PARAM_RAW, 'Result message')
+            'message' => new external_value(PARAM_RAW, 'Result message'),
         ]);
     }
 
@@ -310,9 +301,7 @@ class templates extends external_api {
      */
     public static function duplicate_template_parameters(): external_function_parameters {
         $id = new external_value(PARAM_INT, 'Template ID');
-        return new external_function_parameters(array(
-            'id' => $id
-        ));
+        return new external_function_parameters(['id' => $id]);
     }
 
     /**
@@ -324,14 +313,12 @@ class templates extends external_api {
     public static function duplicate_template($id) {
         global $DB;
 
-        $params = self::validate_parameters(self::duplicate_template_parameters(), array(
-            'id' => $id
-        ));
+        $params = self::validate_parameters(self::duplicate_template_parameters(), ['id' => $id]);
 
         $context = \context_system::instance();
         require_capability('block/coupon:administration', $context);
 
-        $template = $DB->get_record('block_coupon_templates', array('id' => $params['id']), '*', MUST_EXIST);
+        $template = $DB->get_record('block_coupon_templates', ['id' => $params['id']], '*', MUST_EXIST);
         $template = new \block_coupon\template($template);
 
         try {
@@ -344,12 +331,12 @@ class templates extends external_api {
 
             return (object)[
                 'result' => true,
-                'message' => get_string('success:template:duplicate', 'block_coupon', (object)['id' => $id])
+                'message' => get_string('success:template:duplicate', 'block_coupon', (object)['id' => $id]),
             ];
         } catch (\Exception $e) {
             return (object)[
                 'result' => false,
-                'message' => get_string('err:template:duplicate', 'block_coupon') . $e->getMessage()
+                'message' => get_string('err:template:duplicate', 'block_coupon') . $e->getMessage(),
             ];
         }
     }
@@ -362,7 +349,7 @@ class templates extends external_api {
     public static function duplicate_template_returns() {
         return new external_single_structure([
             'result' => new external_value(PARAM_BOOL, 'Result of call'),
-            'message' => new external_value(PARAM_RAW, 'Result message')
+            'message' => new external_value(PARAM_RAW, 'Result message'),
         ]);
     }
 

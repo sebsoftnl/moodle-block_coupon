@@ -91,7 +91,7 @@ class element extends \block_coupon\template\element {
     public function save_unique_data($data) {
         $arrtostore = [
             'width' => !empty($data->width) ? (int)$data->width : 0,
-            'height' => !empty($data->height) ? (int)$data->height : 0
+            'height' => !empty($data->height) ? (int)$data->height : 0,
         ];
 
         return json_encode($arrtostore);
@@ -120,12 +120,12 @@ class element extends \block_coupon\template\element {
      * Handles rendering the element on the pdf.
      *
      * @param \pdf $pdf the pdf object
-     * @param bool $preview true if it is a preview, false otherwise
+     * @param boolean $preview true if it is a preview, false otherwise
      * @param \stdClass $user the user we are rendering this for
      * @param \stdClass $extradata -- expects "code" to be present
      */
     public function render($pdf, $preview, $user, \stdClass $extradata = null) {
-        global $DB, $CFG, $USER;
+        global $CFG, $USER;
 
         // If there is no element data, we have nothing to display.
         if (empty($this->get_data())) {
@@ -139,10 +139,10 @@ class element extends \block_coupon\template\element {
         $sha .= ($extradata?->id) ?? 0;
         $sha .= ($extradata?->ownerid) ?? $USER->id;
         $sha .= $code;
-        $qrcodeurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/qrin.php', array(
+        $qrcodeurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/qrin.php', [
             'c' => $code,
             'h' => sha1($sha),
-        ));
+        ]);
         $qrcodeurl = $qrcodeurl->out(false);
 
         $barcode = new \TCPDF2DBarcode($qrcodeurl, self::BARCODETYPE);

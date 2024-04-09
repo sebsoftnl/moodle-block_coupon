@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @author      Sebastian Berm <sebastian@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -39,7 +39,7 @@ use html_writer;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @author      Sebastian Berm <sebastian@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -82,7 +82,7 @@ class coupons {
 
         $this->page->navbar->add(get_string($title, 'block_coupon'));
 
-        $url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php', array('tab' => $tab));
+        $url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php', ['tab' => $tab]);
         $this->page->set_url($url);
         $this->page->set_title(get_string($title, 'block_coupon'));
         $this->page->set_heading(get_string($heading, 'block_coupon'));
@@ -124,7 +124,7 @@ class coupons {
         $table->set_filtering($filtering);
 
         $table->is_downloadable(true);
-        $table->show_download_buttons_at(array(TABLE_P_BOTTOM, TABLE_P_TOP));
+        $table->show_download_buttons_at([TABLE_P_BOTTOM, TABLE_P_TOP]);
         $download = optional_param('download', '', PARAM_ALPHA);
         if (!empty($download)) {
             $table->is_downloading($download, 'coupons', 'coupons');
@@ -168,11 +168,11 @@ class coupons {
         $id = required_param('itemid', PARAM_INT);
 
         $transaction = $DB->start_delegated_transaction();
-        $DB->delete_records('block_coupon', array('id' => $id));
-        $DB->delete_records('block_coupon_cohorts', array('couponid' => $id));
-        $DB->delete_records('block_coupon_groups', array('couponid' => $id));
-        $DB->delete_records('block_coupon_courses', array('couponid' => $id));
-        $DB->delete_records('block_coupon_errors', array('couponid' => $id));
+        $DB->delete_records('block_coupon', ['id' => $id]);
+        $DB->delete_records('block_coupon_cohorts', ['couponid' => $id]);
+        $DB->delete_records('block_coupon_groups', ['couponid' => $id]);
+        $DB->delete_records('block_coupon_courses', ['couponid' => $id]);
+        $DB->delete_records('block_coupon_errors', ['couponid' => $id]);
         $DB->commit_delegated_transaction($transaction);
 
         redirect($this->page->url, get_string('coupon:deleted', 'block_coupon'));

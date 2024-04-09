@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @author      Sebastian Berm <sebastian@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -39,7 +39,7 @@ use html_writer;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @author      Sebastian Berm <sebastian@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -82,7 +82,7 @@ class maillog {
 
         $this->page->navbar->add(get_string($title, 'block_coupon'));
 
-        $url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/maillog.php', array('tab' => $tab));
+        $url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/maillog.php', ['tab' => $tab]);
         $this->page->set_url($url);
         $this->page->set_title(get_string($title, 'block_coupon'));
         $this->page->set_heading(get_string($heading, 'block_coupon'));
@@ -109,24 +109,23 @@ class maillog {
         $table->set_filtering($filtering);
 
         $table->is_downloadable(true);
-        $table->show_download_buttons_at(array(TABLE_P_BOTTOM, TABLE_P_TOP));
+        $table->show_download_buttons_at([TABLE_P_BOTTOM, TABLE_P_TOP]);
         $download = optional_param('download', '', PARAM_ALPHA);
         if (!empty($download)) {
             $table->is_downloading($download, 'coupons', 'coupons');
             $table->render(25);
-            exit;
+        } else {
+            echo $this->output->header();
+            echo html_writer::start_div('block-coupon-container');
+            echo html_writer::start_div();
+            echo $this->renderer->get_tabs($this->page->context, 'cpmaillog');
+            echo html_writer::end_div();
+            $filtering->display_add();
+            $filtering->display_active();
+            echo $table->render(25);
+            echo html_writer::end_div();
+            echo $this->output->footer();
         }
-
-        echo $this->output->header();
-        echo html_writer::start_div('block-coupon-container');
-        echo html_writer::start_div();
-        echo $this->renderer->get_tabs($this->page->context, 'cpmaillog');
-        echo html_writer::end_div();
-        $filtering->display_add();
-        $filtering->display_active();
-        echo $table->render(25);
-        echo html_writer::end_div();
-        echo $this->output->footer();
     }
 
     /**

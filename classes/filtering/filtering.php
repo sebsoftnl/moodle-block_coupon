@@ -24,7 +24,7 @@
  *
  * @copyright   1999 Martin Dougiamas  http://dougiamas.com
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 
@@ -43,7 +43,7 @@ require_once($CFG->dirroot . '/user/filters/select.php');
  *
  * @copyright   1999 Martin Dougiamas  http://dougiamas.com
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class filtering {
@@ -66,7 +66,7 @@ abstract class filtering {
         global $SESSION;
 
         if (!isset($SESSION->coupon_report_filtering)) {
-            $SESSION->coupon_report_filtering = array();
+            $SESSION->coupon_report_filtering = [];
         }
 
         if (empty($hidefields)) {
@@ -76,7 +76,7 @@ abstract class filtering {
         if (empty($fieldnames)) {
             $fieldnames = $this->get_fields();
         } else {
-            $tmp = array();
+            $tmp = [];
             $fields = $this->get_fields();
             foreach ($fieldnames as $k => $v) {
                 if (!empty($hidefields[$k])) {
@@ -89,7 +89,7 @@ abstract class filtering {
             $fieldnames = $tmp;
         }
 
-        $this->_fields  = array();
+        $this->_fields  = [];
 
         foreach ($fieldnames as $fieldname => $advanced) {
             if ($field = $this->get_field($fieldname, $advanced)) {
@@ -98,7 +98,7 @@ abstract class filtering {
         }
 
         // Fist the new filter form.
-        $addfilterparams = array('fields' => $this->_fields, 'extraparams' => $extraparams);
+        $addfilterparams = ['fields' => $this->_fields, 'extraparams' => $extraparams];
         $addfilterparams['alwayscollapsed'] = true; // Collapse by default.
         $this->_addform = new addfilterform($baseurl, $addfilterparams);
         if ($adddata = $this->_addform->get_data()) {
@@ -108,20 +108,20 @@ abstract class filtering {
                     continue; // Nothing new.
                 }
                 if (!array_key_exists($fname, $SESSION->coupon_report_filtering)) {
-                    $SESSION->coupon_report_filtering[$fname] = array();
+                    $SESSION->coupon_report_filtering[$fname] = [];
                 }
                 $SESSION->coupon_report_filtering[$fname][] = $data;
             }
             // Clear the form.
-            $_POST = array();
-            $this->_addform = new addfilterform($baseurl, array('fields' => $this->_fields, 'extraparams' => $extraparams));
+            $_POST = [];
+            $this->_addform = new addfilterform($baseurl, ['fields' => $this->_fields, 'extraparams' => $extraparams]);
         }
 
         // Now the active filters.
-        $this->_activeform = new activefilterform($baseurl, array('fields' => $this->_fields, 'extraparams' => $extraparams));
+        $this->_activeform = new activefilterform($baseurl, ['fields' => $this->_fields, 'extraparams' => $extraparams]);
         if ($adddata = $this->_activeform->get_data()) {
             if (!empty($adddata->removeall)) {
-                $SESSION->coupon_report_filtering = array();
+                $SESSION->coupon_report_filtering = [];
 
             } else if (!empty($adddata->removeselected) && !empty($adddata->filter)) {
                 foreach ($adddata->filter as $fname => $instances) {
@@ -137,8 +137,8 @@ abstract class filtering {
                 }
             }
             // Clear+reload the form.
-            $_POST = array();
-            $this->_activeform = new activefilterform($baseurl, array('fields' => $this->_fields, 'extraparams' => $extraparams));
+            $_POST = [];
+            $this->_activeform = new activefilterform($baseurl, ['fields' => $this->_fields, 'extraparams' => $extraparams]);
         }
     }
 
@@ -170,7 +170,7 @@ abstract class filtering {
     public function get_sql_filter($extra='', array $params=null) {
         global $SESSION;
 
-        $sqls = array();
+        $sqls = [];
         if ($extra != '') {
             $sqls[] = $extra;
         }
@@ -191,10 +191,10 @@ abstract class filtering {
         }
 
         if (empty($sqls)) {
-            return array('', array());
+            return ['', []];
         } else {
             $sqls = implode(' AND ', $sqls);
-            return array($sqls, $params);
+            return [$sqls, $params];
         }
     }
 

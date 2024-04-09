@@ -23,13 +23,13 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace block_coupon\tablefilters;
 
-use \block_coupon\filtering\filtering;
+use block_coupon\filtering\filtering;
 
 /**
  * block_coupon\tables\errorreport
@@ -37,7 +37,7 @@ use \block_coupon\filtering\filtering;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class errorreport extends filtering {
@@ -47,12 +47,12 @@ class errorreport extends filtering {
      * @return array
      */
     public function get_fields() {
-        return array(
+        return [
             'timecreated' => 0,
             'couponcode' => 0,
             'errortype' => 0,
             'batchid' => 0,
-        );
+        ];
     }
 
     /**

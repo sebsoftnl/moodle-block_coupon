@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * */
 
@@ -39,7 +39,7 @@ use block_coupon\exception;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cohort extends typebase implements icoupontype {
@@ -69,14 +69,14 @@ class cohort extends typebase implements icoupontype {
         }
 
         // Load associated cohorts.
-        $couponcohorts = $DB->get_records('block_coupon_cohorts', array('couponid' => $this->coupon->id));
+        $couponcohorts = $DB->get_records('block_coupon_cohorts', ['couponid' => $this->coupon->id]);
         if (count($couponcohorts) == 0) {
             throw new exception('error:missing_cohort');
         }
 
         // Add user to cohort.
         foreach ($couponcohorts as $couponcohort) {
-            if (!$DB->get_record('cohort', array('id' => $couponcohort->cohortid))) {
+            if (!$DB->get_record('cohort', ['id' => $couponcohort->cohortid])) {
                 throw new exception('error:missing_cohort');
             }
             cohort_add_member($couponcohort->cohortid, $foruserid);
@@ -146,7 +146,7 @@ class cohort extends typebase implements icoupontype {
         global $DB, $CFG;
         require_once($CFG->dirroot . '/cohort/lib.php');
         // Validate we're not yet in ANY cohort yet.
-        $couponcohorts = $DB->get_records('block_coupon_cohorts', array('couponid' => $this->coupon->id));
+        $couponcohorts = $DB->get_records('block_coupon_cohorts', ['couponid' => $this->coupon->id]);
         $cansignup = false;
         foreach ($couponcohorts as $couponcohort) {
             $ee = cohort_is_member($couponcohort->cohortid, $userid);

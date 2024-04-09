@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * */
 
@@ -39,7 +39,7 @@ use block_coupon\exception;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course extends typebase implements icoupontype {
@@ -74,7 +74,7 @@ class course extends typebase implements icoupontype {
         } else {
             $role = $DB->get_record('role', ['id' => $this->coupon->roleid]);
         }
-        $couponcourses = $DB->get_records('block_coupon_courses', array('couponid' => $this->coupon->id));
+        $couponcourses = $DB->get_records('block_coupon_courses', ['couponid' => $this->coupon->id]);
         // Set enrolment period.
         $endenrolment = 0;
         if (!is_null($this->coupon->enrolperiod) && $this->coupon->enrolperiod > 0) {
@@ -97,11 +97,11 @@ class course extends typebase implements icoupontype {
         }
 
         // And add user to groups.
-        $coupongroups = $DB->get_records('block_coupon_groups', array('couponid' => $this->coupon->id));
+        $coupongroups = $DB->get_records('block_coupon_groups', ['couponid' => $this->coupon->id]);
         if (!empty($coupongroups)) {
             foreach ($coupongroups as $coupongroup) {
                 // Check if the group exists.
-                if (!$DB->get_record('groups', array('id' => $coupongroup->groupid))) {
+                if (!$DB->get_record('groups', ['id' => $coupongroup->groupid])) {
                     throw new exception('error:missing_group');
                 }
                 // Add user if its not a member yet.
@@ -150,7 +150,7 @@ class course extends typebase implements icoupontype {
     public function assert_internal_checks($userid) {
         global $DB;
         // Assert we have at least ONE course we can sign up to..
-        $couponcourses = $DB->get_records('block_coupon_courses', array('couponid' => $this->coupon->id));
+        $couponcourses = $DB->get_records('block_coupon_courses', ['couponid' => $this->coupon->id]);
         $cansignup = false;
         foreach ($couponcourses as $couponcourse) {
             $ee = enrol_get_enrolment_end($couponcourse->courseid, $userid);

@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * */
 
@@ -35,7 +35,7 @@ namespace block_coupon\coupon;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class codegenerator {
@@ -72,11 +72,11 @@ final class codegenerator {
      * @return string guaranteed unique coupon code
      */
     public static function generate_unique_code($size, $flags = self::ALL,
-            $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O'), $prefix = '', $postfix = '') {
+            $exclude = ['i', 'I', 'l', 'L', 1, 0, 'o', 'O'], $prefix = '', $postfix = '') {
         global $DB;
 
         $vcode = $prefix . self::generate_code($size, $flags, $exclude) . $postfix;
-        while ($DB->get_record('block_coupon', array('submission_code' => $vcode))) {
+        while ($DB->get_record('block_coupon', ['submission_code' => $vcode])) {
             $vcode = $prefix . self::generate_code($size, $flags, $exclude) . $postfix;
         }
 
@@ -90,7 +90,7 @@ final class codegenerator {
      * @param int $flags generator flags
      * @param array $exclude characters to exclude
      */
-    private static function generate_code($size, $flags = self::ALL, $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
+    private static function generate_code($size, $flags = self::ALL, $exclude = ['i', 'I', 'l', 'L', 1, 0, 'o', 'O']) {
         return static::get_token($size, $flags, $exclude);
     }
 
@@ -114,7 +114,7 @@ final class codegenerator {
      * @return array [maximum, have]
      */
     public static function calc_max_codes_for_size($size, $flags = self::ALL,
-            $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
+            $exclude = ['i', 'I', 'l', 'L', 1, 0, 'o', 'O']) {
         global $DB;
 
         $have = $DB->count_records_sql('SELECT COUNT(1) FROM {block_coupon} WHERE LENGTH(submission_code) = ?', [$size]);
@@ -135,7 +135,7 @@ final class codegenerator {
      * @param array $exclude characters to exclude
      */
     private static function get_char_str($flags = self::ALL,
-            $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
+            $exclude = ['i', 'I', 'l', 'L', 1, 0, 'o', 'O']) {
         $chars = '';
         if (self::is_flag($flags, self::NUMERIC)) {
             $chars .= '0123456789';
@@ -202,7 +202,7 @@ final class codegenerator {
      * @param array $exclude characters to exclude
      * @return string
      */
-    protected static function get_token($size, $flags = self::ALL, $exclude = array('i', 'I', 'l', 'L', 1, 0, 'o', 'O')) {
+    protected static function get_token($size, $flags = self::ALL, $exclude = ['i', 'I', 'l', 'L', 1, 0, 'o', 'O']) {
         $codealphabet = static::get_char_str($flags, $exclude);
         $token = '';
         $max = strlen($codealphabet);

@@ -18,7 +18,7 @@
  * This file contains the form for handling editing a template element.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -36,7 +36,7 @@ use core_form\dynamic_form;
  * The form for handling editing a template element.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_element_dform extends dynamic_form {
@@ -57,7 +57,7 @@ class edit_element_dform extends dynamic_form {
     public function definition() {
         $mform =& $this->_form;
 
-        $mform->updateAttributes(array('id' => 'editelementform'));
+        $mform->updateAttributes(['id' => 'editelementform']);
 
         $mform->addElement('hidden', 'id', $this->element->get_id());
         $mform->setType('id', PARAM_INT);
@@ -88,7 +88,7 @@ class edit_element_dform extends dynamic_form {
      * @return array the errors that were found
      */
     public function validation($data, $files) {
-        $errors = array();
+        $errors = [];
 
         if (\core_text::strlen($data['name']) > 255) {
             $errors['name'] = get_string('nametoolong', 'block_coupon');

@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,25 +38,15 @@ use block_coupon\helper;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class pdfsettings extends baseform {
 
     /**
-     * Get reference to database
-     * @return \moodle_database
-     */
-    protected function db() {
-        global $DB;
-        return $DB;
-    }
-
-    /**
      * form definition
      */
     public function definition() {
-        global $CFG;
         $mform = & $this->_form;
 
         list($this->generatoroptions) = $this->_customdata;
@@ -90,7 +80,6 @@ class pdfsettings extends baseform {
      * @return array
      */
     public function validation($data, $files) {
-        global $DB;
         // Make sure batch id is unique if provided.
         $err = parent::validation($data, $files);
         return $err;

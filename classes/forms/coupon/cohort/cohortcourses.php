@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +38,7 @@ use block_coupon\helper;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cohortcourses extends baseform {
@@ -75,9 +75,16 @@ class cohortcourses extends baseform {
 
             // If we have connected courses we'll display them.
             if ($cohortcourses) {
-                $headingstr = array();
+                $headingstr = [];
                 foreach ($cohortcourses as $course) {
-                    $headingstr[] = $course->fullname;
+                    $headingstr[] = format_string(
+                        $course->fullname,
+                        true,
+                        [
+                            'filter' => true,
+                            'context' => \context_course::instance($course->id),
+                        ]
+                    );
                 }
                 $mform->addElement('static', 'connected_courses',
                         get_string('label:connected_courses', 'block_coupon'), implode('<br/>', $headingstr));

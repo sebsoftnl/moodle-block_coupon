@@ -18,7 +18,7 @@
  * Handles position elements on the PDF via drag and drop.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,9 +27,9 @@ require_once(dirname(__FILE__) . '/../../../../config.php');
 // The page of the template we are editing.
 $pid = required_param('pid', PARAM_INT);
 
-$page = $DB->get_record('block_coupon_pages', array('id' => $pid), '*', MUST_EXIST);
-$templaterec = $DB->get_record('block_coupon_templates', array('id' => $page->templateid), '*', MUST_EXIST);
-$elements = $DB->get_records('block_coupon_elements', array('pageid' => $pid), 'sequence');
+$page = $DB->get_record('block_coupon_pages', ['id' => $pid], '*', MUST_EXIST);
+$templaterec = $DB->get_record('block_coupon_templates', ['id' => $page->templateid], '*', MUST_EXIST);
+$elements = $DB->get_records('block_coupon_elements', ['pageid' => $pid], 'sequence');
 
 // Set the template.
 $template = new \block_coupon\template($templaterec);
@@ -42,7 +42,7 @@ $title = $SITE->fullname;
 $heading = $title;
 
 // Set the $PAGE settings.
-$pageurl = new moodle_url('/blocks/coupon/view/templates/rearrange.php', array('pid' => $pid));
+$pageurl = new moodle_url('/blocks/coupon/view/templates/rearrange.php', ['pid' => $pid]);
 $context = $template->get_context();
 
 $PAGE->set_url($pageurl);
@@ -75,16 +75,16 @@ $wctx = (object)[
     'buttons' => [],
     'template' => $templaterec,
     'page' => $page,
-    'elements' => []
+    'elements' => [],
 ];
 
 // Create the buttons to save the position of the elements.
 $wctx->buttons[] = $OUTPUT->single_button(new moodle_url('/blocks/coupon/view/templates/edit.php', ['tid' => $template->get_id()]),
-        get_string('saveandclose', 'block_coupon'), 'get', array('class' => 'savepositionsbtn'));
-$wctx->buttons[] = $OUTPUT->single_button(new moodle_url('/blocks/coupon/view/templates/rearrange.php', array('pid' => $pid)),
-        get_string('saveandcontinue', 'block_coupon'), 'get', array('class' => 'applypositionsbtn'));
+        get_string('saveandclose', 'block_coupon'), 'get', ['class' => 'savepositionsbtn']);
+$wctx->buttons[] = $OUTPUT->single_button(new moodle_url('/blocks/coupon/view/templates/rearrange.php', ['pid' => $pid]),
+        get_string('saveandcontinue', 'block_coupon'), 'get', ['class' => 'applypositionsbtn']);
 $wctx->buttons[] = $OUTPUT->single_button(new moodle_url('/blocks/coupon/view/templates/edit.php', ['tid' => $template->get_id()]),
-        get_string('close', 'block_coupon'), 'get', array('class' => 'cancelbtn'));
+        get_string('close', 'block_coupon'), 'get', ['class' => 'cancelbtn']);
 
 if ($elements) {
     foreach ($elements as $element) {

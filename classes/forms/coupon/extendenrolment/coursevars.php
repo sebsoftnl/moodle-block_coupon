@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +38,7 @@ use block_coupon\helper;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursevars extends baseform {
@@ -62,12 +62,19 @@ class coursevars extends baseform {
         $courses = helper::get_visible_courses();
 
         // And create data for multiselect.
-        $arrcoursesselect = array();
+        $arrcoursesselect = [];
         foreach ($courses as $course) {
-            $arrcoursesselect[$course->id] = $course->fullname;
+            $arrcoursesselect[$course->id] = format_string(
+                $course->fullname,
+                true,
+                [
+                    'filter' => true,
+                    'context' => \context_course::instance($course->id),
+                ]
+            );
         }
 
-        $attributes = array('size' => min(20, count($arrcoursesselect)));
+        $attributes = ['size' => min(20, count($arrcoursesselect))];
         // Course id.
         $selectcourse = &$mform->addElement('select', 'coupon_courses',
                 get_string('label:coupon_courses', 'block_coupon'), $arrcoursesselect, $attributes);

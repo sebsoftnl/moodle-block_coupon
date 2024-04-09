@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -40,7 +40,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cohort extends \moodleform {
@@ -73,12 +73,12 @@ class cohort extends \moodleform {
 
         // Select cohort(s).
         $cohorts = $DB->get_records_list('cohort', 'id', $this->get_option($this->options, 'cohorts', []));
-        $arrcohortsselect = array();
+        $arrcohortsselect = [];
         foreach ($cohorts as $cohort) {
             $arrcohortsselect[$cohort->id] = $cohort->name;
         }
 
-        $attributes = array('size' => min(20, count($arrcohortsselect)));
+        $attributes = ['size' => min(20, count($arrcohortsselect))];
         $selectcohort = &$mform->addElement('select', 'coupon_cohorts',
                 get_string('label:coupon_cohorts', 'block_coupon'), $arrcohortsselect, $attributes);
         $selectcohort->setMultiple(true);
@@ -131,8 +131,9 @@ class cohort extends \moodleform {
         // Enrolment period selection.
         if ($this->get_option($this->options, 'allowselectenrolperiod', false)) {
             $mform->addElement('duration', 'enrolment_period',
-                    get_string('label:enrolment_period', 'block_coupon'), array('size' => 40, 'optional' => true));
-            $mform->setDefault('enrolment_period', $this->get_option($this->options, 'enrolperioddefault', 0));
+                    get_string('label:enrolment_period', 'block_coupon'), ['size' => 40, 'optional' => true]);
+            $mform->setDefault('enrolment_period', $this->get_option($this->options, 'enrolperioddefault',
+                    get_config('block_coupon', 'defaultenrolmentperiod')));
             $mform->addHelpButton('enrolment_period', 'label:enrolment_period', 'block_coupon');
         } else {
             $mform->addElement('hidden', 'enrolment_period');

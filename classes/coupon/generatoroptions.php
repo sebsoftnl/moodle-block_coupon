@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * */
 
@@ -35,7 +35,7 @@ namespace block_coupon\coupon;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class generatoroptions {
@@ -105,22 +105,22 @@ class generatoroptions {
      * Cohort IDS the coupons are generated for
      * @var array
      */
-    public $cohorts = array();
+    public $cohorts = [];
     /**
      * Course IDS the coupons are generated for
      * @var array
      */
-    public $courses = array();
+    public $courses = [];
     /**
      * Group IDS the coupons are generated for (only applicable for course type)
      * @var array
      */
-    public $groups = array();
+    public $groups = [];
     /**
      * Grouping IDS the coupons are generated for (only applicable for coursegrouping type)
      * @var array
      */
-    public $groupings = array();
+    public $groupings = [];
 
     /**
      * Send to alternative email
@@ -273,6 +273,8 @@ class generatoroptions {
      */
     public function __construct() {
         $this->codesize = get_config('block_coupon', 'coupon_code_length');
+        $this->enrolperiod = get_config('block_coupon', 'defaultenrolmentperiod');
+        $this->generatecodesonly = (bool)get_config('block_coupon', 'defaultgeneratecodesonly');
         if (!$this->codesize) {
             $this->codesize = 16;
         }
@@ -363,7 +365,7 @@ class generatoroptions {
                     $course = get_course($courseid);
                     $course->fullname = format_text($course->fullname, FORMAT_MOODLE, [
                         'context' => \context_course::instance($course->id),
-                        'filter' => true
+                        'filter' => true,
                     ]);
 
                     $courses[] = $course;
@@ -558,7 +560,7 @@ class generatoroptions {
                     $course = get_course($courseid);
                     $course->fullname = format_text($course->fullname, FORMAT_MOODLE, [
                         'context' => \context_course::instance($course->id),
-                        'filter' => true
+                        'filter' => true,
                     ]);
 
                     $courses[] = $course;

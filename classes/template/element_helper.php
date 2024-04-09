@@ -129,7 +129,7 @@ class element_helper {
         if ($element->get_width()) {
             $style .= ' width: ' . $element->get_width() . 'mm';
         }
-        return \html_writer::div($content, '', array('style' => $style));
+        return \html_writer::div($content, '', ['style' => $style]);
     }
 
     /**
@@ -167,11 +167,11 @@ class element_helper {
      * @param \MoodleQuickForm $mform the edit_form instance.
      */
     public static function render_form_element_position($mform) {
-        $mform->addElement('text', 'posx', get_string('posx', 'block_coupon'), array('size' => 10));
+        $mform->addElement('text', 'posx', get_string('posx', 'block_coupon'), ['size' => 10]);
         $mform->setType('posx', PARAM_INT);
         $mform->setDefault('posx', 0);
         $mform->addHelpButton('posx', 'posx', 'block_coupon');
-        $mform->addElement('text', 'posy', get_string('posy', 'block_coupon'), array('size' => 10));
+        $mform->addElement('text', 'posy', get_string('posy', 'block_coupon'), ['size' => 10]);
         $mform->setType('posy', PARAM_INT);
         $mform->setDefault('posy', 0);
         $mform->addHelpButton('posy', 'posy', 'block_coupon');
@@ -183,7 +183,7 @@ class element_helper {
      * @param \MoodleQuickForm $mform the edit_form instance.
      */
     public static function render_form_element_width($mform) {
-        $mform->addElement('text', 'width', get_string('elementwidth', 'block_coupon'), array('size' => 10));
+        $mform->addElement('text', 'width', get_string('elementwidth', 'block_coupon'), ['size' => 10]);
         $mform->setType('width', PARAM_INT);
         $mform->setDefault('width', 0);
         $mform->addHelpButton('width', 'elementwidth', 'block_coupon');
@@ -195,7 +195,7 @@ class element_helper {
      * @param \MoodleQuickForm $mform the edit_form instance.
      */
     public static function render_form_element_height($mform) {
-        $mform->addElement('text', 'height', get_string('elementheight', 'block_coupon'), array('size' => 10));
+        $mform->addElement('text', 'height', get_string('elementheight', 'block_coupon'), ['size' => 10]);
         $mform->setType('height', PARAM_INT);
         $mform->setDefault('height', 0);
         $mform->addHelpButton('height', 'elementheight', 'block_coupon');
@@ -207,7 +207,7 @@ class element_helper {
      * @param \MoodleQuickForm $mform the edit_form instance.
      */
     public static function render_form_element_refpoint($mform) {
-        $refpointoptions = array();
+        $refpointoptions = [];
         $refpointoptions[self::COUPON_REF_POINT_TOPLEFT] = get_string('topleft', 'block_coupon');
         $refpointoptions[self::COUPON_REF_POINT_TOPCENTER] = get_string('topcenter', 'block_coupon');
         $refpointoptions[self::COUPON_REF_POINT_TOPRIGHT] = get_string('topright', 'block_coupon');
@@ -224,7 +224,7 @@ class element_helper {
      * @param \MoodleQuickForm $mform the edit_form instance.
      */
     public static function render_form_element_alignment($mform) {
-        $alignmentoptions = array();
+        $alignmentoptions = [];
         $alignmentoptions[element::ALIGN_LEFT] = get_string('alignleft', 'block_coupon');
         $alignmentoptions[element::ALIGN_CENTER] = get_string('aligncenter', 'block_coupon');
         $alignmentoptions[element::ALIGN_RIGHT] = get_string('alignright', 'block_coupon');
@@ -242,7 +242,7 @@ class element_helper {
      * @return array the validation errors
      */
     public static function validate_form_element_colour($data) {
-        $errors = array();
+        $errors = [];
         // Validate the colour.
         if (!self::validate_colour($data['colour'])) {
             $errors['colour'] = get_string('invalidcolour', 'block_coupon');
@@ -257,7 +257,7 @@ class element_helper {
      * @return array the validation errors
      */
     public static function validate_form_element_position($data) {
-        $errors = array();
+        $errors = [];
 
         // Check if posx is not set, or not numeric or less than 0.
         if ((!isset($data['posx'])) || (!is_numeric($data['posx'])) || ($data['posx'] < 0)) {
@@ -275,7 +275,7 @@ class element_helper {
      * Helper function to perform validation on the width element.
      *
      * @param array $data the submitted data
-     * @param bool $allowzero allow zero as a valid value
+     * @param boolean $allowzero allow zero as a valid value
      * @return array the validation errors
      */
     public static function validate_form_element_width($data, bool $allowzero = true) {
@@ -308,7 +308,7 @@ class element_helper {
      * Helper function to perform validation on the height element.
      *
      * @param array $data the submitted data
-     * @param bool $allowzero allow zero as a valid value
+     * @param boolean $allowzero allow zero as a valid value
      * @return array the validation errors
      */
     public static function validate_form_element_height($data, bool $allowzero = true) {
@@ -368,7 +368,7 @@ class element_helper {
             $font = substr($font, 0, -1);
             $attr .= 'B';
         }
-        return array($font, $attr);
+        return [$font, $attr];
     }
 
     /**
@@ -379,7 +379,7 @@ class element_helper {
      */
     public static function validate_colour($colour) {
         // List of valid HTML colour names.
-        $colournames = array(
+        $colournames = [
             'aliceblue', 'antiquewhite', 'aqua', 'aquamarine', 'azure',
             'beige', 'bisque', 'black', 'blanchedalmond', 'blue',
             'blueviolet', 'brown', 'burlywood', 'cadetblue', 'chartreuse',
@@ -410,8 +410,8 @@ class element_helper {
             'seagreen', 'seashell', 'sienna', 'silver', 'skyblue', 'slateblue',
             'slategray', 'slategrey', 'snow', 'springgreen', 'steelblue', 'tan',
             'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'wheat', 'white',
-            'whitesmoke', 'yellow', 'yellowgreen'
-        );
+            'whitesmoke', 'yellow', 'yellowgreen',
+        ];
 
         if (preg_match('/^#?([[:xdigit:]]{3}){1,2}$/', $colour)) {
             return true;
@@ -436,10 +436,10 @@ class element_helper {
         $sequence = 1;
         // Check if there already elements that exist, if so, overwrite value.
         $sql = "SELECT MAX(sequence) as maxsequence
-                  FROM {block_coupon_elements}
-                 WHERE pageid = :id";
+                FROM {block_coupon_elements}
+                WHERE pageid = :id";
         // Get the current max sequence on this page and add 1 to get the new sequence.
-        if ($maxseq = $DB->get_record_sql($sql, array('id' => $pageid))) {
+        if ($maxseq = $DB->get_record_sql($sql, ['id' => $pageid])) {
             $sequence = $maxseq->maxsequence + 1;
         }
 
@@ -464,7 +464,7 @@ class element_helper {
                  WHERE ce.id = :elementid";
 
         // Check if there is a course associated with this element.
-        if ($course = $DB->get_record_sql($sql, array('elementid' => $elementid))) {
+        if ($course = $DB->get_record_sql($sql, ['elementid' => $elementid])) {
             return $course->course;
         } else { // Must be in a site template.
             return $SITE->id;
@@ -477,7 +477,7 @@ class element_helper {
      * @param int $elementid The element id
      * @return \context The context
      */
-    public static function get_context(int $elementid) : \context {
+    public static function get_context(int $elementid): \context {
         global $DB;
 
         $sql = "SELECT ct.contextid
@@ -487,7 +487,7 @@ class element_helper {
             INNER JOIN {block_coupon_elements} ce
                     ON cp.id = ce.pageid
                  WHERE ce.id = :elementid";
-        $contextid = $DB->get_field_sql($sql, array('elementid' => $elementid), MUST_EXIST);
+        $contextid = $DB->get_field_sql($sql, ['elementid' => $elementid], MUST_EXIST);
 
         return \context::instance_by_id($contextid);
     }
@@ -501,7 +501,7 @@ class element_helper {
         global $CFG;
 
         // Array to store the element types.
-        $options = array();
+        $options = [];
 
         // Check that the directory exists.
         $elementdir = "$CFG->dirroot/blocks/coupon/classes/template/element";

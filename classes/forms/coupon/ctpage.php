@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +38,7 @@ use block_coupon\helper;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ctpage extends baseform {
@@ -130,7 +130,7 @@ class ctpage extends baseform {
                 \block_coupon\emailtemplates::add_form_element($mform);
                 $mform->addElement('editor', 'email_body_manual', get_string('label:email_body', 'block_coupon'), ['noclean' => 1]);
                 $mform->setType('email_body_manual', PARAM_RAW);
-                $mform->setDefault('email_body_manual', array('text' => $mailcontentdefault));
+                $mform->setDefault('email_body_manual', ['text' => $mailcontentdefault]);
                 $mform->addRule('email_body_manual', get_string('required'), 'required', null, 'client');
                 $mform->addHelpButton('email_body_manual', 'label:email_body', 'block_coupon');
 
@@ -140,7 +140,7 @@ class ctpage extends baseform {
                 $mform->addRule('date_send_coupons_manual', get_string('required'), 'required');
                 $mform->addHelpButton('date_send_coupons_manual', 'label:date_send_coupons', 'block_coupon');
 
-                $recips = ['Email,Gender,Name'];
+                $recips = ['E-mail,Gender,Name'];
                 foreach ($this->generatoroptions->recipients as $data) {
                     $recips[] = "{$data->email},{$data->gender},{$data->name}";
                 }
@@ -171,7 +171,7 @@ class ctpage extends baseform {
                 // Filepicker.
                 $urldownloadcsv = new \moodle_url($CFG->wwwroot . '/blocks/coupon/sample.csv');
                 $mform->addElement('filepicker', 'coupon_recipients',
-                        get_string('label:coupon_recipients', 'block_coupon'), null, array('accepted_types' => 'csv'));
+                        get_string('label:coupon_recipients', 'block_coupon'), null, ['accepted_types' => 'csv']);
                 $mform->addHelpButton('coupon_recipients', 'label:coupon_recipients', 'block_coupon');
                 $mform->addElement('static', 'coupon_recipients_desc', '', get_string('coupon_recipients_desc', 'block_coupon'));
                 $mform->addElement('static', 'sample_csv', '', '<a href="' . $urldownloadcsv
@@ -188,9 +188,9 @@ class ctpage extends baseform {
                 $mform->addElement('header', 'mailform', get_string('heading:mailsettings', 'block_coupon'));
                 // Editable email message.
                 \block_coupon\emailtemplates::add_form_element($mform);
-                $mform->addElement('editor', 'email_body', get_string('label:email_body', 'block_coupon'), array('noclean' => 1));
+                $mform->addElement('editor', 'email_body', get_string('label:email_body', 'block_coupon'), ['noclean' => 1]);
                 $mform->setType('email_body', PARAM_RAW);
-                $mform->setDefault('email_body', array('text' => $mailcontentdefault));
+                $mform->setDefault('email_body', ['text' => $mailcontentdefault]);
                 $mform->addRule('email_body', get_string('required'), 'required', null, 'client');
                 $mform->addHelpButton('email_body', 'label:email_body', 'block_coupon');
 

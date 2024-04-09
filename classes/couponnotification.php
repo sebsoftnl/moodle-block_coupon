@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 
@@ -35,7 +35,7 @@ namespace block_coupon;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class couponnotification {
@@ -95,7 +95,14 @@ class couponnotification {
 
         $a = new \stdClass();
         $a->fullname = fullname($recipient);
-        $a->course = $course->fullname;
+        $a->course = format_string(
+            $course->fullname,
+            true,
+            [
+                'filter' => true,
+                'context' => \context_course::instance($course->id),
+            ]
+        );
         $a->signoff = generate_email_signoff();
         $a->batchid = $batchid;
         $a->downloadlink = \html_writer::link($downloadurl, get_string('here', 'block_coupon'));
@@ -143,7 +150,14 @@ class couponnotification {
 
         $a = new \stdClass();
         $a->fullname = fullname($recipient);
-        $a->course = $course->fullname;
+        $a->course = format_string(
+            $course->fullname,
+            true,
+            [
+                'filter' => true,
+                'context' => \context_course::instance($course->id),
+            ]
+        );
         $a->signoff = generate_email_signoff();
         $a->batchid = $batchid;
         $a->downloadlink = \html_writer::link($downloadurl, get_string('here', 'block_coupon'));
@@ -191,7 +205,14 @@ class couponnotification {
 
         $a = new \stdClass();
         $a->fullname = fullname($recipient);
-        $a->course = $course->fullname;
+        $a->course = format_string(
+            $course->fullname,
+            true,
+            [
+                'filter' => true,
+                'context' => \context_course::instance($course->id),
+            ]
+        );
         $a->signoff = generate_email_signoff();
         $a->timecreated = userdate($timeexecuted, get_string('strftimedate', 'langconfig'));
         $a->batchid = $batchid;

@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursegroupings extends \table_sql {
@@ -123,20 +123,20 @@ class coursegroupings extends \table_sql {
      * Display the general status log table.
      *
      * @param int $pagesize
-     * @param bool $useinitialsbar
+     * @param boolean $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
-        $columns = array('name', 'idnumber', 'numcourses');
+        $columns = ['name', 'idnumber', 'numcourses'];
         if ($this->is_downloading() == '') {
             $columns[] = 'action';
         }
         $this->define_columns($columns);
 
-        $headers = array(
+        $headers = [
             get_string('name'),
             get_string('idnumber'),
             get_string('numcourses', 'block_coupon'),
-        );
+        ];
         if ($this->is_downloading() == '') {
             $headers[] = get_string('th:action', 'block_coupon');
         }
@@ -146,8 +146,8 @@ class coursegroupings extends \table_sql {
         $fields = 'cg.*, COUNT(cgc.courseid) AS numcourses, NULL as action';
         $from = '{block_coupon_coursegroupings} cg ';
         $from .= 'LEFT JOIN {block_coupon_cgcourses} cgc ON cg.id=cgc.coursegroupingid ';
-        $where = array('cg.id IS NOT NULL');
-        $params = array();
+        $where = ['cg.id IS NOT NULL'];
+        $params = [];
         // Add filtering rules.
         if (!empty($this->filtering)) {
             list($fsql, $fparams) = $this->filtering->get_sql_filter();
@@ -188,7 +188,7 @@ class coursegroupings extends \table_sql {
      */
     public function col_action($row) {
         global $OUTPUT;
-        $actions = array();
+        $actions = [];
 
         $details = \html_writer::link(new \moodle_url($this->baseurl,
                 ['action' => 'details', 'itemid' => $row->id, 'sesskey' => sesskey()]),
@@ -219,7 +219,7 @@ class coursegroupings extends \table_sql {
      */
     protected function define_table_columns($columns) {
         $this->define_columns($columns);
-        $headers = array();
+        $headers = [];
         foreach ($columns as $name) {
             $headers[] = get_string('th:' . $name, 'block_coupon');
         }

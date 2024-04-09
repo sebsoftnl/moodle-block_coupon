@@ -18,7 +18,7 @@
  * The base class for the template elements.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ namespace block_coupon\template;
  * All template element plugins are based on this class.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class element {
@@ -307,7 +307,7 @@ abstract class element {
      * @throws \InvalidArgumentException if the provided new alignment is not valid.
      */
     protected function set_alignment(string $alignment) {
-        $validvalues = array(self::ALIGN_LEFT, self::ALIGN_CENTER, self::ALIGN_RIGHT);
+        $validvalues = [self::ALIGN_LEFT, self::ALIGN_CENTER, self::ALIGN_RIGHT];
         if (!in_array($alignment, $validvalues)) {
             throw new \InvalidArgumentException("'$alignment' is not a valid alignment value. It has to be one of " .
                 implode(', ', $validvalues));
@@ -352,7 +352,7 @@ abstract class element {
             'posy' => $this->posy,
             'width' => $this->width,
             'refpoint' => $this->refpoint,
-            'alignment' => $this->get_alignment()
+            'alignment' => $this->get_alignment(),
         ];
         foreach ($properties as $property => $value) {
             if (!is_null($value) && $mform->elementExists($property)) {
@@ -372,7 +372,7 @@ abstract class element {
      */
     public function validate_form_elements($data, $files) {
         // Array to return the errors.
-        $errors = array();
+        $errors = [];
 
         // Common validation methods.
         $errors += element_helper::validate_form_element_colour($data);
@@ -471,7 +471,7 @@ abstract class element {
      * Must be overridden.
      *
      * @param \pdf $pdf the pdf object
-     * @param bool $preview true if it is a preview, false otherwise
+     * @param boolean $preview true if it is a preview, false otherwise
      * @param \stdClass $user the user we are rendering this for
      * @param \stdClass $extradata -- expects "code" to be present
      */
@@ -498,7 +498,7 @@ abstract class element {
     public function delete() {
         global $DB;
 
-        $return = $DB->delete_records('block_coupon_elements', array('id' => $this->id));
+        $return = $DB->delete_records('block_coupon_elements', ['id' => $this->id]);
 
         \block_coupon\event\element_deleted::create_from_element($this)->trigger();
 

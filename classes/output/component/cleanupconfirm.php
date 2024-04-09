@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @author      Sebastian Berm <sebastian@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -36,7 +36,7 @@ namespace block_coupon\output\component;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @author      Sebastian Berm <sebastian@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -78,16 +78,16 @@ class cleanupconfirm implements \renderable, \templatable {
         $useopts = [
             0 => get_string('coupon:used:all', 'block_coupon'),
             1 => get_string('coupon:used:yes', 'block_coupon'),
-            2 => get_string('coupon:used:no', 'block_coupon')
+            2 => get_string('coupon:used:no', 'block_coupon'),
         ];
         $data->usedtypestr = $useopts[$this->data->used];
 
-        $typeopts = array(
+        $typeopts = [
             0 => get_string('coupon:type:all', 'block_coupon'),
             1 => get_string('course'),
             2 => get_string('cohort', 'core_cohort'),
             3 => get_string('th:batchid', 'block_coupon'),
-        );
+        ];
         $data->typestr = $typeopts[$this->data->type];
 
         $data->deletestrings = [];
@@ -96,7 +96,14 @@ class cleanupconfirm implements \renderable, \templatable {
                 if (!empty($this->data->course)) {
                     $records = $DB->get_records_list('course', 'id', $this->data->course, 'fullname ASC', 'id,fullname');
                     foreach ($records as $record) {
-                        $data->deletestrings[] = $record->fullname;
+                        $data->deletestrings[] = format_string(
+                            $record->fullname,
+                            true,
+                            [
+                                'filter' => true,
+                                'context' => \context_course::instance($record->id),
+                            ]
+                        );
                     }
                 }
                 break;

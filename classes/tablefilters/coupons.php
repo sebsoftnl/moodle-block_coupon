@@ -23,13 +23,13 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace block_coupon\tablefilters;
 
-use \block_coupon\filtering\filtering;
+use block_coupon\filtering\filtering;
 
 /**
  * block_coupon\tables\coupons
@@ -37,7 +37,7 @@ use \block_coupon\filtering\filtering;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coupons extends filtering {
@@ -47,7 +47,7 @@ class coupons extends filtering {
      * @return array
      */
     public function get_fields() {
-        return array(
+        return [
             'timeexpired' => 0,
             'batchselect' => 0,
             'mybatchselect' => 0,
@@ -65,7 +65,7 @@ class coupons extends filtering {
             'coursegroup' => 1,
             'cohort' => 1,
             'role' => 1,
-        );
+        ];
     }
 
     /**

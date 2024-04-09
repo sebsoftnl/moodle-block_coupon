@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +38,7 @@ use block_coupon\helper;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class campaigntype extends baseform {
@@ -72,9 +72,7 @@ class campaigntype extends baseform {
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'), true);
 
         // Set data.
-        $data = [
-            'showform' => $this->generatoroptions->generatormethod
-        ];
+        $data = ['showform' => $this->generatoroptions->generatormethod];
         $this->set_data($data);
     }
 

@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -46,9 +46,9 @@ function xmldb_block_coupon_upgrade($oldversion) {
         $table->add_field('errormessage', XMLDB_TYPE_TEXT, 'medium', null, XMLDB_NOTNULL, null, null, 'errortype');
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'errormessage');
         // Add KEYS.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
         // Add INDEXES.
-        $table->add_index('couponid', XMLDB_INDEX_NOTUNIQUE, array('couponid'));
+        $table->add_index('couponid', XMLDB_INDEX_NOTUNIQUE, ['couponid']);
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -56,31 +56,31 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // We shall add indexes to link tables!
         $table = new xmldb_table('block_coupon_cohorts');
-        $index = new xmldb_index('couponid', XMLDB_INDEX_NOTUNIQUE, array('couponid'));
+        $index = new xmldb_index('couponid', XMLDB_INDEX_NOTUNIQUE, ['couponid']);
         if ($dbman->index_exists($table, $index)) {
             $dbman->add_index($table, $index);
         }
-        $index = new xmldb_index('cohortid', XMLDB_INDEX_NOTUNIQUE, array('cohortid'));
+        $index = new xmldb_index('cohortid', XMLDB_INDEX_NOTUNIQUE, ['cohortid']);
         if ($dbman->index_exists($table, $index)) {
             $dbman->add_index($table, $index);
         }
 
         $table = new xmldb_table('block_coupon_groups');
-        $index = new xmldb_index('couponid', XMLDB_INDEX_NOTUNIQUE, array('couponid'));
+        $index = new xmldb_index('couponid', XMLDB_INDEX_NOTUNIQUE, ['couponid']);
         if ($dbman->index_exists($table, $index)) {
             $dbman->add_index($table, $index);
         }
-        $index = new xmldb_index('groupid', XMLDB_INDEX_NOTUNIQUE, array('groupid'));
+        $index = new xmldb_index('groupid', XMLDB_INDEX_NOTUNIQUE, ['groupid']);
         if ($dbman->index_exists($table, $index)) {
             $dbman->add_index($table, $index);
         }
 
         $table = new xmldb_table('block_coupon_courses');
-        $index = new xmldb_index('couponid', XMLDB_INDEX_NOTUNIQUE, array('couponid'));
+        $index = new xmldb_index('couponid', XMLDB_INDEX_NOTUNIQUE, ['couponid']);
         if ($dbman->index_exists($table, $index)) {
             $dbman->add_index($table, $index);
         }
-        $index = new xmldb_index('courseid', XMLDB_INDEX_NOTUNIQUE, array('courseid'));
+        $index = new xmldb_index('courseid', XMLDB_INDEX_NOTUNIQUE, ['courseid']);
         if ($dbman->index_exists($table, $index)) {
             $dbman->add_index($table, $index);
         }
@@ -193,9 +193,9 @@ function xmldb_block_coupon_upgrade($oldversion) {
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'configuration');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
         // Add KEYS.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
         // Add INDEXES.
-        $table->add_index('userid', XMLDB_INDEX_NOTUNIQUE, array('userid'));
+        $table->add_index('userid', XMLDB_INDEX_NOTUNIQUE, ['userid']);
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -208,9 +208,9 @@ function xmldb_block_coupon_upgrade($oldversion) {
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'configuration');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
         // Add KEYS.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
         // Add INDEXES.
-        $table->add_index('userid', XMLDB_INDEX_NOTUNIQUE, array('userid'));
+        $table->add_index('userid', XMLDB_INDEX_NOTUNIQUE, ['userid']);
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -343,11 +343,11 @@ function xmldb_block_coupon_upgrade($oldversion) {
         $table->add_field('id', XMLDB_TYPE_INTEGER, '11', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('name', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null, 'id');
         $table->add_field('idnumber', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'name');
-        $table->add_field('maxamount', XMLDB_TYPE_INTEGER, '4', null, null, null, null, 'idnumber');
+        $table->add_field('maxamount', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0', 'idnumber');
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'maxamount');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
         // Add KEYS.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -359,7 +359,7 @@ function xmldb_block_coupon_upgrade($oldversion) {
         $table->add_field('couponid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'id');
         $table->add_field('coursegroupingid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'couponid');
         // Add keys.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
         // Add indices.
         $table->add_index('idx-couponid', XMLDB_INDEX_NOTUNIQUE, ['couponid']);
         $table->add_index('idx-coursegroupingid', XMLDB_INDEX_NOTUNIQUE, ['coursegroupingid']);
@@ -376,7 +376,7 @@ function xmldb_block_coupon_upgrade($oldversion) {
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'courseid');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
         // Add keys.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
         // Add indices.
         $table->add_index('idx-coursegroupingid', XMLDB_INDEX_NOTUNIQUE, ['coursegroupingid']);
         $table->add_index('idx-courseid', XMLDB_INDEX_NOTUNIQUE, ['courseid']);
@@ -392,7 +392,7 @@ function xmldb_block_coupon_upgrade($oldversion) {
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'courseid');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
         // Add keys.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
         // Add indices.
         $table->add_index('idx-couponid', XMLDB_INDEX_NOTUNIQUE, ['couponid']);
         $table->add_index('idx-courseid', XMLDB_INDEX_NOTUNIQUE, ['courseid']);
@@ -415,7 +415,7 @@ function xmldb_block_coupon_upgrade($oldversion) {
         $table->add_field('couponid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'id');
         $table->add_field('cmid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'couponid');
         // Add keys.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
         // Add indices.
         $table->add_index('idx-couponid', XMLDB_INDEX_NOTUNIQUE, ['couponid']);
         $table->add_index('idx-cmid', XMLDB_INDEX_NOTUNIQUE, ['cmid']);
@@ -432,9 +432,9 @@ function xmldb_block_coupon_upgrade($oldversion) {
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'contextid');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
         // Add KEYS.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
         // Add indices.
-        $table->add_index('idx-contextid', XMLDB_INDEX_NOTUNIQUE, array('contextid'));
+        $table->add_index('idx-contextid', XMLDB_INDEX_NOTUNIQUE, ['contextid']);
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -452,9 +452,9 @@ function xmldb_block_coupon_upgrade($oldversion) {
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'sequence');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
         // Add KEYS.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
         // Add indices.
-        $table->add_index('idx-templateid', XMLDB_INDEX_NOTUNIQUE, array('templateid'));
+        $table->add_index('idx-templateid', XMLDB_INDEX_NOTUNIQUE, ['templateid']);
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -478,9 +478,9 @@ function xmldb_block_coupon_upgrade($oldversion) {
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'sequence');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'timecreated');
         // Add KEYS.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
         // Add indices.
-        $table->add_index('idx-pageid', XMLDB_INDEX_NOTUNIQUE, array('pageid'));
+        $table->add_index('idx-pageid', XMLDB_INDEX_NOTUNIQUE, ['pageid']);
 
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
@@ -497,7 +497,7 @@ function xmldb_block_coupon_upgrade($oldversion) {
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'usercreated');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null, 'timecreated');
         // Add keys.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
         // Add indices.
         $table->add_index('idx-usercreated', XMLDB_INDEX_NOTUNIQUE, ['usercreated']);
 
@@ -507,6 +507,15 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2023110300, 'coupon');
+    }
+
+    if ($oldversion < 2024010200) {
+        // Set defaults for new settings.
+        set_config('defaultgeneratecodesonly', 0, 'block_coupon');
+        set_config('defaultenrolmentperiod', 0, 'block_coupon');
+
+        // Block_coupon savepoint reached.
+        upgrade_block_savepoint(true, 2024010200, 'coupon');
     }
 
     return true;

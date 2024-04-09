@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
+// You should have received a copy of the GNU General Public License`
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // Login_check is done in couponpage class.
@@ -44,7 +44,7 @@ $page = couponpage::setup(
     [
         'pagelayout' => 'report',
         'title' => $title,
-        'heading' => $heading
+        'heading' => $heading,
     ]
 );
 

@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * */
 
@@ -39,7 +39,7 @@ use block_coupon\exception;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class enrolext extends typebase implements icoupontype {
@@ -74,7 +74,7 @@ class enrolext extends typebase implements icoupontype {
             throw new exception('coupon:claim:wronguser', 'block_coupon');
         }
 
-        $couponcourses = $DB->get_records('block_coupon_courses', array('couponid' => $this->coupon->id));
+        $couponcourses = $DB->get_records('block_coupon_courses', ['couponid' => $this->coupon->id]);
         foreach ($couponcourses as $couponcourse) {
             // Make sure we only enrol if its not enrolled yet.
             $context = \context_course::instance($couponcourse->courseid);
@@ -85,13 +85,13 @@ class enrolext extends typebase implements icoupontype {
                 continue;
             }
             // Now we can update enrolment.
-            if (!$instances = $DB->get_records('enrol', array('enrol' => 'manual',
-                'courseid' => $couponcourse->courseid, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder,id ASC')) {
+            if (!$instances = $DB->get_records('enrol', ['enrol' => 'manual',
+                'courseid' => $couponcourse->courseid, 'status' => ENROL_INSTANCE_ENABLED], 'sortorder,id ASC')) {
                 return false;
             }
             $instance = reset($instances);
             // Check if we HAVE an enrolment here, otherwise we will not do anything.
-            $existing = $DB->get_record('user_enrolments', array('enrolid' => $instance->id, 'userid' => $foruserid));
+            $existing = $DB->get_record('user_enrolments', ['enrolid' => $instance->id, 'userid' => $foruserid]);
             if (empty($existing)) {
                 throw new exception('user-not-enrolled');
             }
@@ -134,7 +134,7 @@ class enrolext extends typebase implements icoupontype {
     public function assert_internal_checks($userid) {
         global $DB;
         // Assert we have at least ONE course we can sign up to..
-        $couponcourses = $DB->get_records('block_coupon_courses', array('couponid' => $this->coupon->id));
+        $couponcourses = $DB->get_records('block_coupon_courses', ['couponid' => $this->coupon->id]);
         $cansignup = false;
         foreach ($couponcourses as $couponcourse) {
             $ee = enrol_get_enrolment_end($couponcourse->courseid, $userid);

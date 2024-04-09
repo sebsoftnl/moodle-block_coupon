@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,7 +41,7 @@ use component_action;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -51,7 +51,7 @@ use component_action;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer extends plugin_renderer_base {
@@ -83,7 +83,7 @@ class renderer extends plugin_renderer_base {
      * @param string|moodle_url $link
      * @param string $text text on the tab
      * @param string $title title under the link, by defaul equals to text
-     * @param bool $linkedwhenselected whether to display a link under the tab name when it's selected
+     * @param boolean $linkedwhenselected whether to display a link under the tab name when it's selected
      * @return \tabobject
      */
     protected function create_pictab($id, $pix = null, $component = null, $link = null,
@@ -102,9 +102,9 @@ class renderer extends plugin_renderer_base {
      * @param string $selected selected tab
      * @param array $params any paramaters needed for the base url
      */
-    public function get_tabs($context, $selected, $params = array()) {
+    public function get_tabs($context, $selected, $params = []) {
         global $CFG;
-        $tabs = array();
+        $tabs = [];
         // Add exclusions.
         $tabs[] = $this->create_pictab('wzcoupons', 'e/print', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/index.php', $params),
@@ -133,33 +133,33 @@ class renderer extends plugin_renderer_base {
                 get_string('tab:report', 'block_coupon'));
         $tabs[] = $this->create_pictab('cpunused', 'i/completion-manual-n', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php',
-                array_merge($params, array('tab' => 'unused'))),
+                array_merge($params, ['tab' => 'unused'])),
                 get_string('tab:unused', 'block_coupon'));
         $tabs[] = $this->create_pictab('cpused', 'i/completion-manual-enabled', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php',
-                array_merge($params, array('tab' => 'used'))),
+                array_merge($params, ['tab' => 'used'])),
                 get_string('tab:used', 'block_coupon'));
         if (get_config('block_coupon', 'seperatepersonalcoupontab')) {
             $tabs[] = $this->create_pictab('cppersonal', 'i/permissionlock', '',
                     new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php',
-                    array_merge($params, array('tab' => 'personal'))),
+                    array_merge($params, ['tab' => 'personal'])),
                     get_string('tab:personalcoupons', 'block_coupon'));
         }
         $tabs[] = $this->create_pictab('cperrorreport', 'i/warning', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/errorreport.php',
-                array_merge($params, array('tab' => 'cperrorreport'))),
+                array_merge($params, ['tab' => 'cperrorreport'])),
                 get_string('tab:errors', 'block_coupon'));
         $tabs[] = $this->create_pictab('cpcleaner', 'e/cleanup_messy_code', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/cleanup.php',
-                array_merge($params, array('tab' => 'cpcleaner'))),
+                array_merge($params, ['tab' => 'cpcleaner'])),
                 get_string('tab:cleaner', 'block_coupon'));
         $tabs[] = $this->create_pictab('cpbatchlist', 'i/down', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/downloadbatchlist.php',
-                array_merge($params, array('tab' => 'cpbatchlist'))),
+                array_merge($params, ['tab' => 'cpbatchlist'])),
                 get_string('tab:downloadbatchlist', 'block_coupon'));
         $tabs[] = $this->create_pictab('cpmaillog', 'i/warning', '',
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/maillog.php',
-                array_merge($params, array('tab' => 'maillog'))),
+                array_merge($params, ['tab' => 'maillog'])),
                 get_string('tab:maillog', 'block_coupon'));
 
         $tpltab = $this->create_pictab('cptpl', 'i/privatefiles', '',
@@ -177,9 +177,9 @@ class renderer extends plugin_renderer_base {
      * @param string $selected selected tab
      * @param array $params any paramaters needed for the base url
      */
-    public function get_my_tabs($context, $selected, $params = array()) {
+    public function get_my_tabs($context, $selected, $params = []) {
         global $CFG;
-        $tabs = array();
+        $tabs = [];
 
         $config = get_config('block_coupon');
 
@@ -250,8 +250,8 @@ class renderer extends plugin_renderer_base {
      * @param pix_icon $pixicon
      * @param component_action $action
      * @param array $attributes associative array of html link attributes + disabled
-     * @param bool $linktext show title next to image in link
-     * @param bool $iconbeforetext override default Moodle to place icon BEFORE text
+     * @param boolean $linktext show title next to image in link
+     * @param boolean $iconbeforetext override default Moodle to place icon BEFORE text
      * @return string HTML fragment
      */
     public function action_icon($url, pix_icon $pixicon, component_action $action = null,

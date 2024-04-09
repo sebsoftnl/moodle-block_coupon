@@ -23,15 +23,12 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace block_coupon;
 use context_system;
-use context_course;
-use context_block;
-
 
 /**
  * this file contains the couponpage helper
@@ -39,7 +36,7 @@ use context_block;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class couponpage {
@@ -88,7 +85,7 @@ class couponpage {
      *      - heading
      */
     public static function setup($name, $visiblename, $url, $reqcapability = 'moodle/site:config', $context = null, $options = []) {
-        global $CFG, $PAGE, $USER, $SITE, $OUTPUT;
+        global $PAGE, $USER, $SITE;
         $page = new static($name, $visiblename, $url, $reqcapability, $context);
 
         $PAGE->set_context($page->context);
@@ -146,7 +143,7 @@ class couponpage {
         if (is_array($reqcapability)) {
             $this->reqcapability = $reqcapability;
         } else {
-            $this->reqcapability = array($reqcapability);
+            $this->reqcapability = [$reqcapability];
         }
         $this->context = $context;
     }

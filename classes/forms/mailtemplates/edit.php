@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit extends \moodleform {
@@ -78,7 +78,7 @@ class edit extends \moodleform {
             'context' => null,
             'noclean' => 1,
             'trusttext' => 0,
-            'enable_filemanagement' => false
+            'enable_filemanagement' => false,
         ];
         $mform->addElement('editor', 'body', get_string('label:email_body', 'block_coupon'), $eopts);
         $mform->setType('body', PARAM_RAW);

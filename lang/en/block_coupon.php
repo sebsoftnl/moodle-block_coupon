@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // Capabilities.
@@ -993,3 +993,7 @@ We\'ll (try to) import all vouchers, linked course/cohort data, email templates 
 we can <i>not</i> guarantee a full import without errors.<br/>
 However, importing the basic voucher codes and linked data is most likely to succeed without issues.';
 $string['import:voucher:confirm'] = 'Import data from block_voucher';
+$string['label:defaultenrolmentperiod'] = 'Enrolment period default';
+$string['label:defaultenrolmentperiod_help'] = 'Set to 0 for unlimited enrolment';
+$string['label:defaultgeneratecodesonly'] = 'Default for "generate codes only"';
+$string['label:defaultgeneratecodesonly_help'] = 'This will act as the default setting for the generator for "generate codes only"';

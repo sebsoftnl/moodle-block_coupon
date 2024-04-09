@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +37,7 @@ use html_writer;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coupons {
@@ -117,26 +117,25 @@ class coupons {
         $table->set_filtering($filtering);
 
         $table->is_downloadable(true);
-        $table->show_download_buttons_at(array(TABLE_P_BOTTOM, TABLE_P_TOP));
+        $table->show_download_buttons_at([TABLE_P_BOTTOM, TABLE_P_TOP]);
         $download = optional_param('download', '', PARAM_ALPHA);
         if (!empty($download)) {
             $table->is_downloading($download, 'couponreport', 'couponreport');
             $table->render(25, true);
-            exit;
+        } else {
+            echo $this->output->header();
+            echo html_writer::start_div('block-coupon-container');
+            echo html_writer::start_div();
+            echo $this->renderer->get_my_tabs($this->page->context, 'mycoupons-used', $this->page->url->params());
+            echo html_writer::end_div();
+            echo html_writer::start_div();
+            $filtering->display_add();
+            $filtering->display_active();
+            echo html_writer::end_div();
+            echo $table->render(25);
+            echo html_writer::end_div();
+            echo $this->output->footer();
         }
-
-        echo $this->output->header();
-        echo html_writer::start_div('block-coupon-container');
-        echo html_writer::start_div();
-        echo $this->renderer->get_my_tabs($this->page->context, 'mycoupons-used', $this->page->url->params());
-        echo html_writer::end_div();
-        echo html_writer::start_div();
-        $filtering->display_add();
-        $filtering->display_active();
-        echo html_writer::end_div();
-        echo $table->render(25);
-        echo html_writer::end_div();
-        echo $this->output->footer();
     }
 
     /**
@@ -162,26 +161,25 @@ class coupons {
         $table->set_filtering($filtering);
 
         $table->is_downloadable(true);
-        $table->show_download_buttons_at(array(TABLE_P_BOTTOM, TABLE_P_TOP));
+        $table->show_download_buttons_at([TABLE_P_BOTTOM, TABLE_P_TOP]);
         $download = optional_param('download', '', PARAM_ALPHA);
         if (!empty($download)) {
             $table->is_downloading($download, 'couponreport', 'couponreport');
             $table->render(25, true);
-            exit;
+        } else {
+            echo $this->output->header();
+            echo html_writer::start_div('block-coupon-container');
+            echo html_writer::start_div();
+            echo $this->renderer->get_my_tabs($this->page->context, 'mycoupons-unused', $this->page->url->params());
+            echo html_writer::end_div();
+            echo html_writer::start_div();
+            $filtering->display_add();
+            $filtering->display_active();
+            echo html_writer::end_div();
+            echo $table->render(25);
+            echo html_writer::end_div();
+            echo $this->output->footer();
         }
-
-        echo $this->output->header();
-        echo html_writer::start_div('block-coupon-container');
-        echo html_writer::start_div();
-        echo $this->renderer->get_my_tabs($this->page->context, 'mycoupons-unused', $this->page->url->params());
-        echo html_writer::end_div();
-        echo html_writer::start_div();
-        $filtering->display_add();
-        $filtering->display_active();
-        echo html_writer::end_div();
-        echo $table->render(25);
-        echo html_writer::end_div();
-        echo $this->output->footer();
     }
 
     /**

@@ -23,24 +23,24 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-$messageproviders = array(
-    'coupon_task_notification' => array(
-        'defaults' => array(
+$messageproviders = [
+    'coupon_task_notification' => [
+        'defaults' => [
             'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
             'email' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDOFF,
-            'anyotheroutput' => MESSAGE_PERMITTED
-        )
-    ),
-    'coupon_notification' => array(
-        'defaults' => array(
+            'anyotheroutput' => MESSAGE_PERMITTED,
+        ],
+    ],
+    'coupon_notification' => [
+        'defaults' => [
             'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
             'email' => MESSAGE_DISALLOWED,
-            'anyotheroutput' => MESSAGE_PERMITTED
-        )
-    ),
-);
+            'anyotheroutput' => MESSAGE_PERMITTED,
+        ],
+    ],
+];

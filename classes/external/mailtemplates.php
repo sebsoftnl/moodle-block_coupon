@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -46,7 +46,7 @@ use external_single_structure;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mailtemplates extends external_api {
@@ -58,9 +58,7 @@ class mailtemplates extends external_api {
      */
     public static function delete_template_parameters(): external_function_parameters {
         $id = new external_value(PARAM_INT, 'Template ID');
-        return new external_function_parameters(array(
-            'id' => $id
-        ));
+        return new external_function_parameters(['id' => $id]);
     }
 
     /**
@@ -72,9 +70,7 @@ class mailtemplates extends external_api {
     public static function delete_template($id) {
         global $DB;
 
-        $params = self::validate_parameters(self::delete_template_parameters(), array(
-            'id' => $id
-        ));
+        $params = self::validate_parameters(self::delete_template_parameters(), ['id' => $id]);
 
         $context = \context_system::instance();
         require_capability('block/coupon:administration', $context);
@@ -84,12 +80,12 @@ class mailtemplates extends external_api {
 
             return (object)[
                 'result' => true,
-                'message' => get_string('success:template:delete', 'block_coupon', (object)['id' => $id])
+                'message' => get_string('success:template:delete', 'block_coupon', (object)['id' => $id]),
             ];
         } catch (\Exception $e) {
             return (object)[
                 'result' => false,
-                'message' => get_string('err:template:delete', 'block_coupon') . $e->getMessage()
+                'message' => get_string('err:template:delete', 'block_coupon') . $e->getMessage(),
             ];
         }
     }
@@ -102,7 +98,7 @@ class mailtemplates extends external_api {
     public static function delete_template_returns() {
         return new external_single_structure([
             'result' => new external_value(PARAM_BOOL, 'Result of call'),
-            'message' => new external_value(PARAM_RAW, 'Result message')
+            'message' => new external_value(PARAM_RAW, 'Result message'),
         ]);
     }
 
@@ -113,9 +109,7 @@ class mailtemplates extends external_api {
      */
     public static function duplicate_template_parameters(): external_function_parameters {
         $id = new external_value(PARAM_INT, 'Template ID');
-        return new external_function_parameters(array(
-            'id' => $id
-        ));
+        return new external_function_parameters(['id' => $id]);
     }
 
     /**
@@ -127,15 +121,13 @@ class mailtemplates extends external_api {
     public static function duplicate_template($id) {
         global $DB;
 
-        $params = self::validate_parameters(self::duplicate_template_parameters(), array(
-            'id' => $id
-        ));
+        $params = self::validate_parameters(self::duplicate_template_parameters(), ['id' => $id]);
 
         $context = \context_system::instance();
         require_capability('block/coupon:administration', $context);
 
         try {
-            $template = $DB->get_record('block_coupon_mailtemplates', array('id' => $params['id']), '*', MUST_EXIST);
+            $template = $DB->get_record('block_coupon_mailtemplates', ['id' => $params['id']], '*', MUST_EXIST);
             unset($template->id);
 
             $n = 1;
@@ -151,12 +143,12 @@ class mailtemplates extends external_api {
 
             return (object)[
                 'result' => true,
-                'message' => get_string('success:template:duplicate', 'block_coupon', (object)['id' => $template->id])
+                'message' => get_string('success:template:duplicate', 'block_coupon', (object)['id' => $template->id]),
             ];
         } catch (\Exception $e) {
             return (object)[
                 'result' => false,
-                'message' => get_string('err:template:duplicate', 'block_coupon') . $e->getMessage()
+                'message' => get_string('err:template:duplicate', 'block_coupon') . $e->getMessage(),
             ];
         }
     }
@@ -169,7 +161,7 @@ class mailtemplates extends external_api {
     public static function duplicate_template_returns() {
         return new external_single_structure([
             'result' => new external_value(PARAM_BOOL, 'Result of call'),
-            'message' => new external_value(PARAM_RAW, 'Result message')
+            'message' => new external_value(PARAM_RAW, 'Result message'),
         ]);
     }
 

@@ -53,14 +53,14 @@ class element extends \block_coupon\template\element\image\element {
      */
     public function validate_form_elements($data, $files) {
         // Array to return the errors.
-        return array();
+        return [];
     }
 
     /**
      * Handles rendering the element on the pdf.
      *
      * @param \pdf $pdf the pdf object
-     * @param bool $preview true if it is a preview, false otherwise
+     * @param boolean $preview true if it is a preview, false otherwise
      * @param \stdClass $user the user we are rendering this for
      * @param \stdClass $extradata -- expects "code" to be present
      */
@@ -118,11 +118,11 @@ class element extends \block_coupon\template\element\image\element {
             $url = \moodle_url::make_pluginfile_url($file->get_contextid(), 'block_coupon', 'image', $file->get_itemid(),
                 $file->get_filepath(), $file->get_filename());
             // Get the page we are rendering this on.
-            $page = $DB->get_record('block_coupon_pages', array('id' => $this->get_pageid()), '*', MUST_EXIST);
+            $page = $DB->get_record('block_coupon_pages', ['id' => $this->get_pageid()], '*', MUST_EXIST);
 
             // Set the image to the size of the page.
             $style = 'width: ' . $page->width . 'mm; height: ' . $page->height . 'mm';
-            return \html_writer::tag('img', '', array('src' => $url, 'style' => $style));
+            return \html_writer::tag('img', '', ['src' => $url, 'style' => $style]);
         }
     }
 }

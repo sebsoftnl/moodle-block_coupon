@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class deny extends \moodleform {
@@ -55,9 +55,7 @@ class deny extends \moodleform {
         $mform->addElement('header', 'header', $heading);
         $mform->addElement('static', 'info', '', $info);
 
-        $attributes = [
-            'maxfiles' => 0
-        ];
+        $attributes = ['maxfiles' => 0];
         $mform->addElement('editor', 'message', get_string('request:message', 'block_coupon'), $attributes);
 
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'));

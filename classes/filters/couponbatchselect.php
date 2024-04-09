@@ -24,15 +24,15 @@
  *
  * @copyright   1999 Martin Dougiamas  http://dougiamas.com
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- **/
+ * */
 
 namespace block_coupon\filters;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/user/filters/lib.php');
+require_once($CFG->dirroot . '/user/filters/lib.php');
 
 /**
  * block_coupon\filters\couponbatchselect
@@ -40,12 +40,14 @@ require_once($CFG->dirroot.'/user/filters/lib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class couponbatchselect extends \user_filter_type {
+
     /** @var string */
     protected $fieldid;
+
     /**
      * @var bool
      */
@@ -55,7 +57,7 @@ class couponbatchselect extends \user_filter_type {
      * Constructor
      * @param boolean $advanced advanced form element flag
      * @param string $fieldid identifier for the field in the query
-     * @param bool $limitowneronly true to limit to coupon owner
+     * @param boolean $limitowneronly true to limit to coupon owner
      */
     public function __construct($advanced, $fieldid = 'id', $limitowneronly = false) {
         $this->fieldid = $fieldid;
@@ -68,9 +70,10 @@ class couponbatchselect extends \user_filter_type {
      * @return array of comparison operators
      */
     public function get_operators() {
-        return array(0 => get_string('isequalto', 'filters'),
-                     1 => get_string('isnotequalto', 'filters')
-            );
+        return [
+            0 => get_string('isequalto', 'filters'),
+            1 => get_string('isnotequalto', 'filters'),
+        ];
     }
 
     /**
@@ -85,7 +88,7 @@ class couponbatchselect extends \user_filter_type {
             $sql .= ' WHERE ownerid = ?';
             $params[] = $USER->id;
         }
-        return array(0 => '...') + $DB->get_records_sql_menu($sql, $params);
+        return ['' => '...'] + $DB->get_records_sql_menu($sql, $params);
     }
 
     /**
@@ -101,18 +104,18 @@ class couponbatchselect extends \user_filter_type {
         if (count($batches) <= 1) {
             return;
         }
-        $objs = array();
-        $objs['select'] = $mform->createElement('select', $this->_name.'_op', null, $this->get_operators());
+        $objs = [];
+        $objs['select'] = $mform->createElement('select', $this->_name . '_op', null, $this->get_operators());
         $objs['value'] = $mform->createElement('select', $this->_name, null, $batches);
         $objs['select']->setLabel(get_string('limiterfor', 'filters', $this->_label));
         $objs['value']->setLabel(get_string('valuefor', 'filters', $this->_label));
-        $mform->addElement('group', $this->_name.'_grp', $this->_label, $objs, '', false);
+        $mform->addElement('group', $this->_name . '_grp', $this->_label, $objs, '', false);
         $mform->setType($this->_name, PARAM_RAW);
-        $mform->disabledIf($this->_name, $this->_name.'_op', 'eq', 5);
+        $mform->disabledIf($this->_name, $this->_name . '_op', 'eq', 5);
         if ($this->_advanced) {
-            $mform->setAdvanced($this->_name.'_grp');
+            $mform->setAdvanced($this->_name . '_grp');
         }
-        $mform->setDefault($this->_name.'_op', 0);
+        $mform->setDefault($this->_name . '_op', 0);
     }
 
     /**
@@ -121,10 +124,10 @@ class couponbatchselect extends \user_filter_type {
      * @return mixed array filter data or false when filter not set
      */
     public function check_data($formdata) {
-        $field    = $this->_name;
-        $operator = $field.'_op';
+        $field = $this->_name;
+        $operator = $field . '_op';
 
-        if (array_key_exists($operator, $formdata)) {
+        if (property_exists($formdata, $operator)) {
             if ($formdata->$operator != 5 && $formdata->$field == '') {
                 // No data - no change except for empty filter.
                 return false;
@@ -134,7 +137,7 @@ class couponbatchselect extends \user_filter_type {
             if (isset($formdata->$field)) {
                 $fieldvalue = $formdata->$field;
             }
-            return array('operator' => (int)$formdata->$operator, 'value' => $fieldvalue);
+            return ['operator' => (int) $formdata->$operator, 'value' => $fieldvalue];
         }
 
         return false;
@@ -147,18 +150,18 @@ class couponbatchselect extends \user_filter_type {
      */
     public function get_sql_filter($data) {
         static $counter = 0;
-        $name = 'ex_couponbatchselect'.$counter++;
+        $name = 'ex_couponbatchselect' . $counter++;
 
         $operator = $data['operator'];
-        $value    = $data['value'];
+        $value = $data['value'];
 
-        $params = array();
+        $params = [];
 
         if ($value === '') {
             return '';
         }
 
-        switch($operator) {
+        switch ($operator) {
             case 0: // Equals.
                 $res = "c.batchid = :$name";
                 $params[$name] = "$value";
@@ -173,7 +176,7 @@ class couponbatchselect extends \user_filter_type {
 
         $sql = $res;
 
-        return array($sql, $params);
+        return [$sql, $params];
     }
 
     /**
@@ -182,13 +185,13 @@ class couponbatchselect extends \user_filter_type {
      * @return string active filter label
      */
     public function get_label($data) {
-        $operator  = $data['operator'];
-        $value     = $data['value'];
+        $operator = $data['operator'];
+        $value = $data['value'];
         $operators = $this->get_operators();
 
         $a = new \stdClass();
-        $a->label    = $this->_label;
-        $a->value    = '"'.s($value).'"';
+        $a->label = $this->_label;
+        $a->value = '"' . s($value) . '"';
         $a->operator = $operators[$operator];
 
         switch ($operator) {

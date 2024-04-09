@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,7 +41,7 @@ use moodle_url;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class templates extends \table_sql implements \core_table\dynamic {
@@ -60,12 +60,12 @@ class templates extends \table_sql implements \core_table\dynamic {
 
         $columns = [
             'name',
-            'actions'
+            'actions',
         ];
 
         $headers = [
             get_string('name'),
-            ''
+            '',
         ];
 
         $this->define_columns($columns);
@@ -81,7 +81,7 @@ class templates extends \table_sql implements \core_table\dynamic {
      * @param \core_table\local\filter\filterset $filterset
      * @return void
      */
-    public function set_filterset(\core_table\local\filter\filterset $filterset) :void {
+    public function set_filterset(\core_table\local\filter\filterset $filterset): void {
         $this->context = \context_system::instance();
         parent::set_filterset($filterset);
     }
@@ -108,7 +108,7 @@ class templates extends \table_sql implements \core_table\dynamic {
      * Convenience method to call a number of methods for you to display the table.
      *
      * @param int $pagesize
-     * @param bool $useinitialsbar
+     * @param boolean $useinitialsbar
      * @param string $downloadhelpbutton
      * @return string
      */
@@ -139,18 +139,18 @@ class templates extends \table_sql implements \core_table\dynamic {
         global $OUTPUT;
 
         // Link to edit the template.
-        $editlink = new \moodle_url('/blocks/coupon/view/templates/edit.php', array('tid' => $template->id));
+        $editlink = new \moodle_url('/blocks/coupon/view/templates/edit.php', ['tid' => $template->id]);
         $editicon = $OUTPUT->action_icon($editlink, new \pix_icon('t/edit', get_string('edit')));
 
         // Link to duplicate the template.
         $duplicatelink = new \moodle_url('#');
         $duplicateicon = $OUTPUT->action_icon($duplicatelink, new \pix_icon('t/copy', get_string('duplicate')), null,
-            array('class' => 'action-icon duplicate-icon', 'data-action' => 'duplicate', 'data-id' => $template->id));
+            ['class' => 'action-icon duplicate-icon', 'data-action' => 'duplicate', 'data-id' => $template->id]);
 
         // Link to delete the template.
         $deletelink = new \moodle_url('#');
         $deleteicon = $OUTPUT->action_icon($deletelink, new \pix_icon('t/delete', get_string('delete')), null,
-            array('class' => 'action-icon delete-icon', 'data-action' => 'delete', 'data-id' => $template->id));
+            ['class' => 'action-icon delete-icon', 'data-action' => 'delete', 'data-id' => $template->id]);
 
         return $editicon . $duplicateicon . $deleteicon;
     }
@@ -159,16 +159,16 @@ class templates extends \table_sql implements \core_table\dynamic {
      * Query the reader.
      *
      * @param int $pagesize size of page for paginated displayed table.
-     * @param bool $useinitialsbar do you want to use the initials bar.
+     * @param boolean $useinitialsbar do you want to use the initials bar.
      */
     public function query_db($pagesize, $useinitialsbar = true) {
         global $DB;
 
-        $total = $DB->count_records('block_coupon_templates', array('contextid' => $this->context->id));
+        $total = $DB->count_records('block_coupon_templates', ['contextid' => $this->context->id]);
 
         $this->pagesize($pagesize, $total);
 
-        $this->rawdata = $DB->get_records('block_coupon_templates', array('contextid' => $this->context->id),
+        $this->rawdata = $DB->get_records('block_coupon_templates', ['contextid' => $this->context->id],
             $this->get_sql_sort(), '*', $this->get_page_start(), $this->get_page_size());
 
         // Set initial bars.

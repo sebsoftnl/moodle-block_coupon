@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coupons extends \table_sql {
@@ -134,7 +134,7 @@ class coupons extends \table_sql {
     /**
      * Set whether whould use an action menu for the actions?
      *
-     * @param bool $useactionmenu
+     * @param boolean $useactionmenu
      * @return self
      */
     public function set_useactionmenu($useactionmenu) {
@@ -145,7 +145,7 @@ class coupons extends \table_sql {
     /**
      * Set whtewhr or not to display actions
      *
-     * @param bool $noactions
+     * @param boolean $noactions
      * @return $this
      */
     public function set_noactions($noactions) {
@@ -196,9 +196,20 @@ class coupons extends \table_sql {
      * Define headers and columns.
      */
     protected function define_headers_and_columns() {
-        $columns = array('owner', 'for_user_email', 'senddate',
-            'enrolperiod', 'submission_code', 'course', 'cohorts', 'groups', 'roleid', 'batchid', 'issend');
-        $headers = array(
+        $columns = [
+            'owner',
+            'for_user_email',
+            'senddate',
+            'enrolperiod',
+            'submission_code',
+            'course',
+            'cohorts',
+            'groups',
+            'roleid',
+            'batchid',
+            'issend',
+        ];
+        $headers = [
             get_string('th:owner', 'block_coupon'),
             get_string('th:for_user_email', 'block_coupon'),
             get_string('th:senddate', 'block_coupon'),
@@ -209,8 +220,8 @@ class coupons extends \table_sql {
             get_string('th:groups', 'block_coupon'),
             get_string('th:roleid', 'block_coupon'),
             get_string('th:batchid', 'block_coupon'),
-            get_string('th:issend', 'block_coupon')
-        );
+            get_string('th:issend', 'block_coupon'),
+        ];
         if ($this->is_downloading() == '' &&!$this->noactions) {
             $columns[] = 'action';
             $headers[] = get_string('th:action', 'block_coupon');
@@ -235,7 +246,7 @@ class coupons extends \table_sql {
      * Display the general status log table.
      *
      * @param int $pagesize
-     * @param bool $useinitialsbar
+     * @param boolean $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
         global $DB;
@@ -248,8 +259,8 @@ class coupons extends \table_sql {
         $from = '{block_coupon} c ';
         $from .= 'JOIN {user} u ON c.ownerid=u.id ';
         $from .= 'LEFT JOIN {role} r ON c.roleid=r.id ';
-        $where = array();
-        $params = array();
+        $where = [];
+        $params = [];
         if ($this->ownerid > 0) {
             $where[] = 'c.ownerid = :ownerid';
             $params['ownerid'] = $this->ownerid;
@@ -429,10 +440,10 @@ class coupons extends \table_sql {
      */
     public function col_cohorts($row) {
         global $DB;
-        $rs = array();
+        $rs = [];
         $records = $DB->get_records_sql("SELECT c.id,c.name FROM {block_coupon_cohorts} cc
             LEFT JOIN {cohort} c ON cc.cohortid = c.id
-            WHERE cc.couponid = ?", array($row->id));
+            WHERE cc.couponid = ?", [$row->id]);
         foreach ($records as $record) {
             $rs[] = $record->name;
         }
@@ -447,10 +458,10 @@ class coupons extends \table_sql {
      */
     public function col_course($row) {
         global $DB;
-        $rs = array();
+        $rs = [];
         $records = $DB->get_records_sql("SELECT c.id,c.fullname FROM {block_coupon_courses} cc
             LEFT JOIN {course} c ON cc.courseid = c.id
-            WHERE cc.couponid = ?", array($row->id));
+            WHERE cc.couponid = ?", [$row->id]);
         foreach ($records as $record) {
             $rs[] = $record->fullname;
         }
@@ -465,10 +476,10 @@ class coupons extends \table_sql {
      */
     public function col_groups($row) {
         global $DB;
-        $rs = array();
+        $rs = [];
         $records = $DB->get_records_sql("SELECT g.id,g.name FROM {block_coupon_groups} cg
             LEFT JOIN {groups} g ON cg.groupid = g.id
-            WHERE cg.couponid = ?", array($row->id));
+            WHERE cg.couponid = ?", [$row->id]);
         foreach ($records as $record) {
             $rs[] = $record->name;
         }
@@ -505,12 +516,12 @@ class coupons extends \table_sql {
      * @return string actions
      */
     public function col_action($row) {
-        $actions = array();
+        $actions = [];
 
         global $PAGE;
         $renderer = $PAGE->get_renderer('block_coupon');
         $actions[] = $renderer->action_icon(new \moodle_url($this->baseurl,
-                array('action' => 'delete', 'itemid' => $row->id, 'sesskey' => sesskey())),
+                ['action' => 'delete', 'itemid' => $row->id, 'sesskey' => sesskey()]),
                 new \pix_icon('i/delete', $this->strdelete, 'moodle', ['class' => 'icon',
                     'onclick' => 'return confirm(\'' . $this->strdeleteconfirm . '\');']),
                 null,
@@ -542,7 +553,7 @@ class coupons extends \table_sql {
      *
      * @param \stdClass $row
      * @param string $action
-     * @param bool $confirm true to enable javascript confirmation of this action
+     * @param boolean $confirm true to enable javascript confirmation of this action
      * @return string link representing the action with an image
      */
     protected function get_action($row, $action, $confirm = false) {
@@ -553,7 +564,7 @@ class coupons extends \table_sql {
             $onclick = ' onclick="return confirm(\'' . $this->{$actionconfirmstr} . '\');"';
         }
         return '<a ' . $onclick . 'href="' . new \moodle_url($this->baseurl,
-                array('action' => $action, 'itemid' => $row->id, 'sesskey' => sesskey())) .
+                ['action' => $action, 'itemid' => $row->id, 'sesskey' => sesskey()]) .
                 '" alt="' . $this->{$actionstr} .
                 '">' . $this->get_action_image($action) . '</a>';
     }

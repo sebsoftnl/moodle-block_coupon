@@ -18,7 +18,7 @@
  * This file contains the form for handling editing a template element.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,7 +28,7 @@ namespace block_coupon\tool;
  * The form for handling editing a template element.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class voucherimporter {
@@ -189,7 +189,7 @@ class voucherimporter {
                     'timecreated' => $voucher->timecreated,
                     'timemodified' => $voucher->timemodified,
                     'timeexpired' => $voucher->timeexpired,
-                    'timeclaimed' => null
+                    'timeclaimed' => null,
                 ];
 
                 // Type.
@@ -289,20 +289,20 @@ class voucherimporter {
     protected static function import_course_links($voucherid, $couponid) {
         global $DB;
 
-        $records = $DB->get_records('voucher_courses', ['voucherid' => $voucherid]);
+        $records = $DB->get_records('vouchers_courses', ['voucherid' => $voucherid]);
         foreach ($records as $record) {
             $link = (object)[
                 'couponid' => $couponid,
-                'courseid' => $record->courseid
+                'courseid' => $record->courseid,
             ];
             $DB->insert_record('block_coupon_courses', $link);
         }
 
-        $records = $DB->get_records('voucher_groups', ['voucherid' => $voucherid]);
+        $records = $DB->get_records('vouchers_groups', ['voucherid' => $voucherid]);
         foreach ($records as $record) {
             $link = (object)[
                 'couponid' => $couponid,
-                'groupid' => $record->groupid
+                'groupid' => $record->groupid,
             ];
             $DB->insert_record('block_coupon_groups', $link);
         }
@@ -316,11 +316,11 @@ class voucherimporter {
      */
     protected static function import_cohort_links($voucherid, $couponid) {
         global $DB;
-        $records = $DB->get_records('voucher_cohorts', ['voucherid' => $voucherid]);
+        $records = $DB->get_records('vouchers_cohorts', ['voucherid' => $voucherid]);
         foreach ($records as $record) {
             $link = (object)[
                 'couponid' => $couponid,
-                'cohortid' => $record->cohortid
+                'cohortid' => $record->cohortid,
             ];
             $DB->insert_record('block_coupon_cohorts', $link);
         }
@@ -338,7 +338,7 @@ class voucherimporter {
         foreach ($records as $record) {
             $link = (object)[
                 'couponid' => $couponid,
-                'cmid' => $record->cmid
+                'cmid' => $record->cmid,
             ];
             $DB->insert_record('block_coupon_activities', $link);
         }

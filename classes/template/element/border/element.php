@@ -18,7 +18,7 @@
  * This file contains the template element border's core interaction API.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,7 +28,7 @@ namespace block_coupon\template\element\border;
  * The template element border's core interaction API.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class element extends \block_coupon\template\element {
@@ -50,13 +50,13 @@ class element extends \block_coupon\template\element {
      * Handles rendering the element on the pdf.
      *
      * @param \pdf $pdf the pdf object
-     * @param bool $preview true if it is a preview, false otherwise
+     * @param boolean $preview true if it is a preview, false otherwise
      * @param \stdClass $user the user we are rendering this for
      * @param \stdClass $extradata -- expects "code" to be present
      */
     public function render($pdf, $preview, $user, \stdClass $extradata = null) {
         $colour = \TCPDF_COLORS::convertHTMLColorToDec($this->get_colour(), $colour);
-        $pdf->SetLineStyle(array('width' => $this->get_data(), 'color' => $colour));
+        $pdf->SetLineStyle(['width' => $this->get_data(), 'color' => $colour]);
         $pdf->Line(0, 0, $pdf->getPageWidth(), 0);
         $pdf->Line($pdf->getPageWidth(), 0, $pdf->getPageWidth(), $pdf->getPageHeight());
         $pdf->Line(0, $pdf->getPageHeight(), $pdf->getPageWidth(), $pdf->getPageHeight());
@@ -84,7 +84,7 @@ class element extends \block_coupon\template\element {
      */
     public function validate_form_elements($data, $files) {
         // Array to return the errors.
-        $errors = array();
+        $errors = [];
 
         // Validate the width.
         $errors += \block_coupon\template\element_helper::validate_form_element_width($data, false);

@@ -18,7 +18,7 @@
  * This file contains the template element code's core interaction API.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,7 +28,7 @@ namespace block_coupon\template\element\code;
  * The template element code's core interaction API.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class element extends \block_coupon\template\element {
@@ -37,7 +37,7 @@ class element extends \block_coupon\template\element {
      * Handles rendering the element on the pdf.
      *
      * @param \pdf $pdf the pdf object
-     * @param bool $preview true if it is a preview, false otherwise
+     * @param boolean $preview true if it is a preview, false otherwise
      * @param \stdClass $user the user we are rendering this for
      * @param \stdClass $extradata -- expects "code" to be present
      */

@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +38,7 @@ use block_coupon\coupon\generatoroptions;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursegroups extends baseform {
@@ -60,24 +60,32 @@ class coursegroups extends baseform {
         $mform->addElement('header', 'groupsheader', get_string('heading:input_groups', 'block_coupon'));
 
         // Display which course we selected.
-        $groupoptions = array();
+        $groupoptions = [];
         foreach ($this->generatoroptions->courses as $courseid) {
 
             // Collect data.
-            if (!$course = $this->db()->get_record('course', array('id' => $courseid))) {
+            if (!$course = $this->db()->get_record('course', ['id' => $courseid])) {
                 throw new \moodle_exception('error:course-not-found', 'block_coupon');
             }
-            $groups = $this->db()->get_records("groups", array('courseid' => $courseid));
+            $groups = $this->db()->get_records("groups", ['courseid' => $courseid]);
             if (empty($groups)) {
                 continue;
             }
 
             // Build up groups.
-            if (!isset($groupoptions[$course->fullname])) {
-                $groupoptions[$course->fullname] = array();
+            $fullname = format_string(
+                $course->fullname,
+                true,
+                [
+                    'filter' => true,
+                    'context' => \context_course::instance($course->id),
+                ]
+            );
+            if (!isset($groupoptions[$fullname])) {
+                $groupoptions[$fullname] = [];
             }
             foreach ($groups as $group) {
-                $groupoptions[$course->fullname][$group->id] = $group->name;
+                $groupoptions[$fullname][$group->id] = $group->name;
             }
         }
 
@@ -91,9 +99,7 @@ class coursegroups extends baseform {
 
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'), true);
 
-        $data = [
-            'coupon_groups' => []
-        ];
+        $data = ['coupon_groups' => []];
         foreach ($this->generatoroptions->groups as $group) {
             $data['coupon_groups'][$group] = 1;
             $data["coupon_groups[$group]"] = 1;

@@ -18,7 +18,7 @@
  * This file contains the template element image's core interaction API.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ use block_coupon\template\element_helper;
  * The template element image's core interaction API.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class element extends \block_coupon\template\element {
@@ -38,7 +38,7 @@ class element extends \block_coupon\template\element {
     /**
      * @var array The file manager options.
      */
-    protected $filemanageroptions = array();
+    protected $filemanageroptions = [];
 
     /**
      * Constructor.
@@ -48,11 +48,11 @@ class element extends \block_coupon\template\element {
     public function __construct($element) {
         global $COURSE;
 
-        $this->filemanageroptions = array(
+        $this->filemanageroptions = [
             'maxbytes' => $COURSE->maxbytes,
             'subdirs' => 1,
-            'accepted_types' => 'image'
-        );
+            'accepted_types' => 'image',
+        ];
 
         parent::__construct($element);
     }
@@ -79,7 +79,7 @@ class element extends \block_coupon\template\element {
             '0.7' => 0.7,
             '0.8' => 0.8,
             '0.9' => 0.9,
-            '1' => 1
+            '1' => 1,
         ];
         $mform->addElement('select', 'alphachannel', get_string('alphachannel', 'block_coupon'), $alphachannelvalues);
         $mform->setType('alphachannel', PARAM_FLOAT);
@@ -103,7 +103,7 @@ class element extends \block_coupon\template\element {
      */
     public function validate_form_elements($data, $files) {
         // Array to return the errors.
-        $errors = array();
+        $errors = [];
 
         // Validate the width.
         $errors += element_helper::validate_form_element_width($data);
@@ -154,7 +154,7 @@ class element extends \block_coupon\template\element {
     public function save_unique_data($data) {
         $arrtostore = [
             'width' => !empty($data->width) ? (int) $data->width : 0,
-            'height' => !empty($data->height) ? (int) $data->height : 0
+            'height' => !empty($data->height) ? (int) $data->height : 0,
         ];
 
         if (isset($data->alphachannel)) {
@@ -182,7 +182,7 @@ class element extends \block_coupon\template\element {
      * Handles rendering the element on the pdf.
      *
      * @param \pdf $pdf the pdf object
-     * @param bool $preview true if it is a preview, false otherwise
+     * @param boolean $preview true if it is a preview, false otherwise
      * @param \stdClass $user the user we are rendering this for
      * @param \stdClass $extradata -- expects "code" to be present
      */
@@ -267,7 +267,7 @@ class element extends \block_coupon\template\element {
                 $style .= 'height: ' . $imageinfo->height . 'mm';
             }
 
-            return \html_writer::tag('img', '', array('src' => $url, 'style' => $style));
+            return \html_writer::tag('img', '', ['src' => $url, 'style' => $style]);
         }
     }
 
@@ -329,7 +329,6 @@ class element extends \block_coupon\template\element {
      * @param \restore_block_coupon_activity_task $restore
      */
     public function after_restore($restore) {
-        global $DB;
     }
 
     /**
@@ -358,7 +357,7 @@ class element extends \block_coupon\template\element {
         $fs = get_file_storage();
 
         // The array used to store the images.
-        $arrfiles = array();
+        $arrfiles = [];
         // Loop through the files uploaded in the system context.
         if ($files = $fs->get_area_files(\context_system::instance()->id, 'block_coupon', 'image', false, 'filename', false)) {
             foreach ($files as $hash => $file) {
@@ -374,7 +373,7 @@ class element extends \block_coupon\template\element {
         }
 
         \core_collator::asort($arrfiles);
-        $arrfiles = array('0' => get_string('noimage', 'block_coupon')) + $arrfiles;
+        $arrfiles = ['0' => get_string('noimage', 'block_coupon')] + $arrfiles;
 
         return $arrfiles;
     }
@@ -421,9 +420,7 @@ class element extends \block_coupon\template\element {
                 );
 
                 // We want to update the context of the file if it doesn't exist in the course context.
-                $fieldupdates = [
-                    'contextid' => $coursecontext->id
-                ];
+                $fieldupdates = ['contextid' => $coursecontext->id];
                 $coursefile = $fs->create_file_from_storedfile($fieldupdates, $systemfile);
             }
 

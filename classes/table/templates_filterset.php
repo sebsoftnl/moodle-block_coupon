@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +35,7 @@ namespace block_coupon\table;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class templates_filterset extends \core_table\local\filter\filterset {
@@ -45,7 +45,7 @@ class templates_filterset extends \core_table\local\filter\filterset {
      *
      * @return array
      */
-    protected function get_required_filters():array {
+    protected function get_required_filters(): array {
         return [];
     }
 
@@ -54,8 +54,7 @@ class templates_filterset extends \core_table\local\filter\filterset {
      *
      * @return array
      */
-    protected function get_optional_filters():array {
+    protected function get_optional_filters(): array {
         return [];
     }
-
 }

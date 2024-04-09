@@ -24,7 +24,7 @@
  *
  * @copyright   1999 Martin Dougiamas  http://dougiamas.com
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 
@@ -40,7 +40,7 @@ require_once($CFG->dirroot.'/user/filters/lib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class couponcoursegroupid extends \user_filter_type {
@@ -62,12 +62,14 @@ class couponcoursegroupid extends \user_filter_type {
      * @return array of comparison operators
      */
     public function get_operators() {
-        return array(0 => get_string('contains', 'filters'),
-                     1 => get_string('doesnotcontain', 'filters'),
-                     2 => get_string('isequalto', 'filters'),
-                     3 => get_string('startswith', 'filters'),
-                     4 => get_string('endswith', 'filters'),
-                     5 => get_string('isempty', 'filters'));
+        return [
+            0 => get_string('contains', 'filters'),
+            1 => get_string('doesnotcontain', 'filters'),
+            2 => get_string('isequalto', 'filters'),
+            3 => get_string('startswith', 'filters'),
+            4 => get_string('endswith', 'filters'),
+            5 => get_string('isempty', 'filters'),
+        ];
     }
 
     /**
@@ -75,9 +77,10 @@ class couponcoursegroupid extends \user_filter_type {
      * @return array of comparison operators
      */
     public function get_fieldsselect() {
-        return array('idnumber' => get_string('idnumber'),
-                     'name' => get_string('name'),
-            );
+        return [
+            'idnumber' => get_string('idnumber'),
+            'name' => get_string('name'),
+        ];
     }
 
     /**
@@ -89,7 +92,7 @@ class couponcoursegroupid extends \user_filter_type {
      * @param object $mform a MoodleForm object to setup
      */
     public function setup_form(&$mform) {
-        $objs = array();
+        $objs = [];
         $objs['fieldselect'] = $mform->createElement('select', $this->_name.'_fld', null, $this->get_fieldsselect());
         $objs['select'] = $mform->createElement('select', $this->_name.'_op', null, $this->get_operators());
         $objs['text'] = $mform->createElement('text', $this->_name, null);
@@ -115,7 +118,7 @@ class couponcoursegroupid extends \user_filter_type {
         $operator = $field.'_op';
         $selectfield = $field.'_fld';
 
-        if (array_key_exists($operator, $formdata) && array_key_exists($selectfield, $formdata)) {
+        if (property_exists($formdata, $operator) && property_exists($formdata, $selectfield)) {
             if ($formdata->$operator != 5 && $formdata->$field == '') {
                 // No data - no change except for empty filter.
                 return false;
@@ -125,7 +128,7 @@ class couponcoursegroupid extends \user_filter_type {
             if (isset($formdata->$field)) {
                 $fieldvalue = $formdata->$field;
             }
-            return array('operator' => (int)$formdata->$operator, 'value' => $fieldvalue, 'field' => $formdata->$selectfield);
+            return ['operator' => (int)$formdata->$operator, 'value' => $fieldvalue, 'field' => $formdata->$selectfield];
         }
 
         return false;
@@ -145,7 +148,7 @@ class couponcoursegroupid extends \user_filter_type {
         $value    = $data['value'];
         $field    = $data['field'];
 
-        $params = array();
+        $params = [];
 
         if ($value === '') {
             return '';
@@ -193,7 +196,7 @@ class couponcoursegroupid extends \user_filter_type {
                 JOIN {groups} g ON cg.groupid=g.id
                 WHERE $res)";
 
-        return array($sql, $params);
+        return [$sql, $params];
     }
 
     /**

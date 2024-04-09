@@ -1,3 +1,15 @@
+Version 4.3.3 (build 2024020100)
+* Fixed "array_key_exists" errors in filters
+* Fixed wrong templated name for CSV manual (Email != E-mail)
+* Fixed (merged) course name formatting
+* Fixed (github) issue #20
+* Added settings default for "enrolment period"
+* Added settings default for "generate codes only"
+* Various small fixes
+* Added environment.xml
+
+----------
+
 Version 4.3.2 (build 2024010200)
 * Fixed issues while installing module
 * Fixed issues while claiming coupons

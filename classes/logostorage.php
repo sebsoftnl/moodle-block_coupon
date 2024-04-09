@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 
@@ -35,7 +35,7 @@ namespace block_coupon;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class logostorage {
@@ -62,13 +62,13 @@ class logostorage {
         $mform->addElement('static', '_logoman', '', get_string('logomanager:desc', 'block_coupon'));
 
         $maxbytes = 10 * 1024 * 1024;
-        $options = array(
+        $options = [
             'subdirs' => 0,
             'maxbytes' => $maxbytes,
             'areamaxbytes' => 10485760,
             'maxfiles' => static::MAX_FILES,
-            'accepted_types' => array('image'),
-        );
+            'accepted_types' => ['image'],
+        ];
         $mform->addElement('filemanager', 'logos', '', null, $options);
 
         $draftid = file_get_submitted_draft_itemid('logos');
@@ -94,7 +94,7 @@ class logostorage {
      */
     public static function prepare_draftarea(&$draftitemid) {
         $context = \context_system::instance();
-        $options = array('subdirs' => 0, 'maxfiles' => static::MAX_FILES);
+        $options = ['subdirs' => 0, 'maxfiles' => static::MAX_FILES];
         file_prepare_draft_area($draftitemid, $context->id, 'block_coupon',
                 self::FILE_AREA, self::AREA_ITEM_ID, $options);
         return $draftitemid;
@@ -107,7 +107,7 @@ class logostorage {
      */
     public static function store_draft_files($draftitemid) {
         $context = \context_system::instance();
-        $options = array('subdirs' => 0, 'maxfiles' => static::MAX_FILES);
+        $options = ['subdirs' => 0, 'maxfiles' => static::MAX_FILES];
         $text = null;
         return file_save_draft_area_files($draftitemid, $context->id, 'block_coupon',
                 self::FILE_AREA, self::AREA_ITEM_ID, $options, $text);
@@ -164,10 +164,10 @@ class logostorage {
     public static function get_file_menu() {
         $fs = get_file_storage();
         $context = \context_system::instance();
-        $rs = array(
+        $rs = [
             -1 => get_string('logo:none', 'block_coupon'),
-            0 => get_string('logo:default', 'block_coupon')
-        );
+            0 => get_string('logo:default', 'block_coupon'),
+        ];
         if (!$files = $fs->get_area_files($context->id, 'block_coupon', self::FILE_AREA, self::AREA_ITEM_ID, 'id DESC', false)) {
             return $rs;
         }
@@ -185,21 +185,21 @@ class logostorage {
     public static function get_file_table() {
         $fs = get_file_storage();
         $context = \context_system::instance();
-        $rs = array();
+        $rs = [];
         if (!$files = $fs->get_area_files($context->id, 'block_coupon', self::FILE_AREA, self::AREA_ITEM_ID, 'id DESC', false)) {
             return $rs;
         }
         $table = new \html_table();
-        $table->head = array(
+        $table->head = [
             'id',
             'name',
             'path',
             'size',
             'author',
             '',
-        );
+        ];
         foreach ($files as $file) {
-            $table->data[] = array(
+            $table->data[] = [
                 $file->get_id(),
                 $file->get_filename(),
                 $file->get_filepath(),
@@ -213,8 +213,8 @@ class logostorage {
                         $file->get_filepath(),
                         $file->get_filename()
                     ), $file->get_filename()
-                )
-            );
+                ),
+            ];
         }
         return $table;
     }

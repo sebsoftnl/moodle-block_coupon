@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -42,7 +42,7 @@ require_once($CFG->libdir . '/form/select.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class durationext extends \MoodleQuickForm_group {
@@ -52,7 +52,7 @@ class durationext extends \MoodleQuickForm_group {
      * optional => if true, show a checkbox beside the element to turn it on (or off)
      * @var array
      */
-    protected $_options = array('optional' => false, 'defaultunit' => 86400);
+    protected $_options = ['optional' => false, 'defaultunit' => 86400];
 
     /** @var array associative array of time units (weeks, days, hours) */
     private $_units = null;
@@ -68,7 +68,7 @@ class durationext extends \MoodleQuickForm_group {
      *              If not specified, days is used.
      * @param mixed $attributes Either a typical HTML attribute string or an associative array
      */
-    public function __construct($elementname = null, $elementlabel = null, $options = array(), $attributes = null) {
+    public function __construct($elementname = null, $elementlabel = null, $options = [], $attributes = null) {
         parent::__construct($elementname, $elementlabel, $attributes);
         $this->_persistantFreeze = true;
         $this->_appendName = true;
@@ -76,7 +76,7 @@ class durationext extends \MoodleQuickForm_group {
 
         // Set the options, do not bother setting bogus ones.
         if (!is_array($options)) {
-            $options = array();
+            $options = [];
         }
         $this->_options['optional'] = !empty($options['optional']);
         if (isset($options['defaultunit'])) {
@@ -95,10 +95,10 @@ class durationext extends \MoodleQuickForm_group {
      */
     public function get_units() {
         if (is_null($this->_units)) {
-            $this->_units = array(
+            $this->_units = [
                 604800 => get_string('weeks'),
                 86400 => get_string('days'),
-            );
+            ];
         }
         return $this->_units;
     }
@@ -112,14 +112,14 @@ class durationext extends \MoodleQuickForm_group {
      */
     public function seconds_to_unit($seconds) {
         if ($seconds == 0) {
-            return array(0, $this->_options['defaultunit']);
+            return [0, $this->_options['defaultunit']];
         }
         foreach ($this->get_units() as $unit => $notused) {
             if (fmod($seconds, $unit) == 0) {
-                return array($seconds / $unit, $unit);
+                return [$seconds / $unit, $unit];
             }
         }
-        return array($seconds, 1);
+        return [$seconds, 1];
     }
 
     /**
@@ -128,9 +128,9 @@ class durationext extends \MoodleQuickForm_group {
     public function _createElements() { // @codingStandardsIgnoreLine Can't change parent behaviour.
         $attributes = $this->getAttributes();
         if (is_null($attributes)) {
-            $attributes = array();
+            $attributes = [];
         }
-        $this->_elements = array();
+        $this->_elements = [];
 
         $options = [];
         for ($i = 1; $i < 100; $i++) {
@@ -179,7 +179,7 @@ class durationext extends \MoodleQuickForm_group {
                 }
                 if (!is_array($value)) {
                     list($number, $unit) = $this->seconds_to_unit($value);
-                    $value = array('number' => $number, 'timeunit' => $unit);
+                    $value = ['number' => $number, 'timeunit' => $unit];
                     // If optional, default to off, unless a date was provided.
                     if ($this->_options['optional']) {
                         $value['enabled'] = $number != 0;
@@ -222,7 +222,7 @@ class durationext extends \MoodleQuickForm_group {
      * Accepts a renderer
      *
      * @param HTML_QuickForm_Renderer $renderer An HTML_QuickForm_Renderer object
-     * @param bool $required Whether a group is required
+     * @param boolean $required Whether a group is required
      * @param string $error An error message associated with a group
      */
     public function accept(&$renderer, $required = false, $error = null) {
@@ -239,7 +239,7 @@ class durationext extends \MoodleQuickForm_group {
      */
     public function exportValue(&$submitvalues, $assoc = false) { // @codingStandardsIgnoreLine Can't change parent behaviour.
         // Get the values from all the child elements.
-        $valuearray = array();
+        $valuearray = [];
         foreach ($this->_elements as $element) {
             $thisexport = $element->exportValue($submitvalues[$this->getName()], true);
             if (!is_null($thisexport)) {

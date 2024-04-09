@@ -23,9 +23,10 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require_once('../../../config.php');
 
 $code = required_param('c', block_coupon\helper::get_code_param_type());
@@ -33,7 +34,7 @@ $hash = required_param('h', PARAM_ALPHANUMEXT);
 
 // And process the coupon code.
 try {
-    $data = $DB->get_record('block_coupon', array('submission_code' => $code), '*', IGNORE_MISSING);
+    $data = $DB->get_record('block_coupon', ['submission_code' => $code], '*', IGNORE_MISSING);
     if (empty($data->id)) {
         throw new block_coupon\exception('error:invalid_coupon_code');
     } else if ($hash !== sha1($data->id . $data->ownerid . $data->submission_code)) {
@@ -43,7 +44,7 @@ try {
     } else {
         if (!isloggedin()) {
             // Redirect to signup with coupon code.
-            $params = array('submissioncode' => $data->submission_code);
+            $params = ['submissioncode' => $data->submission_code];
             $couponsignup = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/signup.php', $params);
             redirect($couponsignup);
             exit; // Never reached.

@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class myrequests extends \table_sql {
@@ -96,11 +96,11 @@ class myrequests extends \table_sql {
      * Display the general status log table.
      *
      * @param int $pagesize
-     * @param bool $useinitialsbar
+     * @param boolean $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
         global $USER;
-        $columns = array('timecreated');
+        $columns = ['timecreated'];
         if ($this->is_downloading() == '') {
             $columns[] = 'action';
         }
@@ -112,7 +112,7 @@ class myrequests extends \table_sql {
 
         $where = [
             'cr.userid = :userid',
-            'finalized = 0'
+            'finalized = 0',
         ];
         $params = ['userid' => $USER->id];
         // Add filtering rules.
@@ -146,7 +146,7 @@ class myrequests extends \table_sql {
      */
     public function col_action($row) {
         global $OUTPUT;
-        $actions = array();
+        $actions = [];
 
         $details = \html_writer::link(new \moodle_url($this->baseurl,
                 ['action' => 'details', 'itemid' => $row->id, 'sesskey' => sesskey()]),
@@ -169,7 +169,7 @@ class myrequests extends \table_sql {
      */
     protected function define_table_columns($columns) {
         $this->define_columns($columns);
-        $headers = array();
+        $headers = [];
         foreach ($columns as $name) {
             $headers[] = get_string('th:' . $name, 'block_coupon');
         }

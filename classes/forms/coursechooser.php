@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursechooser extends \moodleform {
@@ -74,11 +74,25 @@ class coursechooser extends \moodleform {
         // Add choices.
         if ($this->coursegrouping->maxamount == 1) {
             foreach ($this->courses as $course) {
-                $mform->addElement('radio', 'course', '', $course->fullname, $course->id);
+                $mform->addElement('radio', 'course', '', format_string(
+                        $course->fullname,
+                        true,
+                        [
+                            'filter' => true,
+                            'context' => \context_course::instance($course->id),
+                        ]
+                    ), $course->id);
             }
         } else {
             foreach ($this->courses as $course) {
-                $mform->addElement('advcheckbox', "course[{$course->id}]", '', $course->fullname);
+                $mform->addElement('advcheckbox', "course[{$course->id}]", '', format_string(
+                    $course->fullname,
+                    true,
+                    [
+                        'filter' => true,
+                        'context' => \context_course::instance($course->id),
+                    ]
+                ));
             }
         }
 

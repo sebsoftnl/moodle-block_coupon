@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class maillog extends \table_sql {
@@ -95,10 +95,10 @@ class maillog extends \table_sql {
      * Display the general status log table.
      *
      * @param int $pagesize
-     * @param bool $useinitialsbar
+     * @param boolean $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
-        $this->define_table_columns(array('timecreated', 'errortype', 'errormessage'));
+        $this->define_table_columns(['timecreated', 'errortype', 'errormessage']);
         $this->no_sorting('errortype');
         $this->no_sorting('errormessage');
         $this->sortable(true, 'timecreated', SORT_DESC);
@@ -122,12 +122,12 @@ class maillog extends \table_sql {
     /**
      * Get the complete query to generate the table.
      *
-     * @param bool $forcount if true, generates query for counting.
+     * @param boolean $forcount if true, generates query for counting.
      * @return array array consisting of query and parameters
      */
     protected function get_query($forcount = false) {
-        $where = array('errortype = :type');
-        $params = array('type' => 'debugemail');
+        $where = ['errortype = :type'];
+        $params = ['type' => 'debugemail'];
         $fields = 'e.*, null as action';
         $sql = 'SELECT ' . $fields . ' FROM {block_coupon_errors} e';
 
@@ -144,14 +144,14 @@ class maillog extends \table_sql {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
 
-        return array($sql, $params);
+        return [$sql, $params];
     }
 
     /**
      * Query the db. Store results in the table object for use by build_table.
      *
      * @param int $pagesize size of page for paginated displayed table.
-     * @param bool $useinitialsbar do you want to use the initials bar. Bar
+     * @param boolean $useinitialsbar do you want to use the initials bar. Bar
      * will only be used if there is a fullname column defined for the table.
      */
     public function query_db($pagesize, $useinitialsbar=true) {
@@ -185,7 +185,7 @@ class maillog extends \table_sql {
      * Convenience method to call a number of methods for you to display the table.
      *
      * @param int $pagesize
-     * @param bool $useinitialsbar
+     * @param boolean $useinitialsbar
      * @param mixed $downloadhelpbutton unused
      */
     public function out($pagesize, $useinitialsbar, $downloadhelpbutton='') {
@@ -213,7 +213,7 @@ class maillog extends \table_sql {
      */
     protected function define_table_columns($columns) {
         $this->define_columns($columns);
-        $headers = array();
+        $headers = [];
         foreach ($columns as $name) {
             $headers[] = get_string('report:heading:' . $name, 'block_coupon');
         }

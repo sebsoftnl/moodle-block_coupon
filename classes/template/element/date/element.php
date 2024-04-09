@@ -18,7 +18,7 @@
  * This file contains the element date's core interaction API.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -40,7 +40,7 @@ define('COUPON_DATE_EXPIRES', '-1');
  * The element date's core interaction API.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class element extends \block_coupon\template\element {
@@ -51,10 +51,8 @@ class element extends \block_coupon\template\element {
      * @param \MoodleQuickForm $mform the edit_form instance
      */
     public function render_form_elements($mform) {
-        global $CFG, $COURSE;
-
         // Get the possible date options.
-        $dateoptions = array();
+        $dateoptions = [];
         $dateoptions[COUPON_DATE_CURRENT_DATE] = get_string('currentdate', 'block_coupon');
         $dateoptions[COUPON_DATE_EXPIRY_ONE] = get_string('expirydate', 'block_coupon');
 
@@ -76,10 +74,10 @@ class element extends \block_coupon\template\element {
      */
     public function save_unique_data($data) {
         // Array of data we will be storing in the database.
-        $arrtostore = array(
+        $arrtostore = [
             'dateitem' => $data->dateitem,
-            'dateformat' => $data->dateformat
-        );
+            'dateformat' => $data->dateformat,
+        ];
 
         // Encode these variables before saving into the DB.
         return json_encode($arrtostore);
@@ -89,13 +87,11 @@ class element extends \block_coupon\template\element {
      * Handles rendering the element on the pdf.
      *
      * @param \pdf $pdf the pdf object
-     * @param bool $preview true if it is a preview, false otherwise
+     * @param boolean $preview true if it is a preview, false otherwise
      * @param \stdClass $user the user we are rendering this for
      * @param \stdClass $extradata -- expects "code" to be present
      */
     public function render($pdf, $preview, $user, \stdClass $extradata = null) {
-        global $DB;
-
         // If there is no element data, we have nothing to display.
         if (empty($this->get_data())) {
             return;
@@ -186,7 +182,7 @@ class element extends \block_coupon\template\element {
 
         $dateformats = [
             1 => userdate($date, '%B %d, %Y'),
-            2 => userdate($date, '%B %d' . $suffix . ', %Y')
+            2 => userdate($date, '%B %d' . $suffix . ', %Y'),
         ];
 
         $strdateformats = [
@@ -204,7 +200,7 @@ class element extends \block_coupon\template\element {
             'strftimemonthyear',
             'strftimerecent',
             'strftimerecentfull',
-            'strftimetime'
+            'strftimetime',
         ];
 
         foreach ($strdateformats as $strdateformat) {
@@ -271,7 +267,7 @@ class element extends \block_coupon\template\element {
      * @return string the suffix.
      */
     protected static function get_ordinal_number_suffix($day) {
-        if (!in_array(($day % 100), array(11, 12, 13))) {
+        if (!in_array(($day % 100), [11, 12, 13])) {
             switch ($day % 10) {
                 // Handle 1st, 2nd, 3rd.
                 case 1:

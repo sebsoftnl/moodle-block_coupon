@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +35,7 @@ namespace block_coupon\controller;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursegroupings {
@@ -118,7 +118,7 @@ class coursegroupings {
             $redirect = $this->get_url(['action' => 'list']);
         }
 
-        $params = array('action' => 'delete', 'itemid' => $itemid);
+        $params = ['action' => 'delete', 'itemid' => $itemid];
         $url = $this->get_url($params);
 
         $instance = $DB->get_record('block_coupon_coursegroupings', ['id' => $itemid]);
@@ -126,7 +126,7 @@ class coursegroupings {
         $options = [
             get_string('delete:coursegrouping:header', 'block_coupon', $instance),
             $this->get_coursegroupingsdetails($instance, true),
-            get_string('delete:coursegrouping:confirmmessage', 'block_coupon', $instance)
+            get_string('delete:coursegrouping:confirmmessage', 'block_coupon', $instance),
         ];
         $mform = new \block_coupon\forms\confirmation($url, $options);
         if ($mform->is_cancelled()) {
@@ -152,7 +152,7 @@ class coursegroupings {
      * Process edit coursegroupingsuser instance
      */
     protected function process_coursegrouping_edit() {
-        global $CFG, $DB, $USER;
+        global $DB;
         $itemid = optional_param('itemid', null, PARAM_INT);
         $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
@@ -160,9 +160,9 @@ class coursegroupings {
         }
 
         if (empty($itemid)) {
-            $params = array('action' => 'add');
+            $params = ['action' => 'add'];
         } else {
-            $params = array('action' => 'edit', 'itemid' => $itemid);
+            $params = ['action' => 'edit', 'itemid' => $itemid];
         }
         $url = $this->get_url($params);
 
@@ -231,15 +231,12 @@ class coursegroupings {
      * Process details view
      */
     protected function process_coursegrouping_details() {
-        global $CFG, $DB;
+        global $DB;
         $itemid = required_param('itemid', PARAM_INT);
         $redirect = optional_param('redirect', null, PARAM_LOCALURL);
         if (empty($redirect)) {
             $redirect = $this->get_url(['action' => 'list']);
         }
-
-        $params = array('action' => 'details', 'itemid' => $itemid);
-        $url = $this->get_url($params);
 
         $instance = $DB->get_record('block_coupon_coursegroupings', ['id' => $itemid]);
 
@@ -255,7 +252,7 @@ class coursegroupings {
      * Get the detailview
      *
      * @param stdClass $instance
-     * @param bool $noactions
+     * @param boolean $noactions
      * @return string rendered content
      */
     protected function get_coursegroupingsdetails($instance, $noactions = false) {

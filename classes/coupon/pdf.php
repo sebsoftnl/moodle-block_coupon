@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * */
 
@@ -41,7 +41,7 @@ require_once($CFG->dirroot . '/lib/pdflib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class pdf extends \pdf {
@@ -188,7 +188,7 @@ class pdf extends \pdf {
     /**
      * Set whether or not to include QR code
      *
-     * @param bool $includeqr
+     * @param boolean $includeqr
      * @return \block_coupon\coupon\pdf
      */
     public function set_includeqr($includeqr) {
@@ -219,7 +219,7 @@ class pdf extends \pdf {
     /**
      * Set preview mode
      *
-     * @param bool $preview
+     * @param boolean $preview
      * @param array $courses
      * @return $this
      */
@@ -278,7 +278,7 @@ class pdf extends \pdf {
     /**
      * Is the PDF already rendered?
      *
-     * @var boolean
+     * @var bool
      */
     protected $isrendered = false;
 
@@ -371,7 +371,7 @@ class pdf extends \pdf {
      */
     public function generate($coupons) {
         if (!is_array($coupons)) {
-            $coupons = array($coupons);
+            $coupons = [$coupons];
         }
         $this->coupons = $coupons;
         if ($this->isrendered) {
@@ -465,19 +465,19 @@ class pdf extends \pdf {
                     115 + $offsets->right->x, 210 + $offsets->right->y, true, 0, true);
             // QR.
             if ((bool)$coupon->renderqrcode) {
-                $url = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/qrin.php', array(
+                $url = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/qrin.php', [
                     'c' => $coupon->submission_code,
                     'h' => sha1($coupon->id . $coupon->ownerid . $coupon->submission_code),
-                ));
+                ]);
 
                 $style = [
                     'border' => false,
                     'vpadding' => 2,
                     'hpadding' => 2,
-                    'fgcolor' => array(0, 0, 0),
+                    'fgcolor' => [0, 0, 0],
                     'bgcolor' => false,
                     'module_width' => 1, // Width of a single module in points.
-                    'module_height' => 1 // Height of a single module in points.
+                    'module_height' => 1, // Height of a single module in points.
                 ];
                 $this->write2DBarcode($url->out(false), 'QRCODE,H', 150, 70, 50, 50, $style, '', false);
             }
@@ -495,12 +495,12 @@ class pdf extends \pdf {
      */
     protected function compile_main($coupon, $courses) {
         global $DB;
-        $find = array(
+        $find = [
             '{coupon_code}',
             '{accesstime}',
             '{courses}',
-            '{role}'
-        );
+            '{role}',
+        ];
         if ((int)$coupon->enrolperiod === 0) {
             $accesstime = get_string('unlimited_access', 'block_coupon');
         } else if ($coupon->typ == generatoroptions::ENROLEXTENSION ) {
@@ -514,12 +514,12 @@ class pdf extends \pdf {
             $role = helper::get_default_coupon_role();
         }
         $rolename = role_get_name($role);
-        $replace = array(
+        $replace = [
             '<div style="text-align: center; font-size: 200%; font-weight: bold">'.$coupon->submission_code.'</div>',
             $accesstime,
             '<b>'.implode(', ', $courses).'</b>',
-            $rolename
-        );
+            $rolename,
+        ];
 
         return str_replace($find, $replace, $this->templatemain);
     }
@@ -532,12 +532,8 @@ class pdf extends \pdf {
     protected function compile_botleft() {
         global $CFG;
 
-        $find = array(
-            '{site_url}'
-        );
-        $replace = array(
-            $CFG->wwwroot
-        );
+        $find = ['{site_url}'];
+        $replace = [$CFG->wwwroot];
 
         return str_replace($find, $replace, $this->templatebotleft);
     }
@@ -550,12 +546,8 @@ class pdf extends \pdf {
     protected function compile_botright() {
         global $CFG;
 
-        $find = array(
-            '{site_url}'
-        );
-        $replace = array(
-            $CFG->wwwroot
-        );
+        $find = ['{site_url}'];
+        $replace = [$CFG->wwwroot];
 
         return str_replace($find, $replace, $this->templatebotright);
     }

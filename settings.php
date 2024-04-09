@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -83,7 +83,21 @@ if ($ADMIN->fulltree) {
             $roleoptions
         ));
 
-    $maxcodelengthchoices = array(6 => 6, 8 => 8, 16 => 16, 32 => 32);
+    $settings->add(new admin_setting_configduration(
+            'block_coupon/defaultenrolmentperiod',
+            get_string('label:defaultenrolmentperiod', 'block_coupon'),
+            get_string('label:defaultenrolmentperiod_help', 'block_coupon'),
+            0
+        ));
+
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/defaultgeneratecodesonly',
+            get_string('label:defaultgeneratecodesonly', 'block_coupon'),
+            get_string('label:defaultgeneratecodesonly_help', 'block_coupon'),
+            0
+        ));
+
+    $maxcodelengthchoices = [6 => 6, 8 => 8, 16 => 16, 32 => 32];
     $settings->add(new admin_setting_configselect(
             'block_coupon/coupon_code_length',
             get_string('label:coupon_code_length', 'block_coupon'),
@@ -92,11 +106,11 @@ if ($ADMIN->fulltree) {
             $maxcodelengthchoices
         ));
 
-    $generatorchoices = array(
+    $generatorchoices = [
         1 => get_string('numeric', 'block_coupon'),
         2 => get_string('letters', 'block_coupon'),
         4 => get_string('capitals', 'block_coupon'),
-    );
+    ];
     $settings->add(new admin_setting_configmulticheckbox(
             'block_coupon/coupon_code_flags',
             get_string('label:coupon_code_flags', 'block_coupon'),
@@ -203,6 +217,7 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_heading('block_coupon_textsettings',
             get_string('textsettings', 'block_coupon'),
             get_string('textsettings_desc', 'block_coupon', $header)));
+
     $settings->add(new admin_setting_configtext(
             'block_coupon/info_coupon_type',
             get_string('label:info_coupon_type', 'block_coupon'),

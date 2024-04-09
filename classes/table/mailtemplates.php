@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,7 +41,7 @@ use moodle_url;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mailtemplates extends \table_sql implements \core_table\dynamic {
@@ -61,13 +61,13 @@ class mailtemplates extends \table_sql implements \core_table\dynamic {
         $columns = [
             'name',
             'subject',
-            'actions'
+            'actions',
         ];
 
         $headers = [
             get_string('name'),
             get_string('subject'),
-            ''
+            '',
         ];
 
         $this->define_columns($columns);
@@ -83,7 +83,7 @@ class mailtemplates extends \table_sql implements \core_table\dynamic {
      * @param \core_table\local\filter\filterset $filterset
      * @return void
      */
-    public function set_filterset(\core_table\local\filter\filterset $filterset) :void {
+    public function set_filterset(\core_table\local\filter\filterset $filterset): void {
         $this->context = \context_system::instance();
         parent::set_filterset($filterset);
     }
@@ -110,7 +110,7 @@ class mailtemplates extends \table_sql implements \core_table\dynamic {
      * Convenience method to call a number of methods for you to display the table.
      *
      * @param int $pagesize
-     * @param bool $useinitialsbar
+     * @param boolean $useinitialsbar
      * @param string $downloadhelpbutton
      * @return string
      */
@@ -141,18 +141,18 @@ class mailtemplates extends \table_sql implements \core_table\dynamic {
         global $OUTPUT;
 
         // Link to edit the mailtemplate.
-        $editlink = new \moodle_url('/blocks/coupon/view/mailtemplates.php', array('action' => 'edit', 'tid' => $mailtemplate->id));
+        $editlink = new \moodle_url('/blocks/coupon/view/mailtemplates.php', ['action' => 'edit', 'tid' => $mailtemplate->id]);
         $editicon = $OUTPUT->action_icon($editlink, new \pix_icon('t/edit', get_string('edit')));
 
         // Link to duplicate the mailtemplate.
         $duplicatelink = new \moodle_url('#');
         $duplicateicon = $OUTPUT->action_icon($duplicatelink, new \pix_icon('t/copy', get_string('duplicate')), null,
-            array('class' => 'action-icon duplicate-icon', 'data-action' => 'duplicate', 'data-id' => $mailtemplate->id));
+            ['class' => 'action-icon duplicate-icon', 'data-action' => 'duplicate', 'data-id' => $mailtemplate->id]);
 
         // Link to delete the mailtemplate.
         $deletelink = new \moodle_url('#');
         $deleteicon = $OUTPUT->action_icon($deletelink, new \pix_icon('t/delete', get_string('delete')), null,
-            array('class' => 'action-icon delete-icon', 'data-action' => 'delete', 'data-id' => $mailtemplate->id));
+            ['class' => 'action-icon delete-icon', 'data-action' => 'delete', 'data-id' => $mailtemplate->id]);
 
         return $editicon . $duplicateicon . $deleteicon;
     }
@@ -161,7 +161,7 @@ class mailtemplates extends \table_sql implements \core_table\dynamic {
      * Query the reader.
      *
      * @param int $pagesize size of page for paginated displayed table.
-     * @param bool $useinitialsbar do you want to use the initials bar.
+     * @param boolean $useinitialsbar do you want to use the initials bar.
      */
     public function query_db($pagesize, $useinitialsbar = true) {
         global $DB;

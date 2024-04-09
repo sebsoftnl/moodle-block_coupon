@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +33,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_coupon extends block_base {
@@ -68,7 +68,7 @@ class block_coupon extends block_base {
         }
 
         // We'll fill the array of menu items with everything the logged in user has permission to.
-        $menuitems = array();
+        $menuitems = [];
 
         // The "button class" for links.
         $linkseparator = '';
@@ -104,7 +104,7 @@ class block_coupon extends block_base {
         if (has_capability('block/coupon:viewreports', $this->context)) {
             $urlreports = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/reports.php', $baseparams);
             $urlunusedreports = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php',
-                    array('tab' => 'unused'));
+                    ['tab' => 'unused']);
 
             $menuitems[] = html_writer::link($urlreports,
                     get_string('url:view_reports', 'block_coupon'), ['class' => $btnclass]);
@@ -114,26 +114,19 @@ class block_coupon extends block_base {
 
         // Input Coupon.
         if (has_capability('block/coupon:inputcoupons', $this->context)) {
+            $renderer = $this->page->get_renderer('block_coupon');
             $urlinputcoupon = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/input_coupon.php', $baseparams);
-
-            $couponform = "
-                <form action='$urlinputcoupon' method='post'>
-                    <table>
-                        <tr><td>" . get_string('label:enter_coupon_code', 'block_coupon') . ":</td></tr>
-                        <tr><td><input type='text' name='coupon_code'></td></tr>
-                        <tr><td><input type='submit' name='submitbutton' value='"
-                    . get_string('button:submit_coupon_code', 'block_coupon') . "' class='{$btnclass}'></td></tr>
-                    </table>
-                    <input type='hidden' name='id' value='{$this->instance->id}' />
-                    <input type='hidden' name='submitbutton' value='Submit Coupon' />
-                    <input type='hidden' name='_qf__block_coupon_forms_coupon_validator' value='1' />
-                    <input type='hidden' name='sesskey' value='" . sesskey() . "' />
-                </form>";
+            $templatecontext = (object)[
+                'urlinputcoupon' => $urlinputcoupon->out(false),
+                'btnclass' => $btnclass,
+                'instanceid' => $this->instance->id,
+                'sesskey' => sesskey(),
+            ];
+            $couponform = $renderer->render_from_template('block_coupon/coupon/inputform', $templatecontext);
 
             $displayinputhelp = (bool)get_config('block_coupon', 'displayinputhelp');
             if ($displayinputhelp) {
                 $menuitems[] = "<div>".get_string('str:inputhelp', 'block_coupon')."<br/>{$couponform}</div>";
-
             } else {
                 $menuitems[] = $couponform;
             }
@@ -172,7 +165,7 @@ class block_coupon extends block_base {
      * @return array page-type prefix => true/false.
      */
     public function applicable_formats() {
-        return array('site-index' => true, 'my' => true);
+        return ['site-index' => true, 'my' => true];
     }
 
     /**

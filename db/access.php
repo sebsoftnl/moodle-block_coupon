@@ -23,70 +23,70 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die;
 
-$capabilities = array(
-    'block/coupon:administration' => array(
+$capabilities = [
+    'block/coupon:administration' => [
         'captype' => 'view',
         'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        )
-    ),
-    'block/coupon:viewreports' => array(
-        'captype' => 'view',
-        'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
+        'archetypes' => [
             'manager' => CAP_ALLOW,
-            'coursecreator' => CAP_ALLOW
-        )
-    ),
-    'block/coupon:viewallreports' => array(
+        ],
+    ],
+    'block/coupon:viewreports' => [
         'captype' => 'view',
         'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        )
-    ),
-    'block/coupon:generatecoupons' => array(
-        'captype' => 'view',
-        'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
+        'archetypes' => [
             'manager' => CAP_ALLOW,
-            'coursecreator' => CAP_ALLOW
-        )
-    ),
-    'block/coupon:inputcoupons' => array(
+            'coursecreator' => CAP_ALLOW,
+        ],
+    ],
+    'block/coupon:viewallreports' => [
         'captype' => 'view',
         'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+    'block/coupon:generatecoupons' => [
+        'captype' => 'view',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+            'coursecreator' => CAP_ALLOW,
+        ],
+    ],
+    'block/coupon:inputcoupons' => [
+        'captype' => 'view',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => [
             'user' => CAP_ALLOW,
-            'guest' => CAP_PREVENT
-        )
-    ),
-    'block/coupon:extendenrolments' => array(
+            'guest' => CAP_PREVENT,
+        ],
+    ],
+    'block/coupon:extendenrolments' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        )
-    ),
-    'block/coupon:addinstance' => array(
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+    'block/coupon:addinstance' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        )
-    ),
-    'block/coupon:myaddinstance' => array(
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+    'block/coupon:myaddinstance' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
+        'archetypes' => [
             'user' => CAP_ALLOW,
-            'guest' => CAP_PREVENT
-        )
-    )
-);
+            'guest' => CAP_PREVENT,
+        ],
+    ],
+];
