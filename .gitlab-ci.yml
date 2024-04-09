@@ -20,7 +20,7 @@ variables:
 .job_template: &job_definition
   stage: test
   services:
-    - mysql:5.7
+    - mysql:8.0
   cache:
     paths:
       - $HOME/.composer/cache
