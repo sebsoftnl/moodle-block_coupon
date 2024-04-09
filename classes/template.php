@@ -270,9 +270,9 @@ class template {
      * Generate the PDF for the template.
      *
      * @param array $coupons generated (or fake) array of coupons.
-     * @param boolean $preview true if it is a preview, false otherwise
+     * @param bool $preview true if it is a preview, false otherwise
      * @param int $userid the id of the user whose certificate we want to view
-     * @param boolean $return Do we want to return the contents of the PDF?
+     * @param bool $return Do we want to return the contents of the PDF?
      * @param string $relativefilename relative filename (relative to $CFG->dataroot)
      * @return string|void Can return the PDF in string format if specified.
      */
@@ -350,7 +350,7 @@ class template {
      * @param \pdf $pdf
      * @param array $pages
      * @param array $coupons
-     * @param boolean $preview
+     * @param bool $preview
      * @param int $userid
      */
     protected function render_pages($pdf, $pages, array $coupons = [], bool $preview = false, int $userid = null) {

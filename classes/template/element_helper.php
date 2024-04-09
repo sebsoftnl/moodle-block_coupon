@@ -275,7 +275,7 @@ class element_helper {
      * Helper function to perform validation on the width element.
      *
      * @param array $data the submitted data
-     * @param boolean $allowzero allow zero as a valid value
+     * @param bool $allowzero allow zero as a valid value
      * @return array the validation errors
      */
     public static function validate_form_element_width($data, bool $allowzero = true) {
@@ -308,7 +308,7 @@ class element_helper {
      * Helper function to perform validation on the height element.
      *
      * @param array $data the submitted data
-     * @param boolean $allowzero allow zero as a valid value
+     * @param bool $allowzero allow zero as a valid value
      * @return array the validation errors
      */
     public static function validate_form_element_height($data, bool $allowzero = true) {
