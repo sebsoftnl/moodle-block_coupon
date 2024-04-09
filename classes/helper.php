@@ -1572,7 +1572,7 @@ class helper {
             $button = $OUTPUT->single_button($url, get_string('downloadcoupons:buttontext', 'block_coupon'), 'get');
             echo get_string('downloadcoupons:text', 'block_coupon', $button);
         } else {
-            helper::dlh(basename($filename), filesize($filename));
+            self::dlh(basename($filename), filesize($filename));
             readfile($filename);
             unlink($filename);
         }
