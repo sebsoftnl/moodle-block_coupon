@@ -42,11 +42,7 @@ class block_coupon extends block_base {
      * initializes block
      */
     public function init() {
-        global $CFG;
         $this->title = get_string('blockname', 'block_coupon');
-        include($CFG->dirroot . '/blocks/coupon/version.php');
-        $this->version = $plugin->version;
-        $this->cron = $plugin->cron;
     }
 
     /**
