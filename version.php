@@ -35,4 +35,4 @@ $plugin->cron        = 0;
 $plugin->maturity    = MATURITY_STABLE;
 $plugin->release     = '4.4.0 (build 2024100100)';
 $plugin->dependencies = [];
-$plugin->supported = [402, 404];
+$plugin->supported = [402, 405];

@@ -71,11 +71,6 @@ Moodle 4.2:
   variables:
     MOODLE_BRANCH: "MOODLE_402_STABLE"
 
-Moodle 4.1:
-  <<: *job_definition
-  variables:
-    MOODLE_BRANCH: "MOODLE_401_STABLE"
-
 deploy.gitlab:
   stage: deploy
   image: registry.gitlab.com/gitlab-org/release-cli:latest

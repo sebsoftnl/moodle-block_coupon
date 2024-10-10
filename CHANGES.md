@@ -7,6 +7,7 @@ Version 4.4.0 (build 2024100100)
 ** Fixed issue with CSV upload not being processed
 ** Fixed (github) issue #27
 ** Fixed (github) issue #3 (was done long ago already, but just to be complete).
+** Supported up to Moodle 4.5
 
 ----------
 
