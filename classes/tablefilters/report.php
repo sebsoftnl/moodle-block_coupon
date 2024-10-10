@@ -49,6 +49,7 @@ class report extends filtering {
     public function get_fields() {
         return [
             'timeexpired' => 0,
+            'claimee' => 0,
             'timemodified' => 1,
             'couponcode' => 1,
             'cohortid' => 1,
@@ -65,6 +66,7 @@ class report extends filtering {
      * @return object filter
      */
     public function get_field($fieldname, $advanced) {
+        global $DB;
         switch ($fieldname) {
             case 'timemodified':
                 return new \user_filter_date('timemodified',
@@ -83,6 +85,10 @@ class report extends filtering {
                 return new \block_coupon\filters\couponcourseselect($advanced, 'c.id');
             case 'cohort':
                 return new \block_coupon\filters\couponcohortselect($advanced, 'c.id');
+            case 'claimee':
+                return new \block_coupon\filters\multitext('claimee',
+                        get_string('claimee', 'block_coupon'), $advanced,
+                        ['u1.firstname', 'u1.lastname', 'u1.email', $DB->sql_fullname('u1.firstname', 'u1.lastname')]);
             default:
                 return null;
         }

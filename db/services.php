@@ -156,6 +156,22 @@ $functions = [
         'type' => 'write',
         'ajax' => true,
     ],
+    'block_coupon_delete_coupons' => [
+        'classname' => 'block_coupon_external',
+        'methodname' => 'delete_coupons',
+        'classpath' => 'blocks/coupon/externallib.php',
+        'description' => 'Delete coupons by id',
+        'type' => 'write',
+        'ajax' => true,
+    ],
+    'block_coupon_find_batches' => [
+        'classname' => 'block_coupon_external',
+        'methodname' => 'find_batches',
+        'classpath' => 'blocks/coupon/externallib.php',
+        'description' => 'Find batches. Only use for AMD please',
+        'type' => 'read',
+        'ajax' => true,
+    ],
 
     'block_coupon_delete_mailtemplate' => [
         'classname' => '\\block_coupon\\external\\mailtemplates',

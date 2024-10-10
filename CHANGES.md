@@ -1,10 +1,25 @@
+Version 4.4.0 (build 2024100100)
+** Several bugfixes
+** Require Moodle 4.2 MINIMUM
+** Lots of coding compliance changes
+** Introduced editing of course/cohort coupons (based on settings)
+** Implementation for batch filter is now an autocomplete
+** Fixed issue with CSV upload not being processed
+** Fixed (github) issue #27
+** Fixed (github) issue #3 (was done long ago already, but just to be complete).
+
+----------
+
 Version 4.3.3 (build 2024020100)
 * Fixed "array_key_exists" errors in filters
 * Fixed wrong templated name for CSV manual (Email != E-mail)
 * Fixed (merged) course name formatting
+* Fixed (github) issue #16
+* Fixed (github) issue #18
+* Fixed (github) issue #19
 * Fixed (github) issue #20
 * Added settings default for "enrolment period"
-* Added settings default for "generate codes only"
+* Added settings default for "generate codes only" (issue #23)
 * Various small fixes
 * Added environment.xml
 

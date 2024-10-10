@@ -59,6 +59,9 @@ try {
         // The base is to just claim, but various coupons might have their own processing.
         $typeproc->process_claim($USER->id);
     }
+} catch (block_coupon\notificationexception $ne) {
+    // Add message to stack.
+    $ne->notify();
 } catch (block_coupon\exception $e) {
     \core\notification::error($e->getMessage());
 } catch (\Exception $ex) {

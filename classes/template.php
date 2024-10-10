@@ -271,13 +271,13 @@ class template {
      *
      * @param array $coupons generated (or fake) array of coupons.
      * @param bool $preview true if it is a preview, false otherwise
-     * @param int $userid the id of the user whose certificate we want to view
+     * @param int|null $userid the id of the user whose certificate we want to view
      * @param bool $return Do we want to return the contents of the PDF?
      * @param string $relativefilename relative filename (relative to $CFG->dataroot)
      * @return string|void Can return the PDF in string format if specified.
      */
     public function generate_pdf(array $coupons = [], bool $preview = false,
-            int $userid = null, bool $return = false, $relativefilename = null) {
+            ?int $userid = null, bool $return = false, $relativefilename = null) {
         global $CFG, $DB, $USER;
 
         if (empty($userid)) {
@@ -351,9 +351,9 @@ class template {
      * @param array $pages
      * @param array $coupons
      * @param bool $preview
-     * @param int $userid
+     * @param int|null $userid
      */
-    protected function render_pages($pdf, $pages, array $coupons = [], bool $preview = false, int $userid = null) {
+    protected function render_pages($pdf, $pages, array $coupons = [], bool $preview = false, ?int $userid = null) {
         global $DB;
         foreach ($coupons as $coupon) {
             foreach ($pages as $page) {
@@ -371,15 +371,7 @@ class template {
                     foreach ($elements as $element) {
                         // Get an instance of the element class.
                         if ($e = element_factory::get_element_instance($element)) {
-                            $extradata = null;
-                            switch ($element->element) {
-                                case 'qrcode':
-                                    $extradata = (object)['code' => $coupon->submission_code];
-                                    break;
-                                case 'code':
-                                    $extradata = (object)['code' => $coupon->submission_code];
-                                    break;
-                            }
+                            $extradata = $e->get_extra_data($coupon, $preview);
                             $e->render($pdf, $preview, $userid, $extradata);
                         }
                     }

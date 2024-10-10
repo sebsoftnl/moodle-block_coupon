@@ -146,8 +146,6 @@ abstract class typebase {
         // Base validation.
         if (empty($coupon)) {
             throw new exception('error:invalid_coupon_code');
-        } else if (!is_null($coupon->userid) && $coupon->typ != generatoroptions::ENROLEXTENSION) {
-            throw new exception('error:coupon_already_used');
         }
 
         // All these checks aren't strictly needed but alas, OOP FTW.
@@ -160,7 +158,7 @@ abstract class typebase {
             throw new exception('err:processor-implements', $coupon->typ);
         }
 
-        // Load coupon type and claim().
+        // Return coupon type instance.
         $instance = $rc->newInstance($coupon);
         return $instance;
     }

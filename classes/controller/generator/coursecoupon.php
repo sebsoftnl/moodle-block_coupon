@@ -435,6 +435,7 @@ class coursecoupon {
                 // Parse CSV.
                 $delimiter = helper::get_delimiter($generatoroptions->csvdelimitername);
                 $generatoroptions->csvrecipients = helper::get_recipients_from_csv($data->coupon_recipients, $delimiter);
+                $generatoroptions->amount = count($generatoroptions->csvrecipients);
 
                 // Serialize generatoroptions to session.
                 $generatoroptions->to_session();

@@ -100,13 +100,15 @@ class couponbatchselect extends \user_filter_type {
      * @param object $mform a MoodleForm object to setup
      */
     public function setup_form(&$mform) {
-        $batches = $this->get_batchmenu();
-        if (count($batches) <= 1) {
-            return;
-        }
+        global $CFG;
+
+        \MoodleQuickForm::registerElementType('findbatches',
+            $CFG->dirroot . '/blocks/coupon/classes/forms/element/findbatches.php',
+                '\\block_coupon\\forms\\element\\findbatches');
+
         $objs = [];
         $objs['select'] = $mform->createElement('select', $this->_name . '_op', null, $this->get_operators());
-        $objs['value'] = $mform->createElement('select', $this->_name, null, $batches);
+        $objs['value'] = $mform->createElement('findbatches', $this->_name, null, ['multiple' => false, 'noselectionstring' => '']);
         $objs['select']->setLabel(get_string('limiterfor', 'filters', $this->_label));
         $objs['value']->setLabel(get_string('valuefor', 'filters', $this->_label));
         $mform->addElement('group', $this->_name . '_grp', $this->_label, $objs, '', false);

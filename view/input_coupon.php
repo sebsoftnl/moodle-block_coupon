@@ -61,7 +61,7 @@ $page = couponpage::setup(
 try {
     $mform = new validator();
     if ($mform->is_cancelled()) {
-        redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $course->id]));
+        redirect($redirect);
     } else if ($data = $mform->get_data()) {
         // Get type processor.
         $typeproc = block_coupon\coupon\typebase::get_type_instance($data->coupon_code);
@@ -78,6 +78,9 @@ try {
         echo '</div>';
         echo $OUTPUT->footer();
     }
+} catch (block_coupon\notificationexception $ne) {
+    // Add message to stack.
+    $ne->notify();
 } catch (block_coupon\exception $e) {
     \core\notification::error($e->getMessage());
 } catch (\Exception $ex) {

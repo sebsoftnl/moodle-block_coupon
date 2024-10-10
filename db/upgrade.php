@@ -518,5 +518,33 @@ function xmldb_block_coupon_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2024010200, 'coupon');
     }
 
+    if ($oldversion < 2024040902) {
+        $table = new xmldb_table('block_coupon');
+        // Add template field.
+        $field = new xmldb_field('templateid', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'logoid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+            $key = new xmldb_key('templateid', XMLDB_KEY_FOREIGN, ['templateid'], 'block_coupon_templates', ['id']);
+            $dbman->add_key($table, $key);
+        }
+        // Add 'codeonly' field.
+        $field = new xmldb_field('codeonly', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'templateid');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Inject defaults for new settings.
+        set_config('coursedisplay', 'fullname', 'block_coupon');
+        set_config('coursenameappendidnumber', '1', 'block_coupon');
+        set_config('enableeditcourses', '0', 'block_coupon');
+        set_config('claimworkflow', '1', 'block_coupon');
+        set_config('ccupdateactiveenrolments', '1', 'block_coupon');
+        set_config('ccactivatesuspended', '0', 'block_coupon');
+        set_config('enableeditcohorts', '0', 'block_coupon');
+
+        // Block_coupon savepoint reached.
+        upgrade_block_savepoint(true, 2024040902, 'coupon');
+    }
+
     return true;
 }

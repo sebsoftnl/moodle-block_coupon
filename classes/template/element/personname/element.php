@@ -39,9 +39,9 @@ class element extends \block_coupon\template\element {
      * @param \pdf $pdf the pdf object
      * @param boolean $preview true if it is a preview, false otherwise
      * @param \stdClass $user the user we are rendering this for
-     * @param \stdClass $extradata -- expects "for_user_name" to be present if applicable
+     * @param \stdClass|null $extradata -- expects "for_user_name" to be present if applicable
      */
-    public function render($pdf, $preview, $user, \stdClass $extradata = null) {
+    public function render($pdf, $preview, $user, ?\stdClass $extradata = null) {
         global $USER;
         if (empty($user)) {
             $user = $USER;

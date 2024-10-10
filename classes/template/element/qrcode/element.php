@@ -122,9 +122,9 @@ class element extends \block_coupon\template\element {
      * @param \pdf $pdf the pdf object
      * @param boolean $preview true if it is a preview, false otherwise
      * @param \stdClass $user the user we are rendering this for
-     * @param \stdClass $extradata -- expects "code" to be present
+     * @param \stdClass|null $extradata -- expects "code" to be present
      */
-    public function render($pdf, $preview, $user, \stdClass $extradata = null) {
+    public function render($pdf, $preview, $user, ?\stdClass $extradata = null) {
         global $CFG, $USER;
 
         // If there is no element data, we have nothing to display.
@@ -190,4 +190,16 @@ class element extends \block_coupon\template\element {
 
         return $barcode->getBarcodeHTML($w, $h);
     }
+
+    /**
+     * Get/load extra data that's needed for this element.
+     *
+     * @param stdClass $coupon
+     * @param bool $preview whether or not we're in preview mode
+     * @return null
+     */
+    public function get_extra_data($coupon, bool $preview) {
+        return (object)['code' => $coupon->submission_code];
+    }
+
 }

@@ -73,25 +73,17 @@ abstract class filtering {
             $hidefields = []; // Prevent errors.
         }
 
+        $fields = $this->get_fields();
         if (empty($fieldnames)) {
-            $fieldnames = $this->get_fields();
-        } else {
-            $tmp = [];
-            $fields = $this->get_fields();
-            foreach ($fieldnames as $k => $v) {
-                if (!empty($hidefields[$k])) {
-                    continue;
-                }
-                if (isset($fields[$k])) {
-                    $tmp[$k] = $v;
-                }
-            }
-            $fieldnames = $tmp;
+            $fieldnames = $fields;
         }
 
         $this->_fields  = [];
 
         foreach ($fieldnames as $fieldname => $advanced) {
+            if (!empty($hidefields[$fieldname])) {
+                continue;
+            }
             if ($field = $this->get_field($fieldname, $advanced)) {
                 $this->_fields[$fieldname] = $field;
             }
@@ -164,10 +156,10 @@ abstract class filtering {
     /**
      * Returns sql where statement based on active user filters
      * @param string $extra sql
-     * @param array $params named params (recommended prefix ex)
+     * @param array|null $params named params (recommended prefix ex)
      * @return array sql string and $params
      */
-    public function get_sql_filter($extra='', array $params=null) {
+    public function get_sql_filter($extra='', ?array $params = null) {
         global $SESSION;
 
         $sqls = [];

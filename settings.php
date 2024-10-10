@@ -43,7 +43,7 @@ if ($ADMIN->fulltree) {
             'block_coupon/buttonclass',
             get_string('label:buttonclass', 'block_coupon'),
             get_string('label:buttonclass_desc', 'block_coupon'),
-            'btn-primary',
+            'btn btn-primary',
             ['none' => '', 'btn btn-primary' => 'btn-primary', 'btn btn-secondary' => 'btn-secondary']
         ));
 
@@ -75,11 +75,12 @@ if ($ADMIN->fulltree) {
         ));
 
     $roleoptions = \block_coupon\helper::get_role_menu();
+    $defaultrole = $DB->get_field('role', 'id', ['archetype' => 'student']);
     $settings->add(new admin_setting_configselect(
             'block_coupon/defaultrole',
             get_string('label:defaultrole', 'block_coupon'),
             get_string('label:defaultrole_help', 'block_coupon'),
-            0,
+            $defaultrole, // All default Moodle installs have 5 as "student".
             $roleoptions
         ));
 
@@ -126,6 +127,84 @@ if ($ADMIN->fulltree) {
             50, PARAM_INT
         ));
 
+    $settings->add(new admin_setting_heading('block_coupon/coursecouponsettings',
+            get_string('coursecouponsettings', 'block_coupon'),
+            get_string('coursecouponsettings_help', 'block_coupon')
+        ));
+
+    // Course display.
+    $cnopts = [
+        'shortname' => get_string('shortname'),
+        'fullname' => get_string('fullname'),
+    ];
+    $settings->add(new admin_setting_configselect(
+            'block_coupon/coursedisplay',
+            get_string('label:coursedisplay', 'block_coupon'),
+            get_string('label:coursedisplay_help', 'block_coupon'),
+            'fullname',
+            $cnopts,
+        ));
+
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/coursenameappendidnumber',
+            get_string('label:coursenameappendidnumber', 'block_coupon'),
+            get_string('label:coursenameappendidnumber_help', 'block_coupon'),
+            1
+        ));
+
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/enableeditcourses',
+            get_string('label:enableeditcourses', 'block_coupon'),
+            get_string('label:enableeditcourses_help', 'block_coupon'),
+            0
+        ));
+
+    $workflows = \block_coupon\helper::get_workflow_menu();
+    $workflowhelp = \block_coupon\helper::get_workflow_menu_help();
+    $settings->add(new admin_setting_configselect(
+            'block_coupon/claimworkflow',
+            get_string('label:claimworkflow', 'block_coupon'),
+            get_string('label:claimworkflow_help', 'block_coupon', $workflowhelp),
+            1,
+            $workflows
+        ));
+
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/wf2abortifanyenrolled',
+            get_string('label:wf2abortifanyenrolled', 'block_coupon'),
+            get_string('label:wf2abortifanyenrolled_help', 'block_coupon'),
+            1
+        ));
+    $settings->hide_if('block_coupon/wf2abortifanyenrolled', 'block_coupon/claimworkflow', 'neq', '2');
+
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/ccupdateactiveenrolments',
+            get_string('label:ccupdateactiveenrolments', 'block_coupon'),
+            get_string('label:ccupdateactiveenrolments_help', 'block_coupon'),
+            1
+        ));
+
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/ccactivatesuspended',
+            get_string('label:ccactivatesuspended', 'block_coupon'),
+            get_string('label:ccactivatesuspended_help', 'block_coupon'),
+            0
+        ));
+
+    $settings->add(new admin_setting_heading('block_coupon/cohortcouponsettings',
+            get_string('cohortcouponsettings', 'block_coupon'),
+            get_string('cohortcouponsettings_help', 'block_coupon')
+        ));
+
+    $settings->add(new admin_setting_configcheckbox(
+            'block_coupon/enableeditcohorts',
+            get_string('label:enableeditcohorts', 'block_coupon'),
+            get_string('label:enableeditcohorts_help', 'block_coupon'),
+            0
+        ));
+
+    $settings->add(new admin_setting_heading('block_coupon/othersettings',
+            get_string('othersettings', 'block_coupon'), ''));
     // Display "help" in block.
     $settings->add(new admin_setting_configcheckbox(
             'block_coupon/displayregisterhelp',

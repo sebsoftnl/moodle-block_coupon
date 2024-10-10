@@ -116,6 +116,7 @@ class generator implements icoupongenerator {
         $this->fix_options($options);
         // Validate options.
         $this->validate_options($options);
+
         // And generate.
         return $this->generate($options);
     }
@@ -255,6 +256,11 @@ class generator implements icoupongenerator {
         }
         $generatortime = time();
 
+        // Force amount when CSV recipients.
+        if (!empty($options->csvrecipients)) {
+            $options->amount = count($options->csvrecipients);
+        }
+
         for ($i = 0; $i < $options->amount; $i++) {
             // An object for the coupon itself.
             $objcoupon = new \stdClass();
@@ -271,6 +277,10 @@ class generator implements icoupongenerator {
             $objcoupon->enrolperiod = (int)$options->enrolperiod;
             $objcoupon->redirect_url = (!empty($options->redirecturl)) ? $options->redirecturl : null;
             $objcoupon->logoid = (int)$options->logoid;
+            if (!empty($options->templateid)) {
+                $objcoupon->templateid = (int)$options->templateid;
+            }
+            $objcoupon->codeonly = $options->generatecodesonly ? 1 : 0;
             $objcoupon->typ = $options->type;
             $objcoupon->claimed = 0;
             $objcoupon->renderqrcode = ($options->renderqrcode) ? 1 : 0;

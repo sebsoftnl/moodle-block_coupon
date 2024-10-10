@@ -514,10 +514,13 @@ class pdf extends \pdf {
             $role = helper::get_default_coupon_role();
         }
         $rolename = role_get_name($role);
+
+        $coursenames = array_column($courses, 'shortname');
+
         $replace = [
             '<div style="text-align: center; font-size: 200%; font-weight: bold">'.$coupon->submission_code.'</div>',
             $accesstime,
-            '<b>'.implode(', ', $courses).'</b>',
+            '<b>'.implode(', ', $coursenames).'</b>',
             $rolename,
         ];
 

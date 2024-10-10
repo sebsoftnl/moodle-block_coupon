@@ -19,6 +19,8 @@
         <FIELD NAME="email_body" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="submission_code" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="logoid" TYPE="int" LENGTH="11" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="templateid" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="codeonly" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="typ" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="claimed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="renderqrcode" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
@@ -31,6 +33,7 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="id" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="templateid" TYPE="foreign" FIELDS="templateid" REFTABLE="block_coupon_templates" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>

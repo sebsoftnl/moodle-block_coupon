@@ -51,15 +51,16 @@ class coupons extends filtering {
             'timeexpired' => 0,
             'batchselect' => 0,
             'mybatchselect' => 0,
-            'batchid' => 1,
-            'timemodified' => 1,
-            'senddate' => 1,
             'sent' => 0,
-            'couponcode' => 1,
             'for_user_email' => 0,
             'for_user_name' => 0,
             'courseid' => 0,
             'cohortid' => 0,
+            'claimee' => 0,
+            'batchid' => 1,
+            'timemodified' => 1,
+            'senddate' => 1,
+            'couponcode' => 1,
             'course' => 1,
             'coursegroupid' => 1,
             'coursegroup' => 1,
@@ -75,6 +76,7 @@ class coupons extends filtering {
      * @return object filter
      */
     public function get_field($fieldname, $advanced) {
+        global $DB;
         switch ($fieldname) {
             case 'timemodified':
                 return new \user_filter_date('timemodified',
@@ -101,6 +103,10 @@ class coupons extends filtering {
             case 'for_user_name':
                 return new \user_filter_text('for_user_name',
                         get_string('report:for_user_name', 'block_coupon'), $advanced, 'c.for_user_name');
+            case 'claimee':
+                return new \block_coupon\filters\multitext('claimee',
+                        get_string('claimee', 'block_coupon'), $advanced,
+                        ['u1.firstname', 'u1.lastname', 'u1.email', $DB->sql_fullname('u1.firstname', 'u1.lastname')]);
             case 'couponcode':
                 return new \user_filter_text('couponcode',
                         get_string('report:coupon_code', 'block_coupon'), $advanced, 'c.submission_code');

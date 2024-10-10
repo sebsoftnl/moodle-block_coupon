@@ -46,6 +46,7 @@ if ($action == 'edit') {
             ['id' => $id, 'tid' => $tid, 'action' => $action]);
 } else { // Must be adding an element.
     // We need to supply what element we want added to what page.
+    $id = 0;
     $pageid = required_param('pageid', PARAM_INT);
     $element = new stdClass();
     $element->element = required_param('element', PARAM_ALPHA);

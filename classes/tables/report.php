@@ -144,12 +144,16 @@ class report extends \table_sql {
      * @return array array consisting of query and parameters
      */
     protected function get_query($forcount = false) {
+        $config = get_config('block_coupon');
+        $dfield = $this->config->coursedisplay ?? 'fullname';
+        $coursefield = 'c.'.$dfield;
+
         global $DB;
         $q1params = [];
         $q2params = [];
         $q3params = [];
         $fields = $DB->sql_concat('c.id', '\'-\'', 'bc.id') . ' as idx,
-               bc.*, c.id as courseid, c.fullname as coursename,
+               bc.*, c.id as courseid, '.$coursefield.' as coursename, c.idnumber as courseidnumber,
                ' . helper::get_all_user_name_fields(true, 'u');
         $q1 = 'SELECT ' . $fields . ', null as cohortname ' .
                'FROM {block_coupon} bc ' .
@@ -278,6 +282,26 @@ class report extends \table_sql {
     public function col_user($row) {
         global $CFG;
         return '<a href="' . $CFG->wwwroot . '/user/profile.php?id=' . $row->userid . '">' . $row->user . '</a>';
+    }
+
+    /**
+     * Render visual representation of the 'course' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string
+     */
+    public function col_coursename($row) {
+        $config = get_config('block_coupon');
+        $addidnum = $config->coursenameappendidnumber ?? false;
+        $text = "{$row->coursename}";
+        if ($addidnum && !empty($row->courseidnumber)) {
+             $text .= " ({$row->courseidnumber})";
+        }
+
+        if (!$this->is_downloading()) {
+            $text = \html_writer::link(new \moodle_url('course/view.php', ['id' => $row->courseid]), $text);
+        }
+        return $text;
     }
 
     /**

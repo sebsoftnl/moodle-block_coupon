@@ -248,14 +248,14 @@ class renderer extends plugin_renderer_base {
      *
      * @param string|moodle_url $url A string URL or moodle_url
      * @param pix_icon $pixicon
-     * @param component_action $action
-     * @param array $attributes associative array of html link attributes + disabled
+     * @param component_action|null $action
+     * @param array|null $attributes associative array of html link attributes + disabled
      * @param boolean $linktext show title next to image in link
      * @param boolean $iconbeforetext override default Moodle to place icon BEFORE text
      * @return string HTML fragment
      */
-    public function action_icon($url, pix_icon $pixicon, component_action $action = null,
-            array $attributes = null, $linktext = false, $iconbeforetext = false) {
+    public function action_icon($url, pix_icon $pixicon, ?component_action $action = null,
+            ?array $attributes = null, $linktext = false, $iconbeforetext = false) {
         if (!($url instanceof moodle_url)) {
             $url = new moodle_url($url);
         }

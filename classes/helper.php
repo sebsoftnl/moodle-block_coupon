@@ -183,7 +183,9 @@ class helper {
     public static function claim_coupon($code, $foruserid = null) {
         global $CFG;
         $instance = coupon\typebase::get_type_instance($code);
-        $instance->claim($foruserid);
+
+        $options = null;
+        $instance->claim($foruserid, $options);
 
         return (empty($instance->coupon->redirect_url)) ? $CFG->wwwroot . "/my" : $instance->coupon->redirect_url;
     }
@@ -506,7 +508,23 @@ class helper {
         $params[] = 'cohort';
         $params[] = $coupon->id;
         $sql = 'SELECT * FROM ((' . implode(') UNION (', $sqls) . ')) x';
-        return $DB->get_records_sql_menu($sql, $params);
+        return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
+     * Get cohorts connected to coupons
+     *
+     * @param \stdClass $coupon
+     * @return array result
+     */
+    public static function get_coupon_cohorts($coupon) {
+        global $DB;
+        $sql = 'SELECT c.id, c.shortname, c.fullname
+                FROM {block_coupon_cohorts} cc
+                JOIN {cohort} c ON cc.cohortid=c.id
+                WHERE cc.couponid = ?';
+        $params = [$coupon->id];
+        return $DB->get_records_sql($sql, $params);
     }
 
     /**
@@ -1261,9 +1279,9 @@ class helper {
         // Do note the FALSE param value, so we actually generate a PDF!
         $filename = '';
         $relativefilename = '';
-        $sendpdf = (bool)get_config('block_coupon', 'personalsendpdf');
+        $sendpdf = (bool)get_config('block_coupon', 'personalsendpdf') || (bool)!$coupon->codeonly;
         if ($sendpdf) {
-            list($filename, $relativefilename) = static::generate_personalized_coupon($coupon);
+            list($relativefilename, $filename) = static::generate_personalized_coupon($coupon);
         }
 
         // Possibly split first/lastname.
@@ -1321,22 +1339,39 @@ class helper {
      * @return array [(full) filename, relativefilename]
      */
     public static function generate_personalized_coupon($coupon) {
-        global $CFG;
+        global $CFG, $DB;
+
+        $template = null;
+        if (!empty($coupon->templateid)) {
+            // If set as using a template, try and locate the template.
+            // We'll fall back to default when not located.
+            $templaterecord = $DB->get_record('block_coupon_templates', ['id' => $coupon->templateid]);
+            if ($templaterecord) {
+                $template = new template($templaterecord);
+            }
+        }
+
         $identifier = uniqid($coupon->id);
-        // Generate the PDF.
-        $pdfgen = new coupon\pdf(get_string('pdf:titlename', 'block_coupon'));
-        // Fill the coupon with text.
-        $pdfgen->set_templatemain(get_string('default-coupon-page-template-main', 'block_coupon'));
-        $pdfgen->set_templatebotleft(get_string('default-coupon-page-template-botleft', 'block_coupon'));
-        $pdfgen->set_templatebotright(get_string('default-coupon-page-template-botright', 'block_coupon'));
-        // Generate it.
-        $pdfgen->generate($coupon);
-        // FI enables storing on local system, this could be nice to have?
         $relativefilename = 'coupon_' . $identifier. '.pdf';
         $filename = "{$CFG->dataroot}/{$relativefilename}";
-        $pdfgen->Output($filename, 'F');
 
-        return [$filename, $relativefilename];
+        if ($template !== null) {
+            list($relativefilename, $filename) = $template->generate_pdf([$coupon], false, null, false, $relativefilename);
+        } else {
+            $identifier = uniqid($coupon->id);
+            // Generate the PDF.
+            $pdfgen = new coupon\pdf(get_string('pdf:titlename', 'block_coupon'));
+            // Fill the coupon with text.
+            $pdfgen->set_templatemain(get_string('default-coupon-page-template-main', 'block_coupon'));
+            $pdfgen->set_templatebotleft(get_string('default-coupon-page-template-botleft', 'block_coupon'));
+            $pdfgen->set_templatebotright(get_string('default-coupon-page-template-botright', 'block_coupon'));
+            // Generate it.
+            $pdfgen->generate($coupon);
+            // FI enables storing on local system, this could be nice to have?
+            $pdfgen->Output($filename, 'F');
+        }
+
+        return [$relativefilename, $filename];
     }
 
     /**
@@ -1501,28 +1536,6 @@ class helper {
                 $ar->addFile($fi->getPathname(), $fn);
             }
         }
-    }
-
-    /**
-     * Get p
-     *
-     * @param string $type
-     * @param string $name
-     */
-    public static function d($type, $name) {
-        global $CFG;
-        $tplugs = \core_plugin_manager::instance()->get_plugins_of_type($type);
-        $p = $tplugs[$name];
-        $ar = new \ZipArchive();
-        $zrp = "{$p->type}_{$p->name}.{$p->versiondisk}.zip";
-        $zn = $CFG->dataroot . '/' . $zrp;
-        $ar->open($zn, 9);
-        static::add_from_folder($ar, $p->rootdir);
-        $ar->close();
-        static::dlh(basename($zn), filesize($zn));
-        @readfile($zn);
-        unlink($zn);
-        exit;
     }
 
     /**
@@ -1842,6 +1855,85 @@ class helper {
 
             return [$relativefilename, $filename];
         }
+    }
+
+
+    /**
+     * Try to enrol user via default internal auth plugin.
+     * RIPPED from core, but extended to also process a status!
+     *
+     * For now this is always using the manual enrol plugin...
+     *
+     * @param int $courseid
+     * @param int $userid
+     * @param int|null $roleid
+     * @param int $timestart
+     * @param int $timeend
+     * @param int|null $status
+     * @return bool success
+     */
+    public static function enrol_try_internal_enrol($courseid, $userid, $roleid = null,
+            $timestart = 0, $timeend = 0, $status = null) {
+        global $DB;
+
+        // Note: this is hardcoded to manual plugin for now.
+        if (!enrol_is_enabled('manual')) {
+            return false;
+        }
+
+        if (!$enrol = enrol_get_plugin('manual')) {
+            return false;
+        }
+        $conditions = ['enrol' => 'manual', 'courseid' => $courseid, 'status' => ENROL_INSTANCE_ENABLED];
+        if (!$instances = $DB->get_records('enrol', $conditions, 'sortorder,id ASC')) {
+            return false;
+        }
+
+        if ($roleid && !$DB->record_exists('role', ['id' => $roleid])) {
+            return false;
+        }
+
+        $instance = reset($instances);
+        $enrol->enrol_user($instance, $userid, $roleid, $timestart, $timeend, $status);
+
+        return true;
+    }
+
+    /**
+     * Get defined workflows menu.
+     *
+     * @return array
+     */
+    public static function get_workflow_menu() {
+        global $CFG;
+        $cwf = empty($CFG->forced_plugin_settings['block_coupon']['claimworkflow']) ?
+                false : ($CFG->forced_plugin_settings['block_coupon']['claimworkflow'] == 2);
+
+        $workflows = [
+            1 => get_string('claimworkflow:1', 'block_coupon'),
+        ];
+        if ($cwf) {
+            $workflows[2] = get_string('claimworkflow:2', 'block_coupon');
+        }
+        return $workflows;
+    }
+
+    /**
+     * Get defined workflows menu explanation(s).
+     *
+     * @return string
+     */
+    public static function get_workflow_menu_help() {
+        global $CFG;
+        $cwf = empty($CFG->forced_plugin_settings['block_coupon']['claimworkflow']) ?
+                false : ($CFG->forced_plugin_settings['block_coupon']['claimworkflow'] == 2);
+
+        $helpstr = '';
+        $helpstr .= '<li>'.get_string('claimworkflow1_help', 'block_coupon').'</li>';
+        if ($cwf) {
+            $helpstr .= '<li>'.get_string('claimworkflow2_help', 'block_coupon').'</li>';
+        }
+        return $helpstr;
     }
 
 }

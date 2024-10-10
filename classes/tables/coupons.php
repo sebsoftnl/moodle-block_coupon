@@ -105,6 +105,13 @@ class coupons extends \table_sql {
     protected $useactionmenu = true;
 
     /**
+     * Plugin global configuration
+     *
+     * @var stdClass
+     */
+    protected $config;
+
+    /**
      * Get filtering instance
      * @return \block_coupon\filtering\filtering
      */
@@ -165,6 +172,7 @@ class coupons extends \table_sql {
         $this->ownerid = (int)$ownerid;
         $this->filter = (int)$filter;
         $this->sortable(true, 'c.senddate', 'DESC');
+        $this->no_sorting('id');
         $this->no_sorting('owner');
         $this->no_sorting('course');
         $this->no_sorting('cohorts');
@@ -175,6 +183,7 @@ class coupons extends \table_sql {
         $this->strdeleteconfirm = get_string('action:coupon:delete:confirm', 'block_coupon');
 
         $this->otherusercolumns = [];
+        $this->config = get_config('block_coupon');
     }
 
     /**
@@ -184,10 +193,10 @@ class coupons extends \table_sql {
      * @param string $fields
      * @param string $from
      * @param string $where
-     * @param array $params
+     * @param array|null $params
      * @throws exception
      */
-    public function set_sql($fields, $from, $where, array $params = null) {
+    public function set_sql($fields, $from, $where, ?array $params = null) {
         // We'll disable this method.
         throw new exception('err:statustable:set_sql');
     }
@@ -222,7 +231,16 @@ class coupons extends \table_sql {
             get_string('th:batchid', 'block_coupon'),
             get_string('th:issend', 'block_coupon'),
         ];
-        if ($this->is_downloading() == '' &&!$this->noactions) {
+
+        if (!$this->is_downloading() && $this->filter === static::UNUSED) {
+            // Inject ID column, used to display checkboxes for bulk actions.
+            // We ONLY do this for unused coupons atm.
+            array_unshift($columns, 'id');
+            array_unshift($headers, '');
+        }
+
+        if ($this->is_downloading() == '' && !$this->noactions) {
+            // Inject actions column if applicable.
             $columns[] = 'action';
             $headers[] = get_string('th:action', 'block_coupon');
         }
@@ -269,6 +287,7 @@ class coupons extends \table_sql {
             case self::USED:
                 $where[] = 'claimed = 1';
                 $fields .= ', ' . \block_coupon\helper::get_all_user_name_fields(true, 'u1', '', 'user_');
+                $fields .= ', u1.email';
                 $fields .= ', ' . $DB->sql_fullname('u1.firstname', 'u1.lastname') . ' AS usedby';
                 $from .= ' JOIN {user} u1 ON c.userid=u1.id';
                 break;
@@ -301,6 +320,21 @@ class coupons extends \table_sql {
         }
         parent::set_sql($fields, $from, implode(' AND ', $where), $params);
         $this->out($pagesize, $useinitialsbar);
+    }
+
+    /**
+     * Render visual representation of the 'id' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string time string
+     */
+    public function col_id($row) {
+        if ($this->is_downloading()) {
+            return $row->id;
+        }
+
+        return '<input type="checkbox" data-action="bulk" data-typ="' . $row->typ .
+                '" data-id="' . $row->id . '" name="row[' . $row->id . ']"/>';
     }
 
     /**
@@ -441,9 +475,11 @@ class coupons extends \table_sql {
     public function col_cohorts($row) {
         global $DB;
         $rs = [];
-        $records = $DB->get_records_sql("SELECT c.id,c.name FROM {block_coupon_cohorts} cc
+        $records = $DB->get_records_sql("SELECT c.id,c.name
+            FROM {block_coupon_cohorts} cc
             LEFT JOIN {cohort} c ON cc.cohortid = c.id
-            WHERE cc.couponid = ?", [$row->id]);
+            WHERE cc.couponid = ?
+            GROUP BY c.id", [$row->id]);
         foreach ($records as $record) {
             $rs[] = $record->name;
         }
@@ -458,12 +494,21 @@ class coupons extends \table_sql {
      */
     public function col_course($row) {
         global $DB;
+        $dfield = $this->config->coursedisplay ?? 'fullname';
+        $addidnum = $this->config->coursenameappendidnumber ?? false;
         $rs = [];
-        $records = $DB->get_records_sql("SELECT c.id,c.fullname FROM {block_coupon_courses} cc
+        $records = $DB->get_records_sql("SELECT c.id,c.shortname,c.fullname,c.idnumber
+            FROM {block_coupon_courses} cc
             LEFT JOIN {course} c ON cc.courseid = c.id
-            WHERE cc.couponid = ?", [$row->id]);
+            WHERE cc.couponid = ?
+            GROUP BY c.id", [$row->id]);
         foreach ($records as $record) {
-            $rs[] = $record->fullname;
+            $name = $record->{$dfield};
+            if ($addidnum && !empty($record->idnumber)) {
+                $name .= " ($record->idnumber)";
+            }
+
+            $rs[] = $name;
         }
         return implode($this->is_downloading() ? ', ' : '<br/>', $rs);
     }
@@ -477,9 +522,11 @@ class coupons extends \table_sql {
     public function col_groups($row) {
         global $DB;
         $rs = [];
-        $records = $DB->get_records_sql("SELECT g.id,g.name FROM {block_coupon_groups} cg
+        $records = $DB->get_records_sql("SELECT g.id,g.name
+            FROM {block_coupon_groups} cg
             LEFT JOIN {groups} g ON cg.groupid = g.id
-            WHERE cg.couponid = ?", [$row->id]);
+            WHERE cg.couponid = ?
+            GROUP BY g.id", [$row->id]);
         foreach ($records as $record) {
             $rs[] = $record->name;
         }

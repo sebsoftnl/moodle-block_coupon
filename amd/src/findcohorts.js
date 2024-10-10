@@ -53,8 +53,11 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
          * @return {Array} New array of results.
          */
         processResults: function(selector, results) {
+            if (results.overflow) {
+                return results.overflowstr;
+            }
             var options = [];
-            $.each(results, function(index, data) {
+            $.each(results.data, function(index, data) {
                 options.push({
                     value: data.id,
                     label: data.name

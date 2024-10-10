@@ -141,7 +141,8 @@ class ctpage extends baseform {
                 $mform->addHelpButton('date_send_coupons_manual', 'label:date_send_coupons', 'block_coupon');
 
                 $recips = ['E-mail,Gender,Name'];
-                foreach ($this->generatoroptions->recipients as $data) {
+                $recipients = $this->generatoroptions->recipients ?? [];
+                foreach ($recipients as $data) {
                     $recips[] = "{$data->email},{$data->gender},{$data->name}";
                 }
                 $data = [
