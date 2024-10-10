@@ -93,13 +93,15 @@
 }
 /* Override layout of autocomplete */
 .path-blocks-coupon .block-coupon-container span[data-fieldtype="autocomplete"] {
-    display: flex!important;
+    /*ignore jslint start*/
+    display: flex !important;
+    /*ignore jslint end*/
     flex-direction: row;
 }
 .path-blocks-coupon .block-coupon-container span[data-fieldtype="autocomplete"] .form-autocomplete-selection {
     order: 4;
     margin: unset;
-    min-height:unset;
+    min-height: unset;
 }
 .path-blocks-coupon .block-coupon-container span[data-fieldtype="autocomplete"] div:has(input) {
     order: 1;

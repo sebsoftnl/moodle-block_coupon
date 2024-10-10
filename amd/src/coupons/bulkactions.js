@@ -18,7 +18,6 @@ import * as Notification from 'core/notification';
 import * as Str from 'core/str';
 import {add as addToast} from 'core/toast';
 import {Service} from 'block_coupon/coupons/service';
-import * as DynamicTable from 'core_table/dynamic';
 import ModalForm from 'core_form/modalform';
 
 const SELECTORS = {
@@ -49,22 +48,28 @@ const handleCheckboxChange = () => {
     if (size > 0) {
         // Enable/disable cohort/course types.
         let types = getSelectedTypes();
-        document.querySelector(`${SELECTORS.bulkactions.container} ${SELECTORS.bulkactions.editcourses}`).classList.remove('hidden');
-        document.querySelector(`${SELECTORS.bulkactions.container} ${SELECTORS.bulkactions.editcohorts}`).classList.add('hidden');
+        document.querySelector(`${SELECTORS.bulkactions.container} ${SELECTORS.bulkactions.editcourses}`)
+                .classList.remove('hidden');
+        document.querySelector(`${SELECTORS.bulkactions.container} ${SELECTORS.bulkactions.editcohorts}`)
+                .classList.add('hidden');
 
         if (types.length > 1) {
             // Multiple types: disable all.
-            document.querySelector(`${SELECTORS.bulkactions.container} ${SELECTORS.bulkactions.editcourses}`).classList.add('hidden');
-            document.querySelector(`${SELECTORS.bulkactions.container} ${SELECTORS.bulkactions.editcohorts}`).classList.add('hidden');
+            document.querySelector(`${SELECTORS.bulkactions.container} ${SELECTORS.bulkactions.editcourses}`)
+                    .classList.add('hidden');
+            document.querySelector(`${SELECTORS.bulkactions.container} ${SELECTORS.bulkactions.editcohorts}`)
+                    .classList.add('hidden');
         } else {
             let typ = types[0];
             if (typ === 'cohort') {
                 // Enable cohort type.
-                document.querySelector(`${SELECTORS.bulkactions.container} ${SELECTORS.bulkactions.editcohorts}`).classList.remove('hidden');
+                document.querySelector(`${SELECTORS.bulkactions.container} ${SELECTORS.bulkactions.editcohorts}`)
+                        .classList.remove('hidden');
             }
             if (typ === 'course') {
                 // Enable course type.
-                document.querySelector(`${SELECTORS.bulkactions.container} ${SELECTORS.bulkactions.editcourses}`).classList.remove('hidden');
+                document.querySelector(`${SELECTORS.bulkactions.container} ${SELECTORS.bulkactions.editcourses}`)
+                        .classList.remove('hidden');
             }
         }
     }
@@ -108,7 +113,6 @@ const bulkDelete = async(e) => {
     if (rs) {
         // Display confirmation box.
         e.preventDefault();
-        const templateId = $(e.currentTarget).attr('data-id');
         Str.get_strings([
             {key: 'confirm', component: 'moodle'},
             {key: 'deletecouponsconfirm', component: 'block_coupon'},
@@ -133,7 +137,6 @@ const bulkDelete = async(e) => {
 const bulkEditCourses = async(e) => {
     let rs = await checkTypes();
     if (rs) {
-        console.log(`bulk editcourses ${getSelectedIds()}`);
         // Display dynamic form.
         e.preventDefault();
 
@@ -165,7 +168,6 @@ const bulkEditCourses = async(e) => {
 const bulkEditCohorts = async(e) => {
     let rs = await checkTypes();
     if (rs) {
-        console.log(`bulk editcohorts ${getSelectedIds()}`);
         // Display dynamic form.
         e.preventDefault();
 
