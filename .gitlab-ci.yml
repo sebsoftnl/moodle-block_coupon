@@ -51,10 +51,15 @@ variables:
     - for i in ${failures[@]}; do echo "$i -- FAIL"; done;
     - if [ "${#failures[@]}" -gt "0" ]; then echo "${#failures[@]} jobs failed"; exit 1; fi;
 
-Moodle 4.5:
+Moodle 5.0:
   <<: *job_definition
   variables:
     MOODLE_BRANCH: "main"
+
+Moodle 4.5:
+  <<: *job_definition
+  variables:
+    MOODLE_BRANCH: "MOODLE_405_STABLE"
 
 Moodle 4.4:
   <<: *job_definition
@@ -70,11 +75,6 @@ Moodle 4.2:
   <<: *job_definition
   variables:
     MOODLE_BRANCH: "MOODLE_402_STABLE"
-
-Moodle 4.1:
-  <<: *job_definition
-  variables:
-    MOODLE_BRANCH: "MOODLE_401_STABLE"
 
 deploy.gitlab:
   stage: deploy
