@@ -1,3 +1,8 @@
+Version 4.4.1 (build 2024100102)
+** Fixed requiring Moodle 4.2 minimum
+
+----------
+
 Version 4.4.0 (build 2024100100)
 ** Several bugfixes
 ** Require Moodle 4.2 MINIMUM
