@@ -22,6 +22,7 @@ import ModalForm from 'core_form/modalform';
 
 const SELECTORS = {
     checkbox: '[data-action="bulk"]',
+    checkboxselectall: '[data-action="bulkcheckall"]',
     bulkactionselect: '[data-type="bulkaction"]',
     bulkcounter: '#bulk-counter',
     bulkactions: {
@@ -197,7 +198,15 @@ const bulkEditCohorts = async(e) => {
     }
 };
 
+const bulkSelectAll = (e) => {
+    let state = e.currentTarget.checked;
+    let els = document.querySelectorAll(SELECTORS.checkbox);
+    [...els].forEach( (cb) => {cb.checked = state;});
+    handleCheckboxChange();
+};
+
 const initBulkActions = () => {
+    $(SELECTORS.checkboxselectall).on('change', bulkSelectAll);
     // Initialize dropdown state.
     enableBulkActions($(`${SELECTORS.checkbox}:checked`).length > 0);
     // Initialize checkbox state changes.

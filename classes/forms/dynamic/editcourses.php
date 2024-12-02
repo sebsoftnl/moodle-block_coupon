@@ -81,6 +81,9 @@ class editcourses extends dynamic_form {
 
             $mform->addElement('static', '_courses', '', get_string('searchcourses:desc', 'block_coupon'));
             $mform->addElement('findcourses', 'courses', get_string('course'), ['multiple' => true]);
+
+            $mform->addElement('advcheckbox', 'addcourses', get_string('addcoursestoexisting', 'block_coupon'));
+            $mform->setDefault('addcourses', 1);
         }
     }
 
@@ -175,11 +178,15 @@ class editcourses extends dynamic_form {
         foreach ($data->id as $id) {
             $coupon = $this->coupons[$id];
             // Unlink old.
-            $DB->delete_records('block_coupon_courses', ['couponid' => $coupon->id]);
+            if (!(bool)$data->addcourses) {
+                $DB->delete_records('block_coupon_courses', ['couponid' => $coupon->id]);
+            }
             // Inject new.
             foreach ($data->courses as $cid) {
                 $link = ['couponid' => $coupon->id, 'courseid' => $cid];
-                $DB->insert_record('block_coupon_courses', $link);
+                if (!$DB->record_exists('block_coupon_courses', $link)) {
+                    $DB->insert_record('block_coupon_courses', $link);
+                }
             }
         }
     }

@@ -81,6 +81,9 @@ class editcohorts extends dynamic_form {
 
             $mform->addElement('static', '_courses', '', get_string('searchcohorts:desc', 'block_coupon'));
             $mform->addElement('findcohorts', 'cohorts', get_string('cohort', 'core_cohort'));
+
+            $mform->addElement('advcheckbox', 'addcohorts', get_string('addcohortstoexisting', 'block_coupon'));
+            $mform->setDefault('addcohorts', 1);
         }
     }
 
@@ -175,11 +178,15 @@ class editcohorts extends dynamic_form {
         foreach ($data->id as $id) {
             $coupon = $this->coupons[$id];
             // Unlink old.
-            $DB->delete_records('block_coupon_cohorts', ['couponid' => $coupon->id]);
+            if (!(bool)$data->addcohorts) {
+                $DB->delete_records('block_coupon_cohorts', ['couponid' => $coupon->id]);
+            }
             // Inject new.
             foreach ($data->cohorts as $cid) {
                 $link = ['couponid' => $coupon->id, 'cohortid' => $cid];
-                $DB->insert_record('block_coupon_cohorts', $link);
+                if (!$DB->record_exists('block_coupon_cohorts', $link)) {
+                    $DB->insert_record('block_coupon_cohorts', $link);
+                }
             }
         }
     }

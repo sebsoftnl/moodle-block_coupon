@@ -236,7 +236,8 @@ class coupons extends \table_sql {
             // Inject ID column, used to display checkboxes for bulk actions.
             // We ONLY do this for unused coupons atm.
             array_unshift($columns, 'id');
-            array_unshift($headers, '');
+            $checkall = '<input type="checkbox" data-action="bulkcheckall"/>';
+            array_unshift($headers, $checkall);
         }
 
         if ($this->is_downloading() == '' && !$this->noactions) {

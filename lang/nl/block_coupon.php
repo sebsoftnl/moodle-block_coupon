@@ -33,6 +33,8 @@ $string['action:coursegrouping:delete'] = 'Groepering verwijderen';
 $string['action:coursegrouping:details'] = 'Details bekijken';
 $string['action:coursegrouping:edit'] = 'Groepering bewerken';
 $string['action:error:delete'] = 'Foutmelding verwijderen';
+$string['addcohortstoexisting'] = 'Sitegroepen toevoegen aan coupon? Indien niet aangevinkt worden alle sitegroepen eerst ontkoppeld.';
+$string['addcoursestoexisting'] = 'Cursussen toevoegen aan coupon? Indien niet aangevinkt worden alle cursussen eerst ontkoppeld.';
 $string['and'] = 'en';
 $string['batchidselect'] = 'Batch ID';
 $string['blockname'] = 'Coupon';
@@ -457,6 +459,9 @@ Je <i>zou</i> enkel afbeeldingen van 300 DPI op A4 formaat (2480 x 3508 pixels) 
 $string['messageprovider:coupon_notification'] = 'Coupons gegenereerd notificatie';
 $string['messageprovider:coupon_task_notification'] = 'Persoonlijke coupons verzonden notificatie';
 $string['missing_config_info'] = 'Plaats hier uw extra informatie - in te stellen in de globale configuratie van het blok.';
+$string['notify:already_enrolled_in_course_list'] = 'Je bent al aangemeld in de cursus(s) en: {$a}';
+$string['notify:already_enrolled_in_courses'] = 'Je bent al aangemeld';
+$string['notify:now_enrolled_in_courses'] = 'Je bent nu aangemeld in de cursus(sen): {$a}';
 $string['numcourses'] = 'Maximum aantal te selecteren cursussen';
 $string['othersettings'] = 'Overige instellingen / opties';
 $string['page:generate_coupon.php:title'] = 'Genereer coupons';
@@ -548,6 +553,12 @@ $string['requestusersettings'] = 'Instellingen coupon verzoeken';
 $string['requestusersettings_desc'] = 'Dit onderdeel heeft een aantal instellingen waarmee de gebruikersinterface van de gebruikers voor coupon verzoeken kunnen worden gelimiteerd.<br/>
 De instellingen zijn specifiek ingezet om eventuele GDPR/AVG problemen te voorkomen.';
 $string['required:atleastonecohortorcourse'] = 'Minimaal 1 cursus of cohort dient te worden ingegeven!';
+$string['searchcourses:desc'] = 'Cursussen worden gezocht op basis van de volgende velden:
+<ul>
+    <li>Korte naam</li>
+    <li>Volledige naam</li>
+    <li>ID-nummer</li>
+</ul>';
 $string['select:logo'] = 'Selecteer template logo';
 $string['select:logo:desc'] = 'Selecteer een template logo.<br/>Deze wordt enkel gebruikt indien er PDFs worden gegenereerd.';
 $string['showform-amount'] = 'Ik wil een arbitrair aantal coupons aanmaken';
