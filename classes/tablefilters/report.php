@@ -88,7 +88,7 @@ class report extends filtering {
             case 'claimee':
                 return new \block_coupon\filters\multitext('claimee',
                         get_string('claimee', 'block_coupon'), $advanced,
-                        ['u1.firstname', 'u1.lastname', 'u1.email', $DB->sql_fullname('u1.firstname', 'u1.lastname')]);
+                        ['firstname', 'lastname', 'email', $DB->sql_fullname('firstname', 'lastname')]);
             default:
                 return null;
         }

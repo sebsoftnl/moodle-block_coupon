@@ -153,7 +153,7 @@ class report extends \table_sql {
         $q2params = [];
         $q3params = [];
         $fields = $DB->sql_concat('c.id', '\'-\'', 'bc.id') . ' as idx,
-               bc.*, c.id as courseid, '.$coursefield.' as coursename, c.idnumber as courseidnumber,
+               bc.*, c.id as courseid, '.$coursefield.' as coursename, c.idnumber as courseidnumber, u.email,
                ' . helper::get_all_user_name_fields(true, 'u');
         $q1 = 'SELECT ' . $fields . ', null as cohortname ' .
                'FROM {block_coupon} bc ' .

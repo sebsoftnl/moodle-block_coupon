@@ -200,7 +200,7 @@ class course extends typebase implements icoupontype {
                         // Current claiming user !== referenced user.
                         throw new notificationexception('error:coupon_already_used_other', 'error');
                     } else {
-                        throw new notificationexception('error:coupon_already_used_self', 'success');
+                        throw new notificationexception('error:coupon_already_used_self', 'error');
                     }
                 }
                 break;
@@ -270,14 +270,14 @@ class course extends typebase implements icoupontype {
                 // If all actively enrolled, this is a no brainer.
                 if ($allenrolled && $allactivelyenrolled) {
                     $a = '<ul><li>' . implode('</li><li>', $courselist) . '</li></ul>';
-                    throw new notificationexception('notify:already_enrolled_in_course_list', 'success', $a);
+                    throw new notificationexception('notify:already_enrolled_in_course_list', 'danger', $a);
                 }
 
                 // NOT enrolled in all courses, are we configured to abort on _any_ enrolment?
                 $abortifanyenrolled = (bool)($this->config->wf2abortifanyenrolled ?? false);
                 if ($anyenrolled && $abortifanyenrolled) {
                     $a = '<ul><li>' . implode('</li><li>', $courselist) . '</li></ul>';
-                    throw new notificationexception('notify:already_enrolled_in_course_list', 'success', $a);
+                    throw new notificationexception('notify:already_enrolled_in_course_list', 'danger', $a);
                 }
 
                 $reactivatesuspended = (bool)($this->config->ccactivatesuspended ?? true);
@@ -290,9 +290,9 @@ class course extends typebase implements icoupontype {
                             'suspendedcourses' => '<ul><li>' . implode('</li><li>', $suspendedcourselist) . '</li></ul>',
                         ];
                         if (empty($courselist)) {
-                            throw new notificationexception('notify:already_enrolled_in_course_list_all_suspended', 'warning', $a);
+                            throw new notificationexception('notify:already_enrolled_in_course_list_all_suspended', 'danger', $a);
                         } else {
-                            throw new notificationexception('notify:already_enrolled_in_course_list_with_suspended', 'success', $a);
+                            throw new notificationexception('notify:already_enrolled_in_course_list_with_suspended', 'danger', $a);
                         }
                     }
                 }
