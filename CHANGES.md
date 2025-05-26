@@ -1,3 +1,9 @@
+Version 4.4.2 (build 2024100103)
+** Requiring Moodle 4.5+
+** Centralized all CI actions to new defaults for Sebsoft
+
+----------
+
 Version 4.4.1 (build 2024100102)
 ** Fixed requiring Moodle 4.2 minimum
 
