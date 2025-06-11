@@ -163,7 +163,7 @@ class block_coupon_external extends external_api {
      */
     public static function request_coupon_codes_for_course($amount, $courses, $groups = null, $enrolperiod = 0) {
         // Get to work and have generator and options.
-        list($generator, $unused) = static::p_request_coupon_codes_for_course($amount, $courses, $groups, $enrolperiod);
+        list($generator, $unused) = static::p_request_coupon_codes_for_course($amount, $courses, '', $groups, $enrolperiod);
         // We made it, so return the generated codes.
         return $generator->get_generated_couponcodes();
     }
@@ -218,12 +218,11 @@ class block_coupon_external extends external_api {
 
         // Let our other method do the magic of generating.
         list($generator, $generatoroptions) = static::p_request_coupon_codes_for_course($amount,
-                        $courses, $groups, $enrolperiod, $font);
+                        $courses, $email, $groups, $enrolperiod, $font);
         $generatedcodes = $generator->get_generated_couponcodes();
         // Get coupons and send off.
         $coupons = $DB->get_records_list('block_coupon', 'submission_code', $generatedcodes);
-        list($status, $batchid, $ts) = block_coupon\helper::mail_coupons($coupons, $email, $generatesinglepdfs,
-                        false, false, $generatoroptions->batchid, $generatoroptions->font);
+        list($status, $batchid, $ts) = block_coupon\helper::mail_coupons($coupons, $generatoroptions);
 
         return $status;
     }
@@ -317,12 +316,11 @@ class block_coupon_external extends external_api {
         global $DB;
 
         // Let our other method do the magic of generating.
-        list($generator, $generatoroptions) = static::p_request_coupon_codes_for_cohorts($amount, $cohorts, $font);
+        list($generator, $generatoroptions) = static::p_request_coupon_codes_for_cohorts($amount, $cohorts, $email, $generatesinglepdfs, $font);
         $generatedcodes = $generator->get_generated_couponcodes();
         // Get coupons and send off.
         $coupons = $DB->get_records_list('block_coupon', 'submission_code', $generatedcodes);
-        list($status, $batchid, $ts) = block_coupon\helper::mail_coupons($coupons, $email, $generatesinglepdfs,
-                        false, false, $generatoroptions->batchid, $generatoroptions->font);
+        list($status, $batchid, $ts) = block_coupon\helper::mail_coupons($coupons, $generatoroptions);
 
         return $status;
     }
@@ -797,13 +795,14 @@ class block_coupon_external extends external_api {
      *
      * @param int $amount Amount of coupons to be generated.
      * @param int $courses Array of IDs of the courses the coupons will be generated for.
+     * @param string $emailto string with the email to send the coupons
      * @param array $groups Array of IDs of all groups the users will be added to after using a Coupon.
      * @param int $enrolperiod enrolment period in SECONDS
      * @param string $font the font to apply with the PDF
      *
      * @return array array containing generator instance and generator options.
      */
-    private static function p_request_coupon_codes_for_course($amount, $courses, $groups = null,
+    private static function p_request_coupon_codes_for_course($amount, $courses, $emailto = '', $groups = null,
             $enrolperiod = 0, $font = 'helvetica') {
         global $USER;
 
@@ -821,7 +820,7 @@ class block_coupon_external extends external_api {
         $generatoroptions->courses = $courses;
         $generatoroptions->csvrecipients = [];
         $generatoroptions->emailbody = '';
-        $generatoroptions->emailto = '';
+        $generatoroptions->emailto = $emailto;
         $generatoroptions->enrolperiod = $enrolperiod;
         $generatoroptions->extendusers = [];
         $generatoroptions->generatesinglepdfs = true;
@@ -852,11 +851,13 @@ class block_coupon_external extends external_api {
      *
      * @param int $amount Amount of coupons to be generated.
      * @param array $cohorts Array of IDs of the cohorts the coupons will be generated for.
+     * @param string $emailto string with the email to send the coupons
+     * @param boolean $generatesinglepdfs Will generate one PDF file for each coupon if true.
      * @param string $font the font to apply with the PDF
      *
      * @return array array containing generator instance and generator options.
      */
-    private static function p_request_coupon_codes_for_cohorts($amount, $cohorts, $font = 'helvetica') {
+    private static function p_request_coupon_codes_for_cohorts($amount, $cohorts, $emailto = '', $generatesinglepdfs = false, $font = 'helvetica') {
         global $USER;
 
         // Get max length for the coupon code.
@@ -871,10 +872,10 @@ class block_coupon_external extends external_api {
         $generatoroptions->courses = [];
         $generatoroptions->csvrecipients = [];
         $generatoroptions->emailbody = '';
-        $generatoroptions->emailto = '';
+        $generatoroptions->emailto = $emailto;
         $generatoroptions->enrolperiod = 0;
         $generatoroptions->extendusers = [];
-        $generatoroptions->generatesinglepdfs = true;
+        $generatoroptions->generatesinglepdfs = $generatesinglepdfs;
         $generatoroptions->groups = [];
         $generatoroptions->logoid = 0;
         $generatoroptions->ownerid = $USER->id;
