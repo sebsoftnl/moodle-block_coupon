@@ -38,6 +38,11 @@
  */
 class block_coupon extends block_base {
 
+    /** The global course object associated with this block's specialization.
+     * @var object $course 
+     */
+    public $course = NULL;
+
     /**
      * initializes block
      */
