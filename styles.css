@@ -119,3 +119,11 @@
 .block-coupon-container [data-action="editcohorts"] {
     cursor: pointer;
 }
+/* Put each link on their own line */
+.block_coupon .btn-coupon {
+    display: block;
+}
+/* Put each link in their own column */
+#region-main .block_coupon .footer {
+    display: flex;
+}
