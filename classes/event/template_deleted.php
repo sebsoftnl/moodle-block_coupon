@@ -74,11 +74,11 @@ class template_deleted extends \core\event\base {
      * @param template $template
      * @return template_deleted
      */
-    public static function create_from_template(template $template) : template_deleted {
-        $data = array(
+    public static function create_from_template(template $template): template_deleted {
+        $data = [
             'context' => $template->get_context(),
             'objectid' => $template->get_id(),
-        );
+        ];
         $event = self::create($data);
         return $event;
     }
@@ -101,7 +101,7 @@ class template_deleted extends \core\event\base {
      * @return string[]
      */
     public static function get_objectid_mapping() {
-        return array('db' => 'block_coupon_templates', 'restore' => 'block_coupon_templates');
+        return ['db' => 'block_coupon_templates', 'restore' => 'block_coupon_templates'];
     }
 
     /**

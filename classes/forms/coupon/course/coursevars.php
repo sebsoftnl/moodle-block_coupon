@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +38,7 @@ use block_coupon\forms\baseform;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursevars extends baseform {
@@ -81,8 +81,8 @@ class coursevars extends baseform {
 
         // Configurable enrolment time.
         $mform->addElement('duration', 'enrolment_period',
-                get_string('label:enrolment_period', 'block_coupon'), array('size' => 40, 'optional' => true));
-        $mform->setDefault('enrolment_period', '0');
+                get_string('label:enrolment_period', 'block_coupon'), ['size' => 40, 'optional' => true]);
+        $mform->setDefault('enrolment_period', get_config('block_coupon', 'defaultenrolmentperiod'));
         $mform->addHelpButton('enrolment_period', 'label:enrolment_period', 'block_coupon');
 
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'), false);
@@ -93,7 +93,7 @@ class coursevars extends baseform {
             $data['coupon_courses'] = $multiselect ? $this->generatoroptions->courses : reset($this->generatoroptions->courses);
         }
         $data['roleid'] = $this->generatoroptions->roleid ?? helper::get_default_coupon_role()->id;
-        $data['enrolperiod'] = $this->generatoroptions->enrolperiod ?? null;
+        $data['enrolment_period'] = $this->generatoroptions->enrolperiod ?? null;
         $this->set_data($data);
     }
 

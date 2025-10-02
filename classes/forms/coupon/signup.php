@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ require_once($CFG->dirroot . '/login/signup_form.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class signup extends \login_signup_form {
@@ -69,10 +69,10 @@ class signup extends \login_signup_form {
         global $DB;
         $errors = parent::validation($data, $files);
 
-        $conditions = array(
+        $conditions = [
             'submission_code' => $data['submissioncode'],
             'claimed' => 0,
-        );
+        ];
         $coupon = $DB->get_record('block_coupon', $conditions);
         if (empty($coupon)) {
             $errors['submissioncode'] = get_string('error:invalid_coupon_code', 'block_coupon');

@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @author      Sebastian Berm <sebastian@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -38,7 +38,7 @@ use html_writer;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @author      Sebastian Berm <sebastian@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -120,7 +120,7 @@ class errorreports {
         global $DB;
         require_capability('block/coupon:viewallreports', $this->page->context);
         $itemid = required_param('itemid', PARAM_INT);
-        $DB->delete_records('block_coupon_errors', array('id' => $itemid));
+        $DB->delete_records('block_coupon_errors', ['id' => $itemid]);
         redirect($this->get_url());
     }
 

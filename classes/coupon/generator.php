@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * */
 
@@ -39,7 +39,7 @@ use block_coupon\exception;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class generator implements icoupongenerator {
@@ -110,12 +110,13 @@ class generator implements icoupongenerator {
      * @return bool
      */
     public function generate_coupons(generatoroptions $options) {
-        $this->generatorids = array();
-        $this->generatorcodes = array();
+        $this->generatorids = [];
+        $this->generatorcodes = [];
         // First, correct options.
         $this->fix_options($options);
         // Validate options.
         $this->validate_options($options);
+
         // And generate.
         return $this->generate($options);
     }
@@ -193,7 +194,7 @@ class generator implements icoupongenerator {
         global $DB;
         // Load courses.
         $this->courses = $DB->get_records_list('course', 'id', $courseids, 'id ASC', 'id, fullname');
-        $errors = array();
+        $errors = [];
         foreach ($courseids as $courseid) {
             if (!isset($this->courses[$courseid])) {
                 $errors[] = get_string('error:course-not-found', 'block_coupon') . ' (id = ' . $courseid . ')';
@@ -202,7 +203,7 @@ class generator implements icoupongenerator {
         // Groups.
         if (!empty($groupids)) {
             $this->groups = $DB->get_records_list('groups', 'id', $groupids, 'id ASC', 'id, name');
-            $errors = array();
+            $errors = [];
             foreach ($groupids as $groupid) {
                 if (!isset($this->groups[$groupid])) {
                     $errors[] = get_string('error:group-not-found', 'block_coupon') . ' (id = ' . $groupid . ')';
@@ -225,7 +226,7 @@ class generator implements icoupongenerator {
         global $DB;
         // Load courses.
         $this->cohorts = $DB->get_records_list('cohort', 'id', $cohortids, 'id ASC', 'id, name');
-        $errors = array();
+        $errors = [];
         foreach ($cohortids as $cohortid) {
             if (!isset($this->cohorts[$cohortid])) {
                 $errors[] = get_string('error:cohort-not-found', 'block_coupon') . ' (id = ' . $cohortid . ')';
@@ -247,13 +248,18 @@ class generator implements icoupongenerator {
     protected function generate(generatoroptions $options) {
         global $DB;
         raise_memory_limit(MEMORY_HUGE);
-        $errors = array();
+        $errors = [];
         $defaultrole = \block_coupon\helper::get_default_coupon_role();
         $defaultroleid = null;
         if (isset($defaultrole->id)) {
             $defaultroleid = $defaultrole->id;
         }
         $generatortime = time();
+
+        // Force amount when CSV recipients.
+        if (!empty($options->csvrecipients)) {
+            $options->amount = count($options->csvrecipients);
+        }
 
         for ($i = 0; $i < $options->amount; $i++) {
             // An object for the coupon itself.
@@ -271,6 +277,10 @@ class generator implements icoupongenerator {
             $objcoupon->enrolperiod = (int)$options->enrolperiod;
             $objcoupon->redirect_url = (!empty($options->redirecturl)) ? $options->redirecturl : null;
             $objcoupon->logoid = (int)$options->logoid;
+            if (!empty($options->templateid)) {
+                $objcoupon->templateid = (int)$options->templateid;
+            }
+            $objcoupon->codeonly = $options->generatecodesonly ? 1 : 0;
             $objcoupon->typ = $options->type;
             $objcoupon->claimed = 0;
             $objcoupon->renderqrcode = ($options->renderqrcode) ? 1 : 0;
@@ -304,7 +314,7 @@ class generator implements icoupongenerator {
             $this->generatorcodes[] = $objcoupon->submission_code;
 
             // Insert extra data depending on generator type.
-            $inserterrors = array();
+            $inserterrors = [];
             $result = true;
             switch ($options->type) {
                 case generatoroptions::COURSE:
@@ -355,27 +365,34 @@ class generator implements icoupongenerator {
         }
 
         // Replace some strings in the email body.
-        $arrreplace = array(
+        $arrreplace = [
             '##to_name##',
             '##site_name##',
             '##to_gender##',
             '##extensionperiod##',
             '##submission_code##',
-        );
-        $arrwith = array(
+        ];
+        $arrwith = [
             $coupon->for_user_name,
             $SITE->fullname,
             $gendertxt,
             $extensionperiod,
-            $coupon->submission_code
-        );
+            $coupon->submission_code,
+        ];
 
         // Check if we're generating based on course, in which case we enter the course name too.
         if (isset($this->courses) && !empty($this->courses)) {
 
-            $coursenames = array();
+            $coursenames = [];
             foreach ($this->courses as $course) {
-                $coursenames[] = $course->fullname;
+                $coursenames[] = format_string(
+                    $course->fullname,
+                    true,
+                    [
+                        'filter' => true,
+                        'context' => \context_course::instance($course->id),
+                    ]
+                );
             }
 
             $arrreplace[] = '##course_fullnames##';
@@ -394,13 +411,13 @@ class generator implements icoupongenerator {
      */
     protected function insert_coupon_courses($coupon, &$errors) {
         global $DB;
-        $errors = array();
+        $errors = [];
         foreach ($this->courses as $course) {
             // An object for each added course.
-            $record = (object) array(
+            $record = (object) [
                 'couponid' => $coupon->id,
-                'courseid' => $course->id
-            );
+                'courseid' => $course->id,
+            ];
             // And insert in db.
             if (!$DB->insert_record('block_coupon_courses', $record)) {
                 $errors[] = 'Failed to create course link ' . $course->id . ' record for coupon id ' . $coupon->id . '.';
@@ -409,10 +426,10 @@ class generator implements icoupongenerator {
         if (!empty($this->groups)) {
             foreach ($this->groups as $group) {
                 // An object for each added cohort.
-                $record = (object) array(
+                $record = (object) [
                     'couponid' => $coupon->id,
-                    'groupid' => $group->id
-                );
+                    'groupid' => $group->id,
+                ];
                 // And insert in db.
                 if (!$DB->insert_record('block_coupon_groups', $record)) {
                     $errors[] = 'Failed to create group link ' . $group->id . ' record for coupon id ' . $coupon->id . '.';
@@ -431,13 +448,13 @@ class generator implements icoupongenerator {
      */
     protected function insert_coupon_cohorts($coupon, &$errors) {
         global $DB;
-        $errors = array();
+        $errors = [];
         foreach ($this->cohorts as $cohort) {
             // An object for each added cohort.
-            $record = (object) array(
+            $record = (object) [
                 'couponid' => $coupon->id,
-                'cohortid' => $cohort->id
-            );
+                'cohortid' => $cohort->id,
+            ];
             // And insert in db.
             if (!$DB->insert_record('block_coupon_cohorts', $record)) {
                 $errors[] = 'Failed to create cohort link ' . $cohort->id . ' record for coupon id ' . $coupon->id . '.';
@@ -456,7 +473,7 @@ class generator implements icoupongenerator {
         global $DB;
         // Load groupings.
         $this->groupings = $DB->get_records_list('block_coupon_coursegroupings', 'id', $groupingids, 'id ASC', 'id, name');
-        $errors = array();
+        $errors = [];
         foreach ($groupingids as $grouping) {
             if (!isset($this->groupings[$grouping])) {
                 $errors[] = get_string('error:grouping-not-found', 'block_coupon') . ' (id = ' . $grouping . ')';
@@ -477,13 +494,13 @@ class generator implements icoupongenerator {
      */
     protected function insert_coupon_groupings($coupon, &$errors) {
         global $DB;
-        $errors = array();
+        $errors = [];
         foreach ($this->groupings as $grouping) {
             // An object for each added cohort.
-            $record = (object) array(
+            $record = (object) [
                 'couponid' => $coupon->id,
-                'coursegroupingid' => $grouping->id
-            );
+                'coursegroupingid' => $grouping->id,
+            ];
             // And insert in db.
             if (!$DB->insert_record('block_coupon_groupings', $record)) {
                 $errors[] = 'Failed to create grouping link ' . $grouping->id . ' record for coupon id ' . $coupon->id . '.';

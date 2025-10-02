@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class user extends \moodleform {
@@ -125,7 +125,7 @@ class user extends \moodleform {
 
         $mform->addElement('duration', 'enrolperioddefault',
                 get_string('label:enrolment_perioddefault', 'block_coupon'),
-                array('size' => 40, 'optional' => false));
+                ['size' => 40, 'optional' => false]);
         $mform->setDefault('enrolperioddefault', '0');
         $mform->addHelpButton('enrolperioddefault', 'label:enrolment_period', 'block_coupon');
 

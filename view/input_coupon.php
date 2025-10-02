@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // Login_check is done in couponpage class.
@@ -32,6 +32,14 @@ require_once(dirname(__FILE__) . '/../../../config.php');
 
 use block_coupon\couponpage;
 use block_coupon\forms\coupon\validator;
+
+$redirect = optional_param('redirect', null, PARAM_LOCALURL);
+if (empty($redirect)) {
+    $redirect = get_local_referer(false);
+    if (empty($redirect)) {
+        $redirect = $CFG->wwwroot . '/my';
+    }
+}
 
 $title = get_string('view:input_coupon:title', 'block_coupon');
 $heading = get_string('view:input_coupon:heading', 'block_coupon');
@@ -45,7 +53,7 @@ $page = couponpage::setup(
     [
         'pagelayout' => 'standard',
         'title' => $title,
-        'heading' => $heading
+        'heading' => $heading,
     ]
 );
 
@@ -53,7 +61,7 @@ $page = couponpage::setup(
 try {
     $mform = new validator();
     if ($mform->is_cancelled()) {
-        redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $course->id)));
+        redirect($redirect);
     } else if ($data = $mform->get_data()) {
         // Get type processor.
         $typeproc = block_coupon\coupon\typebase::get_type_instance($data->coupon_code);
@@ -70,9 +78,12 @@ try {
         echo '</div>';
         echo $OUTPUT->footer();
     }
+} catch (block_coupon\notificationexception $ne) {
+    // Add message to stack.
+    $ne->notify();
 } catch (block_coupon\exception $e) {
     \core\notification::error($e->getMessage());
 } catch (\Exception $ex) {
     \core\notification::error(get_string('err:coupon:generic', 'block_coupon'));
 }
-redirect($CFG->wwwroot . '/my');
+redirect($redirect);

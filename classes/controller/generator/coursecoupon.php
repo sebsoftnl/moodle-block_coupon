@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,7 +41,7 @@ use block_coupon\coupon\generatoroptions;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursecoupon {
@@ -129,7 +129,7 @@ class coursecoupon {
 
         if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             $generatoroptions->ownerid = $USER->id;
             $generatoroptions->type = generatoroptions::COURSE;
@@ -170,7 +170,7 @@ class coursecoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             // Add selected groups to session.
             if (isset($data->coupon_groups)) {
@@ -209,7 +209,7 @@ class coursecoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             $generatoroptions->generatormethod = $data->showform;
 
@@ -229,7 +229,7 @@ class coursecoupon {
      * Process page 4
      */
     protected function process_page_4() {
-        global $CFG, $USER, $DB;
+        global $CFG;
         $url = $this->get_url(['page' => '4']);
 
         // Load generator options.
@@ -242,7 +242,7 @@ class coursecoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             // These settings are always the same.
             if (!empty($data->batchid)) {
@@ -298,7 +298,7 @@ class coursecoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             $generatoroptions->generatesinglepdfs = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
             $generatoroptions->pdftype = $data->usetype;
@@ -348,7 +348,7 @@ class coursecoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($mform->no_submit_button_pressed()) {
             $tplid = $mform->optional_param('tplload', 0, PARAM_INT);
             if (!empty($tplid)) {
@@ -410,7 +410,7 @@ class coursecoupon {
      * Process page 5
      */
     protected function process_page_7() {
-        global $CFG, $DB;
+        global $CFG;
         $url = $this->get_url(['page' => '7']);
 
         // Load generator options.
@@ -427,7 +427,7 @@ class coursecoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
 
             // Get recipients.
@@ -435,6 +435,7 @@ class coursecoupon {
                 // Parse CSV.
                 $delimiter = helper::get_delimiter($generatoroptions->csvdelimitername);
                 $generatoroptions->csvrecipients = helper::get_recipients_from_csv($data->coupon_recipients, $delimiter);
+                $generatoroptions->amount = count($generatoroptions->csvrecipients);
 
                 // Serialize generatoroptions to session.
                 $generatoroptions->to_session();
@@ -482,7 +483,7 @@ class coursecoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             // There is no data, only processing.
             $generatoroptions->to_session();

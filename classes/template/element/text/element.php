@@ -18,7 +18,7 @@
  * This file contains the template element text's core interaction API.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,7 +28,7 @@ namespace block_coupon\template\element\text;
  * The template element text's core interaction API.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class element extends \block_coupon\template\element {
@@ -70,11 +70,11 @@ class element extends \block_coupon\template\element {
      * Handles rendering the element on the pdf.
      *
      * @param \pdf $pdf the pdf object
-     * @param bool $preview true if it is a preview, false otherwise
+     * @param boolean $preview true if it is a preview, false otherwise
      * @param \stdClass $user the user we are rendering this for
-     * @param \stdClass $extradata -- expects "code" to be present
+     * @param \stdClass|null $extradata -- expects "code" to be present
      */
-    public function render($pdf, $preview, $user, \stdClass $extradata = null) {
+    public function render($pdf, $preview, $user, ?\stdClass $extradata = null) {
         \block_coupon\template\element_helper::render_content($pdf, $this, $this->get_text($extradata));
     }
 
@@ -88,7 +88,7 @@ class element extends \block_coupon\template\element {
      */
     public function render_html() {
         $extradata = (object)[
-            'code' => random_string(16)
+            'code' => random_string(16),
         ];
         return \block_coupon\template\element_helper::render_html_content($this, $this->get_text($extradata));
     }
@@ -109,14 +109,16 @@ class element extends \block_coupon\template\element {
     /**
      * Helper function that returns the text.
      *
-     * @param \stdClass $extradata -- expects "code" to be present
+     * @param \stdClass|null $extradata -- expects "code" to be present
      * @return string
      */
-    protected function get_text(\stdClass $extradata = null) : string {
+    protected function get_text(?\stdClass $extradata = null): string {
         $context = \block_coupon\template\element_helper::get_context($this->get_id());
         $templatedata = $this->get_template_data($extradata);
         $translations = $this->mod_vars($templatedata);
         $text = strtr($this->get_data(), $translations);
+        // Transform NL to BR.
+        $text = nl2br($text);
         return format_text($text, FORMAT_HTML, ['context' => $context]);
     }
 
@@ -125,21 +127,24 @@ class element extends \block_coupon\template\element {
      *
      * @return array
      */
-    protected function get_template_vars() : array {
-        return array(
+    protected function get_template_vars(): array {
+        return [
             '###code###' => get_string('label:coupon_code', 'block_coupon'),
+            '###coursenamesshort###' => get_string('label:courseshortname', 'block_coupon'),
+            '###coursenamesfull###' => get_string('label:coursefullname', 'block_coupon'),
+            '###cohorts###' => get_string('element:cohort', 'block_coupon'),
             '###sitename###' => get_string('fullsitename'),
             '###siteurl###' => get_string('siteurl', 'hub'),
-        );
+        ];
     }
 
     /**
      * Helper function that returns the template data.
      *
-     * @param \stdClass $extradata -- expects "code" to be present
+     * @param \stdClass|null $extradata -- expects "code" to be present
      * @return array
      */
-    protected function get_template_data(\stdClass $extradata = null) : \stdClass {
+    protected function get_template_data(?\stdClass $extradata = null): \stdClass {
         global $CFG, $SITE;
         if (empty($extradata)) {
             $extradata = new \stdClass();
@@ -153,6 +158,27 @@ class element extends \block_coupon\template\element {
         if (!isset($extradata->siteurl)) {
             $extradata->siteurl = $CFG->wwwroot;
         }
+
+        // Course names.
+        $courses = ($extradata?->courses) ?? [];
+        $courseshortnames = [];
+        $coursefullnames = [];
+        foreach ($courses as $course) {
+            $optid = ($course->id == 0) ? null : $course->id;
+            $courseshortnames[] = format_string($course->shortname, true, $optid);
+            $coursefullnames[] = format_string($course->fullname, true, $optid);
+        }
+        $extradata->coursenamesshort = implode(', ', $courseshortnames);
+        $extradata->coursenamesfull = implode(', ', $coursefullnames);
+
+        // Cohort names.
+        $cohorts = ($extradata?->cohorts) ?? [];
+        $cohortnames = [];
+        foreach ($cohorts as $cohort) {
+            $cohortnames[] = format_string($cohort->name, true);
+        }
+        $extradata->cohorts = implode(', ', $cohortnames);
+
         return $extradata;
     }
 
@@ -167,11 +193,34 @@ class element extends \block_coupon\template\element {
         if (is_object($a)) {
             $a = (array)$a;
         }
-        $tr = array();
+        $tr = [];
         foreach ($a as $k => $v) {
             $tr['###'.$k.'###'] = $v;
         }
         return $tr;
+    }
+
+    /**
+     * Get/load extra data that's needed for this element.
+     *
+     * @param stdClass $coupon
+     * @param bool $preview -- is this a preview mode?
+     * @return mixed
+     */
+    public function get_extra_data($coupon, bool $preview) {
+        // Get coupon courses.
+        if ($preview) {
+            $courses = [
+                (object)['id' => 0, 'shortname' => 'COURSESHORTNAME', 'fullname' => 'COURSEFULLNAME'],
+            ];
+            $cohorts = [
+                (object)['id' => 0, 'name' => 'COHORTNAME'],
+            ];
+        } else {
+            $courses = \block_coupon\helper::get_coupon_courses($coupon);
+            $cohorts = \block_coupon\helper::get_coupon_cohorts($coupon);
+        }
+        return (object)['courses' => $courses, 'cohorts' => $cohorts];
     }
 
 }

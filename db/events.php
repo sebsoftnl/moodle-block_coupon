@@ -23,24 +23,24 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 defined('MOODLE_INTERNAL') || die;
-$observers = array(
-    array(
+$observers = [
+    [
         'eventname'   => core\event\course_deleted::class,
         'callback'    => 'block_coupon\eventobservers::course_deleted',
-        'internal' => false
-    ),
-    array(
+        'internal' => false,
+    ],
+    [
         'eventname'   => core\event\cohort_deleted::class,
         'callback'    => 'block_coupon\eventobservers::cohort_deleted',
-        'internal' => false
-    ),
-    array(
+        'internal' => false,
+    ],
+    [
         'eventname'   => core\event\user_deleted::class,
         'callback'    => 'block_coupon\eventobservers::user_deleted',
-        'internal' => false
-    ),
-);
+        'internal' => false,
+    ],
+];

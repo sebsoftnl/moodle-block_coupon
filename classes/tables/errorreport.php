@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -40,7 +40,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class errorreport extends \table_sql {
@@ -97,10 +97,10 @@ class errorreport extends \table_sql {
      * Display the general status log table.
      *
      * @param int $pagesize
-     * @param bool $useinitialsbar
+     * @param boolean $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
-        $this->define_table_columns(array('coupon', 'batchid', 'errortype', 'errormessage', 'timecreated', 'action'));
+        $this->define_table_columns(['coupon', 'batchid', 'errortype', 'errormessage', 'timecreated', 'action']);
         // We won't be able to sort by action columns.
         $this->no_sorting('action');
 
@@ -124,13 +124,13 @@ class errorreport extends \table_sql {
     /**
      * Get the complete query to generate the table.
      *
-     * @param bool $forcount if true, generates query for counting.
+     * @param boolean $forcount if true, generates query for counting.
      * @return array array consisting of query and parameters
      */
     protected function get_query($forcount = false) {
         global $DB;
-        $where = array('iserror = 1');
-        $params = array();
+        $where = ['iserror = 1'];
+        $params = [];
         if ($this->ownerid > 0) {
             $params['ownerid'] = $this->ownerid;
             $where[] = 'c.ownerid = :ownerid';
@@ -153,14 +153,14 @@ class errorreport extends \table_sql {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
 
-        return array($sql, $params);
+        return [$sql, $params];
     }
 
     /**
      * Query the db. Store results in the table object for use by build_table.
      *
      * @param int $pagesize size of page for paginated displayed table.
-     * @param bool $useinitialsbar do you want to use the initials bar. Bar
+     * @param boolean $useinitialsbar do you want to use the initials bar. Bar
      * will only be used if there is a fullname column defined for the table.
      */
     public function query_db($pagesize, $useinitialsbar=true) {
@@ -194,7 +194,7 @@ class errorreport extends \table_sql {
      * Convenience method to call a number of methods for you to display the table.
      *
      * @param int $pagesize
-     * @param bool $useinitialsbar
+     * @param boolean $useinitialsbar
      * @param mixed $downloadhelpbutton unused
      */
     public function out($pagesize, $useinitialsbar, $downloadhelpbutton='') {
@@ -221,7 +221,7 @@ class errorreport extends \table_sql {
      * @return string actions
      */
     public function col_action($row) {
-        $actions = array();
+        $actions = [];
         $actions[] = $this->get_action($row, 'delete');
         return implode('', $actions);
     }
@@ -247,7 +247,7 @@ class errorreport extends \table_sql {
     protected function get_action($row, $action) {
         $actionstr = 'str' . $action;
         return '<a href="' . new \moodle_url($this->baseurl,
-                array('action' => $action, 'itemid' => $row->id, 'sesskey' => sesskey())) .
+                ['action' => $action, 'itemid' => $row->id, 'sesskey' => sesskey()]) .
                 '" alt="' . $this->{$actionstr} .
                 '">' . $this->get_action_image($action) . '</a>';
     }
@@ -260,7 +260,7 @@ class errorreport extends \table_sql {
      */
     protected function define_table_columns($columns) {
         $this->define_columns($columns);
-        $headers = array();
+        $headers = [];
         foreach ($columns as $name) {
             if ($name == 'batchid') {
                 $headers[] = get_string('label:' . $name, 'block_coupon');

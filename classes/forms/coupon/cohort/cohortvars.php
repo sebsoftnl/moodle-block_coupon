@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +38,7 @@ use block_coupon\helper;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cohortvars extends baseform {
@@ -68,7 +68,7 @@ class cohortvars extends baseform {
         $cohorts = helper::get_cohorts();
 
         // And create data for multiselect.
-        $arrcohortselect = array();
+        $arrcohortselect = [];
         foreach ($cohorts as $cohort) {
             $arrcohortselect[$cohort->id] = $cohort->name;
         }
@@ -91,8 +91,8 @@ class cohortvars extends baseform {
 
         // Configurable enrolment time.
         $mform->addElement('duration', 'enrolment_period',
-                get_string('label:enrolment_period', 'block_coupon'), array('size' => 40, 'optional' => true));
-        $mform->setDefault('enrolment_period', '0');
+                get_string('label:enrolment_period', 'block_coupon'), ['size' => 40, 'optional' => true]);
+        $mform->setDefault('enrolment_period', get_config('block_coupon', 'defaultenrolmentperiod'));
         $mform->addHelpButton('enrolment_period', 'label:enrolment_period', 'block_coupon');
 
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'), false);

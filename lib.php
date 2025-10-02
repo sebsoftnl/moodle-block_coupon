@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -43,7 +43,7 @@ function block_coupon_extend_navigation_course(navigation_node $parentnode, stdC
         return;
     }
     $icon = new \pix_icon('coupons', get_string('coupon:extendenrol', 'block_coupon'), 'block_coupon');
-    $conditions = array('cid' => $course->id, 'id' => $biid);
+    $conditions = ['cid' => $course->id, 'id' => $biid];
     $action = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/extendenrolment.php', $conditions);
     $parentnode->add(get_string('coupon:extendenrol', 'block_coupon'), $action, navigation_node::TYPE_CUSTOM,
             get_string('coupon:extendenrol', 'block_coupon'), 'cpextendenrol', $icon);
@@ -57,11 +57,11 @@ function block_coupon_extend_navigation_course(navigation_node $parentnode, stdC
  * @param \context $context
  * @param string $filearea
  * @param array $args
- * @param bool $forcedownload
+ * @param boolean $forcedownload
  * @param array $options
  */
-function block_coupon_pluginfile($course, $birecordorcm, $context, $filearea, $args, $forcedownload, array $options=array()) {
-    $allowed = array('content', 'logos', 'image');
+function block_coupon_pluginfile($course, $birecordorcm, $context, $filearea, $args, $forcedownload, array $options = []) {
+    $allowed = ['content', 'logos', 'image'];
     if (!in_array($filearea, $allowed)) {
         send_file_not_found();
     }
@@ -101,9 +101,9 @@ function block_coupon_inplace_editable($itemtype, $itemid, $newvalue) {
     global $DB, $PAGE;
 
     if ($itemtype === 'elementname') {
-        $element = $DB->get_record('block_coupon_elements', array('id' => $itemid), '*', MUST_EXIST);
-        $page = $DB->get_record('block_coupon_pages', array('id' => $element->pageid), '*', MUST_EXIST);
-        $template = $DB->get_record('block_coupon_templates', array('id' => $page->templateid), '*', MUST_EXIST);
+        $element = $DB->get_record('block_coupon_elements', ['id' => $itemid], '*', MUST_EXIST);
+        $page = $DB->get_record('block_coupon_pages', ['id' => $element->pageid], '*', MUST_EXIST);
+        $template = $DB->get_record('block_coupon_templates', ['id' => $page->templateid], '*', MUST_EXIST);
 
         // Set the template object.
         $template = new \block_coupon\template($template);
@@ -120,7 +120,7 @@ function block_coupon_inplace_editable($itemtype, $itemid, $newvalue) {
         $DB->update_record('block_coupon_elements', $updateelement);
 
         return new \core\output\inplace_editable('block_coupon', 'elementname', $element->id, true,
-            $updateelement->name, $updateelement->name);
+                $updateelement->name, $updateelement->name);
     }
 }
 

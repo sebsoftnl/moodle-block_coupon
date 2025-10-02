@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -43,7 +43,7 @@ use core_privacy\local\request\approved_userlist;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
@@ -57,7 +57,7 @@ class provider implements
      * @param  collection $collection A collection of meta data items to be added to.
      * @return  collection Returns the collection of metadata.
      */
-    public static function get_metadata(collection $collection) : collection {
+    public static function get_metadata(collection $collection): collection {
         $collection->add_database_table(
             'block_coupon',
             [
@@ -75,6 +75,28 @@ class provider implements
             ],
             'privacy:metadata:block_coupon'
         );
+        $collection->add_database_table(
+            'block_coupon_rusers',
+            [
+                'userid' => 'privacy:metadata:block_coupon:userid',
+                'timecreated' => 'privacy:metadata:block_coupon:timecreated',
+                'timemodified' => 'privacy:metadata:block_coupon:timemodified',
+            ],
+            'privacy:metadata:block_coupon_rusers'
+        );
+        $collection->add_database_table(
+            'block_coupon_requests',
+            [
+                'userid' => 'privacy:metadata:block_coupon:userid',
+                'configuration' => 'privacy:metadata:block_coupon_requests:configuration',
+                'clientref' => 'privacy:metadata:block_coupon_requests:clientref',
+                'denied' => 'privacy:metadata:block_coupon_requests:denied',
+                'finalized' => 'privacy:metadata:block_coupon_requests:finalized',
+                'timecreated' => 'privacy:metadata:block_coupon:timecreated',
+                'timemodified' => 'privacy:metadata:block_coupon:timemodified',
+            ],
+            'privacy:metadata:block_coupon_requests'
+        );
         return $collection;
     }
 
@@ -84,7 +106,7 @@ class provider implements
      * @param   int           $userid       The user to search.
      * @return  contextlist   $contextlist  The list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid(int $userid) : contextlist {
+    public static function get_contexts_for_userid(int $userid): contextlist {
         $contextlist = new \core_privacy\local\request\contextlist();
 
         // Add system context.
@@ -176,6 +198,58 @@ class provider implements
                 writer::with_context($context)->export_related_data(
                     ['block_coupon'],
                     'claimedcoupons',
+                    (object)['coupon' => $coupondata]
+                );
+            });
+
+            // Add My request user.
+            $sql = "SELECT c.* FROM {block_coupon_rusers} c WHERE c.userid = :userid";
+            $params = ['userid' => $user->id];
+            $alldata = [];
+            $couponusers = $DB->get_recordset_sql($sql, $params);
+            foreach ($couponusers as $couponuser) {
+                $alldata[$context->id][] = (object)[
+                        'userid' => $couponuser->userid,
+                        'timecreated' => transform::datetime($couponuser->timecreated),
+                        'timemodified' => transform::datetime($couponuser->timemodified),
+                    ];
+            }
+            $couponusers->close();
+
+            // The data is organised in: {?}/couponrequestusers.json.
+            array_walk($alldata, function($coupondata, $contextid) {
+                $context = \context::instance_by_id($contextid);
+                writer::with_context($context)->export_related_data(
+                    ['block_coupon'],
+                    'couponrequestusers',
+                    (object)['coupon' => $coupondata]
+                );
+            });
+
+            // Add requested coupons.
+            $sql = "SELECT c.* FROM {block_coupon_requests} c WHERE c.userid = :userid";
+            $params = ['userid' => $user->id];
+            $alldata = [];
+            $couponrequests = $DB->get_recordset_sql($sql, $params);
+            foreach ($couponrequests as $couponrequest) {
+                $alldata[$context->id][] = (object)[
+                        'userid' => $couponrequest->userid,
+                        'configuration' => $couponrequest->configuration,
+                        'clientref' => $couponrequest->clientref,
+                        'denied' => $couponrequest->denied,
+                        'finalized' => $couponrequest->finalized,
+                        'timecreated' => transform::datetime($couponrequest->timecreated),
+                        'timemodified' => transform::datetime($couponrequest->timemodified),
+                    ];
+            }
+            $coupons->close();
+
+            // The data is organised in: {?}/couponrequests.json.
+            array_walk($alldata, function($coupondata, $contextid) {
+                $context = \context::instance_by_id($contextid);
+                writer::with_context($context)->export_related_data(
+                    ['block_coupon'],
+                    'couponrequests',
                     (object)['coupon' => $coupondata]
                 );
             });

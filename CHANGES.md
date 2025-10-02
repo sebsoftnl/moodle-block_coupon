@@ -1,3 +1,42 @@
+Version 4.4.2 (build 2024100103)
+** Requiring Moodle 4.5+
+** Centralized all CI actions to new defaults for Sebsoft
+
+----------
+
+Version 4.4.1 (build 2024100102)
+** Fixed requiring Moodle 4.2 minimum
+
+----------
+
+Version 4.4.0 (build 2024100100)
+** Several bugfixes
+** Require Moodle 4.2 MINIMUM
+** Lots of coding compliance changes
+** Introduced editing of course/cohort coupons (based on settings)
+** Implementation for batch filter is now an autocomplete
+** Fixed issue with CSV upload not being processed
+** Fixed (github) issue #27
+** Fixed (github) issue #3 (was done long ago already, but just to be complete).
+** Supported up to Moodle 4.5
+
+----------
+
+Version 4.3.3 (build 2024020100)
+* Fixed "array_key_exists" errors in filters
+* Fixed wrong templated name for CSV manual (Email != E-mail)
+* Fixed (merged) course name formatting
+* Fixed (github) issue #16
+* Fixed (github) issue #18
+* Fixed (github) issue #19
+* Fixed (github) issue #20
+* Added settings default for "enrolment period"
+* Added settings default for "generate codes only" (issue #23)
+* Various small fixes
+* Added environment.xml
+
+----------
+
 Version 4.3.2 (build 2024010200)
 * Fixed issues while installing module
 * Fixed issues while claiming coupons

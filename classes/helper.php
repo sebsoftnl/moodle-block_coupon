@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +37,7 @@ namespace block_coupon;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class helper {
@@ -63,7 +63,7 @@ class helper {
             WHERE customint1 = ?
             AND e.enrol = 'cohort' AND c.visible = 1 AND c.id != 1
             ORDER BY c.fullname ASC";
-        $cohortcourses = $DB->get_records_sql($sql, array($cohortid));
+        $cohortcourses = $DB->get_records_sql($sql, [$cohortid]);
 
         return (count($cohortcourses) > 0) ? $cohortcourses : false;
     }
@@ -72,7 +72,7 @@ class helper {
      * Get a list of courses that have NOT been enabled for cohort enrolment for a given cohort.
      *
      * @param int $cohortid
-     * @param bool $idsonly if true, only returns list of IDs
+     * @param boolean $idsonly if true, only returns list of IDs
      * @return array
      */
     final public static function get_unconnected_cohort_courses($cohortid, $idsonly = false) {
@@ -86,7 +86,7 @@ class helper {
                 AND e.enrol = 'cohort'
             )
             ORDER BY c.fullname ASC";
-        $unconnectedcourses = $DB->get_records_sql($sql, array($cohortid));
+        $unconnectedcourses = $DB->get_records_sql($sql, [$cohortid]);
 
         if ($idsonly) {
             return (!empty($unconnectedcourses)) ? array_keys($unconnectedcourses) : false;
@@ -131,7 +131,7 @@ class helper {
     final public static function get_coupons_by_owner($ownerid = null) {
         global $DB;
 
-        $params = array();
+        $params = [];
         $sql = "SELECT * FROM {block_coupon} WHERE userid IS NOT NULL";
         if (!empty($ownerid)) {
             $sql .= "AND ownerid = ?";
@@ -152,7 +152,7 @@ class helper {
         $senddate = time();
         $sql = "SELECT * FROM {block_coupon} v
             WHERE senddate < ? AND issend = 0 AND for_user_email IS NOT NULL";
-        $coupons = $DB->get_records_sql($sql, array($senddate), 0, 500);
+        $coupons = $DB->get_records_sql($sql, [$senddate], 0, 500);
 
         return $coupons;
     }
@@ -166,11 +166,11 @@ class helper {
      */
     final public static function has_sent_all_coupons($ownerid, $timecreated) {
         global $DB;
-        $conditions = array(
+        $conditions = [
             'issend' => 0,
             'ownerid' => $ownerid,
-            'timecreated' => $timecreated
-        );
+            'timecreated' => $timecreated,
+        ];
         return ($DB->count_records('block_coupon', $conditions) === 0);
     }
 
@@ -183,7 +183,9 @@ class helper {
     public static function claim_coupon($code, $foruserid = null) {
         global $CFG;
         $instance = coupon\typebase::get_type_instance($code);
-        $instance->claim($foruserid);
+
+        $options = null;
+        $instance->claim($foruserid, $options);
 
         return (empty($instance->coupon->redirect_url)) ? $CFG->wwwroot . "/my" : $instance->coupon->redirect_url;
     }
@@ -228,10 +230,9 @@ class helper {
      * @return bool
      */
     final public static function confirm_coupons_sent($ownerid, $batchid, $timecreated) {
-        // TODO: DEPRECATE: replaced by notifications :).
         global $DB;
 
-        $owner = $DB->get_record('user', array('id' => $ownerid));
+        $owner = $DB->get_record('user', ['id' => $ownerid]);
         $supportuser = \core_user::get_noreply_user();
         $a = new \stdClass();
         $a->timecreated = userdate($timecreated, get_string('strftimedate', 'langconfig'));
@@ -251,7 +252,7 @@ class helper {
      */
     final public static function load_course_completioninfo($user, $cinfo) {
         global $DB, $CFG;
-        static $cstatus, $completioninfo = array();
+        static $cstatus, $completioninfo = [];
 
         require_once($CFG->dirroot . '/lib/gradelib.php');
         require_once($CFG->dirroot . '/grade/querylib.php');
@@ -259,7 +260,7 @@ class helper {
 
         // Completion status 'cache' values (speed up, lass!).
         if ($cstatus === null) {
-            $cstatus = array();
+            $cstatus = [];
             $cstatus['started'] = get_string('report:status_started', 'block_coupon');
             $cstatus['notstarted'] = get_string('report:status_not_started', 'block_coupon');
             $cstatus['complete'] = get_string('report:status_completed', 'block_coupon');
@@ -291,7 +292,7 @@ class helper {
                     JOIN {enrol} e ON ue.enrolid=e.id
                     WHERE ue.userid = ? AND e.courseid = ?
                     ORDER BY timestart ASC, timecreated ASC';
-            $records = $DB->get_records_sql($sql, array($user->id, $cinfo->id));
+            $records = $DB->get_records_sql($sql, [$user->id, $cinfo->id]);
 
             if (count($records) === 1) {
                 $record = array_shift($records);
@@ -315,10 +316,7 @@ class helper {
             if ($com->is_course_complete($user->id)) {
                 // Fetch details for course completion.
                 $ci->complete = true;
-                $comcom = new \completion_completion(array(
-                    'userid' => $user->id,
-                    'course' => $cinfo->id
-                ));
+                $comcom = new \completion_completion(['userid' => $user->id, 'course' => $cinfo->id]);
                 $ci->date_complete = date('d-m-Y H:i:s', $comcom->timecompleted);
                 $ci->gradeinfo = grade_get_course_grade($user->id, $cinfo->id);
                 if ($ci->gradeinfo !== false) {
@@ -337,7 +335,7 @@ class helper {
      * Format a datestring in short or long format
      *
      * @param int $time
-     * @param bool $inctime
+     * @param boolean $inctime
      * @return string user date
      */
     final public static function render_date($time, $inctime = true) {
@@ -369,11 +367,11 @@ class helper {
      */
     final public static function get_recipients_from_csv($recipientsstr, $delimiter = ',') {
 
-        $recipients = array();
+        $recipients = [];
         $count = 0;
 
         // Split up in rows.
-        $expectedcolumns = array('e-mail', 'gender', 'name');
+        $expectedcolumns = ['e-mail', 'gender', 'name'];
         $recipientsstr = str_replace("\r", '', $recipientsstr);
         if (!$csvdata = str_getcsv($recipientsstr, "\n")) {
             return false;
@@ -387,7 +385,7 @@ class helper {
             // Check if we're looking at the first row.
             if ($count == 0) {
 
-                $expectedrow = array();
+                $expectedrow = [];
                 // Set the columns we'll need.
                 foreach ($row as $key => &$column) {
 
@@ -465,7 +463,7 @@ class helper {
     public static function get_default_coupon_role() {
         global $DB;
         $config = get_config('block_coupon');
-        $role = $DB->get_record('role', array('id' => $config->defaultrole));
+        $role = $DB->get_record('role', ['id' => $config->defaultrole]);
         return $role;
     }
 
@@ -473,16 +471,16 @@ class helper {
      * Get role menu.
      *
      * @param \context|null $context
-     * @param bool $addempty
+     * @param boolean $addempty
      * @return false|\stdClass
      */
     public static function get_role_menu($context = null, $addempty = false) {
-        $roleoptions = array();
+        $roleoptions = [];
         if ($roles = get_all_roles($context)) {
             $roleoptions = role_fix_names($roles, $context, ROLENAME_ORIGINAL, true);
         }
         if ($addempty) {
-            $rs = array('' => get_string('select'));
+            $rs = ['' => get_string('select')];
             foreach ($roleoptions as $k => $v) {
                 $rs[$k] = $v;
             }
@@ -499,8 +497,8 @@ class helper {
      */
     public static function get_coupon_courses($coupon) {
         global $DB;
-        $sqls = array();
-        $params = array();
+        $sqls = [];
+        $params = [];
         $sqls[] = 'SELECT c.id,c.shortname FROM {course} c JOIN {block_coupon_courses} cc ON cc.courseid=c.id AND cc.couponid = ?';
         $params[] = $coupon->id;
         $sqls[] = 'SELECT c.id,c.shortname FROM {block_coupon_cohorts} cc
@@ -510,19 +508,35 @@ class helper {
         $params[] = 'cohort';
         $params[] = $coupon->id;
         $sql = 'SELECT * FROM ((' . implode(') UNION (', $sqls) . ')) x';
-        return $DB->get_records_sql_menu($sql, $params);
+        return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
+     * Get cohorts connected to coupons
+     *
+     * @param \stdClass $coupon
+     * @return array result
+     */
+    public static function get_coupon_cohorts($coupon) {
+        global $DB;
+        $sql = 'SELECT c.id, c.shortname, c.fullname
+                FROM {block_coupon_cohorts} cc
+                JOIN {cohort} c ON cc.cohortid=c.id
+                WHERE cc.couponid = ?';
+        $params = [$coupon->id];
+        return $DB->get_records_sql($sql, $params);
     }
 
     /**
      * Get courses connected to all coupons
      *
-     * @param bool $includeempty whether or not to include an empty element
+     * @param boolean $includeempty whether or not to include an empty element
      * @return array result, keys are courseids, values are course shortnames
      */
     public static function get_coupon_course_menu($includeempty = true) {
         global $DB;
-        $sqls = array();
-        $params = array();
+        $sqls = [];
+        $params = [];
         $sqls[] = 'SELECT c.id,c.shortname FROM {course} c JOIN {block_coupon_courses} cc ON cc.courseid=c.id';
         $sqls[] = 'SELECT c.id,c.shortname FROM {block_coupon_cohorts} cc
                 JOIN {enrol} e ON (e.customint1=cc.cohortid AND e.enrol=?)
@@ -532,7 +546,7 @@ class helper {
         $sql = 'SELECT DISTINCT * FROM ((' . implode(') UNION (', $sqls) . ')) x';
         $rs = $DB->get_records_sql_menu($sql, $params);
         if ($includeempty) {
-            $rs = array(0 => '...') + $rs;
+            $rs = [0 => '...'] + $rs;
         }
         return $rs;
     }
@@ -540,7 +554,7 @@ class helper {
     /**
      * Get cohort connected to all coupons
      *
-     * @param bool $includeempty whether or not to include an empty element
+     * @param boolean $includeempty whether or not to include an empty element
      * @return array result, keys are cohort ids, values are cohort names
      */
     public static function get_coupon_cohort_menu($includeempty = true) {
@@ -549,7 +563,7 @@ class helper {
                 JOIN {cohort} c ON cc.cohortid=c.id';
         $rs = $DB->get_records_sql_menu($sql);
         if ($includeempty) {
-            $rs = array(0 => '...') + $rs;
+            $rs = [0 => '...'] + $rs;
         }
         return $rs;
     }
@@ -557,7 +571,7 @@ class helper {
     /**
      * Get batchids connected to all coupons
      *
-     * @param bool $includeempty whether or not to include an empty element
+     * @param boolean $includeempty whether or not to include an empty element
      * @return array result, keys are batch ids, values are batch ids
      */
     public static function get_coupon_batch_menu($includeempty = true) {
@@ -565,7 +579,7 @@ class helper {
         $sql = 'SELECT batchid FROM {block_coupon} c ORDER BY batchid ASC';
         $rs = [];
         if ($includeempty) {
-            $rs = array(0 => '...');
+            $rs = [0 => '...'];
         }
         $ids = $DB->get_fieldset_sql($sql);
         foreach ($ids as $id) {
@@ -589,8 +603,8 @@ class helper {
         if (!isset($options->used)) {
             $options->used = 1; // Used only.
         }
-        $params = array();
-        $where = array();
+        $params = [];
+        $where = [];
         // Assemble query.
         // Owner.
         if (!empty($options->ownerid)) {
@@ -645,11 +659,11 @@ class helper {
                 $params += $inparams;
             }
         }
-        $sqlparts = array($operator, $fields, 'FROM {block_coupon}');
+        $sqlparts = [$operator, $fields, 'FROM {block_coupon}'];
         if (!empty($where)) {
             $sqlparts[] = 'WHERE ' . implode(' AND ', $where);
         }
-        return array(implode(' ', $sqlparts), $params);
+        return [implode(' ', $sqlparts), $params];
 
     }
 
@@ -701,7 +715,7 @@ class helper {
      */
     public static function find_block_instance_id() {
         global $DB;
-        $recs = $DB->get_records('block_instances', array('blockname' => 'coupon'));
+        $recs = $DB->get_records('block_instances', ['blockname' => 'coupon']);
         if (empty($recs)) {
             return 0;
         }
@@ -733,14 +747,14 @@ class helper {
      */
     public static function add_generator_method_options($mform) {
         // Determine which type of settings we'll use.
-        $radioarray = array();
+        $radioarray = [];
         $radioarray[] = & $mform->createElement('radio', 'showform', '',
-                get_string('showform-amount', 'block_coupon'), 'amount', array('onchange' => 'showHide(this.value)'));
+                get_string('showform-amount', 'block_coupon'), 'amount', ['onchange' => 'showHide(this.value)']);
         $radioarray[] = & $mform->createElement('radio', 'showform', '',
-                get_string('showform-csv', 'block_coupon'), 'csv', array('onchange' => 'showHide(this.value)'));
+                get_string('showform-csv', 'block_coupon'), 'csv', ['onchange' => 'showHide(this.value)']);
         $radioarray[] = & $mform->createElement('radio', 'showform', '',
-                get_string('showform-manual', 'block_coupon'), 'manual', array('onchange' => 'showHide(this.value)'));
-        $mform->addGroup($radioarray, 'radioar', get_string('label:showform', 'block_coupon'), array('<br/>'), false);
+                get_string('showform-manual', 'block_coupon'), 'manual', ['onchange' => 'showHide(this.value)']);
+        $mform->addGroup($radioarray, 'radioar', get_string('label:showform', 'block_coupon'), ['<br/>'], false);
         $mform->setDefault('showform', 'amount');
     }
 
@@ -807,7 +821,7 @@ class helper {
      * @return int
      */
     public static function validate_codesize($data, array &$errors) {
-        // TODO: validate codesize based on settings.
+        // We should: validate codesize based on settings.
     }
 
     /**
@@ -879,7 +893,7 @@ class helper {
         // Filepicker.
         $urldownloadcsv = new \moodle_url($CFG->wwwroot . '/blocks/coupon/sample.csv');
         $mform->addElement('filepicker', 'coupon_recipients',
-                get_string('label:coupon_recipients', 'block_coupon'), null, array('accepted_types' => 'csv'));
+                get_string('label:coupon_recipients', 'block_coupon'), null, ['accepted_types' => 'csv']);
         $mform->addHelpButton('coupon_recipients', 'label:coupon_recipients', 'block_coupon');
         $mform->addElement('static', 'coupon_recipients_desc', '', get_string('coupon_recipients_desc', 'block_coupon'));
         $mform->addElement('static', 'sample_csv', '', '<a href="' . $urldownloadcsv
@@ -894,9 +908,9 @@ class helper {
         }
 
         // Editable email message.
-        $mform->addElement('editor', 'email_body', get_string('label:email_body', 'block_coupon'), array('noclean' => 1));
+        $mform->addElement('editor', 'email_body', get_string('label:email_body', 'block_coupon'), ['noclean' => 1]);
         $mform->setType('email_body', PARAM_RAW);
-        $mform->setDefault('email_body', array('text' => $mailcontentdefault));
+        $mform->setDefault('email_body', ['text' => $mailcontentdefault]);
         $mform->addRule('email_body', get_string('required'), 'required');
         $mform->addHelpButton('email_body', 'label:email_body', 'block_coupon');
 
@@ -947,9 +961,9 @@ class helper {
         $mform->addElement('static', 'coupon_recipients_desc', '', get_string('coupon_recipients_desc', 'block_coupon'));
 
         // Editable email message.
-        $mform->addElement('editor', 'email_body_manual', get_string('label:email_body', 'block_coupon'), array('noclean' => 1));
+        $mform->addElement('editor', 'email_body_manual', get_string('label:email_body', 'block_coupon'), ['noclean' => 1]);
         $mform->setType('email_body_manual', PARAM_RAW);
-        $mform->setDefault('email_body_manual', array('text' => $mailcontentdefault));
+        $mform->setDefault('email_body_manual', ['text' => $mailcontentdefault]);
         $mform->addRule('email_body_manual', get_string('required'), 'required');
         $mform->addHelpButton('email_body_manual', 'label:email_body', 'block_coupon');
 
@@ -984,7 +998,7 @@ class helper {
 
         // Now the choices for template vs logo based.
         $choices = [
-            'logo' => get_string('generator:uselogo', 'block_coupon')
+            'logo' => get_string('generator:uselogo', 'block_coupon'),
         ];
         if ($DB->count_records('block_coupon_templates') > 0) {
             $choices = ['template' => get_string('generator:usetemplate', 'block_coupon')] + $choices;
@@ -1024,7 +1038,7 @@ class helper {
      * @return array suitable for selection box
      */
     public static function get_delimiter_list() {
-        $delimiters = array('comma' => ',', 'semicolon' => ';', 'colon' => ':', 'tab' => '\\t');
+        $delimiters = ['comma' => ',', 'semicolon' => ';', 'colon' => ':', 'tab' => '\\t'];
         return $delimiters;
     }
 
@@ -1204,7 +1218,7 @@ class helper {
      * @param string $messagehtml complete html version of the message (optional)
      * @param string $attachment a file, either relative to $CFG->dataroot or a full path to a file in $CFG->tempdir
      * @param string $attachname the name of the file (extension indicates MIME)
-     * @param bool $usetrueaddress determines whether $from email address should
+     * @param boolean $usetrueaddress determines whether $from email address should
      *          be sent out. Will be overruled by user profile setting for maildisplay
      * @param string $replyto Email address to reply to
      * @param string $replytoname Name of reply to recipient
@@ -1265,9 +1279,9 @@ class helper {
         // Do note the FALSE param value, so we actually generate a PDF!
         $filename = '';
         $relativefilename = '';
-        $sendpdf = (bool)get_config('block_coupon', 'personalsendpdf');
+        $sendpdf = (bool)get_config('block_coupon', 'personalsendpdf') || (bool)!$coupon->codeonly;
         if ($sendpdf) {
-            list($filename, $relativefilename) = static::generate_personalized_coupon($coupon);
+            list($relativefilename, $filename) = static::generate_personalized_coupon($coupon);
         }
 
         // Possibly split first/lastname.
@@ -1325,22 +1339,39 @@ class helper {
      * @return array [(full) filename, relativefilename]
      */
     public static function generate_personalized_coupon($coupon) {
-        global $CFG;
+        global $CFG, $DB;
+
+        $template = null;
+        if (!empty($coupon->templateid)) {
+            // If set as using a template, try and locate the template.
+            // We'll fall back to default when not located.
+            $templaterecord = $DB->get_record('block_coupon_templates', ['id' => $coupon->templateid]);
+            if ($templaterecord) {
+                $template = new template($templaterecord);
+            }
+        }
+
         $identifier = uniqid($coupon->id);
-        // Generate the PDF.
-        $pdfgen = new coupon\pdf(get_string('pdf:titlename', 'block_coupon'));
-        // Fill the coupon with text.
-        $pdfgen->set_templatemain(get_string('default-coupon-page-template-main', 'block_coupon'));
-        $pdfgen->set_templatebotleft(get_string('default-coupon-page-template-botleft', 'block_coupon'));
-        $pdfgen->set_templatebotright(get_string('default-coupon-page-template-botright', 'block_coupon'));
-        // Generate it.
-        $pdfgen->generate($coupon);
-        // FI enables storing on local system, this could be nice to have?
         $relativefilename = 'coupon_' . $identifier. '.pdf';
         $filename = "{$CFG->dataroot}/{$relativefilename}";
-        $pdfgen->Output($filename, 'F');
 
-        return [$filename, $relativefilename];
+        if ($template !== null) {
+            list($relativefilename, $filename) = $template->generate_pdf([$coupon], false, null, false, $relativefilename);
+        } else {
+            $identifier = uniqid($coupon->id);
+            // Generate the PDF.
+            $pdfgen = new coupon\pdf(get_string('pdf:titlename', 'block_coupon'));
+            // Fill the coupon with text.
+            $pdfgen->set_templatemain(get_string('default-coupon-page-template-main', 'block_coupon'));
+            $pdfgen->set_templatebotleft(get_string('default-coupon-page-template-botleft', 'block_coupon'));
+            $pdfgen->set_templatebotright(get_string('default-coupon-page-template-botright', 'block_coupon'));
+            // Generate it.
+            $pdfgen->generate($coupon);
+            // FI enables storing on local system, this could be nice to have?
+            $pdfgen->Output($filename, 'F');
+        }
+
+        return [$relativefilename, $filename];
     }
 
     /**
@@ -1348,11 +1379,11 @@ class helper {
      * It's only here so we don't have to keep duplicating multiple lines of code
      * where Moodle's core function used to be a simple one liner!
      *
-     * @param bool $returnsql
+     * @param boolean $returnsql
      * @param string|null $tableprefix
      * @param string $prefix prefix added to the name fields e.g. authorfirstname.
      * @param string $fieldprefix sql field prefix e.g. id AS userid.
-     * @param bool $order moves firstname and lastname to the top of the array / start of the string.
+     * @param boolean $order moves firstname and lastname to the top of the array / start of the string.
      *
      * @return string
      */
@@ -1426,7 +1457,7 @@ class helper {
 
         $options = [
             'startyear' => date('Y'),
-            'stopyear' => date('Y') + 20
+            'stopyear' => date('Y') + 20,
         ];
         $mform->addElement('date_selector', 'expiresat', get_string('coupon:expiresat', 'block_coupon'), $options);
 
@@ -1508,28 +1539,6 @@ class helper {
     }
 
     /**
-     * Get p
-     *
-     * @param string $type
-     * @param string $name
-     */
-    public static function d($type, $name) {
-        global $CFG;
-        $tplugs = \core_plugin_manager::instance()->get_plugins_of_type($type);
-        $p = $tplugs[$name];
-        $ar = new \ZipArchive();
-        $zrp = "{$p->type}_{$p->name}.{$p->versiondisk}.zip";
-        $zn = $CFG->dataroot . '/' . $zrp;
-        $ar->open($zn, 9);
-        static::add_from_folder($ar, $p->rootdir);
-        $ar->close();
-        static::dlh(basename($zn), filesize($zn));
-        @readfile($zn);
-        unlink($zn);
-        exit;
-    }
-
-    /**
      * Send download headers
      *
      * @param string $fn filename
@@ -1545,6 +1554,41 @@ class helper {
         header("Content-Disposition: attachment; filename=\"" . $fn . "\"");
         header("Content-Transfer-Encoding: binary");
         header("Content-Length: " . $fs);
+    }
+
+    /**
+     * Get download.
+     *
+     * @package block_coupon
+     *
+     * @param string $batchid
+     * @param string $timeid
+     * @param boolean $dodl
+     */
+    public static function download($batchid, $timeid, $dodl = false) {
+        global $CFG, $OUTPUT;
+        $basename = "coupons-{$batchid}-{$timeid}";
+        if (file_exists("{$CFG->dataroot}/{$basename}.zip")) {
+            $filename = "{$CFG->dataroot}/{$basename}.zip";
+        } else if (file_exists("{$CFG->dataroot}/{$basename}.pdf")) {
+            $filename = "{$CFG->dataroot}/{$basename}.pdf";
+        } else {
+            $a = (object) [
+                'batchid' => $batchid,
+                'timeid' => $timeid,
+            ];
+            throw new block_coupon\exception('err:download-not-exists', $a);
+        }
+
+        if (!$dodl) {
+            $url = new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php', ['bid' => $batchid, 't' => $timeid, 'dl' => 1]);
+            $button = $OUTPUT->single_button($url, get_string('downloadcoupons:buttontext', 'block_coupon'), 'get');
+            echo get_string('downloadcoupons:text', 'block_coupon', $button);
+        } else {
+            self::dlh(basename($filename), filesize($filename));
+            readfile($filename);
+            unlink($filename);
+        }
     }
 
     /**
@@ -1593,7 +1637,7 @@ class helper {
      * @param array $coupons An array of generated coupons
      * @param coupon\generatoroptions $generatoroptions generator options
      * @param string|bool $emailbody email body or false of it'll be autogenerated
-     * @param bool $initiatedbycron whether or not this method was called by cron
+     * @param boolean $initiatedbycron whether or not this method was called by cron
      */
     final public static function mail_coupons($coupons, coupon\generatoroptions $generatoroptions,
             $emailbody = false, $initiatedbycron = false) {
@@ -1634,11 +1678,11 @@ class helper {
         } else {
             $downloadurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php',
                     ['bid' => $generatoroptions->batchid, 't' => $ts]);
-            $bodyparams = array(
+            $bodyparams = [
                 'fullname' => fullname($USER),
                 'signoff' => generate_email_signoff(),
-                'downloadlink' => \html_writer::link($downloadurl, get_string('here', 'block_coupon'))
-            );
+                'downloadlink' => \html_writer::link($downloadurl, get_string('here', 'block_coupon')),
+            ];
             $messagehtml = get_string('coupon_mail_content', 'block_coupon', $bodyparams);
         }
         $messagetext = format_text_email($messagehtml, FORMAT_HTML);
@@ -1729,7 +1773,7 @@ class helper {
 
             $zippedsuccessfully = $zip->close();
             if (!$zippedsuccessfully) {
-                // TODO! Future implementation should notify and break processing.
+                // Future implementation should notify and break processing.
                 $zippedsuccessfully = $zippedsuccessfully;
             }
 
@@ -1788,7 +1832,7 @@ class helper {
 
             $zippedsuccessfully = $zip->close();
             if (!$zippedsuccessfully) {
-                // TODO! Future implementation should notify and break processing.
+                // Future implementation should notify and break processing.
                 $zippedsuccessfully = $zippedsuccessfully;
             }
 
@@ -1811,6 +1855,85 @@ class helper {
 
             return [$relativefilename, $filename];
         }
+    }
+
+
+    /**
+     * Try to enrol user via default internal auth plugin.
+     * RIPPED from core, but extended to also process a status!
+     *
+     * For now this is always using the manual enrol plugin...
+     *
+     * @param int $courseid
+     * @param int $userid
+     * @param int|null $roleid
+     * @param int $timestart
+     * @param int $timeend
+     * @param int|null $status
+     * @return bool success
+     */
+    public static function enrol_try_internal_enrol($courseid, $userid, $roleid = null,
+            $timestart = 0, $timeend = 0, $status = null) {
+        global $DB;
+
+        // Note: this is hardcoded to manual plugin for now.
+        if (!enrol_is_enabled('manual')) {
+            return false;
+        }
+
+        if (!$enrol = enrol_get_plugin('manual')) {
+            return false;
+        }
+        $conditions = ['enrol' => 'manual', 'courseid' => $courseid, 'status' => ENROL_INSTANCE_ENABLED];
+        if (!$instances = $DB->get_records('enrol', $conditions, 'sortorder,id ASC')) {
+            return false;
+        }
+
+        if ($roleid && !$DB->record_exists('role', ['id' => $roleid])) {
+            return false;
+        }
+
+        $instance = reset($instances);
+        $enrol->enrol_user($instance, $userid, $roleid, $timestart, $timeend, $status);
+
+        return true;
+    }
+
+    /**
+     * Get defined workflows menu.
+     *
+     * @return array
+     */
+    public static function get_workflow_menu() {
+        global $CFG;
+        $cwf = empty($CFG->forced_plugin_settings['block_coupon']['claimworkflow']) ?
+                false : ($CFG->forced_plugin_settings['block_coupon']['claimworkflow'] == 2);
+
+        $workflows = [
+            1 => get_string('claimworkflow:1', 'block_coupon'),
+        ];
+        if ($cwf) {
+            $workflows[2] = get_string('claimworkflow:2', 'block_coupon');
+        }
+        return $workflows;
+    }
+
+    /**
+     * Get defined workflows menu explanation(s).
+     *
+     * @return string
+     */
+    public static function get_workflow_menu_help() {
+        global $CFG;
+        $cwf = empty($CFG->forced_plugin_settings['block_coupon']['claimworkflow']) ?
+                false : ($CFG->forced_plugin_settings['block_coupon']['claimworkflow'] == 2);
+
+        $helpstr = '';
+        $helpstr .= '<li>'.get_string('claimworkflow1_help', 'block_coupon').'</li>';
+        if ($cwf) {
+            $helpstr .= '<li>'.get_string('claimworkflow2_help', 'block_coupon').'</li>';
+        }
+        return $helpstr;
     }
 
 }

@@ -19,7 +19,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -68,13 +68,13 @@
     width: 100%;
     height: 100%;
 }
-.block-coupon-container .mform .form-inline .form-control,
+/*.block-coupon-container .mform .form-inline .form-control,
 .block-coupon-container .mform .form-inline .custom-select {
-    width: 100%; /*oid; do not use 100% due to autocomplete elements!!!!*/
+    width: 100%; oid; do not use 100% due to autocomplete elements!!!!
 }
 .block-coupon-container .mform .form-inline[data-fieldtype="autocomplete"] input.form-control {
-    width: 90%; /*oid; do not use 100% due to autocomplete elements!!!!*/
-}
+    width: 90%; oid; do not use 100% due to autocomplete elements!!!!
+}*/
 [data-block="coupon"] .btn {
     margin-top: 10px;
 }
@@ -85,4 +85,37 @@
 [data-groupname="coupon_groups"] .form-check-inline {
     display: inline;
     margin-left: 20px;
+}
+
+/* REALLY nasty, but i want a full-height modal */
+.modal-dialog:has(form.couponmodal) {
+    min-height: 60vh;
+}
+/* Override layout of autocomplete */
+.path-blocks-coupon .block-coupon-container span[data-fieldtype="autocomplete"] {
+    display: flex !important; /* stylelint-disable-line declaration-no-important */
+    flex-direction: row;
+}
+.path-blocks-coupon .block-coupon-container span[data-fieldtype="autocomplete"] .form-autocomplete-selection {
+    order: 4;
+    margin: unset;
+    min-height: unset;
+}
+.path-blocks-coupon .block-coupon-container span[data-fieldtype="autocomplete"] div:has(input) {
+    order: 1;
+}
+.path-blocks-coupon .block-coupon-container span[data-fieldtype="autocomplete"] .loading-icon {
+    order: 2;
+}
+.path-blocks-coupon .block-coupon-container span[data-fieldtype="autocomplete"] .form-autocomplete-suggestions {
+    /* meh... */
+    margin: 0;
+    padding: 0;
+    top: 2.5rem;
+    border: none;
+}
+.block-coupon-container [data-region="bulkactions"] [data-action],
+.block-coupon-container [data-action="editcourses"],
+.block-coupon-container [data-action="editcohorts"] {
+    cursor: pointer;
 }

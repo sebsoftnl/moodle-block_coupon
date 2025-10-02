@@ -11,11 +11,11 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
+// You should have received a copy of the GNU General Public License`
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * download generated coupons
+ * Download generated coupons
  *
  * File         download.php
  * Encoding     UTF-8
@@ -23,9 +23,10 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require_once(dirname(__FILE__) . '/../../config.php');
 
 use block_coupon\helper;
@@ -55,45 +56,12 @@ $PAGE->set_heading(get_string($heading, 'block_coupon'));
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('standard');
 
-/**
- * Get download.
- *
- * @param string $batchid
- * @param string $timeid
- * @param bool $dodl
- */
-function download($batchid, $timeid, $dodl = false) {
-    global $CFG, $OUTPUT;
-    $basename = "coupons-{$batchid}-{$timeid}";
-    if (file_exists("{$CFG->dataroot}/{$basename}.zip")) {
-        $filename = "{$CFG->dataroot}/{$basename}.zip";
-    } else if (file_exists("{$CFG->dataroot}/{$basename}.pdf")) {
-        $filename = "{$CFG->dataroot}/{$basename}.pdf";
-    } else {
-        $a = (object) [
-                    'batchid' => $batchid,
-                    'timeid' => $timeid,
-        ];
-        throw new block_coupon\exception('err:download-not-exists', $a);
-    }
-
-    if (!$dodl) {
-        $url = new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php', ['bid' => $batchid, 't' => $timeid, 'dl' => 1]);
-        $button = $OUTPUT->single_button($url, get_string('downloadcoupons:buttontext', 'block_coupon'), 'get');
-        echo get_string('downloadcoupons:text', 'block_coupon', $button);
-    } else {
-        helper::dlh(basename($filename), filesize($filename));
-        readfile($filename);
-        unlink($filename);
-    }
-}
-
 try {
     if ((bool) $dodl) {
-        download($batchid, $timeid, true);
+        helper::download($batchid, $timeid, true);
     } else {
         echo $OUTPUT->header();
-        download($batchid, $timeid);
+        helper::download($batchid, $timeid);
         echo $OUTPUT->footer();
     }
 } catch (block_coupon\exception $e) {

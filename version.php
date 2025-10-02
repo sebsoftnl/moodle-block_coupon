@@ -23,15 +23,16 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 $plugin = new stdClass();
-$plugin->version     = 2024020500;
-$plugin->requires    = 2022041900;      // YYYYMMDDHH (This is the release version for Moodle 4.0).
-$plugin->cron        = 0;
+$plugin->version     = 2024100103;
+$plugin->requires    = 2023042400; // YYYYMMDDHH (This is the release version for Moodle 4.2).
 $plugin->component   = 'block_coupon';
+$plugin->cron        = 0;
 $plugin->maturity    = MATURITY_STABLE;
-$plugin->release     = '4.3.2 (build 2024010200)';
-$plugin->dependencies = array();
+$plugin->release     = '4.4.2 (build 2024100103)';
+$plugin->dependencies = [];
+$plugin->supported = [405, 500];

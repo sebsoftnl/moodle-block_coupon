@@ -16,7 +16,7 @@
 /**
  * Preview modal implementation.
  *
- * @copyright  2019 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2019 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

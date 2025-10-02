@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +35,7 @@ namespace block_coupon\tables;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mycoupons extends coupons {
@@ -44,18 +44,18 @@ class mycoupons extends coupons {
      * Define headers and columns.
      */
     protected function define_headers_and_columns() {
-        $columns = array(
+        $columns = [
             'enrolperiod',
             'submission_code',
             'roleid',
-            'batchid'
-        );
-        $headers = array(
+            'batchid',
+        ];
+        $headers = [
             get_string('th:enrolperiod', 'block_coupon'),
             get_string('th:submission_code', 'block_coupon'),
             get_string('th:roleid', 'block_coupon'),
-            get_string('th:batchid', 'block_coupon')
-        );
+            get_string('th:batchid', 'block_coupon'),
+        ];
         if ($this->is_downloading() == '' &&!$this->noactions) {
             $columns[] = 'action';
             $headers[] = get_string('th:action', 'block_coupon');

@@ -93,7 +93,7 @@ class template {
         $sql = "SELECT MAX(sequence) as maxpage
                   FROM {block_coupon_pages} cp
                  WHERE cp.templateid = :templateid";
-        if ($maxpage = $DB->get_record_sql($sql, array('templateid' => $this->id))) {
+        if ($maxpage = $DB->get_record_sql($sql, ['templateid' => $this->id])) {
             $sequence = $maxpage->maxpage + 1;
         }
 
@@ -129,7 +129,7 @@ class template {
         $time = time();
 
         // Get the existing pages and save the page data.
-        if ($pages = $DB->get_records('block_coupon_pages', array('templateid' => $data->tid))) {
+        if ($pages = $DB->get_records('block_coupon_pages', ['templateid' => $data->tid])) {
             // Loop through existing pages.
             foreach ($pages as $page) {
                 // Get the name of the fields we want from the form.
@@ -169,25 +169,25 @@ class template {
             INNER JOIN {block_coupon_pages} p
                     ON e.pageid = p.id
                  WHERE p.templateid = :templateid";
-        if ($elements = $DB->get_records_sql($sql, array('templateid' => $this->id))) {
+        if ($elements = $DB->get_records_sql($sql, ['templateid' => $this->id])) {
             foreach ($elements as $element) {
                 // Get an instance of the element class.
                 if ($e = element_factory::get_element_instance($element)) {
                     $e->delete();
                 } else {
                     // The plugin files are missing, so just remove the entry from the DB.
-                    $DB->delete_records('block_coupon_elements', array('id' => $element->id));
+                    $DB->delete_records('block_coupon_elements', ['id' => $element->id]);
                 }
             }
         }
 
         // Delete the pages.
-        if (!$DB->delete_records('block_coupon_pages', array('templateid' => $this->id))) {
+        if (!$DB->delete_records('block_coupon_pages', ['templateid' => $this->id])) {
             return false;
         }
 
         // Now, finally delete the actual template.
-        if (!$DB->delete_records('block_coupon_templates', array('id' => $this->id))) {
+        if (!$DB->delete_records('block_coupon_templates', ['id' => $this->id])) {
             return false;
         }
 
@@ -205,22 +205,22 @@ class template {
         global $DB;
 
         // Get the page.
-        $page = $DB->get_record('block_coupon_pages', array('id' => $pageid), '*', MUST_EXIST);
+        $page = $DB->get_record('block_coupon_pages', ['id' => $pageid], '*', MUST_EXIST);
 
         // Delete this page.
-        $DB->delete_records('block_coupon_pages', array('id' => $page->id));
+        $DB->delete_records('block_coupon_pages', ['id' => $page->id]);
 
         \block_coupon\event\page_deleted::create_from_page($page, $this)->trigger();
 
         // The element may have some extra tasks it needs to complete to completely delete itself.
-        if ($elements = $DB->get_records('block_coupon_elements', array('pageid' => $page->id))) {
+        if ($elements = $DB->get_records('block_coupon_elements', ['pageid' => $page->id])) {
             foreach ($elements as $element) {
                 // Get an instance of the element class.
                 if ($e = element_factory::get_element_instance($element)) {
                     $e->delete();
                 } else {
                     // The plugin files are missing, so just remove the entry from the DB.
-                    $DB->delete_records('block_coupon_elements', array('id' => $element->id));
+                    $DB->delete_records('block_coupon_elements', ['id' => $element->id]);
                 }
             }
         }
@@ -231,7 +231,7 @@ class template {
                    SET sequence = sequence - 1
                  WHERE templateid = :templateid
                    AND sequence > :sequence";
-        $DB->execute($sql, array('templateid' => $this->id, 'sequence' => $page->sequence));
+        $DB->execute($sql, ['templateid' => $this->id, 'sequence' => $page->sequence]);
 
         \block_coupon\event\template_updated::create_from_template($this)->trigger();
     }
@@ -245,14 +245,14 @@ class template {
         global $DB;
 
         // Ensure element exists and delete it.
-        $element = $DB->get_record('block_coupon_elements', array('id' => $elementid), '*', MUST_EXIST);
+        $element = $DB->get_record('block_coupon_elements', ['id' => $elementid], '*', MUST_EXIST);
 
         // Get an instance of the element class.
         if ($e = element_factory::get_element_instance($element)) {
             $e->delete();
         } else {
             // The plugin files are missing, so just remove the entry from the DB.
-            $DB->delete_records('block_coupon_elements', array('id' => $elementid));
+            $DB->delete_records('block_coupon_elements', ['id' => $elementid]);
         }
 
         // Now we want to decrease the sequence numbers of the elements
@@ -261,7 +261,7 @@ class template {
                    SET sequence = sequence - 1
                  WHERE pageid = :pageid
                    AND sequence > :sequence";
-        $DB->execute($sql, array('pageid' => $element->pageid, 'sequence' => $element->sequence));
+        $DB->execute($sql, ['pageid' => $element->pageid, 'sequence' => $element->sequence]);
 
         \block_coupon\event\template_updated::create_from_template($this)->trigger();
     }
@@ -271,13 +271,13 @@ class template {
      *
      * @param array $coupons generated (or fake) array of coupons.
      * @param bool $preview true if it is a preview, false otherwise
-     * @param int $userid the id of the user whose certificate we want to view
+     * @param int|null $userid the id of the user whose certificate we want to view
      * @param bool $return Do we want to return the contents of the PDF?
      * @param string $relativefilename relative filename (relative to $CFG->dataroot)
      * @return string|void Can return the PDF in string format if specified.
      */
     public function generate_pdf(array $coupons = [], bool $preview = false,
-            int $userid = null, bool $return = false, $relativefilename = null) {
+            ?int $userid = null, bool $return = false, $relativefilename = null) {
         global $CFG, $DB, $USER;
 
         if (empty($userid)) {
@@ -290,7 +290,7 @@ class template {
         require_once($CFG->dirroot . '/blocks/coupon/lib.php');
 
         // Get the pages for the template, there should always be at least one page for each template.
-        if ($pages = $DB->get_records('block_coupon_pages', array('templateid' => $this->id), 'sequence ASC')) {
+        if ($pages = $DB->get_records('block_coupon_pages', ['templateid' => $this->id], 'sequence ASC')) {
             // Create the pdf object.
             $pdf = new \pdf('P', 'mm', 'A4', true, 'UTF-8');
 
@@ -351,9 +351,9 @@ class template {
      * @param array $pages
      * @param array $coupons
      * @param bool $preview
-     * @param int $userid
+     * @param int|null $userid
      */
-    protected function render_pages($pdf, $pages, array $coupons = [], bool $preview = false, int $userid = null) {
+    protected function render_pages($pdf, $pages, array $coupons = [], bool $preview = false, ?int $userid = null) {
         global $DB;
         foreach ($coupons as $coupon) {
             foreach ($pages as $page) {
@@ -363,27 +363,15 @@ class template {
                 } else {
                     $orientation = 'P';
                 }
-                $pdf->AddPage($orientation, array($page->width, $page->height));
+                $pdf->AddPage($orientation, [$page->width, $page->height]);
                 $pdf->SetMargins($page->leftmargin, 0, $page->rightmargin);
                 // Get the elements for the page.
-                if ($elements = $DB->get_records('block_coupon_elements', array('pageid' => $page->id), 'sequence ASC')) {
+                if ($elements = $DB->get_records('block_coupon_elements', ['pageid' => $page->id], 'sequence ASC')) {
                     // Loop through and display.
                     foreach ($elements as $element) {
                         // Get an instance of the element class.
                         if ($e = element_factory::get_element_instance($element)) {
-                            $extradata = null;
-                            switch ($element->element) {
-                                case 'qrcode':
-                                    $extradata = (object)[
-                                        'code' => $coupon->submission_code
-                                    ];
-                                    break;
-                                case 'code':
-                                    $extradata = (object)[
-                                        'code' => $coupon->submission_code
-                                    ];
-                                    break;
-                            }
+                            $extradata = $e->get_extra_data($coupon, $preview);
                             $e->render($pdf, $preview, $userid, $extradata);
                         }
                     }
@@ -403,7 +391,7 @@ class template {
         $copytotemplateid = $copytotemplate->get_id();
 
         // Get the pages for the template, there should always be at least one page for each template.
-        if ($templatepages = $DB->get_records('block_coupon_pages', array('templateid' => $this->id))) {
+        if ($templatepages = $DB->get_records('block_coupon_pages', ['templateid' => $this->id])) {
             // Loop through the pages.
             foreach ($templatepages as $templatepage) {
                 $page = clone($templatepage);
@@ -414,7 +402,7 @@ class template {
                 $page->id = $DB->insert_record('block_coupon_pages', $page);
                 \block_coupon\event\page_created::create_from_page($page, $this)->trigger();
                 // Now go through the elements we want to load.
-                if ($templateelements = $DB->get_records('block_coupon_elements', array('pageid' => $templatepage->id))) {
+                if ($templateelements = $DB->get_records('block_coupon_elements', ['pageid' => $templatepage->id])) {
                     foreach ($templateelements as $templateelement) {
                         $element = clone($templateelement);
                         $element->pageid = $page->id;
@@ -463,7 +451,7 @@ class template {
             $table .= 'elements';
         }
 
-        if ($moveitem = $DB->get_record($table, array('id' => $itemid))) {
+        if ($moveitem = $DB->get_record($table, ['id' => $itemid])) {
             // Check which direction we are going.
             if ($direction == 'up') {
                 $sequence = $moveitem->sequence - 1;
@@ -474,17 +462,17 @@ class template {
             // Get the item we will be swapping with. Make sure it is related to the same template (if it's
             // a page) or the same page (if it's an element).
             if ($itemname == 'page') {
-                $params = array('templateid' => $moveitem->templateid);
+                $params = ['templateid' => $moveitem->templateid];
             } else { // Must be an element.
-                $params = array('pageid' => $moveitem->pageid);
+                $params = ['pageid' => $moveitem->pageid];
             }
-            $swapitem = $DB->get_record($table, $params + array('sequence' => $sequence));
+            $swapitem = $DB->get_record($table, $params + ['sequence' => $sequence]);
         }
 
         // Check that there is an item to move, and an item to swap it with.
         if ($moveitem && !empty($swapitem)) {
-            $DB->set_field($table, 'sequence', $swapitem->sequence, array('id' => $moveitem->id));
-            $DB->set_field($table, 'sequence', $moveitem->sequence, array('id' => $swapitem->id));
+            $DB->set_field($table, 'sequence', $swapitem->sequence, ['id' => $moveitem->id]);
+            $DB->set_field($table, 'sequence', $moveitem->sequence, ['id' => $swapitem->id]);
 
             \block_coupon\event\template_updated::create_from_template($this)->trigger();
         }

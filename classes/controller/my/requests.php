@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +37,7 @@ use html_writer;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @author      Sebastian Berm <sebastian@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -144,7 +144,7 @@ class requests {
             $redirect = $this->get_url(['action' => 'list']);
         }
 
-        $params = array('action' => 'delete', 'itemid' => $itemid);
+        $params = ['action' => 'delete', 'itemid' => $itemid];
         $url = $this->get_url($params);
 
         $instance = $DB->get_record('block_coupon_requests', ['id' => $itemid]);
@@ -156,7 +156,7 @@ class requests {
         $options = [
             get_string('delete:request:header', 'block_coupon', $user),
             $this->renderer->requestdetails($instance),
-            get_string('delete:request:confirmmessage', 'block_coupon', $user)
+            get_string('delete:request:confirmmessage', 'block_coupon', $user),
         ];
         $mform = new \block_coupon\forms\confirmation($url, $options);
         if ($mform->is_cancelled()) {
@@ -199,7 +199,7 @@ class requests {
             $redirect = $this->get_url(['action' => 'list']);
         }
 
-        $params = array('action' => 'newrequest', 't' => 'course');
+        $params = ['action' => 'newrequest', 't' => 'course'];
         $url = $this->get_url($params);
 
         $instance = $DB->get_record('block_coupon_rusers', ['userid' => $USER->id]);
@@ -256,7 +256,7 @@ class requests {
             $redirect = $this->get_url(['action' => 'list']);
         }
 
-        $params = array('action' => 'newrequest', 't' => 'cohort');
+        $params = ['action' => 'newrequest', 't' => 'cohort'];
         $url = $this->get_url($params);
 
         $instance = $DB->get_record('block_coupon_rusers', ['userid' => $USER->id]);

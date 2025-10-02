@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 
@@ -37,7 +37,7 @@ use block_coupon\helper;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cleanup extends \core\task\scheduled_task {
@@ -59,16 +59,16 @@ class cleanup extends \core\task\scheduled_task {
     public function execute() {
         global $DB;
         $config = get_config('block_coupon');
-        $couponids = array();
+        $couponids = [];
         if ((bool)$config->enablecleanup) {
             $timecheck = time() - $config->cleanupage;
             // Remove unused coupons older than xxx.
             $couponids = array_merge($couponids, $DB->get_fieldset_select('block_coupon', 'id',
-                    'userid IS NULL AND timecreated < ? AND (timeexpired IS NULL OR timeexpired = 0)', array($timecheck)));
+                    'userid IS NULL AND timecreated < ? AND (timeexpired IS NULL OR timeexpired = 0)', [$timecheck]));
         }
         // Now clean up expired coupons.
         $couponids = array_merge($couponids, $DB->get_fieldset_select('block_coupon', 'id',
-                'userid IS NULL AND timeexpired IS NOT NULL AND timeexpired < ?', array(time())));
+                'userid IS NULL AND timeexpired IS NOT NULL AND timeexpired < ?', [time()]));
         if (!empty($couponids)) {
             // Delegated transaction to ensure everything is removed.
             $transaction = $DB->start_delegated_transaction();

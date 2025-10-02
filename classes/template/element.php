@@ -18,11 +18,13 @@
  * The base class for the template elements.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace block_coupon\template;
+
+use stdClass;
 
 /**
  * Class element
@@ -30,7 +32,7 @@ namespace block_coupon\template;
  * All template element plugins are based on this class.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class element {
@@ -76,7 +78,7 @@ abstract class element {
     const FD_OVERLINE = 'O';
 
     /**
-     * @var \stdClass $element The data for the element we are adding - do not use, kept for legacy reasons.
+     * @var stdClass $element The data for the element we are adding - do not use, kept for legacy reasons.
      */
     protected $element;
 
@@ -158,7 +160,7 @@ abstract class element {
     /**
      * Constructor.
      *
-     * @param \stdClass $element the element data
+     * @param stdClass $element the element data
      */
     public function __construct($element) {
         $showposxy = (bool)get_config('block_coupon', 'showposxy');
@@ -307,7 +309,7 @@ abstract class element {
      * @throws \InvalidArgumentException if the provided new alignment is not valid.
      */
     protected function set_alignment(string $alignment) {
-        $validvalues = array(self::ALIGN_LEFT, self::ALIGN_CENTER, self::ALIGN_RIGHT);
+        $validvalues = [self::ALIGN_LEFT, self::ALIGN_CENTER, self::ALIGN_RIGHT];
         if (!in_array($alignment, $validvalues)) {
             throw new \InvalidArgumentException("'$alignment' is not a valid alignment value. It has to be one of " .
                 implode(', ', $validvalues));
@@ -352,7 +354,7 @@ abstract class element {
             'posy' => $this->posy,
             'width' => $this->width,
             'refpoint' => $this->refpoint,
-            'alignment' => $this->get_alignment()
+            'alignment' => $this->get_alignment(),
         ];
         foreach ($properties as $property => $value) {
             if (!is_null($value) && $mform->elementExists($property)) {
@@ -372,7 +374,7 @@ abstract class element {
      */
     public function validate_form_elements($data, $files) {
         // Array to return the errors.
-        $errors = array();
+        $errors = [];
 
         // Common validation methods.
         $errors += element_helper::validate_form_element_colour($data);
@@ -388,14 +390,14 @@ abstract class element {
      * Handles saving the form elements created by this element.
      * Can be overridden if more functionality is needed.
      *
-     * @param \stdClass $data the form data
+     * @param stdClass $data the form data
      * @return bool true of success, false otherwise.
      */
     public function save_form_elements($data) {
         global $DB;
 
         // Get the data from the form.
-        $element = new \stdClass();
+        $element = new stdClass();
         $element->name = $data->name;
         $element->data = $this->save_unique_data($data);
         $element->font = $data->font ?? null;
@@ -437,7 +439,7 @@ abstract class element {
      * block_coupon_elements table.
      * Can be overridden if more functionality is needed.
      *
-     * @param \stdClass $data the form data
+     * @param stdClass $data the form data
      * @return string the unique data to save
      */
     public function save_unique_data($data) {
@@ -448,7 +450,7 @@ abstract class element {
      * This handles copying data from another element of the same type.
      * Can be overridden if more functionality is needed.
      *
-     * @param \stdClass $data the form data
+     * @param stdClass $data the form data
      * @return bool returns true if the data was copied successfully, false otherwise
      */
     public function copy_element($data) {
@@ -471,11 +473,11 @@ abstract class element {
      * Must be overridden.
      *
      * @param \pdf $pdf the pdf object
-     * @param bool $preview true if it is a preview, false otherwise
-     * @param \stdClass $user the user we are rendering this for
-     * @param \stdClass $extradata -- expects "code" to be present
+     * @param boolean $preview true if it is a preview, false otherwise
+     * @param stdClass $user the user we are rendering this for
+     * @param stdClass|null $extradata -- expects "code" to be present
      */
-    abstract public function render($pdf, $preview, $user, \stdClass $extradata = null);
+    abstract public function render($pdf, $preview, $user, ?stdClass $extradata = null);
 
     /**
      * Render the element in html.
@@ -498,7 +500,7 @@ abstract class element {
     public function delete() {
         global $DB;
 
-        $return = $DB->delete_records('block_coupon_elements', array('id' => $this->id));
+        $return = $DB->delete_records('block_coupon_elements', ['id' => $this->id]);
 
         \block_coupon\event\element_deleted::create_from_element($this)->trigger();
 
@@ -568,6 +570,17 @@ abstract class element {
      */
     public function is_visible_in_html_view() {
         return true;
+    }
+
+    /**
+     * Get/load extra data that's needed for this element.
+     *
+     * @param stdClass $coupon
+     * @param bool $preview whether or not we're in preview mode
+     * @return null
+     */
+    public function get_extra_data($coupon, bool $preview) {
+        return null;
     }
 
 }

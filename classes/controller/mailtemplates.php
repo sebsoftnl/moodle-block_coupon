@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +37,7 @@ use html_writer;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mailtemplates {
@@ -122,9 +122,9 @@ class mailtemplates {
         }
 
         if (empty($id)) {
-            $params = array('action' => 'add');
+            $params = ['action' => 'add'];
         } else {
-            $params = array('action' => 'edit', 'tid' => $id);
+            $params = ['action' => 'edit', 'tid' => $id];
         }
         $url = $this->get_url($params);
 
@@ -143,7 +143,7 @@ class mailtemplates {
         $instancedata = clone $instance;
         $instancedata->body = [
             'text' => $instancedata->body,
-            'format' => $instancedata->bodyformat
+            'format' => $instancedata->bodyformat,
         ];
         $mform->set_data($instancedata);
 

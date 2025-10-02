@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<COMPATIBILITY_MATRIX>
+    <PLUGIN name="block_coupon">
+        <PHP version="8.0.0" level="required"/>
+    </PLUGIN>
+</COMPATIBILITY_MATRIX>

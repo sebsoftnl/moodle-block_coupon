@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 
@@ -37,7 +37,7 @@ use block_coupon\helper;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class sendcoupons extends \core\task\scheduled_task {
@@ -67,10 +67,10 @@ class sendcoupons extends \core\task\scheduled_task {
             case 'oracle':
                 // Thanks goes out to: Wade Colclough from Zuken Limited and their team.
                 $sql = "SELECT batchid FROM(
-                        SELECT batchid FROM {block_coupon}
-                        WHERE senddate < ? AND issend = 0 AND for_user_email IS NOT NULL
-                        ORDER BY timecreated ASC
-                    ) where ROWNUM = 1";
+                    SELECT batchid FROM {block_coupon}
+                    WHERE senddate < ? AND issend = 0 AND for_user_email IS NOT NULL
+                    ORDER BY timecreated ASC
+                ) where ROWNUM = 1";
                 break;
             default:
                 $sql = "SELECT batchid FROM {block_coupon}
@@ -123,11 +123,11 @@ class sendcoupons extends \core\task\scheduled_task {
         }
 
         // Check batch completed.
-        $conditions = array(
+        $conditions = [
             'issend' => 0,
             'ownerid' => $ownerid,
-            'batchid' => $batchid
-        );
+            'batchid' => $batchid,
+        ];
         $batchcomplete = ($DB->count_records('block_coupon', $conditions) === 0);
         if ($batchcomplete) {
             // Mail confirmation.

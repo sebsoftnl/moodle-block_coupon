@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // Login_check is done in couponpage class.
@@ -38,7 +38,7 @@ if (empty($cid)) {
     $course = get_site();
     $context = \context_system::instance();
 } else {
-    $course = $DB->get_record('course', array('id' => $cid));
+    $course = $DB->get_record('course', ['id' => $cid]);
     $context = \context_course::instance($cid);
 }
 
@@ -55,7 +55,7 @@ $page = couponpage::setup(
     [
         'pagelayout' => 'report',
         'title' => $title,
-        'heading' => $heading
+        'heading' => $heading,
     ]
 );
 

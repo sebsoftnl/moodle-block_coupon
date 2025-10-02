@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +37,7 @@ use block_coupon\forms\baseform;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class courseusers extends baseform {
@@ -67,7 +67,7 @@ class courseusers extends baseform {
 
             // User selection.
             $mform->addElement('static', '_extendusers', '', get_string('label:extendusers:desc', 'block_coupon'));
-            $attributes = array('size' => min(10, max(4, count($users))));
+            $attributes = ['size' => min(10, max(4, count($users)))];
             $select = $mform->addElement('select', 'extendusers',
                     get_string('label:users', 'block_coupon'), $users, $attributes);
             $select->setMultiple(true);
@@ -97,13 +97,13 @@ class courseusers extends baseform {
      *
      * @param array $courseids
      * @param string $withcapability
-     * @param bool $manualenrolmentsonly
+     * @param boolean $manualenrolmentsonly
      * @return array
      */
     protected function get_course_users($courseids, $withcapability = '', $manualenrolmentsonly = true) {
         global $DB;
         if (!is_array($courseids)) {
-            $courseids = array($courseids);
+            $courseids = [$courseids];
         }
 
         $rs = [];

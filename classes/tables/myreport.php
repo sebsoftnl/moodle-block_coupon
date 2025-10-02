@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +35,7 @@ namespace block_coupon\tables;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class myreport extends report {
@@ -44,7 +44,7 @@ class myreport extends report {
      * Define headers and columns.
      */
     protected function define_headers_and_columns() {
-        $columns = array(
+        $columns = [
             'fullname',
             'submission_code',
             'coursename',
@@ -52,8 +52,8 @@ class myreport extends report {
             'status',
             'datestart',
             'datecomplete',
-            'grade'
-        );
+            'grade',
+        ];
         $this->define_table_columns($columns);
     }
 

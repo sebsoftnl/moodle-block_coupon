@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +38,7 @@ use block_coupon\coupon\typebase;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursegroupingchoosecourse {
@@ -125,7 +125,7 @@ class coursegroupingchoosecourse {
         $customdata = [
             $courses,
             $coursegrouping,
-            $typeproc
+            $typeproc,
         ];
         $mform = new \block_coupon\forms\coursechooser($url, $customdata);
         if ($mform->is_cancelled()) {

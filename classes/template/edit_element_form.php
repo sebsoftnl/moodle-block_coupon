@@ -18,7 +18,7 @@
  * This file contains the form for handling editing a template element.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +35,7 @@ require_once($CFG->dirroot . '/lib/formslib.php');
  * The form for handling editing a template element.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_element_form extends \moodleform {
@@ -51,7 +51,7 @@ class edit_element_form extends \moodleform {
     public function definition() {
         $mform =& $this->_form;
 
-        $mform->updateAttributes(array('id' => 'editelementform'));
+        $mform->updateAttributes(['id' => 'editelementform']);
 
         $element = $this->_customdata['element'];
 
@@ -84,7 +84,7 @@ class edit_element_form extends \moodleform {
      * @return array the errors that were found
      */
     public function validation($data, $files) {
-        $errors = array();
+        $errors = [];
 
         if (\core_text::strlen($data['name']) > 255) {
             $errors['name'] = get_string('nametoolong', 'block_coupon');

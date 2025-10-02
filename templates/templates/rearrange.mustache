@@ -39,7 +39,7 @@
             "class": "",
             "refpoint": "",
             "visible": true,
-            "renderer": "<div>Rendered element</div>"
+            "rendered": "<div>Rendered element</div>"
         }]
     }
 }}
@@ -65,9 +65,9 @@
         </div>
         <div id="right-container" class="right-container ml-2">
             <ul class="list-inline">
-                <li><label><input type="checkbox" name="show-el-all" value="1" data-action="shelall" data-id="{{id}}" checked/> {{#str}}showall{{/str}}</label></li>
+                <li><label><input type="checkbox" name="show-el-all" value="1" data-action="shelall" data-id="{{id}}" checked> {{#str}}showall{{/str}}</label></li>
                 {{#elements}}
-                    <li><label><input type="checkbox" name="show-el-{{id}}" value="1" data-action="shel" data-id="{{id}}" {{#visible}}checked{{/visible}} {{^visible}}disabled{{/visible}}/> {{name}}</label></li>
+                    <li><label><input type="checkbox" name="show-el-{{id}}" value="1" data-action="shel" data-id="{{id}}" {{#visible}}checked{{/visible}} {{^visible}}disabled{{/visible}}> {{name}}</label></li>
                 {{/elements}}
             </ul>
         </div>

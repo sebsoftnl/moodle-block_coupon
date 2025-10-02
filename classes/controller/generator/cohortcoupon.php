@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,7 +41,7 @@ use block_coupon\coupon\generatoroptions;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cohortcoupon {
@@ -129,7 +129,7 @@ class cohortcoupon {
 
         if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             $generatoroptions->ownerid = $USER->id;
             $generatoroptions->type = generatoroptions::COHORT;
@@ -166,7 +166,7 @@ class cohortcoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             // Check if a course is selected.
             if (isset($data->connect_courses)) {
@@ -178,8 +178,8 @@ class cohortcoupon {
                     // Loop over all courses selected for this cohort.
                     foreach ($courses as $courseid) {
                         // And enroll the shizzle.
-                        $course = $DB->get_record('course', array('id' => $courseid));
-                        $id = $enrol->add_instance($course, array('customint1' => $cohortid, 'roleid' => $roleid));
+                        $course = $DB->get_record('course', ['id' => $courseid]);
+                        $id = $enrol->add_instance($course, ['customint1' => $cohortid, 'roleid' => $roleid]);
                         $instance = $DB->get_record('enrol', ['id' => $id]);
                         $data->enrolperiod = $generatoroptions->enrolperiod;
                         // Supresses notifications from cohort enrol lib.
@@ -219,7 +219,7 @@ class cohortcoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             $generatoroptions->generatormethod = $data->showform;
 
@@ -239,7 +239,7 @@ class cohortcoupon {
      * Process page 4
      */
     protected function process_page_4() {
-        global $CFG, $USER, $DB;
+        global $CFG;
         $url = $this->get_url(['page' => '4']);
 
         // Load generator options.
@@ -252,7 +252,7 @@ class cohortcoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             // These settings are always the same.
             if (!empty($data->batchid)) {
@@ -308,7 +308,7 @@ class cohortcoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             $generatoroptions->generatesinglepdfs = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
             $generatoroptions->pdftype = $data->usetype;
@@ -359,7 +359,7 @@ class cohortcoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($mform->no_submit_button_pressed()) {
             $tplid = $mform->optional_param('tplload', 0, PARAM_INT);
             if (!empty($tplid)) {
@@ -421,7 +421,7 @@ class cohortcoupon {
      * Process page 5
      */
     protected function process_page_7() {
-        global $CFG, $DB;
+        global $CFG;
         $url = $this->get_url(['page' => '7']);
 
         // Load generator options.
@@ -438,7 +438,7 @@ class cohortcoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
 
             // Get recipients.
@@ -493,7 +493,7 @@ class cohortcoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             // There is no data, only processing.
             $generatoroptions->to_session();

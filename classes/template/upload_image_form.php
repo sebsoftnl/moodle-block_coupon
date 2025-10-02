@@ -18,7 +18,7 @@
  * This file contains the class that handles uploading files.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,13 +32,13 @@ require_once($CFG->libdir.'/formslib.php');
  * Handles uploading files.
  *
  * @package    block_coupon
- * @copyright  2023 R.J. van Dongen <rogier@sebsoft.nl>
+ * @copyright  2023 RvD <helpdesk@sebsoft.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class upload_image_form extends \moodleform {
 
     /** @var array the filemanager options */
-    protected $filemanageroptions = array();
+    protected $filemanageroptions = [];
 
     /**
      * Form definition.
@@ -47,10 +47,11 @@ class upload_image_form extends \moodleform {
         global $CFG;
 
         $mform = $this->_form;
-        $this->filemanageroptions = array(
+        $this->filemanageroptions = [
             'maxbytes' => $CFG->maxbytes,
             'subdirs' => 1,
-            'accepted_types' => 'image');
+            'accepted_types' => 'image',
+        ];
         $mform->addElement('filemanager', 'templateimage', get_string('uploadimage', 'block_coupon'), '',
             $this->filemanageroptions);
 

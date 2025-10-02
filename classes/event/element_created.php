@@ -73,16 +73,16 @@ class element_created extends \core\event\base {
      * @param \block_coupon\template\element $element
      * @return element_created
      */
-    public static function create_from_element(\block_coupon\template\element $element) : element_created {
+    public static function create_from_element(\block_coupon\template\element $element): element_created {
         global $DB;
 
         $page = $DB->get_record('block_coupon_pages', ['id' => $element->get_pageid()]);
         $template = $DB->get_record('block_coupon_templates', ['id' => $page->templateid]);
 
-        $data = array(
+        $data = [
             'contextid' => $template->contextid,
             'objectid' => $element->get_id(),
-        );
+        ];
 
         return self::create($data);
     }
@@ -95,8 +95,7 @@ class element_created extends \core\event\base {
         if ($this->contextlevel == \context_system::instance()->contextlevel) {
             return new \moodle_url('/blocks/coupon/manage_templates.php');
         } else {
-            return new \moodle_url('/blocks/coupon/view.php',
-                array('id' => $this->contextinstanceid));
+            return new \moodle_url('/blocks/coupon/view.php', ['id' => $this->contextinstanceid]);
         }
     }
 
@@ -106,7 +105,7 @@ class element_created extends \core\event\base {
      * @return string[]
      */
     public static function get_objectid_mapping() {
-        return array('db' => 'block_coupon_elements', 'restore' => 'block_coupon_elements');
+        return ['db' => 'block_coupon_elements', 'restore' => 'block_coupon_elements'];
     }
 
     /**

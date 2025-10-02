@@ -24,7 +24,7 @@
  *
  * @copyright   1999 Martin Dougiamas  http://dougiamas.com
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 
@@ -40,7 +40,7 @@ require_once($CFG->dirroot.'/user/filters/lib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class couponcourseselect extends \user_filter_type {
@@ -62,9 +62,10 @@ class couponcourseselect extends \user_filter_type {
      * @return array of comparison operators
      */
     public function get_operators() {
-        return array(0 => get_string('isequalto', 'filters'),
-                     1 => get_string('isnotequalto', 'filters')
-            );
+        return [
+            0 => get_string('isequalto', 'filters'),
+            1 => get_string('isnotequalto', 'filters'),
+        ];
     }
 
     /**
@@ -73,7 +74,7 @@ class couponcourseselect extends \user_filter_type {
      */
     public function get_coursemenu() {
         global $DB;
-        return array(0 => '...') + $DB->get_records_menu('course', null, 'fullname ASC', 'id,fullname');
+        return [0 => '...'] + $DB->get_records_menu('course', null, 'fullname ASC', 'id,fullname');
     }
 
     /**
@@ -89,7 +90,7 @@ class couponcourseselect extends \user_filter_type {
         if (count($courses) <= 1) {
             return;
         }
-        $objs = array();
+        $objs = [];
         $objs['select'] = $mform->createElement('select', $this->_name.'_op', null, $this->get_operators());
         $objs['value'] = $mform->createElement('select', $this->_name, null, $courses);
         $objs['select']->setLabel(get_string('limiterfor', 'filters', $this->_label));
@@ -112,7 +113,7 @@ class couponcourseselect extends \user_filter_type {
         $field    = $this->_name;
         $operator = $field.'_op';
 
-        if (array_key_exists($operator, (array)$formdata)) {
+        if (property_exists($formdata, $operator)) {
             if (empty($formdata->$field)) {
                 // No data - no change except for empty filter.
                 return false;
@@ -122,7 +123,7 @@ class couponcourseselect extends \user_filter_type {
             if (isset($formdata->$field)) {
                 $fieldvalue = $formdata->$field;
             }
-            return array('operator' => (int)$formdata->$operator, 'value' => $fieldvalue);
+            return ['operator' => (int)$formdata->$operator, 'value' => $fieldvalue];
         }
 
         return false;
@@ -140,7 +141,7 @@ class couponcourseselect extends \user_filter_type {
         $operator = $data['operator'];
         $value    = $data['value'];
 
-        $params = array();
+        $params = [];
 
         if ($value === '') {
             return '';
@@ -159,10 +160,9 @@ class couponcourseselect extends \user_filter_type {
                 return '';
         }
 
-        $sql = "{$this->fieldid} IN (SELECT couponid
-                FROM {block_coupon_courses} cc
-                WHERE $res)";
-        return array($sql, $params);
+        $sql = "{$this->fieldid} IN (SELECT couponid FROM {block_coupon_courses} cc WHERE $res)";
+
+        return [$sql, $params];
     }
 
     /**

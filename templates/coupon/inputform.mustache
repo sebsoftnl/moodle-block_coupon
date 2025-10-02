@@ -1,0 +1,40 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_coupon/coupon/inputform
+
+    Coupon input form.
+
+    Example context (json):
+    {
+        "urlinputcoupon": "#",
+        "btnclass": "btn btn-primary",
+        "instanceid": 0,
+        "sesskey": "12345"
+    }
+}}
+<form action="{{urlinputcoupon}}" method="post">
+    <table>
+        <tr><td>{{#str}}label:enter_coupon_code, block_coupon{{/str}}:</td></tr>
+        <tr><td><input type="text" name="coupon_code"></td></tr>
+        <tr><td><input type="submit" name="submitbutton" value="{{#str}}button:submit_coupon_code, block_coupon{{/str}}" class="{{btnclass}}"></td></tr>
+    </table>
+    <input type="hidden" name="id" value="{{instanceid}}">
+    <input type="hidden" name="submitbutton" value="Submit Coupon">
+    <input type="hidden" name="_qf__block_coupon_forms_coupon_validator" value="1">
+    <input type="hidden" name="sesskey" value="{{sesskey}}">
+</form>

@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cleanup extends \moodleform {
@@ -48,6 +48,16 @@ class cleanup extends \moodleform {
      * form definition
      */
     public function definition() {
+        global $CFG;
+
+        // Register elements.
+        $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcourses.php';
+        \MoodleQuickForm::registerElementType('findcourses', $path, '\block_coupon\forms\element\findcourses');
+        $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcohorts.php';
+        \MoodleQuickForm::registerElementType('findcohorts', $path, '\block_coupon\forms\element\findcohorts');
+        $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/findbatches.php';
+        \MoodleQuickForm::registerElementType('findbatches', $path, '\block_coupon\forms\element\findbatches');
+
         $mform = & $this->_form;
 
         $mform->addElement('header', 'header', get_string('coupon:cleanup:heading', 'block_coupon'));
@@ -63,55 +73,47 @@ class cleanup extends \moodleform {
         }
 
         // Which coupons.
-        $options = array(
+        $options = [
             0 => get_string('coupon:type:all', 'block_coupon'),
             1 => get_string('course'),
             2 => get_string('cohort', 'core_cohort'),
             3 => get_string('th:batchid', 'block_coupon'),
-        );
+        ];
         $select = $mform->addElement('select', 'type', get_string('coupon:type', 'block_coupon'), $options);
+        $select->setMultiple(false);
         $mform->setDefault('type', 0);
 
         // Usage selection.
-        $options = array(
+        $options = [
             0 => get_string('coupon:used:all', 'block_coupon'),
             1 => get_string('coupon:used:yes', 'block_coupon'),
-            2 => get_string('coupon:used:no', 'block_coupon')
-        );
+            2 => get_string('coupon:used:no', 'block_coupon'),
+        ];
         $select = $mform->addElement('select', 'used', get_string('coupon:used', 'block_coupon'), $options);
         $mform->setDefault('used', 1);
 
         // Date selection.
-        $dateoptions = array(
+        $dateoptions = [
             'startyear' => 1970,
             'stopyear'  => date('Y') + 1,
             'timezone'  => 99,
-            'optional'  => true
-        );
+            'optional'  => true,
+        ];
         $mform->addElement('date_selector', 'timebefore', get_string('timebefore', 'block_coupon'), $dateoptions);
         $mform->addElement('date_selector', 'timeafter', get_string('timeafter', 'block_coupon'), $dateoptions);
 
         // Course selector.
-        $courses = \block_coupon\helper::get_coupon_course_menu();
-        $attributes = array('size' => min(max(0, count($courses)), 10));
-        $courseselect = $mform->addElement('select', 'course', get_string('th:course', 'block_coupon'), $courses, $attributes);
-        $courseselect->setMultiple(true);
+        $mform->addElement('findcourses', 'course', get_string('th:course', 'block_coupon'), ['multiple' => true]);
 
         // Cohort selector.
-        $cohorts = \block_coupon\helper::get_coupon_cohort_menu();
-        $attributes = array('size' => min(max(0, count($cohorts)), 10));
-        $cohortselect = $mform->addElement('select', 'cohort', get_string('th:cohorts', 'block_coupon'), $cohorts, $attributes);
-        $cohortselect->setMultiple(true);
+        $mform->addElement('findcohorts', 'cohort', get_string('th:cohorts', 'block_coupon'), ['multiple' => true]);
 
         // Batch selector.
-        $batches = \block_coupon\helper::get_coupon_batch_menu();
-        $attributes = array('size' => min(max(0, count($batches)), 10));
-        $batchselect = $mform->addElement('select', 'batchid', get_string('th:batchid', 'block_coupon'), $batches, $attributes);
-        $batchselect->setMultiple(true);
+        $mform->addElement('findbatches', 'batchid', get_string('th:batchid', 'block_coupon'), ['multiple' => true]);
 
-        $mform->disabledIf('course', 'type', 'neq', 1);
-        $mform->disabledIf('cohort', 'type', 'neq', 2);
-        $mform->disabledIf('batchid', 'type', 'neq', 3);
+        $mform->hideIf('course[]', 'type', 'neq', 1);
+        $mform->hideIf('cohort[]', 'type', 'neq', 2);
+        $mform->hideIf('batchid[]', 'type', 'neq', 3);
 
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'));
     }

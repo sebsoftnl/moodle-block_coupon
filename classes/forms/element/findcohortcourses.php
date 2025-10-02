@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Courses selector field.
  *
@@ -22,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace block_coupon\forms\element;
@@ -41,7 +42,7 @@ require_once($CFG->libdir . '/form/autocomplete.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class findcohortcourses extends findcourses {
@@ -62,12 +63,12 @@ class findcohortcourses extends findcourses {
      *                       Valid options are:
      *                       - multiple bool Whether or not the field accepts more than one values.
      */
-    public function __construct($elementname = null, $elementlabel = null, $cohortid = null, $options = array()) {
+    public function __construct($elementname = null, $elementlabel = null, $cohortid = null, $options = []) {
         $this->cohortid = $cohortid;
-        $validattributes = array(
+        $validattributes = [
             'ajax' => 'block_coupon/findcohortcourses',
-            'multiple' => true
-        );
+            'multiple' => true,
+        ];
         if (!empty($options['multiple'])) {
             $validattributes['multiple'] = 'multiple';
         }
@@ -80,7 +81,7 @@ class findcohortcourses extends findcourses {
         $validattributes['noselectionstring'] = get_string('findcohortcourses:noselectionstring', 'block_coupon');
         $validattributes['showsuggestions'] = true;
         $validattributes['data-cohortid'] = $this->cohortid;
-        MoodleQuickForm_autocomplete::__construct($elementname, $elementlabel, array(), $validattributes);
+        MoodleQuickForm_autocomplete::__construct($elementname, $elementlabel, [], $validattributes);
     }
 
     /**
@@ -101,7 +102,7 @@ class findcohortcourses extends findcourses {
         $this->selectedset = true;
 
         $values = (array) $value;
-        $ids = array();
+        $ids = [];
         foreach ($values as $onevalue) {
             if (!empty($onevalue) && (!$this->optionExists($onevalue)) &&
                     ($onevalue !== '_qf__force_multiselect_submission')) {
@@ -112,7 +113,7 @@ class findcohortcourses extends findcourses {
             return;
         }
         // Logic here is simulating API.
-        $toselect = array();
+        $toselect = [];
         $courses = $this->load_courses();
         foreach ($courses as $id => $coursefullname) {
             $optionname = $coursefullname;
@@ -124,7 +125,7 @@ class findcohortcourses extends findcourses {
     }
 
     /**
-     * Load courses based on cohorot setting.
+     * Load courses based on cohort setting.
      *
      * @return array
      */
@@ -135,7 +136,14 @@ class findcohortcourses extends findcourses {
         $courses = [];
         if ($unconnectedcourses) {
             foreach ($unconnectedcourses as $course) {
-                $courses[$course->id] = $course->fullname;
+                $courses[$course->id] = format_string(
+                    $course->fullname,
+                    true,
+                    [
+                        'filter' => true,
+                        'context' => \context_course::instance($course->id),
+                    ]
+                );
             }
         }
         return $courses;

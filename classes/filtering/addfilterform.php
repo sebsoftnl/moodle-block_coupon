@@ -24,7 +24,7 @@
  *
  * @copyright   1999 Martin Dougiamas  http://dougiamas.com
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 
@@ -41,7 +41,7 @@ require_once($CFG->dirroot . '/lib/formslib.php');
  *
  * @copyright   1999 Martin Dougiamas  http://dougiamas.com
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class addfilterform extends \moodleform {

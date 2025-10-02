@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +38,7 @@ use block_coupon\helper;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cgvars extends baseform {
@@ -65,13 +65,14 @@ class cgvars extends baseform {
         // Role id.
         $selectrole = &$mform->addElement('select', 'coupon_role',
                 get_string('label:coupon_role', 'block_coupon'), $roles, $attributes);
+        $selectrole->setMultiple(false);
         $mform->setDefault('coupon_role', helper::get_default_coupon_role()->id);
         $mform->addHelpButton('coupon_role', 'label:coupon_role', 'block_coupon');
 
         // Configurable enrolment time.
         $mform->addElement('duration', 'enrolment_period',
-                get_string('label:enrolment_period', 'block_coupon'), array('size' => 40, 'optional' => true));
-        $mform->setDefault('enrolment_period', '0');
+                get_string('label:enrolment_period', 'block_coupon'), ['size' => 40, 'optional' => true]);
+        $mform->setDefault('enrolment_period', get_config('block_coupon', 'defaultenrolmentperiod'));
         $mform->addHelpButton('enrolment_period', 'label:enrolment_period', 'block_coupon');
 
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'));

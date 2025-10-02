@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class downloadbatchlist extends \table_sql {
@@ -109,10 +109,10 @@ class downloadbatchlist extends \table_sql {
      * @param string $fields
      * @param string $from
      * @param string $where
-     * @param array $params
+     * @param array|null $params
      * @throws exception
      */
-    public function set_sql($fields, $from, $where, array $params = null) {
+    public function set_sql($fields, $from, $where, ?array $params = null) {
         // We'll disable this method.
         throw new exception('err:statustable:set_sql');
     }
@@ -121,11 +121,11 @@ class downloadbatchlist extends \table_sql {
      * Display the general status log table.
      *
      * @param int $pagesize
-     * @param bool $useinitialsbar
+     * @param boolean $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
         global $CFG, $DB;
-        $columns = array('tid', 'batchid', 'owner');
+        $columns = ['tid', 'batchid', 'owner'];
         if ($this->is_downloading() == '') {
             $columns[] = 'action';
         }
@@ -207,13 +207,13 @@ class downloadbatchlist extends \table_sql {
      */
     public function col_action($row) {
         global $CFG;
-        $actions = array();
+        $actions = [];
 
         global $PAGE;
         $renderer = $PAGE->get_renderer('block_coupon');
         $actions[] = $renderer->action_icon(
                 new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php',
-                array('bid' => $row->batchid, 't' => $row->tid)),
+                ['bid' => $row->batchid, 't' => $row->tid]),
                 new \image_icon('i/down', $this->strdownload, 'moodle', ['class' => 'icon']),
                 null,
                 ['alt' => $this->strdownload, 'target' => '_new'], $linktext = '');
@@ -229,7 +229,7 @@ class downloadbatchlist extends \table_sql {
      */
     protected function define_table_columns($columns) {
         $this->define_columns($columns);
-        $headers = array();
+        $headers = [];
         foreach ($columns as $name) {
             $headers[] = get_string('th:' . $name, 'block_coupon');
         }

@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +38,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class confirmation extends \moodleform {
@@ -54,7 +54,7 @@ class confirmation extends \moodleform {
         $mform->addElement('header', 'xhead1', $headertext);
         $mform->addElement('static', 'xstaticdesc1', '', $description);
 
-        $mform->addElement('advcheckbox', 'confirm', '', $confirmmessage, null, array(0, 1));
+        $mform->addElement('advcheckbox', 'confirm', '', $confirmmessage, null, [0, 1]);
         $mform->setType('confirm', PARAM_BOOL);
 
         $this->add_action_buttons(true, get_string('button:continue', 'block_coupon'));

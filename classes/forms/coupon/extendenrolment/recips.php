@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +37,7 @@ use block_coupon\forms\baseform;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class recips extends baseform {
@@ -64,7 +64,7 @@ class recips extends baseform {
 
             // Email address to mail to.
             $mform->addElement('text', 'alternative_email',
-                    get_string('label:alternative_email', 'block_coupon'), array('size' => 40));
+                    get_string('label:alternative_email', 'block_coupon'), ['size' => 40]);
             $mform->setType('alternative_email', PARAM_EMAIL);
             $mform->setDefault('alternative_email', $alternativeemail);
             $mform->addRule('alternative_email', get_string('error:invalid_email', 'block_coupon'), 'email', null);
@@ -77,15 +77,15 @@ class recips extends baseform {
 
             \block_coupon\emailtemplates::add_form_element($mform);
             $mform->addElement('editor', 'email_body_manual',
-                    get_string('label:email_body', 'block_coupon'), array('noclean' => 1));
+                    get_string('label:email_body', 'block_coupon'), ['noclean' => 1]);
             $mform->setType('email_body_manual', PARAM_RAW);
-            $mform->setDefault('email_body_manual', array('text' => $mailcontentdefault));
+            $mform->setDefault('email_body_manual', ['text' => $mailcontentdefault]);
             $mform->addRule('email_body_manual', get_string('required'), 'required');
             $mform->addHelpButton('email_body_manual', 'label:email_body', 'block_coupon');
         }
 
         // Configurable enrolment time.
-        $options = array('optional' => true);
+        $options = ['optional' => true];
         $mform->addElement('date_selector', 'date_send_coupons_manual',
                 get_string('label:date_send_coupons', 'block_coupon'), $options);
         $mform->addHelpButton('date_send_coupons_manual', 'label:date_send_coupons', 'block_coupon');

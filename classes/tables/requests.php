@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,7 +39,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class requests extends \table_sql {
@@ -106,10 +106,10 @@ class requests extends \table_sql {
      * @param string $fields
      * @param string $from
      * @param string $where
-     * @param array $params
+     * @param array|null $params
      * @throws exception
      */
-    public function set_sql($fields, $from, $where, array $params = null) {
+    public function set_sql($fields, $from, $where, ?array $params = null) {
         // We'll disable this method.
         throw new exception('err:statustable:set_sql');
     }
@@ -118,10 +118,10 @@ class requests extends \table_sql {
      * Display the general status log table.
      *
      * @param int $pagesize
-     * @param bool $useinitialsbar
+     * @param boolean $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
-        $columns = array('fullname', 'timecreated');
+        $columns = ['fullname', 'timecreated'];
         if ($this->is_downloading() == '') {
             $columns[] = 'action';
         }
@@ -132,9 +132,7 @@ class requests extends \table_sql {
                 \block_coupon\helper::get_all_user_name_fields(true, 'u') . ', NULL as action';
         $from = '{block_coupon_requests} cu ';
         $from .= 'JOIN {user} u ON cu.userid=u.id ';
-        $where = [
-            'finalized = 0'
-        ];
+        $where = ['finalized = 0'];
         $params = [];
         // Add filtering rules.
         if (!empty($this->filtering)) {
@@ -181,7 +179,7 @@ class requests extends \table_sql {
      */
     public function col_action($row) {
         global $OUTPUT;
-        $actions = array();
+        $actions = [];
 
         $deny = \html_writer::link(new \moodle_url($this->baseurl,
                 ['action' => 'denyrequest', 'itemid' => $row->id, 'sesskey' => sesskey()]),
@@ -212,7 +210,7 @@ class requests extends \table_sql {
      *
      * @param \stdClass $row
      * @param string $action
-     * @param bool $confirm true to enable javascript confirmation of this action
+     * @param boolean $confirm true to enable javascript confirmation of this action
      * @return string link representing the action with an image
      */
     protected function get_action($row, $action, $confirm = false) {
@@ -223,7 +221,7 @@ class requests extends \table_sql {
             $onclick = ' onclick="return confirm(\'' . $this->{$actionconfirmstr} . '\');"';
         }
         return '<a ' . $onclick . 'href="' . new \moodle_url($this->baseurl,
-                array('action' => $action, 'itemid' => $row->id, 'sesskey' => sesskey())) .
+                ['action' => $action, 'itemid' => $row->id, 'sesskey' => sesskey()]) .
                 '" alt="' . $this->{$actionstr} .
                 '">' . $this->get_action_image($action) . '</a>';
     }
@@ -236,7 +234,7 @@ class requests extends \table_sql {
      */
     protected function define_table_columns($columns) {
         $this->define_columns($columns);
-        $headers = array();
+        $headers = [];
         foreach ($columns as $name) {
             $headers[] = get_string('th:' . $name, 'block_coupon');
         }

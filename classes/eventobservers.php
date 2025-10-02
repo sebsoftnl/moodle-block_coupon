@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 
@@ -35,7 +35,7 @@ namespace block_coupon;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class eventobservers {
@@ -47,11 +47,11 @@ class eventobservers {
      */
     public static function course_deleted(\core\event\course_deleted $event) {
         global $DB;
-        $couponids = $DB->get_fieldset_select('block_coupon_courses', 'DISTINCT couponid', 'courseid = ?', array($event->objectid));
+        $couponids = $DB->get_fieldset_select('block_coupon_courses', 'DISTINCT couponid', 'courseid = ?', [$event->objectid]);
         if (empty($couponids)) {
             return;
         }
-        $DB->delete_records('block_coupon_courses', array('courseid' => $event->objectid));
+        $DB->delete_records('block_coupon_courses', ['courseid' => $event->objectid]);
 
         list($insql, $params) = $DB->get_in_or_equal($couponids);
         $remainingcouponids = $DB->get_fieldset_select('block_coupon_courses', 'DISTINCT couponid', 'couponid '.$insql, $params);
@@ -68,11 +68,11 @@ class eventobservers {
      */
     public static function cohort_deleted(\core\event\cohort_deleted $event) {
         global $DB;
-        $couponids = $DB->get_fieldset_select('block_coupon_cohorts', 'DISTINCT couponid', 'cohortid = ?', array($event->objectid));
+        $couponids = $DB->get_fieldset_select('block_coupon_cohorts', 'DISTINCT couponid', 'cohortid = ?', [$event->objectid]);
         if (empty($couponids)) {
             return;
         }
-        $DB->delete_records('block_coupon_cohorts', array('cohortid' => $event->objectid));
+        $DB->delete_records('block_coupon_cohorts', ['cohortid' => $event->objectid]);
 
         list($insql, $params) = $DB->get_in_or_equal($couponids);
         $remainingcouponids = $DB->get_fieldset_select('block_coupon_cohorts', 'DISTINCT couponid', 'couponid '.$insql, $params);
@@ -89,8 +89,8 @@ class eventobservers {
      */
     public static function user_deleted(\core\event\user_deleted $event) {
         global $DB;
-        $DB->delete_records('block_coupon_rusers', array('userid' => $event->objectid));
-        $DB->delete_records('block_coupon_requests', array('userid' => $event->objectid));
+        $DB->delete_records('block_coupon_rusers', ['userid' => $event->objectid]);
+        $DB->delete_records('block_coupon_requests', ['userid' => $event->objectid]);
     }
 
 }

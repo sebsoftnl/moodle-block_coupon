@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace block_coupon\forms;
@@ -41,7 +41,7 @@ require_once($CFG->libdir . '/formslib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class baseform extends \moodleform {
@@ -81,9 +81,9 @@ abstract class baseform extends \moodleform {
      * check for it being pressed using is_cancelled() and redirecting if it is true before trying to
      * get data with get_data().
      *
-     * @param bool $cancel whether to show cancel button, default true
+     * @param boolean $cancel whether to show cancel button, default true
      * @param string $submitlabel label for submit button, defaults to get_string('savechanges')
-     * @param bool $backbutton whether to show back button, default false
+     * @param boolean $backbutton whether to show back button, default false
      */
     public function add_action_buttons($cancel = true, $submitlabel = null, $backbutton = false) {
         if (is_null($submitlabel)) {
@@ -92,7 +92,7 @@ abstract class baseform extends \moodleform {
         $mform =& $this->_form;
         if ($cancel) {
             // When two elements we need a group.
-            $buttonarray = array();
+            $buttonarray = [];
             if ($backbutton) {
                 $this->register_back_button('backbutton');
                 $buttonarray[] = &$mform->createElement('submit', 'backbutton', get_string('back'));
@@ -100,7 +100,7 @@ abstract class baseform extends \moodleform {
             $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $submitlabel);
             $buttonarray[] = &$mform->createElement('cancel');
             $this->add_extra_buttons($buttonarray);
-            $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+            $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
             $mform->closeHeaderBefore('buttonar');
         } else {
             // No group needed.

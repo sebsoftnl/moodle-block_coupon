@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -40,7 +40,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report extends \table_sql {
@@ -91,7 +91,7 @@ class report extends \table_sql {
      * Define headers and columns.
      */
     protected function define_headers_and_columns() {
-        $columns = array(
+        $columns = [
             'fullname',
             'submission_code',
             'typ',
@@ -100,8 +100,8 @@ class report extends \table_sql {
             'status',
             'datestart',
             'datecomplete',
-            'grade'
-        );
+            'grade',
+        ];
         $this->define_table_columns($columns);
     }
 
@@ -109,7 +109,7 @@ class report extends \table_sql {
      * Display the general status log table.
      *
      * @param int $pagesize
-     * @param bool $useinitialsbar
+     * @param boolean $useinitialsbar
      */
     public function render($pagesize, $useinitialsbar = true) {
         $this->useridfield = 'userid';
@@ -140,16 +140,20 @@ class report extends \table_sql {
     /**
      * Get the complete query to generate the table.
      *
-     * @param bool $forcount if true, generates query for counting.
+     * @param boolean $forcount if true, generates query for counting.
      * @return array array consisting of query and parameters
      */
     protected function get_query($forcount = false) {
+        $config = get_config('block_coupon');
+        $dfield = $this->config->coursedisplay ?? 'fullname';
+        $coursefield = 'c.'.$dfield;
+
         global $DB;
-        $q1params = array();
-        $q2params = array();
-        $q3params = array();
+        $q1params = [];
+        $q2params = [];
+        $q3params = [];
         $fields = $DB->sql_concat('c.id', '\'-\'', 'bc.id') . ' as idx,
-               bc.*, c.id as courseid, c.fullname as coursename,
+               bc.*, c.id as courseid, '.$coursefield.' as coursename, c.idnumber as courseidnumber, u.email,
                ' . helper::get_all_user_name_fields(true, 'u');
         $q1 = 'SELECT ' . $fields . ', null as cohortname ' .
                'FROM {block_coupon} bc ' .
@@ -191,14 +195,14 @@ class report extends \table_sql {
             $q3params['ownerid1'] = $this->ownerid;
         }
 
-        return array("{$q1} UNION DISTINCT {$q2} UNION DISTINCT {$q3}", array_merge($q1params, $q2params, $q3params));
+        return ["{$q1} UNION DISTINCT {$q2} UNION DISTINCT {$q3}", array_merge($q1params, $q2params, $q3params)];
     }
 
     /**
      * Query the db. Store results in the table object for use by build_table.
      *
      * @param int $pagesize size of page for paginated displayed table.
-     * @param bool $useinitialsbar do you want to use the initials bar. Bar
+     * @param boolean $useinitialsbar do you want to use the initials bar. Bar
      * will only be used if there is a fullname column defined for the table.
      */
     public function query_db($pagesize, $useinitialsbar=true) {
@@ -219,7 +223,7 @@ class report extends \table_sql {
         }
 
         // Add filtering rules.
-        $where = array();
+        $where = [];
         if (!empty($this->filtering)) {
             list($fsql, $fparams) = $this->filtering->get_sql_filter();
             if (!empty($fsql)) {
@@ -241,8 +245,8 @@ class report extends \table_sql {
 
         // Now we've got fully the main data, we'll load the completion data. This is just too nasty :(.
         foreach ($reportdata as &$row) {
-            $user = (object)array('id' => $row->userid);
-            $course = (object)array('id' => $row->courseid);
+            $user = (object)['id' => $row->userid];
+            $course = (object)['id' => $row->courseid];
             $row->completiondata = helper::load_course_completioninfo($user, $course);
 
             $row->status = $row->completiondata->str_status;
@@ -259,7 +263,7 @@ class report extends \table_sql {
      * Convenience method to call a number of methods for you to display the table.
      *
      * @param int $pagesize
-     * @param bool $useinitialsbar
+     * @param boolean $useinitialsbar
      * @param mixed $downloadhelpbutton unused
      */
     public function out($pagesize, $useinitialsbar, $downloadhelpbutton='') {
@@ -278,6 +282,26 @@ class report extends \table_sql {
     public function col_user($row) {
         global $CFG;
         return '<a href="' . $CFG->wwwroot . '/user/profile.php?id=' . $row->userid . '">' . $row->user . '</a>';
+    }
+
+    /**
+     * Render visual representation of the 'course' column for use in the table
+     *
+     * @param \stdClass $row
+     * @return string
+     */
+    public function col_coursename($row) {
+        $config = get_config('block_coupon');
+        $addidnum = $config->coursenameappendidnumber ?? false;
+        $text = "{$row->coursename}";
+        if ($addidnum && !empty($row->courseidnumber)) {
+             $text .= " ({$row->courseidnumber})";
+        }
+
+        if (!$this->is_downloading()) {
+            $text = \html_writer::link(new \moodle_url('course/view.php', ['id' => $row->courseid]), $text);
+        }
+        return $text;
     }
 
     /**
@@ -327,7 +351,7 @@ class report extends \table_sql {
      * @return string actions
      */
     public function col_action($row) {
-        $actions = array();
+        $actions = [];
         return implode('', $actions);
     }
 
@@ -352,7 +376,7 @@ class report extends \table_sql {
     protected function get_action($row, $action) {
         $actionstr = 'str' . $action;
         return '<a href="' . new \moodle_url($this->baseurl,
-                array('action' => $action, 'id' => $row->id)) .
+                ['action' => $action, 'id' => $row->id]) .
                 '" alt="' . $this->{$actionstr} .
                 '">' . $this->get_action_image($action) . '</a>';
     }
@@ -365,7 +389,7 @@ class report extends \table_sql {
      */
     protected function define_table_columns($columns) {
         $this->define_columns($columns);
-        $headers = array();
+        $headers = [];
         foreach ($columns as $name) {
             if ($name === 'fullname') {
                 $headers[] = get_string('fullname');

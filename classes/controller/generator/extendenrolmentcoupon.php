@@ -23,7 +23,7 @@
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,7 +41,7 @@ use block_coupon\coupon\generatoroptions;
  * @package     block_coupon
  *
  * @copyright   Sebsoft.nl
- * @author      R.J. van Dongen <rogier@sebsoft.nl>
+ * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class extendenrolmentcoupon {
@@ -103,7 +103,7 @@ class extendenrolmentcoupon {
         $courseid = optional_param('cid', null, PARAM_INT);
         if (!empty($courseid) && $courseid > 1) {
             // Validate course.
-            if (!$DB->record_exists('course', array('id' => $courseid))) {
+            if (!$DB->record_exists('course', ['id' => $courseid])) {
                 redirect(new moodle_url($CFG->wwwroot . '/my'),
                         get_string('generator:extendenrolment:invalidcourse', 'block_coupon'));
             }
@@ -112,7 +112,7 @@ class extendenrolmentcoupon {
             $generatoroptions = new generatoroptions();
             $generatoroptions->ownerid = $USER->id;
             $generatoroptions->type = generatoroptions::ENROLEXTENSION;
-            $generatoroptions->courses = array($courseid);
+            $generatoroptions->courses = [$courseid];
             $generatoroptions->to_session();
             $redirect = $this->get_url(['page' => 1]);
             redirect($redirect);
@@ -128,7 +128,7 @@ class extendenrolmentcoupon {
 
         if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             // Load generator options.
             $generatoroptions = generatoroptions::from_session();
@@ -156,7 +156,7 @@ class extendenrolmentcoupon {
      * Process page 2
      */
     protected function process_page_2() {
-        global $CFG, $DB;
+        global $CFG;
         $url = $this->get_url(['page' => 2]);
 
         // Make sure sessions are still alive.
@@ -171,11 +171,11 @@ class extendenrolmentcoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             if ((bool)$data->abort) {
                 generatoroptions::clean_session();
-                redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+                redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
                 exit; // Never reached.
             }
             // Set user(s).
@@ -199,7 +199,7 @@ class extendenrolmentcoupon {
      * Process page 4
      */
     protected function process_page_3() {
-        global $CFG, $USER, $DB;
+        global $CFG;
         $url = $this->get_url(['page' => 3]);
 
         // Load generator options.
@@ -212,7 +212,7 @@ class extendenrolmentcoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             // These settings are always the same.
             if (!empty($data->batchid)) {
@@ -268,7 +268,7 @@ class extendenrolmentcoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             $generatoroptions->generatesinglepdfs = (isset($data->generate_pdf) && $data->generate_pdf) ? true : false;
             $generatoroptions->pdftype = $data->usetype;
@@ -319,7 +319,7 @@ class extendenrolmentcoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($mform->no_submit_button_pressed()) {
             $tplid = $mform->optional_param('tplload', 0, PARAM_INT);
             if (!empty($tplid)) {
@@ -343,11 +343,11 @@ class extendenrolmentcoupon {
                 $fields = 'id, email, ' . \block_coupon\helper::get_all_user_name_fields(true);
                 $users = $DB->get_records_list('user', 'id', $generatoroptions->extendusers, '', $fields);
                 foreach ($users as $user) {
-                    $generatoroptions->recipients[] = (object) array(
+                    $generatoroptions->recipients[] = (object)[
                         'email' => $user->email,
                         'name' => fullname($user),
                         'gender' => '',
-                    );
+                    ];
                 }
                 // Force seperate coupons!
                 $generatoroptions->generatesinglepdfs = true;
@@ -389,7 +389,7 @@ class extendenrolmentcoupon {
             redirect($redirecturl);
         } else if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
-            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', array('id' => $this->page->course->id)));
+            redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
             // There is no data, only processing.
             $generatoroptions->to_session();
