@@ -77,7 +77,6 @@ class sendcoupons extends \core\task\scheduled_task {
                     ORDER BY timecreated ASC";
                 break;
         }
-        /** @var \moodle_database $DB */
         $batchid = $DB->get_field_sql($sql, [$time], IGNORE_MISSING);
         if (empty($batchid)) {
             mtrace("No batches found");

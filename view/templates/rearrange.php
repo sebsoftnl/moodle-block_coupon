@@ -143,7 +143,6 @@ if ($elements) {
     }
 }
 
-/** @var moodle_page $PAGE */
 $PAGE->requires->css('/blocks/coupon/tplstyles.css');
 $PAGE->requires->js_call_amd('block_coupon/templates/elements', 'init', ['#right-container']);
 $PAGE->requires->js_call_amd('block_coupon/templates/rearrange-area', 'init', ['#pdf', $template->get_id(), $page]);
