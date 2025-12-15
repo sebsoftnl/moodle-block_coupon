@@ -41,7 +41,6 @@ use html_writer;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mailtemplates {
-
     /**
      * @var \moodle_page
      */
@@ -130,7 +129,7 @@ class mailtemplates {
 
         $instance = $DB->get_record('block_coupon_mailtemplates', ['id' => $id]);
         if (empty($instance)) {
-            $instance = new \stdClass;
+            $instance = new \stdClass();
             $instance->id = 0;
             $instance->bodyformat = FORMAT_HTML;
             $instance->usercreated = $USER->id;
@@ -171,7 +170,6 @@ class mailtemplates {
         echo $this->renderer->get_tabs($this->page->context, 'cpmailtemplates');
         echo $mform->render();
         echo $this->output->footer();
-
     }
 
     /**
@@ -185,5 +183,4 @@ class mailtemplates {
         $url->params($mergeparams);
         return $url;
     }
-
 }

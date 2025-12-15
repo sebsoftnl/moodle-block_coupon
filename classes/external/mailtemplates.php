@@ -29,16 +29,12 @@
 
 namespace block_coupon\external;
 
-defined('MOODLE_INTERNAL') || die;
-
-require_once("$CFG->libdir/externallib.php");
-
 use stdClass;
-use external_api;
-use external_value;
-use external_function_parameters;
-use external_multiple_structure;
-use external_single_structure;
+use core_external\external_api;
+use core_external\external_value;
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
 
 /**
  * Webservices implementation for block_coupon
@@ -50,7 +46,6 @@ use external_single_structure;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mailtemplates extends external_api {
-
     /**
      * External method parameters
      *
@@ -164,5 +159,4 @@ class mailtemplates extends external_api {
             'message' => new external_value(PARAM_RAW, 'Result message'),
         ]);
     }
-
 }

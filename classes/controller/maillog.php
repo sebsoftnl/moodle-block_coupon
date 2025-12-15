@@ -44,7 +44,6 @@ use html_writer;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class maillog {
-
     /**
      * @var \moodle_page
      */
@@ -139,5 +138,4 @@ class maillog {
         $url->params($mergeparams);
         return $url;
     }
-
 }

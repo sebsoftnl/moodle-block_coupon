@@ -36,7 +36,6 @@ require_once($CFG->libdir . '/tcpdf/tcpdf_barcodes_2d.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class element extends \block_coupon\template\element {
-
     /**
      * @var string The barcode type.
      */
@@ -201,5 +200,4 @@ class element extends \block_coupon\template\element {
     public function get_extra_data($coupon, bool $preview) {
         return (object)['code' => $coupon->submission_code];
     }
-
 }

@@ -42,7 +42,6 @@ use block_coupon\exception;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class typebase {
-
     /**
      * @var \stdClass
      */
@@ -162,5 +161,4 @@ abstract class typebase {
         $instance = $rc->newInstance($coupon);
         return $instance;
     }
-
 }

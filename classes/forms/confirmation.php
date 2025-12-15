@@ -42,14 +42,13 @@ require_once($CFG->libdir . '/formslib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class confirmation extends \moodleform {
-
     /**
      * form definition
      */
     protected function definition() {
         $mform = & $this->_form;
 
-        list($headertext, $description, $confirmmessage) = $this->_customdata;
+        [$headertext, $description, $confirmmessage] = $this->_customdata;
 
         $mform->addElement('header', 'xhead1', $headertext);
         $mform->addElement('static', 'xstaticdesc1', '', $description);
@@ -59,5 +58,4 @@ class confirmation extends \moodleform {
 
         $this->add_action_buttons(true, get_string('button:continue', 'block_coupon'));
     }
-
 }

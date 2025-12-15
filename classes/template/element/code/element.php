@@ -32,7 +32,6 @@ namespace block_coupon\template\element\code;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class element extends \block_coupon\template\element {
-
     /**
      * Handles rendering the element on the pdf.
      *
@@ -71,5 +70,4 @@ class element extends \block_coupon\template\element {
     public function get_extra_data($coupon, bool $preview) {
         return (object)['code' => $coupon->submission_code];
     }
-
 }

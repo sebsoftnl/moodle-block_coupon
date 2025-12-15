@@ -29,10 +29,6 @@
 
 namespace block_coupon\tables;
 
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->libdir . '/tablelib.php');
-
 /**
  * block_coupon\tables\myrequests
  *
@@ -42,38 +38,13 @@ require_once($CFG->libdir . '/tablelib.php');
  * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class myrequests extends \table_sql {
-
-    /**
-     *
-     * @var \block_coupon\filtering\filtering
-     */
-    protected $filtering;
-
-    /**
-     * Get filtering instance
-     * @return \block_coupon\filtering\filtering
-     */
-    public function get_filtering() {
-        return $this->filtering;
-    }
-
-    /**
-     * Set filtering instance
-     * @param \block_coupon\filtering\filtering $filtering
-     * @return \block_coupon\tables\myrequests
-     */
-    public function set_filtering(\block_coupon\filtering\filtering $filtering) {
-        $this->filtering = $filtering;
-        return $this;
-    }
-
+class myrequests extends base {
     /**
      * Create a new instance of the table
      */
     public function __construct() {
         global $USER;
-        parent::__construct(__CLASS__. '-' . $USER->id);
+        parent::__construct(__CLASS__ . '-' . $USER->id);
         $this->no_sorting('action');
     }
 
@@ -117,7 +88,7 @@ class myrequests extends \table_sql {
         $params = ['userid' => $USER->id];
         // Add filtering rules.
         if (!empty($this->filtering)) {
-            list($fsql, $fparams) = $this->filtering->get_sql_filter();
+            [$fsql, $fparams] = $this->filtering->get_sql_filter();
             if (!empty($fsql)) {
                 $where[] = $fsql;
                 $params += $fparams;
@@ -126,16 +97,6 @@ class myrequests extends \table_sql {
 
         parent::set_sql($fields, $from, implode(' AND ', $where), $params);
         $this->out($pagesize, $useinitialsbar);
-    }
-
-    /**
-     * Render visual representation of the 'timecreated' column for use in the table
-     *
-     * @param \stdClass $row
-     * @return string time string
-     */
-    public function col_timecreated($row) {
-        return userdate($row->timecreated);
     }
 
     /**
@@ -148,14 +109,22 @@ class myrequests extends \table_sql {
         global $OUTPUT;
         $actions = [];
 
-        $details = \html_writer::link(new \moodle_url($this->baseurl,
-                ['action' => 'details', 'itemid' => $row->id, 'sesskey' => sesskey()]),
-                \html_writer::img($OUTPUT->image_url('i/search'), 'Details', ['class' => 'icon']));
+        $details = \html_writer::link(
+            new \moodle_url(
+                $this->baseurl,
+                ['action' => 'details', 'itemid' => $row->id, 'sesskey' => sesskey()]
+            ),
+            \html_writer::img($OUTPUT->image_url('i/search'), 'Details', ['class' => 'icon'])
+        );
         $actions[] = $details;
 
-        $delete = \html_writer::link(new \moodle_url($this->baseurl,
-                ['action' => 'delete', 'itemid' => $row->id, 'sesskey' => sesskey()]),
-                \html_writer::img($OUTPUT->image_url('i/delete'), 'Delete', ['class' => 'icon']));
+        $delete = \html_writer::link(
+            new \moodle_url(
+                $this->baseurl,
+                ['action' => 'delete', 'itemid' => $row->id, 'sesskey' => sesskey()]
+            ),
+            \html_writer::img($OUTPUT->image_url('i/delete'), 'Delete', ['class' => 'icon'])
+        );
         $actions[] = $delete;
 
         return implode('', $actions);
@@ -175,5 +144,4 @@ class myrequests extends \table_sql {
         }
         $this->define_headers($headers);
     }
-
 }

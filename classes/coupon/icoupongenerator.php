@@ -39,7 +39,6 @@ namespace block_coupon\coupon;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 interface icoupongenerator {
-
     /**
      * Generate a batch of coupons
      * @param \block_coupon\test\coupon\generatoroptions $options
@@ -58,5 +57,4 @@ interface icoupongenerator {
      * @return array
      */
     public function get_errors();
-
 }

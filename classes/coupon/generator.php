@@ -265,9 +265,13 @@ class generator implements icoupongenerator {
             // An object for the coupon itself.
             $objcoupon = new \stdClass();
             $objcoupon->ownerid = $options->ownerid;
-            $objcoupon->submission_code = codegenerator::generate_unique_code($options->codesize,
-                    $options->generatorflags, $options->generatorexcludechars,
-                    $options->ccprefix, $options->ccpostfix);
+            $objcoupon->submission_code = codegenerator::generate_unique_code(
+                $options->codesize,
+                $options->generatorflags,
+                $options->generatorexcludechars,
+                $options->ccprefix,
+                $options->ccpostfix
+            );
             $objcoupon->timecreated = $generatortime;
             $objcoupon->timeexpired = null;
             $objcoupon->email_body = null;
@@ -382,7 +386,6 @@ class generator implements icoupongenerator {
 
         // Check if we're generating based on course, in which case we enter the course name too.
         if (isset($this->courses) && !empty($this->courses)) {
-
             $coursenames = [];
             foreach ($this->courses as $course) {
                 $coursenames[] = format_string(
@@ -508,5 +511,4 @@ class generator implements icoupongenerator {
         }
         return !empty($errors);
     }
-
 }

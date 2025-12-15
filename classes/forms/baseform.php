@@ -45,7 +45,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class baseform extends \moodleform {
-
     /**
      * Get reference to database
      * @return \moodle_database
@@ -137,5 +136,4 @@ abstract class baseform extends \moodleform {
         }
         $this->previousbuttons[] = $fieldsname;
     }
-
 }

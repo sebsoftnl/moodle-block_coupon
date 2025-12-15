@@ -43,7 +43,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit extends \moodleform {
-
     /**
      * @var \stdClass
      */
@@ -56,7 +55,7 @@ class edit extends \moodleform {
         global $CFG;
         $mform = & $this->_form;
 
-        list($this->instance) = $this->_customdata;
+        [$this->instance] = $this->_customdata;
 
         // Register element.
         $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcourses.php';
@@ -81,7 +80,8 @@ class edit extends \moodleform {
         $mform->addRule('maxamount', null, 'numeric', null, 'client');
 
         // Select courses that can be accessed.
-        $select = $mform->addElement('findcourses', 'course', get_string('course'));
+        $options = ['multiple' => true, 'onlyvisible' => true];
+        $select = $mform->addElement('findcourses', 'course', get_string('course'), $options);
         $mform->addHelpButton('course', 'findcourses', 'block_coupon');
         $mform->addRule('course', null, 'required', null, 'client');
         $select->setMultiple(true);
@@ -118,5 +118,4 @@ class edit extends \moodleform {
 
         return $errors;
     }
-
 }

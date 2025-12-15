@@ -42,14 +42,13 @@ use block_coupon\helper;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class pdfsettings extends baseform {
-
     /**
      * form definition
      */
     public function definition() {
         $mform = & $this->_form;
 
-        list($this->generatoroptions) = $this->_customdata;
+        [$this->generatoroptions] = $this->_customdata;
 
         $mform->addElement('header', 'header', get_string('pdfsettings', 'block_coupon'));
 
@@ -84,5 +83,4 @@ class pdfsettings extends baseform {
         $err = parent::validation($data, $files);
         return $err;
     }
-
 }

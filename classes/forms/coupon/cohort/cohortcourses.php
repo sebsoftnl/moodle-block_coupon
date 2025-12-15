@@ -42,7 +42,6 @@ use block_coupon\helper;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cohortcourses extends baseform {
-
     /**
      * form definition
      */
@@ -54,7 +53,7 @@ class cohortcourses extends baseform {
         $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcohortcourses.php';
         \MoodleQuickForm::registerElementType('findcohortcourses', $path, '\block_coupon\forms\element\findcohortcourses');
 
-        list($this->generatoroptions) = $this->_customdata;
+        [$this->generatoroptions] = $this->_customdata;
 
         $mform->addElement('header', 'header', get_string('heading:cohortlinkcourses', 'block_coupon'));
         if (!$strinfo = get_config('block_coupon', 'info_coupon_cohort_courses')) {
@@ -66,7 +65,6 @@ class cohortcourses extends baseform {
 
         // Now we'll show the cohorts one by one.
         foreach ($cohorts as $cohort) {
-
             // Header for the cohort.
             $mform->addElement('header', 'cohortsheader[]', $cohort->name);
 
@@ -86,19 +84,30 @@ class cohortcourses extends baseform {
                         ]
                     );
                 }
-                $mform->addElement('static', 'connected_courses',
-                        get_string('label:connected_courses', 'block_coupon'), implode('<br/>', $headingstr));
+                $mform->addElement(
+                    'static',
+                    'connected_courses',
+                    get_string('label:connected_courses', 'block_coupon'),
+                    implode('<br/>', $headingstr)
+                );
             } else {
-                $mform->addElement('static', 'connected_courses[' . $cohort->id . '][]',
-                        get_string('label:connected_courses', 'block_coupon'),
-                        get_string('label:no_courses_connected', 'block_coupon'));
+                $mform->addElement(
+                    'static',
+                    'connected_courses[' . $cohort->id . '][]',
+                    get_string('label:connected_courses', 'block_coupon'),
+                    get_string('label:no_courses_connected', 'block_coupon')
+                );
             }
 
             $options = ['multiple' => true, 'onlyvisible' => true];
-            $mform->addElement('findcohortcourses', 'connect_courses[' . $cohort->id . ']',
-                    get_string('label:coupon_connect_course', 'block_coupon'), $cohort->id, $options);
+            $mform->addElement(
+                'findcohortcourses',
+                'connect_courses[' . $cohort->id . ']',
+                get_string('label:coupon_connect_course', 'block_coupon'),
+                $cohort->id,
+                $options
+            );
             $mform->addHelpButton('connect_courses[' . $cohort->id . ']', 'label:coupon_connect_course', 'block_coupon');
-
             // That's the end of the loop.
         }
 
@@ -107,5 +116,4 @@ class cohortcourses extends baseform {
         $data = [];
         $this->set_data($data);
     }
-
 }

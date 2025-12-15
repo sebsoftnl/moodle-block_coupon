@@ -32,7 +32,6 @@ namespace block_coupon\template\element\border;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class element extends \block_coupon\template\element {
-
     /**
      * This function renders the form elements when adding a template element.
      *
@@ -136,5 +135,4 @@ class element extends \block_coupon\template\element {
     public function is_visible_in_html_view() {
         return false;
     }
-
 }

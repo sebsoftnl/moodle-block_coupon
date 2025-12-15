@@ -41,7 +41,6 @@ namespace block_coupon\output\component;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cleanupconfirm implements \renderable, \templatable {
-
     /**
      * @var \stdClass deletion data
      */
@@ -132,5 +131,4 @@ class cleanupconfirm implements \renderable, \templatable {
 
         return $data;
     }
-
 }

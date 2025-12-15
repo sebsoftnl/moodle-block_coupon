@@ -32,7 +32,7 @@ namespace block_coupon\filters;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/user/filters/lib.php');
+require_once($CFG->dirroot . '/user/filters/lib.php');
 
 /**
  * block_coupon\filters\couponbatch
@@ -83,15 +83,15 @@ class couponbatch extends \user_filter_type {
         }
         $objs = [];
         $objs['value'] = $mform->createElement('select', $this->_name, null, $cohorts);
-        $objs['select'] = $mform->createElement('select', $this->_name.'_op', null, $this->get_operators());
+        $objs['select'] = $mform->createElement('select', $this->_name . '_op', null, $this->get_operators());
         $objs['select']->setLabel(get_string('limiterfor', 'filters', $this->_label));
-        $mform->addElement('group', $this->_name.'_grp', $this->_label, $objs, '', false);
+        $mform->addElement('group', $this->_name . '_grp', $this->_label, $objs, '', false);
         // Batch ID has PARAM_ALPHANUM.
         $mform->setType($this->_name, PARAM_RAW);
         if ($this->_advanced) {
-            $mform->setAdvanced($this->_name.'_grp');
+            $mform->setAdvanced($this->_name . '_grp');
         }
-        $mform->setDefault($this->_name.'_op', 0);
+        $mform->setDefault($this->_name . '_op', 0);
     }
 
     /**
@@ -101,8 +101,8 @@ class couponbatch extends \user_filter_type {
      */
     public function check_data($formdata) {
         $field    = $this->_name;
-        $operator = $field.'_op';
-        $selectfield = $field.'_fld';
+        $operator = $field . '_op';
+        $selectfield = $field . '_fld';
 
         if (property_exists($formdata, $operator) && property_exists($formdata, $selectfield)) {
             if ($formdata->$operator != 5 && $formdata->$field == '') {
@@ -127,7 +127,7 @@ class couponbatch extends \user_filter_type {
      */
     public function get_sql_filter($data) {
         static $counter = 0;
-        $name = 'ex_couponbatch'.$counter++;
+        $name = 'ex_couponbatch' . $counter++;
 
         $operator = $data['operator'];
         $value    = $data['value'];
@@ -138,7 +138,7 @@ class couponbatch extends \user_filter_type {
             return '';
         }
 
-        switch($operator) {
+        switch ($operator) {
             case 0: // Equals.
                 $res = "c.batchid = :$name";
                 $params[$name] = "$value";
@@ -169,7 +169,7 @@ class couponbatch extends \user_filter_type {
 
         $a = new \stdClass();
         $a->label    = $this->_label . '.' . $field;
-        $a->value    = '"'.s($value).'"';
+        $a->value    = '"' . s($value) . '"';
         $a->operator = $operators[$operator];
 
         switch ($operator) {

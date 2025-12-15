@@ -43,7 +43,6 @@ use html_writer;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class errorreports {
-
     /**
      * @var \moodle_page
      */
@@ -136,5 +135,4 @@ class errorreports {
         $url->params($mergeparams);
         return $url;
     }
-
 }

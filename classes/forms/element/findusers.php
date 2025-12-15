@@ -44,7 +44,6 @@ require_once($CFG->libdir . '/form/autocomplete.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class findusers extends MoodleQuickForm_autocomplete {
-
     /**
      * Has setValue() already been called already?
      *
@@ -95,8 +94,11 @@ class findusers extends MoodleQuickForm_autocomplete {
         $values = (array) $value;
         $ids = [];
         foreach ($values as $onevalue) {
-            if (!empty($onevalue) && (!$this->optionExists($onevalue)) &&
-                    ($onevalue !== '_qf__force_multiselect_submission')) {
+            if (
+                !empty($onevalue) &&
+                (!$this->optionExists($onevalue)) &&
+                ($onevalue !== '_qf__force_multiselect_submission')
+            ) {
                 array_push($ids, $onevalue);
             }
         }
@@ -105,13 +107,13 @@ class findusers extends MoodleQuickForm_autocomplete {
         }
         // Logic here is simulating API.
         $toselect = [];
-        list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'param');
-        $users = $DB->get_records_select('user', 'id '.$insql, $inparams);
+        [$insql, $inparams] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'param');
+        $users = $DB->get_records_select('user', 'id ' . $insql, $inparams);
         foreach ($users as $user) {
             if ($user->deleted || $user->suspended) {
                 continue;
             }
-            $optionname = fullname($user) . (empty($user->idnumber) ? '' : ' ('.$user->idnumber.')');
+            $optionname = fullname($user) . (empty($user->idnumber) ? '' : ' (' . $user->idnumber . ')');
             $this->addOption($optionname, $user->id, ['selected' => 'selected']);
             array_push($toselect, $user->id);
         }

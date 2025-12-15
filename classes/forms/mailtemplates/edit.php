@@ -43,7 +43,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit extends \moodleform {
-
     /**
      * @var \stdClass
      */
@@ -55,7 +54,7 @@ class edit extends \moodleform {
     public function definition() {
         $mform = & $this->_form;
 
-        list($this->instance) = $this->_customdata;
+        [$this->instance] = $this->_customdata;
 
         $mform->addElement('header', 'header', get_string('mailtemplates:title', 'block_coupon', $this->instance));
 
@@ -117,5 +116,4 @@ class edit extends \moodleform {
 
         return $errors;
     }
-
 }

@@ -39,7 +39,6 @@ namespace block_coupon\task;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class unenrolcohorts extends \core\task\scheduled_task {
-
     /**
      * Return the localised name for this task
      *
@@ -62,9 +61,14 @@ class unenrolcohorts extends \core\task\scheduled_task {
                 FROM {block_coupon} bc
                 WHERE typ = :typ AND claimed = 1
                 AND enrolperiod <> 0
+                AND (timeclaimed + enrolperiod) >= :then
                 AND (timeclaimed + enrolperiod) < :now';
-        $params = ['typ' => 'cohort', 'now' => $this->get_last_run_time()];
-
+        $params = [
+            'typ' => 'cohort',
+            'then' => $this->get_last_run_time(),
+            'now' => $this->get_next_run_time(),
+        ];
+        \core\task\manager::adhoc_task_from_record($record);
         $records = $DB->get_records_sql($sql, $params);
         foreach ($records as $coupon) {
             // Fetch cohorts.
@@ -74,7 +78,9 @@ class unenrolcohorts extends \core\task\scheduled_task {
                 $userid = $coupon->userid;
                 $cohortid = $ref->cohortid;
                 try {
-                    cohort_remove_member($cohortid, $userid);
+                    if (cohort_is_member($cohortid, $userid)) {
+                        cohort_remove_member($cohortid, $userid);
+                    }
                 } catch (\Exception $ex) {
                     // This is a no-op, it could be that this cohort or member does not exist.
                     mtrace("Failed removing user with ID {$userid} from cohort with ID {$cohortid}: " . $ex->getMessage());

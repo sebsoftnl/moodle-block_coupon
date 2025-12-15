@@ -39,12 +39,10 @@ namespace block_coupon\coupon;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 interface icoupontype {
-
     /**
      * Claim coupon.
      * @param int $foruserid user that claims coupon. Current userid if not given.
      * @param mixed $options any options required by the instance
      */
     public function claim($foruserid = null, $options = null);
-
 }

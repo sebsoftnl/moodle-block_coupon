@@ -41,7 +41,6 @@ use block_coupon\helper;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class sendcoupons extends \core\task\scheduled_task {
-
     /**
      * Return the localised name for this task
      *
@@ -74,12 +73,12 @@ class sendcoupons extends \core\task\scheduled_task {
                 break;
             default:
                 $sql = "SELECT batchid FROM {block_coupon}
-                    WHERE senddate < ? AND issend = 0 AND for_user_email IS NOT NULL
-                    ORDER BY timecreated ASC
-                    LIMIT 1";
+                    WHERE senddate < ? AND issend = 0 AND COALESCE(for_user_email, '') <> ''
+                    ORDER BY timecreated ASC";
                 break;
         }
-        $batchid = $DB->get_field_sql($sql, [$time]);
+        /** @var \moodle_database $DB */
+        $batchid = $DB->get_field_sql($sql, [$time], IGNORE_MISSING);
         if (empty($batchid)) {
             mtrace("No batches found");
             return;
@@ -87,7 +86,7 @@ class sendcoupons extends \core\task\scheduled_task {
 
         // Load coupons for batch.
         $sql = "SELECT * FROM {block_coupon}
-            WHERE batchid = ? AND issend = 0 AND for_user_email IS NOT NULL";
+            WHERE batchid = ? AND issend = 0 AND COALESCE(for_user_email, '') <> ''";
         $coupons = $DB->get_records_sql($sql, [$batchid], 0, 500);
 
         if (!$coupons || empty($coupons)) {
@@ -98,7 +97,7 @@ class sendcoupons extends \core\task\scheduled_task {
         // Find owner for batch.
         $ownerid = $DB->get_field('block_coupon', 'ownerid', ['batchid' => $batchid], IGNORE_MULTIPLE);
 
-        mtrace("SENDING COUPON BATCH (max 500 items | have = ".count($coupons).") {$batchid} WITH OWNER {$ownerid}");
+        mtrace("SENDING COUPON BATCH (max 500 items | have = " . count($coupons) . ") {$batchid} WITH OWNER {$ownerid}");
 
         $this->send_batch($coupons, $batchid, $time);
     }
@@ -119,7 +118,13 @@ class sendcoupons extends \core\task\scheduled_task {
             }
 
             // Send off. All handling is done by the helper method.
-            helper::mail_personalized_coupon($coupon);
+            // @codingStandardsIgnoreStart (Generic.CodeAnalysis.EmptyStatement.DetectedCatch)
+            try {
+                helper::mail_personalized_coupon($coupon);
+            } catch (\Exception $e) {
+                // No-op.
+            }
+            // @codingStandardsIgnoreEnd
         }
 
         // Check batch completed.
@@ -135,5 +140,4 @@ class sendcoupons extends \core\task\scheduled_task {
             \block_coupon\couponnotification::send_task_notification($ownerid, $batchid, $timeexecuted);
         }
     }
-
 }

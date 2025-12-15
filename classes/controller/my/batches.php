@@ -41,7 +41,6 @@ use html_writer;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class batches {
-
     /**
      * @var \moodle_page
      */
@@ -100,5 +99,4 @@ class batches {
         echo html_writer::end_div();
         echo $this->output->footer();
     }
-
 }

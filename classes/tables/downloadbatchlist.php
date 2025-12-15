@@ -29,10 +29,6 @@
 
 namespace block_coupon\tables;
 
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->libdir . '/tablelib.php');
-
 /**
  * block_coupon\tables\downloadbatchlist
  *
@@ -42,8 +38,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class downloadbatchlist extends \table_sql {
-
+class downloadbatchlist extends base {
     /**
      * @var string
      */
@@ -64,30 +59,6 @@ class downloadbatchlist extends \table_sql {
     protected $context;
 
     /**
-     *
-     * @var \block_coupon\filtering\filtering
-     */
-    protected $filtering;
-
-    /**
-     * Get filtering instance
-     * @return \block_coupon\filtering\filtering
-     */
-    public function get_filtering() {
-        return $this->filtering;
-    }
-
-    /**
-     * Set filtering instance
-     * @param \block_coupon\filtering\filtering $filtering
-     * @return \block_coupon\tables\coupons
-     */
-    public function set_filtering(\block_coupon\filtering\filtering $filtering) {
-        $this->filtering = $filtering;
-        return $this;
-    }
-
-    /**
      * Create a new instance of the logtable
      *
      * @param \context $context - used for capability checks
@@ -95,7 +66,7 @@ class downloadbatchlist extends \table_sql {
      */
     public function __construct(\context $context, $ownerid = null) {
         global $USER;
-        parent::__construct(__CLASS__. '-' . $USER->id . '-' . ((int)$ownerid));
+        parent::__construct(__CLASS__ . '-' . $USER->id . '-' . ((int)$ownerid));
         $this->context = $context;
         $this->ownerid = (int)$ownerid;
         $this->sortable(false);
@@ -156,13 +127,12 @@ class downloadbatchlist extends \table_sql {
             }
         }
         // Loop through rows and find owners.
-        list($insql, $params) = $DB->get_in_or_equal($batchids, SQL_PARAMS_NAMED, 'bid', true, 0);
+        [$insql, $params] = $DB->get_in_or_equal($batchids, SQL_PARAMS_NAMED, 'bid', true, 0);
 
-        $sql = "SELECT c.batchid, c.ownerid, " . \block_coupon\helper::get_all_user_name_fields(true, 'u') .
+        $sql = "SELECT DISTINCT c.batchid, c.ownerid, " . \block_coupon\helper::get_all_user_name_fields(true, 'u') .
             " FROM {block_coupon} c " .
             "JOIN {user} u ON u.id=c.ownerid " .
-            "WHERE c.batchid {$insql} " .
-            "GROUP BY c.batchid, c.ownerid";
+            "WHERE c.batchid {$insql} ";
         $udata = $DB->get_records_sql($sql, $params);
         foreach ($rows as $row) {
             if (isset($udata[$row->batchid])) {
@@ -212,11 +182,15 @@ class downloadbatchlist extends \table_sql {
         global $PAGE;
         $renderer = $PAGE->get_renderer('block_coupon');
         $actions[] = $renderer->action_icon(
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php',
-                ['bid' => $row->batchid, 't' => $row->tid]),
-                new \image_icon('i/down', $this->strdownload, 'moodle', ['class' => 'icon']),
-                null,
-                ['alt' => $this->strdownload, 'target' => '_new'], $linktext = '');
+            new \moodle_url(
+                $CFG->wwwroot . '/blocks/coupon/download.php',
+                ['bid' => $row->batchid, 't' => $row->tid]
+            ),
+            new \image_icon('i/down', $this->strdownload, 'moodle', ['class' => 'icon']),
+            null,
+            ['alt' => $this->strdownload, 'target' => '_new'],
+            $linktext = ''
+        );
 
         return implode('', $actions);
     }
@@ -235,5 +209,4 @@ class downloadbatchlist extends \table_sql {
         }
         $this->define_headers($headers);
     }
-
 }

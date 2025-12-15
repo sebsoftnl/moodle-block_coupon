@@ -41,7 +41,6 @@ use block_coupon\filtering\filtering;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coupons extends filtering {
-
     /**
      * Return all default filter names and advanced status
      * @return array
@@ -79,37 +78,72 @@ class coupons extends filtering {
         global $DB;
         switch ($fieldname) {
             case 'timemodified':
-                return new \user_filter_date('timemodified',
-                        get_string('lastmodified'), $advanced, 'c.timemodified');
+                return new \user_filter_date(
+                    'timemodified',
+                    get_string('lastmodified'),
+                    $advanced,
+                    'c.timemodified'
+                );
             case 'timeexpired':
-                return new \user_filter_date('timeexpired',
-                        get_string('report:timeexpired', 'block_coupon'), $advanced, 'c.timeexpired');
+                return new \user_filter_date(
+                    'timeexpired',
+                    get_string('report:timeexpired', 'block_coupon'),
+                    $advanced,
+                    'c.timeexpired'
+                );
             case 'senddate':
-                return new \user_filter_date('senddate',
-                        get_string('report:senddate', 'block_coupon'), $advanced, 'c.senddate');
+                return new \user_filter_date(
+                    'senddate',
+                    get_string('report:senddate', 'block_coupon'),
+                    $advanced,
+                    'c.senddate'
+                );
             case 'sent':
-                return new \user_filter_yesno('sent',
-                        get_string('report:issend', 'block_coupon'), $advanced, 'c.issend');
+                return new \user_filter_yesno(
+                    'sent',
+                    get_string('report:issend', 'block_coupon'),
+                    $advanced,
+                    'c.issend'
+                );
             case 'batchid':
-                return new \user_filter_text('batchid',
-                        get_string('label:batchid', 'block_coupon'), $advanced, 'c.batchid');
+                return new \user_filter_text(
+                    'batchid',
+                    get_string('label:batchid', 'block_coupon'),
+                    $advanced,
+                    'c.batchid'
+                );
             case 'batchselect':
                 return new \block_coupon\filters\couponbatchselect($advanced, 'c.batchid', false);
             case 'mybatchselect':
                 return new \block_coupon\filters\couponbatchselect($advanced, 'c.batchid', true);
             case 'for_user_email':
-                return new \user_filter_text('for_user_email',
-                        get_string('report:for_user_email', 'block_coupon'), $advanced, 'c.for_user_email');
+                return new \user_filter_text(
+                    'for_user_email',
+                    get_string('report:for_user_email', 'block_coupon'),
+                    $advanced,
+                    'c.for_user_email'
+                );
             case 'for_user_name':
-                return new \user_filter_text('for_user_name',
-                        get_string('report:for_user_name', 'block_coupon'), $advanced, 'c.for_user_name');
+                return new \user_filter_text(
+                    'for_user_name',
+                    get_string('report:for_user_name', 'block_coupon'),
+                    $advanced,
+                    'c.for_user_name'
+                );
             case 'claimee':
-                return new \block_coupon\filters\multitext('claimee',
-                        get_string('claimee', 'block_coupon'), $advanced,
-                        ['u1.firstname', 'u1.lastname', 'u1.email', $DB->sql_fullname('u1.firstname', 'u1.lastname')]);
+                return new \block_coupon\filters\multitext(
+                    'claimee',
+                    get_string('claimee', 'block_coupon'),
+                    $advanced,
+                    ['u1.firstname', 'u1.lastname', 'u1.email', $DB->sql_fullname('u1.firstname', 'u1.lastname')]
+                );
             case 'couponcode':
-                return new \user_filter_text('couponcode',
-                        get_string('report:coupon_code', 'block_coupon'), $advanced, 'c.submission_code');
+                return new \user_filter_text(
+                    'couponcode',
+                    get_string('report:coupon_code', 'block_coupon'),
+                    $advanced,
+                    'c.submission_code'
+                );
             case 'cohortid':
                 return new \block_coupon\filters\couponcohortid($advanced, 'c.id');
             case 'courseid':
@@ -129,5 +163,4 @@ class coupons extends filtering {
                 return null;
         }
     }
-
 }

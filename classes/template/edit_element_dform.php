@@ -28,8 +28,11 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot . '/lib/formslib.php');
 
-\MoodleQuickForm::registerElementType('bccolourpicker',
-    $CFG->dirroot . '/blocks/coupon/classes/forms/element/colourpicker.php', '\\block_coupon\\forms\\element\\colourpicker');
+\MoodleQuickForm::registerElementType(
+    'bccolourpicker',
+    $CFG->dirroot . '/blocks/coupon/classes/forms/element/colourpicker.php',
+    '\\block_coupon\\forms\\element\\colourpicker'
+);
 use core_form\dynamic_form;
 
 /**
@@ -40,7 +43,6 @@ use core_form\dynamic_form;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_element_dform extends dynamic_form {
-
     /**
      * @var element The element object.
      */
@@ -101,7 +103,7 @@ class edit_element_dform extends dynamic_form {
     /**
      * Returns context where this form is used
      *
-     * This context is validated in {@see \external_api::validate_context()}
+     * This context is validated in {@see external_api::validate_context()}
      *
      * If context depends on the form data, it is available in $this->_ajaxformdata or
      * by calling $this->optional_param()
@@ -198,5 +200,4 @@ class edit_element_dform extends dynamic_form {
         $elementid = $this->optional_param('id', 0, PARAM_INT);
         return new \moodle_url('/blocks/coupon/view/templates/edit_element.php', ['id' => $elementid]);
     }
-
 }

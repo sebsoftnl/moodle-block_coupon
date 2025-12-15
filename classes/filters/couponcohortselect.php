@@ -44,7 +44,6 @@ require_once($CFG->dirroot . '/user/filters/lib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class couponcohortselect extends \user_filter_type {
-
     /** @var string */
     protected $fieldid;
 
@@ -87,13 +86,17 @@ class couponcohortselect extends \user_filter_type {
      * @param object $mform a MoodleForm object to setup
      */
     public function setup_form(&$mform) {
-        $cohorts = $this->get_cohortmenu();
-        if (count($cohorts) <= 1) {
-            return;
-        }
+        global $CFG;
+
+        \MoodleQuickForm::registerElementType(
+            'findcohorts',
+            $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcohorts.php',
+            '\\block_coupon\\forms\\element\\findcohorts'
+        );
+
         $objs = [];
         $objs['select'] = $mform->createElement('select', $this->_name . '_op', null, $this->get_operators());
-        $objs['value'] = $mform->createElement('select', $this->_name, null, $cohorts);
+        $objs['value'] = $mform->createElement('findcohorts', $this->_name, null, ['multiple' => false, 'noselectionstring' => '']);
         $objs['select']->setLabel(get_string('limiterfor', 'filters', $this->_label));
         $objs['value']->setLabel(get_string('valuefor', 'filters', $this->_label));
         $mform->addElement('group', $this->_name . '_grp', $this->_label, $objs, '', false);

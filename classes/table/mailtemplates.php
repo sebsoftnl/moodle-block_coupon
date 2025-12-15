@@ -45,7 +45,6 @@ use moodle_url;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mailtemplates extends \table_sql implements \core_table\dynamic {
-
     /**
      * @var \context $context
      */
@@ -107,6 +106,15 @@ class mailtemplates extends \table_sql implements \core_table\dynamic {
     }
 
     /**
+     * Check capability for users accessing the dynamic table.
+     *
+     * @return bool
+     */
+    public function has_capability(): bool {
+        return has_capability('block/coupon:administration', $this->get_context());
+    }
+
+    /**
      * Convenience method to call a number of methods for you to display the table.
      *
      * @param int $pagesize
@@ -114,7 +122,7 @@ class mailtemplates extends \table_sql implements \core_table\dynamic {
      * @param string $downloadhelpbutton
      * @return string
      */
-    public function render($pagesize, $useinitialsbar, $downloadhelpbutton='') {
+    public function render($pagesize, $useinitialsbar, $downloadhelpbutton = '') {
         ob_start();
         parent::out($pagesize, $useinitialsbar, $downloadhelpbutton);
         $table = ob_get_clean();
@@ -146,13 +154,21 @@ class mailtemplates extends \table_sql implements \core_table\dynamic {
 
         // Link to duplicate the mailtemplate.
         $duplicatelink = new \moodle_url('#');
-        $duplicateicon = $OUTPUT->action_icon($duplicatelink, new \pix_icon('t/copy', get_string('duplicate')), null,
-            ['class' => 'action-icon duplicate-icon', 'data-action' => 'duplicate', 'data-id' => $mailtemplate->id]);
+        $duplicateicon = $OUTPUT->action_icon(
+            $duplicatelink,
+            new \pix_icon('t/copy', get_string('duplicate')),
+            null,
+            ['class' => 'action-icon duplicate-icon', 'data-action' => 'duplicate', 'data-id' => $mailtemplate->id]
+        );
 
         // Link to delete the mailtemplate.
         $deletelink = new \moodle_url('#');
-        $deleteicon = $OUTPUT->action_icon($deletelink, new \pix_icon('t/delete', get_string('delete')), null,
-            ['class' => 'action-icon delete-icon', 'data-action' => 'delete', 'data-id' => $mailtemplate->id]);
+        $deleteicon = $OUTPUT->action_icon(
+            $deletelink,
+            new \pix_icon('t/delete', get_string('delete')),
+            null,
+            ['class' => 'action-icon delete-icon', 'data-action' => 'delete', 'data-id' => $mailtemplate->id]
+        );
 
         return $editicon . $duplicateicon . $deleteicon;
     }
@@ -170,8 +186,14 @@ class mailtemplates extends \table_sql implements \core_table\dynamic {
 
         $this->pagesize($pagesize, $total);
 
-        $this->rawdata = $DB->get_records('block_coupon_mailtemplates', null,
-            $this->get_sql_sort(), '*', $this->get_page_start(), $this->get_page_size());
+        $this->rawdata = $DB->get_records(
+            'block_coupon_mailtemplates',
+            null,
+            $this->get_sql_sort(),
+            '*',
+            $this->get_page_start(),
+            $this->get_page_size()
+        );
 
         // Set initial bars.
         if ($useinitialsbar) {

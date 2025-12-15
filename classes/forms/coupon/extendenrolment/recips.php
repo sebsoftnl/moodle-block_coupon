@@ -41,13 +41,12 @@ use block_coupon\forms\baseform;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class recips extends baseform {
-
     /**
      * form definition
      */
     protected function definition() {
         $mform = & $this->_form;
-        list($this->generatoroptions) = $this->_customdata;
+        [$this->generatoroptions] = $this->_customdata;
 
         $mform->addElement('header', '_recipients', get_string('heading:extendenrolment', 'block_coupon'));
 
@@ -57,27 +56,37 @@ class recips extends baseform {
             $alternativeemail = get_config('block_coupon', 'alternative_email');
 
             // Use alternative email address.
-            $mform->addElement('checkbox', 'use_alternative_email',
-                    get_string('label:use_alternative_email', 'block_coupon'));
+            $mform->addElement(
+                'checkbox',
+                'use_alternative_email',
+                get_string('label:use_alternative_email', 'block_coupon')
+            );
             $mform->setType('use_alternative_email', PARAM_BOOL);
             $mform->setDefault('use_alternative_email', $usealternativeemail);
 
             // Email address to mail to.
-            $mform->addElement('text', 'alternative_email',
-                    get_string('label:alternative_email', 'block_coupon'), ['size' => 40]);
+            $mform->addElement(
+                'text',
+                'alternative_email',
+                get_string('label:alternative_email', 'block_coupon'),
+                ['size' => 40]
+            );
             $mform->setType('alternative_email', PARAM_EMAIL);
             $mform->setDefault('alternative_email', $alternativeemail);
             $mform->addRule('alternative_email', get_string('error:invalid_email', 'block_coupon'), 'email', null);
             $mform->addHelpButton('alternative_email', 'label:alternative_email', 'block_coupon');
             $mform->hideIf('alternative_email', 'use_alternative_email', 'notchecked');
-
         } else {
             // Editable email message.
             $mailcontentdefault = get_string('coupon_mail_extend_content', 'block_coupon');
 
             \block_coupon\emailtemplates::add_form_element($mform);
-            $mform->addElement('editor', 'email_body_manual',
-                    get_string('label:email_body', 'block_coupon'), ['noclean' => 1]);
+            $mform->addElement(
+                'editor',
+                'email_body_manual',
+                get_string('label:email_body', 'block_coupon'),
+                ['noclean' => 1]
+            );
             $mform->setType('email_body_manual', PARAM_RAW);
             $mform->setDefault('email_body_manual', ['text' => $mailcontentdefault]);
             $mform->addRule('email_body_manual', get_string('required'), 'required');
@@ -86,8 +95,12 @@ class recips extends baseform {
 
         // Configurable enrolment time.
         $options = ['optional' => true];
-        $mform->addElement('date_selector', 'date_send_coupons_manual',
-                get_string('label:date_send_coupons', 'block_coupon'), $options);
+        $mform->addElement(
+            'date_selector',
+            'date_send_coupons_manual',
+            get_string('label:date_send_coupons', 'block_coupon'),
+            $options
+        );
         $mform->addHelpButton('date_send_coupons_manual', 'label:date_send_coupons', 'block_coupon');
 
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'), true);
@@ -104,5 +117,4 @@ class recips extends baseform {
         $err = parent::validation($data, $files);
         return $err;
     }
-
 }

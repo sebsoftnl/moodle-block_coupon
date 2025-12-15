@@ -42,14 +42,13 @@ use block_coupon\helper;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class csvrecips extends baseform {
-
     /**
      * form definition
      */
     public function definition() {
         $mform = & $this->_form;
 
-        list($this->generatoroptions) = $this->_customdata;
+        [$this->generatoroptions] = $this->_customdata;
 
         $csvrecips = ['e-mail,gender,name'];
         foreach ($this->generatoroptions->csvrecipients as $recip) {
@@ -59,8 +58,12 @@ class csvrecips extends baseform {
 
         $mform->addElement('header', 'header', get_string('heading:info', 'block_coupon'));
 
-        $mform->addElement('textarea', 'coupon_recipients',
-                get_string("label:coupon_recipients", 'block_coupon'), 'rows="20" cols="50"');
+        $mform->addElement(
+            'textarea',
+            'coupon_recipients',
+            get_string("label:coupon_recipients", 'block_coupon'),
+            'rows="20" cols="50"'
+        );
         $mform->addRule('coupon_recipients', get_string('required'), 'required', null, 'client');
         $mform->addHelpButton('coupon_recipients', 'label:coupon_recipients_txt', 'block_coupon');
         $mform->setDefault('coupon_recipients', $csvrecips);
@@ -84,5 +87,4 @@ class csvrecips extends baseform {
         }
         return $errors;
     }
-
 }

@@ -408,13 +408,13 @@ class generatoroptions {
                 if ($exported->generatormethod === 'amount') {
                     $exported->recipients = [empty($this->emailto) ? $USER->email : $this->emailto];
                 } else if ($exported->generatormethod == 'manual') {
-                    $exported->recipients = array_map(function($a) {
+                    $exported->recipients = array_map(function ($a) {
                         return "{$a->email},{$a->gender},{$a->name}";
                     }, $exported->recipients);
                     $exported->mailtemplate = $exported->emailbody;
                     $exported->senddate = userdate($exported->senddate);
                 } else if ($exported->generatormethod == 'csv') {
-                    $exported->recipients = array_map(function($a){
+                    $exported->recipients = array_map(function ($a) {
                         return "{$a->email},{$a->gender},{$a->name}";
                     }, $exported->csvrecipients);
                     $exported->mailtemplate = $exported->emailbody;
@@ -482,13 +482,13 @@ class generatoroptions {
                 if ($exported->generatormethod === 'amount') {
                     $exported->recipients = [empty($this->emailto) ? $USER->email : $this->emailto];
                 } else if ($exported->generatormethod == 'manual') {
-                    $exported->recipients = array_map(function($a) {
+                    $exported->recipients = array_map(function ($a) {
                         return "{$a->email},{$a->gender},{$a->name}";
                     }, $exported->recipients);
                     $exported->mailtemplate = $exported->emailbody;
                     $exported->senddate = userdate($exported->senddate);
                 } else if ($exported->generatormethod == 'csv') {
-                    $exported->recipients = array_map(function($a){
+                    $exported->recipients = array_map(function ($a) {
                         return "{$a->email},{$a->gender},{$a->name}";
                     }, $exported->csvrecipients);
                     $exported->mailtemplate = $exported->emailbody;
@@ -538,13 +538,13 @@ class generatoroptions {
                 if ($exported->generatormethod === 'amount') {
                     $exported->recipients = [empty($this->emailto) ? $USER->email : $this->emailto];
                 } else if ($exported->generatormethod == 'manual') {
-                    $exported->recipients = array_map(function($a) {
+                    $exported->recipients = array_map(function ($a) {
                         return "{$a->email},{$a->gender},{$a->name}";
                     }, $exported->recipients);
                     $exported->mailtemplate = $exported->emailbody;
                     $exported->senddate = userdate($exported->senddate);
                 } else if ($exported->generatormethod == 'csv') {
-                    $exported->recipients = array_map(function($a){
+                    $exported->recipients = array_map(function ($a) {
                         return "{$a->email},{$a->gender},{$a->name}";
                     }, $exported->csvrecipients);
                     $exported->mailtemplate = $exported->emailbody;
@@ -599,7 +599,7 @@ class generatoroptions {
                 if ($exported->extendusersrecipient === 'me') {
                     $exported->recipients = [empty($this->emailto) ? $USER->email : $this->emailto];
                 } else {
-                    $exported->recipients = array_map(function($a){
+                    $exported->recipients = array_map(function ($a) {
                         return "{$a->email},{$a->gender},{$a->name}";
                     }, $exported->recipients);
                     $exported->mailtemplate = $exported->emailbody;
@@ -608,10 +608,8 @@ class generatoroptions {
 
                 $template = 'block_coupon/generatorinfo/extendenrolmentsinfo';
                 break;
-
         }
 
         return $OUTPUT->render_from_template($template, $exported);
     }
-
 }

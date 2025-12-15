@@ -41,7 +41,6 @@ use block_coupon\forms\baseform;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class courseusers extends baseform {
-
     /**
      * form definition
      */
@@ -68,17 +67,32 @@ class courseusers extends baseform {
             // User selection.
             $mform->addElement('static', '_extendusers', '', get_string('label:extendusers:desc', 'block_coupon'));
             $attributes = ['size' => min(10, max(4, count($users)))];
-            $select = $mform->addElement('select', 'extendusers',
-                    get_string('label:users', 'block_coupon'), $users, $attributes);
+            $select = $mform->addElement(
+                'select',
+                'extendusers',
+                get_string('label:users', 'block_coupon'),
+                $users,
+                $attributes
+            );
             $select->setMultiple(true);
             $mform->addRule('extendusers', null, 'required', null, 'client');
         }
 
         // Who or how do we send this to?
-        $mform->addElement('radio', 'extendusersrecipient', get_string('extendusers:recipient', 'block_coupon'),
-                get_string('extendusers:recipient:users', 'block_coupon'), 'users');
-        $mform->addElement('radio', 'extendusersrecipient', '',
-                get_string('extendusers:recipient:me', 'block_coupon'), 'me');
+        $mform->addElement(
+            'radio',
+            'extendusersrecipient',
+            get_string('extendusers:recipient', 'block_coupon'),
+            get_string('extendusers:recipient:users', 'block_coupon'),
+            'users'
+        );
+        $mform->addElement(
+            'radio',
+            'extendusersrecipient',
+            '',
+            get_string('extendusers:recipient:me', 'block_coupon'),
+            'me'
+        );
         $mform->setType('extendusers_recipient', PARAM_ALPHA);
         $mform->setDefault('extendusers_recipient', 'me');
 
@@ -143,5 +157,4 @@ class courseusers extends baseform {
         $err = parent::validation($data, $files);
         return $err;
     }
-
 }

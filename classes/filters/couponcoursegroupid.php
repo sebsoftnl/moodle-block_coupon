@@ -32,7 +32,7 @@ namespace block_coupon\filters;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/user/filters/lib.php');
+require_once($CFG->dirroot . '/user/filters/lib.php');
 
 /**
  * block_coupon\filters\couponcoursegroupid
@@ -93,19 +93,19 @@ class couponcoursegroupid extends \user_filter_type {
      */
     public function setup_form(&$mform) {
         $objs = [];
-        $objs['fieldselect'] = $mform->createElement('select', $this->_name.'_fld', null, $this->get_fieldsselect());
-        $objs['select'] = $mform->createElement('select', $this->_name.'_op', null, $this->get_operators());
+        $objs['fieldselect'] = $mform->createElement('select', $this->_name . '_fld', null, $this->get_fieldsselect());
+        $objs['select'] = $mform->createElement('select', $this->_name . '_op', null, $this->get_operators());
         $objs['text'] = $mform->createElement('text', $this->_name, null);
         $objs['select']->setLabel(get_string('limiterfor', 'filters', $this->_label));
         $objs['text']->setLabel(get_string('valuefor', 'filters', $this->_label));
-        $mform->addElement('group', $this->_name.'_grp', $this->_label, $objs, '', false);
+        $mform->addElement('group', $this->_name . '_grp', $this->_label, $objs, '', false);
         // ID Number has PARAM_RAW.
         $mform->setType($this->_name, PARAM_RAW);
-        $mform->disabledIf($this->_name, $this->_name.'_op', 'eq', 5);
+        $mform->disabledIf($this->_name, $this->_name . '_op', 'eq', 5);
         if ($this->_advanced) {
-            $mform->setAdvanced($this->_name.'_grp');
+            $mform->setAdvanced($this->_name . '_grp');
         }
-        $mform->setDefault($this->_name.'_op', 2);
+        $mform->setDefault($this->_name . '_op', 2);
     }
 
     /**
@@ -115,8 +115,8 @@ class couponcoursegroupid extends \user_filter_type {
      */
     public function check_data($formdata) {
         $field    = $this->_name;
-        $operator = $field.'_op';
-        $selectfield = $field.'_fld';
+        $operator = $field . '_op';
+        $selectfield = $field . '_fld';
 
         if (property_exists($formdata, $operator) && property_exists($formdata, $selectfield)) {
             if ($formdata->$operator != 5 && $formdata->$field == '') {
@@ -142,7 +142,7 @@ class couponcoursegroupid extends \user_filter_type {
     public function get_sql_filter($data) {
         global $DB;
         static $counter = 0;
-        $name = 'ex_couponcoursegroupid'.$counter++;
+        $name = 'ex_couponcoursegroupid' . $counter++;
 
         $operator = $data['operator'];
         $value    = $data['value'];
@@ -160,7 +160,7 @@ class couponcoursegroupid extends \user_filter_type {
         }
 
         $not = '';
-        switch($operator) {
+        switch ($operator) {
             case 0: // Contains.
                 $res = $DB->sql_like('g.' . $field, ":$name", false, false);
                 $params[$name] = "%$value%";
@@ -184,7 +184,7 @@ class couponcoursegroupid extends \user_filter_type {
                 break;
             case 5: // Empty.
                 $not = 'NOT';
-                $res = '(g.' . $field . ' IS NOT NULL AND g.' . $field . ' <> :'.$name.')';
+                $res = '(g.' . $field . ' IS NOT NULL AND g.' . $field . ' <> :' . $name . ')';
                 $params[$name] = '';
                 break;
             default:
@@ -212,7 +212,7 @@ class couponcoursegroupid extends \user_filter_type {
 
         $a = new \stdClass();
         $a->label    = $this->_label . '.' . $field;
-        $a->value    = '"'.s($value).'"';
+        $a->value    = '"' . s($value) . '"';
         $a->operator = $operators[$operator];
 
         switch ($operator) {

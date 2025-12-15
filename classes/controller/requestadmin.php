@@ -41,7 +41,6 @@ namespace block_coupon\controller;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class requestadmin {
-
     /**
      * @var \moodle_page
      */
@@ -174,7 +173,7 @@ class requestadmin {
             redirect($redirect);
         } else if ($data = $mform->get_data()) {
             if (empty($instance->options)) {
-                $options = new \stdClass;
+                $options = new \stdClass();
             } else {
                 $options = json_decode($instance->options);
             }
@@ -413,8 +412,12 @@ class requestadmin {
 
                 // Generate and send off.
                 $coupons = $DB->get_records_list('block_coupon', 'id', $generator->get_generated_couponids());
-                \block_coupon\helper::mail_requested_coupons($user, $coupons,
-                        $options, $data->message['text']);
+                \block_coupon\helper::mail_requested_coupons(
+                    $user,
+                    $coupons,
+                    $options,
+                    $data->message['text']
+                );
 
                 $dbt->allow_commit();
             } catch (\Exception $ex) {
@@ -439,5 +442,4 @@ class requestadmin {
         $url->params($mergeparams);
         return $url;
     }
-
 }

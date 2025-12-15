@@ -43,7 +43,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class chooser extends \moodleform {
-
     /**
      * form definition
      */
@@ -59,8 +58,13 @@ class chooser extends \moodleform {
 
         // Type of coupon.
         // Only create first element with label.
-        $mform->addElement('radio', 'coupon_type[type]', get_string('label:coupon_type', 'block_coupon'),
-                get_string('label:type_course', 'block_coupon'), 0);
+        $mform->addElement(
+            'radio',
+            'coupon_type[type]',
+            get_string('label:coupon_type', 'block_coupon'),
+            get_string('label:type_course', 'block_coupon'),
+            0
+        );
         if ($DB->count_records('cohort', null) > 0) {
             $mform->addElement('radio', 'coupon_type[type]', '', get_string('label:type_cohorts', 'block_coupon'), 1);
         }
@@ -93,5 +97,4 @@ class chooser extends \moodleform {
         }
         return $rs;
     }
-
 }

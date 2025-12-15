@@ -42,7 +42,6 @@ use block_coupon\forms\baseform;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursevars extends baseform {
-
     /**
      * form definition
      */
@@ -54,7 +53,7 @@ class coursevars extends baseform {
         $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcourses.php';
         \MoodleQuickForm::registerElementType('findcourses', $path, '\block_coupon\forms\element\findcourses');
 
-        list($this->generatoroptions) = $this->_customdata;
+        [$this->generatoroptions] = $this->_customdata;
 
         $mform->addElement('header', 'header1', get_string('heading:courseandvars', 'block_coupon'));
 
@@ -64,8 +63,12 @@ class coursevars extends baseform {
             $multiselect = (bool)$this->_customdata['coursemultiselect'];
         }
         $options = ['multiple' => $multiselect, 'onlyvisible' => true];
-        $mform->addElement('findcourses', 'coupon_courses',
-                get_string('label:coupon_courses', 'block_coupon'), $options);
+        $mform->addElement(
+            'findcourses',
+            'coupon_courses',
+            get_string('label:coupon_courses', 'block_coupon'),
+            $options
+        );
         $mform->addRule('coupon_courses', get_string('error:required', 'block_coupon'), 'required', null, 'client');
         $mform->addHelpButton('coupon_courses', 'label:coupon_courses', 'block_coupon');
 
@@ -73,15 +76,24 @@ class coursevars extends baseform {
         $roles = helper::get_role_menu(null, true);
         $attributes = [];
         // Role id.
-        $selectrole = &$mform->addElement('select', 'coupon_role',
-                get_string('label:coupon_role', 'block_coupon'), $roles, $attributes);
+        $selectrole = &$mform->addElement(
+            'select',
+            'coupon_role',
+            get_string('label:coupon_role', 'block_coupon'),
+            $roles,
+            $attributes
+        );
         $selectrole->setMultiple(false);
         $mform->setDefault('coupon_role', helper::get_default_coupon_role()->id);
         $mform->addHelpButton('coupon_role', 'label:coupon_role', 'block_coupon');
 
         // Configurable enrolment time.
-        $mform->addElement('duration', 'enrolment_period',
-                get_string('label:enrolment_period', 'block_coupon'), ['size' => 40, 'optional' => true]);
+        $mform->addElement(
+            'duration',
+            'enrolment_period',
+            get_string('label:enrolment_period', 'block_coupon'),
+            ['size' => 40, 'optional' => true]
+        );
         $mform->setDefault('enrolment_period', get_config('block_coupon', 'defaultenrolmentperiod'));
         $mform->addHelpButton('enrolment_period', 'label:enrolment_period', 'block_coupon');
 
@@ -108,5 +120,4 @@ class coursevars extends baseform {
         $err = parent::validation($data, $files);
         return $err;
     }
-
 }

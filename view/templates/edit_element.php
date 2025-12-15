@@ -42,17 +42,16 @@ if ($action == 'edit') {
     // The id of the element must be supplied if we are currently editing one.
     $id = required_param('id', PARAM_INT);
     $element = $DB->get_record('block_coupon_elements', ['id' => $id], '*', MUST_EXIST);
-    $pageurl = new moodle_url('/blocks/coupon/view/templates/edit_element.php',
-            ['id' => $id, 'tid' => $tid, 'action' => $action]);
+    $params = ['id' => $id, 'tid' => $tid, 'action' => $action];
+    $pageurl = new moodle_url('/blocks/coupon/view/templates/edit_element.php', $params);
 } else { // Must be adding an element.
     // We need to supply what element we want added to what page.
     $id = 0;
     $pageid = required_param('pageid', PARAM_INT);
     $element = new stdClass();
     $element->element = required_param('element', PARAM_ALPHA);
-    $pageurl = new moodle_url('/blocks/coupon/view/templates/edit_element.php',
-        ['tid' => $tid, 'element' => $element->element,
-        'pageid' => $pageid, 'action' => $action]);
+    $params = ['tid' => $tid, 'element' => $element->element, 'pageid' => $pageid, 'action' => $action];
+    $pageurl = new moodle_url('/blocks/coupon/view/templates/edit_element.php', $params);
 }
 
 $context = $template->get_context();
@@ -75,11 +74,15 @@ if ($context->contextlevel == CONTEXT_SYSTEM) {
 
 // Additional page setup.
 if ($template->get_context()->contextlevel == CONTEXT_SYSTEM) {
-    $PAGE->navbar->add(get_string('managetemplates', 'block_coupon'),
-        new moodle_url('/blocks/coupon/view/templates/manage_templates.php'));
+    $PAGE->navbar->add(
+        get_string('managetemplates', 'block_coupon'),
+        new moodle_url('/blocks/coupon/view/templates/manage_templates.php')
+    );
 }
-$PAGE->navbar->add(get_string('edittemplate', 'block_coupon'), new moodle_url('/blocks/coupon/view/templates/edit.php',
-    ['tid' => $tid]));
+$PAGE->navbar->add(
+    get_string('edittemplate', 'block_coupon'),
+    new moodle_url('/blocks/coupon/view/templates/edit.php', ['tid' => $tid])
+);
 $PAGE->navbar->add(get_string('editelement', 'block_coupon'));
 
 $mform = new \block_coupon\template\edit_element_form($pageurl, ['element' => $element]);

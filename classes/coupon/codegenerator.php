@@ -39,7 +39,6 @@ namespace block_coupon\coupon;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class codegenerator {
-
     /**
      * Generator flag for numeric characters
      */
@@ -71,8 +70,13 @@ final class codegenerator {
      * @param string $postfix coupon code postfix
      * @return string guaranteed unique coupon code
      */
-    public static function generate_unique_code($size, $flags = self::ALL,
-            $exclude = ['i', 'I', 'l', 'L', 1, 0, 'o', 'O'], $prefix = '', $postfix = '') {
+    public static function generate_unique_code(
+        $size,
+        $flags = self::ALL,
+        $exclude = ['i', 'I', 'l', 'L', 1, 0, 'o', 'O'],
+        $prefix = '',
+        $postfix = ''
+    ) {
         global $DB;
 
         $vcode = $prefix . self::generate_code($size, $flags, $exclude) . $postfix;
@@ -90,7 +94,11 @@ final class codegenerator {
      * @param int $flags generator flags
      * @param array $exclude characters to exclude
      */
-    private static function generate_code($size, $flags = self::ALL, $exclude = ['i', 'I', 'l', 'L', 1, 0, 'o', 'O']) {
+    private static function generate_code(
+        $size,
+        $flags = self::ALL,
+        $exclude = ['i', 'I', 'l', 'L', 1, 0, 'o', 'O']
+    ) {
         return static::get_token($size, $flags, $exclude);
     }
 
@@ -113,8 +121,11 @@ final class codegenerator {
      * @param array $exclude characters to exclude
      * @return array [maximum, have]
      */
-    public static function calc_max_codes_for_size($size, $flags = self::ALL,
-            $exclude = ['i', 'I', 'l', 'L', 1, 0, 'o', 'O']) {
+    public static function calc_max_codes_for_size(
+        $size,
+        $flags = self::ALL,
+        $exclude = ['i', 'I', 'l', 'L', 1, 0, 'o', 'O']
+    ) {
         global $DB;
 
         $have = $DB->count_records_sql('SELECT COUNT(1) FROM {block_coupon} WHERE LENGTH(submission_code) = ?', [$size]);
@@ -134,8 +145,10 @@ final class codegenerator {
      * @param int $flags generator flags
      * @param array $exclude characters to exclude
      */
-    private static function get_char_str($flags = self::ALL,
-            $exclude = ['i', 'I', 'l', 'L', 1, 0, 'o', 'O']) {
+    private static function get_char_str(
+        $flags = self::ALL,
+        $exclude = ['i', 'I', 'l', 'L', 1, 0, 'o', 'O']
+    ) {
         $chars = '';
         if (self::is_flag($flags, self::NUMERIC)) {
             $chars .= '0123456789';
@@ -202,7 +215,11 @@ final class codegenerator {
      * @param array $exclude characters to exclude
      * @return string
      */
-    protected static function get_token($size, $flags = self::ALL, $exclude = ['i', 'I', 'l', 'L', 1, 0, 'o', 'O']) {
+    protected static function get_token(
+        $size,
+        $flags = self::ALL,
+        $exclude = ['i', 'I', 'l', 'L', 1, 0, 'o', 'O']
+    ) {
         $codealphabet = static::get_char_str($flags, $exclude);
         $token = '';
         $max = strlen($codealphabet);
@@ -231,5 +248,4 @@ final class codegenerator {
 
         return $token;
     }
-
 }

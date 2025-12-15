@@ -39,7 +39,6 @@ namespace block_coupon\controller;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursegroupings {
-
     /**
      * @var \moodle_page
      */
@@ -168,7 +167,7 @@ class coursegroupings {
 
         $instance = $DB->get_record('block_coupon_coursegroupings', ['id' => $itemid]);
         if (empty($instance)) {
-            $instance = new \stdClass;
+            $instance = new \stdClass();
             $instance->id = 0;
         }
         $gcourseids = $DB->get_fieldset_select('block_coupon_cgcourses', 'courseid', 'coursegroupingid = ?', [$itemid]);
@@ -200,14 +199,14 @@ class coursegroupings {
             // Link courses.
             $deletecourseids = array_diff($gcourseids, $data->course);
             if (!empty($deletecourseids)) {
-                list($insql, $params) = $DB->get_in_or_equal($deletecourseids, SQL_PARAMS_NAMED, 'cid', true, 0);
+                [$insql, $params] = $DB->get_in_or_equal($deletecourseids, SQL_PARAMS_NAMED, 'cid', true, 0);
                 $params['coursegroupingid'] = $instance->id;
                 $select = "courseid {$insql} AND coursegroupingid = :coursegroupingid";
                 $DB->delete_records_select('block_coupon_cgcourses', $select, $params);
             }
             $addcourseids = array_diff($data->course, $gcourseids);
             foreach ($addcourseids as $cid) {
-                $record = new \stdClass;
+                $record = new \stdClass();
                 $record->coursegroupingid = $instance->id;
                 $record->courseid = $cid;
                 $record->timecreated = time();
@@ -266,16 +265,24 @@ class coursegroupings {
         }
         $instance->actions = [];
         if (!$noactions) {
-            $delete = \html_writer::link($this->get_url(['action' => 'delete', 'itemid' => $instance->id]),
-                    \html_writer::img($this->output->image_url('i/delete'),
-                            get_string('action:coursegrouping:delete', 'block_coupon'),
-                            ['class' => 'icon action-icon']));
+            $delete = \html_writer::link(
+                $this->get_url(['action' => 'delete', 'itemid' => $instance->id]),
+                \html_writer::img(
+                    $this->output->image_url('i/delete'),
+                    get_string('action:coursegrouping:delete', 'block_coupon'),
+                    ['class' => 'icon action-icon']
+                )
+            );
             $instance->actions[] = $delete;
 
-            $edit = \html_writer::link($this->get_url(['action' => 'edit', 'itemid' => $instance->id]),
-                    \html_writer::img($this->output->image_url('i/edit'),
-                            get_string('action:coursegrouping:edit', 'block_coupon'),
-                            ['class' => 'icon action-icon']));
+            $edit = \html_writer::link(
+                $this->get_url(['action' => 'edit', 'itemid' => $instance->id]),
+                \html_writer::img(
+                    $this->output->image_url('i/edit'),
+                    get_string('action:coursegrouping:edit', 'block_coupon'),
+                    ['class' => 'icon action-icon']
+                )
+            );
             $instance->actions[] = $edit;
         }
 
@@ -293,5 +300,4 @@ class coursegroupings {
         $url->params($mergeparams);
         return $url;
     }
-
 }

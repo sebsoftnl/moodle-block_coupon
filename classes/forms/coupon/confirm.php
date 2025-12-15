@@ -40,7 +40,6 @@ use block_coupon\forms\baseform;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class confirm extends baseform {
-
     /**
      * form definition
      */
@@ -49,16 +48,17 @@ class confirm extends baseform {
         $PAGE->requires->js_call_amd('block_coupon/confirm', 'init', ['.block-coupon-container form.mform']);
         $mform = & $this->_form;
 
-        list($this->generatoroptions) = $this->_customdata;
+        [$this->generatoroptions] = $this->_customdata;
 
         $mform->addElement('header', 'header', get_string('confirm'));
 
         $mform->addElement('html', $this->generatoroptions->create_confirmation_info());
 
-        $mform->addElement('static', '_msg', '', '<div class="processing hidden alert alert-info">'.
-                $OUTPUT->render_from_template('core/loading', []). '<span class="ml-2">'.
-                get_string('coupon:generator:processing', 'block_coupon').
-                '</span></div>');
+        $msg = '<div class="processing hidden alert alert-info">' .
+            $OUTPUT->render_from_template('core/loading', []) . '<span class="ml-2">' .
+            get_string('coupon:generator:processing', 'block_coupon') .
+            '</span></div>';
+        $mform->addElement('static', '_msg', '', $msg);
 
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'), true);
     }
@@ -101,5 +101,4 @@ class confirm extends baseform {
         $errors = parent::validation($data, $files);
         return $errors;
     }
-
 }

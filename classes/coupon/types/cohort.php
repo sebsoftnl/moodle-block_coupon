@@ -43,7 +43,6 @@ use block_coupon\exception;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cohort extends typebase implements icoupontype {
-
     /**
      * Claim coupon.
      * @param int $foruserid user that claims coupon. Current userid if not given.
@@ -158,5 +157,4 @@ class cohort extends typebase implements icoupontype {
             throw new exception('error:already-enrolled-in-cohorts');
         }
     }
-
 }

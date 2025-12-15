@@ -42,7 +42,6 @@ use block_coupon\helper;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cohortvars extends baseform {
-
     /**
      * form definition
      */
@@ -54,7 +53,7 @@ class cohortvars extends baseform {
         $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcohorts.php';
         \MoodleQuickForm::registerElementType('findcohorts', $path, '\block_coupon\forms\element\findcohorts');
 
-        list($this->generatoroptions) = $this->_customdata;
+        [$this->generatoroptions] = $this->_customdata;
 
         // Select cohort(s).
         $multiselect = true;
@@ -74,8 +73,12 @@ class cohortvars extends baseform {
         }
 
         $options = ['multiple' => true, 'onlyvisible' => true];
-        $mform->addElement('findcohorts', 'coupon_cohorts',
-                get_string('label:coupon_cohorts', 'block_coupon'), $options);
+        $mform->addElement(
+            'findcohorts',
+            'coupon_cohorts',
+            get_string('label:coupon_cohorts', 'block_coupon'),
+            $options
+        );
         $mform->addRule('coupon_cohorts', get_string('error:required', 'block_coupon'), 'required', null, 'client');
         $mform->addHelpButton('coupon_cohorts', 'label:coupon_cohorts', 'block_coupon');
 
@@ -83,15 +86,24 @@ class cohortvars extends baseform {
         $roles = helper::get_role_menu(null, true);
         $attributes = [];
         // Role id.
-        $selectrole = &$mform->addElement('select', 'coupon_role',
-                get_string('label:coupon_role', 'block_coupon'), $roles, $attributes);
+        $selectrole = &$mform->addElement(
+            'select',
+            'coupon_role',
+            get_string('label:coupon_role', 'block_coupon'),
+            $roles,
+            $attributes
+        );
         $selectrole->setMultiple(false);
         $mform->setDefault('coupon_role', helper::get_default_coupon_role()->id);
         $mform->addHelpButton('coupon_role', 'label:coupon_role', 'block_coupon');
 
         // Configurable enrolment time.
-        $mform->addElement('duration', 'enrolment_period',
-                get_string('label:enrolment_period', 'block_coupon'), ['size' => 40, 'optional' => true]);
+        $mform->addElement(
+            'duration',
+            'enrolment_period',
+            get_string('label:enrolment_period', 'block_coupon'),
+            ['size' => 40, 'optional' => true]
+        );
         $mform->setDefault('enrolment_period', get_config('block_coupon', 'defaultenrolmentperiod'));
         $mform->addHelpButton('enrolment_period', 'label:enrolment_period', 'block_coupon');
 
@@ -101,7 +113,7 @@ class cohortvars extends baseform {
         $data = [];
         if (!empty($this->generatoroptions->cohorts)) {
             $data['coupon_cohorts'] = $multiselect ?
-                    $this->generatoroptions->cohorts : reset($this->generatoroptions->cohorts);
+                $this->generatoroptions->cohorts : reset($this->generatoroptions->cohorts);
         }
         $data['roleid'] = $this->generatoroptions->roleid ?? helper::get_default_coupon_role()->id;
         $data['enrolperiod'] = $this->generatoroptions->enrolperiod ?? null;
@@ -119,5 +131,4 @@ class cohortvars extends baseform {
         $err = parent::validation($data, $files);
         return $err;
     }
-
 }

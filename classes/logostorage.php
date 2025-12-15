@@ -39,7 +39,6 @@ namespace block_coupon;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class logostorage {
-
     /**
      * @var string
      */
@@ -95,8 +94,14 @@ class logostorage {
     public static function prepare_draftarea(&$draftitemid) {
         $context = \context_system::instance();
         $options = ['subdirs' => 0, 'maxfiles' => static::MAX_FILES];
-        file_prepare_draft_area($draftitemid, $context->id, 'block_coupon',
-                self::FILE_AREA, self::AREA_ITEM_ID, $options);
+        file_prepare_draft_area(
+            $draftitemid,
+            $context->id,
+            'block_coupon',
+            self::FILE_AREA,
+            self::AREA_ITEM_ID,
+            $options
+        );
         return $draftitemid;
     }
 
@@ -109,8 +114,15 @@ class logostorage {
         $context = \context_system::instance();
         $options = ['subdirs' => 0, 'maxfiles' => static::MAX_FILES];
         $text = null;
-        return file_save_draft_area_files($draftitemid, $context->id, 'block_coupon',
-                self::FILE_AREA, self::AREA_ITEM_ID, $options, $text);
+        return file_save_draft_area_files(
+            $draftitemid,
+            $context->id,
+            'block_coupon',
+            self::FILE_AREA,
+            self::AREA_ITEM_ID,
+            $options,
+            $text
+        );
     }
 
     /**
@@ -205,14 +217,16 @@ class logostorage {
                 $file->get_filepath(),
                 $file->get_filesize(),
                 $file->get_author(),
-                \html_writer::img(\moodle_url::make_pluginfile_url(
+                \html_writer::img(
+                    \moodle_url::make_pluginfile_url(
                         $file->get_contextid(),
                         $file->get_component(),
                         $file->get_filearea(),
                         $file->get_itemid(),
                         $file->get_filepath(),
                         $file->get_filename()
-                    ), $file->get_filename()
+                    ),
+                    $file->get_filename()
                 ),
             ];
         }
@@ -244,5 +258,4 @@ class logostorage {
         $fs = get_file_storage();
         return $fs->get_file_by_id($fileid);
     }
-
 }

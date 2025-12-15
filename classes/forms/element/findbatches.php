@@ -44,7 +44,6 @@ require_once($CFG->libdir . '/form/autocomplete.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class findbatches extends MoodleQuickForm_autocomplete {
-
     /**
      * Has setValue() already been called already?
      *
@@ -97,8 +96,11 @@ class findbatches extends MoodleQuickForm_autocomplete {
         $values = (array) $value;
         $ids = [];
         foreach ($values as $onevalue) {
-            if (!empty($onevalue) && (!$this->optionExists($onevalue)) &&
-                    ($onevalue !== '_qf__force_multiselect_submission')) {
+            if (
+                !empty($onevalue) &&
+                (!$this->optionExists($onevalue)) &&
+                ($onevalue !== '_qf__force_multiselect_submission')
+            ) {
                 array_push($ids, $onevalue);
             }
         }
@@ -107,8 +109,8 @@ class findbatches extends MoodleQuickForm_autocomplete {
         }
         // Logic here is simulating API.
         $toselect = [];
-        list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'param');
-        $coupons = $DB->get_records_select('block_coupon', 'batchid '.$insql, $inparams, '', 'id,batchid');
+        [$insql, $inparams] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'param');
+        $coupons = $DB->get_records_select('block_coupon', 'batchid ' . $insql, $inparams, '', 'id,batchid');
         foreach ($coupons as $coupon) {
             $this->addOption($coupon->batchid, $coupon->batchid, ['selected' => 'selected']);
             array_push($toselect, $coupon->batchid);

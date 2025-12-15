@@ -30,6 +30,14 @@ const SELECTORS = {
         "delete": '[data-action="bulkdelete"]',
         editcourses: '[data-action="editcourses"]',
         editcohorts: '[data-action="editcohorts"]',
+    },
+    massactions: {
+        container: '[data-region="massactions"]',
+        replacecohorts: '[data-action="replacecohorts"]',
+        replacecourses: '[data-action="replacecourses"]',
+    },
+    actions: {
+        editcoupon: '[data-action="editcoupon"]',
     }
 };
 
@@ -205,7 +213,97 @@ const bulkSelectAll = (e) => {
     handleCheckboxChange();
 };
 
-const initBulkActions = () => {
+const bulkReplaceCohorts = async(e) => {
+    e.preventDefault();
+
+    let mfArgs = {};
+    if (e.currentTarget.dataset.jArgs !== undefined) {
+        let jArgs = e.currentTarget.dataset.jArgs;
+        if (typeof jArgs === 'string') {
+            jArgs = JSON.parse(jArgs);
+        }
+        for (const [key, value] of Object.entries(jArgs)) {
+            mfArgs[key] = value;
+        }
+    }
+
+    const modalForm = new ModalForm({
+        formClass: 'block_coupon\\forms\\dynamic\\replacecohorts',
+        modalConfig: {title: Str.get_string('replacecohorts', 'block_coupon')},
+        args: mfArgs,
+        returnFocus: e.target
+    });
+
+    // When table ID not provided, detect.
+    modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, () => window.location.reload());
+    modalForm.show();
+};
+
+const bulkReplaceCourses = async(e) => {
+    e.preventDefault();
+
+    let mfArgs = {};
+    if (e.currentTarget.dataset.jArgs !== undefined) {
+        let jArgs = e.currentTarget.dataset.jArgs;
+        if (typeof jArgs === 'string') {
+            jArgs = JSON.parse(jArgs);
+        }
+        for (const [key, value] of Object.entries(jArgs)) {
+            mfArgs[key] = value;
+        }
+    }
+
+    const modalForm = new ModalForm({
+        formClass: 'block_coupon\\forms\\dynamic\\replacecourses',
+        modalConfig: {title: Str.get_string('replacecourses', 'block_coupon')},
+        args: mfArgs,
+        returnFocus: e.target
+    });
+
+    // When table ID not provided, detect.
+    modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, () => window.location.reload());
+    modalForm.show();
+};
+
+const editCoupon = (e) => {
+    e.preventDefault();
+
+    let mfArgs = {
+        id: e.currentTarget.dataset.id,
+        typ: e.currentTarget.dataset.typ,
+    };
+    let formClass = '';
+    switch (e.currentTarget.dataset.typ) {
+        case 'course':
+            formClass = 'block_coupon\\forms\\dynamic\\editcoursecoupon';
+            break;
+        case 'cohort':
+            formClass = 'block_coupon\\forms\\dynamic\\editcohortcoupon';
+            break;
+    }
+    if (e.currentTarget.dataset.jArgs !== undefined) {
+        let jArgs = e.currentTarget.dataset.jArgs;
+        if (typeof jArgs === 'string') {
+            jArgs = JSON.parse(jArgs);
+        }
+        for (const [key, value] of Object.entries(jArgs)) {
+            mfArgs[key] = value;
+        }
+    }
+
+    const modalForm = new ModalForm({
+        formClass,
+        modalConfig: {title: Str.get_string('edit')},
+        args: mfArgs,
+        returnFocus: e.target
+    });
+
+    // When table ID not provided, detect.
+    modalForm.addEventListener(modalForm.events.FORM_SUBMITTED, () => window.location.reload());
+    modalForm.show();
+};
+
+const initBulkActions = (selector) => {
     $(SELECTORS.checkboxselectall).on('change', bulkSelectAll);
     // Initialize dropdown state.
     enableBulkActions($(`${SELECTORS.checkbox}:checked`).length > 0);
@@ -215,9 +313,12 @@ const initBulkActions = () => {
     $(SELECTORS.bulkactions.container).on('click', SELECTORS.bulkactions.delete, bulkDelete);
     $(SELECTORS.bulkactions.container).on('click', SELECTORS.bulkactions.editcourses, bulkEditCourses);
     $(SELECTORS.bulkactions.container).on('click', SELECTORS.bulkactions.editcohorts, bulkEditCohorts);
+    $(SELECTORS.massactions.container).on('click', SELECTORS.massactions.replacecourses, bulkReplaceCourses);
+    $(SELECTORS.massactions.container).on('click', SELECTORS.massactions.replacecohorts, bulkReplaceCohorts);
 
+    $(selector).on('click', SELECTORS.actions.editcoupon, editCoupon);
 };
 
-export const init = () => {
-    initBulkActions();
+export const init = (selector) => {
+    initBulkActions(selector);
 };

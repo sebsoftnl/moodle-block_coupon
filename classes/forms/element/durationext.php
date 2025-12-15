@@ -46,7 +46,7 @@ require_once($CFG->libdir . '/form/select.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class durationext extends \MoodleQuickForm_group {
-
+    // @codingStandardsIgnoreStart
     /**
      * Control the fieldnames for form elements
      * optional => if true, show a checkbox beside the element to turn it on (or off)
@@ -56,6 +56,7 @@ class durationext extends \MoodleQuickForm_group {
 
     /** @var array associative array of time units (weeks, days, hours) */
     private $_units = null;
+    // @codingStandardsIgnoreEnd
 
     /**
      * constructor
@@ -136,15 +137,33 @@ class durationext extends \MoodleQuickForm_group {
         for ($i = 1; $i < 100; $i++) {
             $options[$i] = $i;
         }
-        $this->_elements[] = $this->createFormElement('select', 'number', get_string('time', 'form'),
-                $options, $attributes, true);
+        $this->_elements[] = $this->createFormElement(
+            'select',
+            'number',
+            get_string('time', 'form'),
+            $options,
+            $attributes,
+            true
+        );
         unset($attributes['size']);
-        $this->_elements[] = $this->createFormElement('select', 'timeunit', get_string('timeunit', 'form'),
-                $this->get_units(), $attributes, true);
+        $this->_elements[] = $this->createFormElement(
+            'select',
+            'timeunit',
+            get_string('timeunit', 'form'),
+            $this->get_units(),
+            $attributes,
+            true
+        );
         // If optional we add a checkbox which the user can use to turn if on.
         if ($this->_options['optional']) {
-            $this->_elements[] = $this->createFormElement('checkbox', 'enabled', null, get_string('enable'),
-                    $this->getAttributes(), true);
+            $this->_elements[] = $this->createFormElement(
+                'checkbox',
+                'enabled',
+                null,
+                get_string('enable'),
+                $this->getAttributes(),
+                true
+            );
         }
         foreach ($this->_elements as $element) {
             if (method_exists($element, 'setHiddenLabel')) {
@@ -178,7 +197,7 @@ class durationext extends \MoodleQuickForm_group {
                     }
                 }
                 if (!is_array($value)) {
-                    list($number, $unit) = $this->seconds_to_unit($value);
+                    [$number, $unit] = $this->seconds_to_unit($value);
                     $value = ['number' => $number, 'timeunit' => $unit];
                     // If optional, default to off, unless a date was provided.
                     if ($this->_options['optional']) {
@@ -240,6 +259,10 @@ class durationext extends \MoodleQuickForm_group {
     public function exportValue(&$submitvalues, $assoc = false) { // @codingStandardsIgnoreLine Can't change parent behaviour.
         // Get the values from all the child elements.
         $valuearray = [];
+        if (!isset($submitvalues[$this->getName()])) {
+            // Quick fix. If "disabled" we have no submitted data.
+            return null;
+        }
         foreach ($this->_elements as $element) {
             $thisexport = $element->exportValue($submitvalues[$this->getName()], true);
             if (!is_null($thisexport)) {
@@ -256,7 +279,8 @@ class durationext extends \MoodleQuickForm_group {
         }
 
         return $this->_prepareValue(
-                (int) round($valuearray['number'] * $valuearray['timeunit']), $assoc);
+            (int) round($valuearray['number'] * $valuearray['timeunit']),
+            $assoc
+        );
     }
-
 }

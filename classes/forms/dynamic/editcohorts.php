@@ -35,7 +35,6 @@ use context_system;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class editcohorts extends dynamic_form {
-
     /**
      * @var array list of coupons ids.
      */
@@ -93,9 +92,11 @@ class editcohorts extends dynamic_form {
     protected function initialize() {
         global $DB, $CFG;
 
-        \MoodleQuickForm::registerElementType('findcohorts',
+        \MoodleQuickForm::registerElementType(
+            'findcohorts',
             $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcohorts.php',
-                '\\block_coupon\\forms\\element\\findcohorts');
+            '\\block_coupon\\forms\\element\\findcohorts'
+        );
 
         $this->errorlist = [];
         $this->idlist = $this->required_param_array('id', PARAM_INT);
@@ -126,7 +127,7 @@ class editcohorts extends dynamic_form {
     /**
      * Returns context where this form is used
      *
-     * This context is validated in {@see \external_api::validate_context()}
+     * This context is validated in {@see external_api::validate_context()}
      *
      * If context depends on the form data, it is available in $this->_ajaxformdata or
      * by calling $this->optional_param()
@@ -247,10 +248,11 @@ class editcohorts extends dynamic_form {
         }
 
         // Search for the element first in $this->_ajaxformdata, then in $_POST and then in $_GET.
-        if (($values = $this->get_array_value_by_keys($this->_ajaxformdata ?? [], $keys)) !== null ||
+        if (
+            ($values = $this->get_array_value_by_keys($this->_ajaxformdata ?? [], $keys)) !== null ||
             ($values = $this->get_array_value_by_keys($_POST, $keys)) !== null ||
-            ($values = $this->get_array_value_by_keys($_GET, $keys)) !== null) {
-
+            ($values = $this->get_array_value_by_keys($_GET, $keys)) !== null
+        ) {
             if (!is_array($values)) {
                 throw new \moodle_exception('missingparam', '', '', $name);
             }
@@ -271,5 +273,4 @@ class editcohorts extends dynamic_form {
 
         throw new \moodle_exception('missingparam', '', '', $name);
     }
-
 }

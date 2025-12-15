@@ -39,7 +39,6 @@ namespace block_coupon\table;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class templates_filterset extends \core_table\local\filter\filterset {
-
     /**
      * Get required filters
      *

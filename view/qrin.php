@@ -36,11 +36,11 @@ $hash = required_param('h', PARAM_ALPHANUMEXT);
 try {
     $data = $DB->get_record('block_coupon', ['submission_code' => $code], '*', IGNORE_MISSING);
     if (empty($data->id)) {
-        throw new block_coupon\exception('error:invalid_coupon_code');
+        throw new \block_coupon\exception('error:invalid_coupon_code');
     } else if ($hash !== sha1($data->id . $data->ownerid . $data->submission_code)) {
-        throw new block_coupon\exception('error:invalid_coupon_code');
+        throw new \block_coupon\exception('error:invalid_coupon_code');
     } else if (!empty($data->userid)) {
-        throw new block_coupon\exception('error:coupon_already_used');
+        throw new \block_coupon\exception('error:coupon_already_used');
     } else {
         if (!isloggedin()) {
             // Redirect to signup with coupon code.

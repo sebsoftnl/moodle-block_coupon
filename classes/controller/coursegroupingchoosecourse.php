@@ -42,7 +42,6 @@ use block_coupon\coupon\typebase;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursegroupingchoosecourse {
-
     /**
      * @var \moodle_page
      */
@@ -103,8 +102,12 @@ class coursegroupingchoosecourse {
         // Fetch grouping record.
         $grouping = $DB->get_record('block_coupon_groupings', ['id' => $gpid], '*', MUST_EXIST);
         // Fetch coursegrouping record.
-        $coursegrouping = $DB->get_record('block_coupon_coursegroupings',
-                ['id' => $grouping->coursegroupingid], '*', MUST_EXIST);
+        $coursegrouping = $DB->get_record(
+            'block_coupon_coursegroupings',
+            ['id' => $grouping->coursegroupingid],
+            '*',
+            MUST_EXIST
+        );
         // Fetch cgcourse records.
         $cgcourses = $DB->get_records('block_coupon_cgcourses', ['coursegroupingid' => $coursegrouping->id], '', '*');
         $courseids = [];
@@ -157,5 +160,4 @@ class coursegroupingchoosecourse {
         $url->params($mergeparams);
         return $url;
     }
-
 }

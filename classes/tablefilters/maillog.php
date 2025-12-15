@@ -41,7 +41,6 @@ use block_coupon\filtering\filtering;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class maillog extends filtering {
-
     /**
      * Return all default filter names and advanced status
      * @return array
@@ -61,11 +60,14 @@ class maillog extends filtering {
     public function get_field($fieldname, $advanced) {
         switch ($fieldname) {
             case 'timecreated':
-                return new \user_filter_date('timecreated',
-                        get_string('report:heading:timecreated', 'block_coupon'), $advanced, 'e.timecreated');
+                return new \user_filter_date(
+                    'timecreated',
+                    get_string('report:heading:timecreated', 'block_coupon'),
+                    $advanced,
+                    'e.timecreated'
+                );
             default:
                 return null;
         }
     }
-
 }

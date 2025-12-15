@@ -42,7 +42,6 @@ use block_coupon\helper;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursevars extends baseform {
-
     /**
      * form definition
      */
@@ -76,16 +75,25 @@ class coursevars extends baseform {
 
         $attributes = ['size' => min(20, count($arrcoursesselect))];
         // Course id.
-        $selectcourse = &$mform->addElement('select', 'coupon_courses',
-                get_string('label:coupon_courses', 'block_coupon'), $arrcoursesselect, $attributes);
+        $selectcourse = &$mform->addElement(
+            'select',
+            'coupon_courses',
+            get_string('label:coupon_courses', 'block_coupon'),
+            $arrcoursesselect,
+            $attributes
+        );
         $selectcourse->setMultiple($multiselect);
         $mform->addRule('coupon_courses', get_string('error:required', 'block_coupon'), 'required', null, 'client');
         $mform->addHelpButton('coupon_courses', 'label:coupon_courses', 'block_coupon');
 
         // Configurable enrolment extension time.
         $mform->addElement('static', '_enrolperiod', '', get_string('label:extendperiod:desc', 'block_coupon'));
-        $mform->addElement('duration', 'enrolperiod', get_string('label:extendperiod', 'block_coupon'),
-                ['size' => 40, 'optional' => true]);
+        $mform->addElement(
+            'duration',
+            'enrolperiod',
+            get_string('label:extendperiod', 'block_coupon'),
+            ['size' => 40, 'optional' => true]
+        );
         $mform->setDefault('enrolperiod', 86400);
         $mform->addHelpButton('enrolperiod', 'label:enrolment_period', 'block_coupon');
 
@@ -113,5 +121,4 @@ class coursevars extends baseform {
         $err = parent::validation($data, $files);
         return $err;
     }
-
 }

@@ -45,7 +45,6 @@ use block_coupon\coupon\generatoroptions;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursegroupingcoupon {
-
     /**
      * @var \moodle_page
      */
@@ -268,7 +267,7 @@ class coursegroupingcoupon {
      * Process page 6
      */
     protected function process_page_5() {
-        global $CFG, $USER;
+        global $CFG, $USER, $DB;
         $url = $this->get_url(['page' => 5]);
 
         // Load generator options.
@@ -299,7 +298,6 @@ class coursegroupingcoupon {
             // And reload page.
             redirect($url);
         } else if ($data = $mform->get_data()) {
-
             // Get recipients.
             switch ($generatoroptions->generatormethod) {
                 case 'csv':
@@ -366,7 +364,6 @@ class coursegroupingcoupon {
             generatoroptions::clean_session();
             redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
-
             // Get recipients.
             if ($generatoroptions->generatormethod == 'csv') {
                 // Parse CSV.
@@ -440,7 +437,7 @@ class coursegroupingcoupon {
                 if (!$generatoroptions->generatecodesonly) {
                     // Generate and send off.
                     $coupons = $DB->get_records_list('block_coupon', 'id', $generator->get_generated_couponids());
-                    list($rs, $batchid, $ts) = helper::mail_coupons($coupons, $generatoroptions, false, false);
+                    [$rs, $batchid, $ts] = helper::mail_coupons($coupons, $generatoroptions, false, false);
 
                     $dlurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php', ['bid' => $batchid, 't' => $ts]);
                     $dllink = \html_writer::link($dlurl, get_string('here', 'block_coupon'));
@@ -498,5 +495,4 @@ class coursegroupingcoupon {
         $url->params($mergeparams);
         return $url;
     }
-
 }

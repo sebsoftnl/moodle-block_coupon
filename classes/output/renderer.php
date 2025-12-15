@@ -55,7 +55,6 @@ use component_action;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer extends plugin_renderer_base {
-
     /**
      * Return rendered request details
      * @param stdClass $request
@@ -86,8 +85,15 @@ class renderer extends plugin_renderer_base {
      * @param boolean $linkedwhenselected whether to display a link under the tab name when it's selected
      * @return \tabobject
      */
-    protected function create_pictab($id, $pix = null, $component = null, $link = null,
-            $text = '', $title = '', $linkedwhenselected = false) {
+    protected function create_pictab(
+        $id,
+        $pix = null,
+        $component = null,
+        $link = null,
+        $text = '',
+        $title = '',
+        $linkedwhenselected = false
+    ) {
         $img = '';
         if ($pix !== null) {
             $img = $this->image_icon($pix, $title, empty($component) ? 'moodle' : $component, ['class' => 'icon']);
@@ -102,72 +108,183 @@ class renderer extends plugin_renderer_base {
      * @param string $selected selected tab
      * @param array $params any paramaters needed for the base url
      */
-    public function get_tabs($context, $selected, $params = []) {
+    public function get_tab_defs($context, $selected, $params = []) {
         global $CFG;
         $tabs = [];
+
+        $config = get_config('block_coupon');
+
         // Add exclusions.
-        $tabs[] = $this->create_pictab('wzcoupons', 'e/print', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/index.php', $params),
-                get_string('tab:wzcoupons', 'block_coupon'));
-        $tabs[] = $this->create_pictab('wzcouponimage', 'e/insert_edit_image', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/managelogos.php', $params),
-                get_string('tab:wzcouponimage', 'block_coupon'));
-        $coursegroupingstab = $this->create_pictab('cpcoursegroupings', '', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/coursegroupings/index.php', $params),
-                get_string('tab:wzcoupongroupings', 'block_coupon'));
+        $tabs[] = $this->create_pictab(
+            'wzcoupons',
+            'e/print',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/index.php', $params),
+            get_string('tab:wzcoupons', 'block_coupon')
+        );
+        $tabs[] = $this->create_pictab(
+            'wzcouponimage',
+            'e/insert_edit_image',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/managelogos.php', $params),
+            get_string('tab:wzcouponimage', 'block_coupon')
+        );
+        $coursegroupingstab = $this->create_pictab(
+            'cpcoursegroupings',
+            '',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/coursegroupings/index.php', $params),
+            get_string('tab:wzcoupongroupings', 'block_coupon')
+        );
         $tabs[] = $coursegroupingstab;
 
-        $requesttab = $this->create_pictab('cprequestadmin', 'i/checkpermissions', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', $params),
-                get_string('tab:requests', 'block_coupon'));
-        $requesttab->subtree[] = $this->create_pictab('cprequestusers', 'i/users', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', $params + ['action' => 'users']),
-                get_string('tab:requestusers', 'block_coupon'));
-        $requesttab->subtree[] = $this->create_pictab('cprequests', 'e/help', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', $params + ['action' => 'requests']),
-                get_string('tab:requests', 'block_coupon'));
+        $requesttab = $this->create_pictab(
+            'cprequestadmin',
+            'i/checkpermissions',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', $params),
+            get_string('tab:requests', 'block_coupon')
+        );
+        $requesttab->subtree[] = $this->create_pictab(
+            'cprequestusers',
+            'i/users',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', $params + ['action' => 'users']),
+            get_string('tab:requestusers', 'block_coupon')
+        );
+        $requesttab->subtree[] = $this->create_pictab(
+            'cprequests',
+            'e/help',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/requests/admin.php', $params + ['action' => 'requests']),
+            get_string('tab:requests', 'block_coupon')
+        );
         $tabs[] = $requesttab;
 
-        $tabs[] = $this->create_pictab('cpreport', 'i/report', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/reports.php', $params),
-                get_string('tab:report', 'block_coupon'));
-        $tabs[] = $this->create_pictab('cpunused', 'i/completion-manual-n', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php',
-                array_merge($params, ['tab' => 'unused'])),
-                get_string('tab:unused', 'block_coupon'));
-        $tabs[] = $this->create_pictab('cpused', 'i/completion-manual-enabled', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php',
-                array_merge($params, ['tab' => 'used'])),
-                get_string('tab:used', 'block_coupon'));
+        $tabs[] = $this->create_pictab(
+            'cpreport',
+            'i/report',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/reports.php', $params),
+            get_string('tab:report', 'block_coupon')
+        );
+        $tabs[] = $this->create_pictab(
+            'cpunused',
+            'i/completion-manual-n',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php', $params + ['tab' => 'unused']),
+            get_string('tab:unused', 'block_coupon')
+        );
+        $tabs[] = $this->create_pictab(
+            'cpused',
+            'i/completion-manual-enabled',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php', $params + ['tab' => 'used']),
+            get_string('tab:used', 'block_coupon')
+        );
         if (get_config('block_coupon', 'seperatepersonalcoupontab')) {
-            $tabs[] = $this->create_pictab('cppersonal', 'i/permissionlock', '',
-                    new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php',
-                    array_merge($params, ['tab' => 'personal'])),
-                    get_string('tab:personalcoupons', 'block_coupon'));
+            $tabs[] = $this->create_pictab(
+                'cppersonal',
+                'i/permissionlock',
+                '',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/couponview.php', $params + ['tab' => 'personal']),
+                get_string('tab:personalcoupons', 'block_coupon')
+            );
         }
-        $tabs[] = $this->create_pictab('cperrorreport', 'i/warning', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/errorreport.php',
-                array_merge($params, ['tab' => 'cperrorreport'])),
-                get_string('tab:errors', 'block_coupon'));
-        $tabs[] = $this->create_pictab('cpcleaner', 'e/cleanup_messy_code', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/cleanup.php',
-                array_merge($params, ['tab' => 'cpcleaner'])),
-                get_string('tab:cleaner', 'block_coupon'));
-        $tabs[] = $this->create_pictab('cpbatchlist', 'i/down', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/downloadbatchlist.php',
-                array_merge($params, ['tab' => 'cpbatchlist'])),
-                get_string('tab:downloadbatchlist', 'block_coupon'));
-        $tabs[] = $this->create_pictab('cpmaillog', 'i/warning', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/maillog.php',
-                array_merge($params, ['tab' => 'maillog'])),
-                get_string('tab:maillog', 'block_coupon'));
+        $tabs[] = $this->create_pictab(
+            'cperrorreport',
+            'i/warning',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/errorreport.php', $params + ['tab' => 'cperrorreport']),
+            get_string('tab:errors', 'block_coupon')
+        );
+        $tabs[] = $this->create_pictab(
+            'cpcleaner',
+            'e/cleanup_messy_code',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/cleanup.php', $params + ['tab' => 'cpcleaner']),
+            get_string('tab:cleaner', 'block_coupon')
+        );
+        $tabs[] = $this->create_pictab(
+            'cpbatchlist',
+            'i/down',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/downloadbatchlist.php', $params + ['tab' => 'cpbatchlist']),
+            get_string('tab:downloadbatchlist', 'block_coupon')
+        );
+        $tabs[] = $this->create_pictab(
+            'cpmaillog',
+            'i/warning',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/maillog.php', $params + ['tab' => 'maillog']),
+            get_string('tab:maillog', 'block_coupon')
+        );
 
-        $tpltab = $this->create_pictab('cptpl', 'i/privatefiles', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/templates/index.php', $params),
-                get_string('templates', 'block_coupon'));
+        $tpltab = $this->create_pictab(
+            'cptpl',
+            'i/privatefiles',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/templates/index.php', $params),
+            get_string('templates', 'block_coupon')
+        );
         $tabs[] = $tpltab;
 
-        return $this->tabtree($tabs, $selected);
+        if (!empty($config->enableeditcohorts) || !empty($config->enableeditcourses)) {
+            $edltab = $this->create_pictab(
+                'cpeditlog',
+                'i/edit',
+                '',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/editlog.php', $params),
+                get_string('view:reports-editlog:title', 'block_coupon')
+            );
+            if ($config->enableeditcourses) {
+                $edltab->subtree[] = $this->create_pictab(
+                    'cpeditlogcourses',
+                    'i/edit',
+                    '',
+                    new \moodle_url(
+                        $CFG->wwwroot . '/blocks/coupon/view/editlog.php',
+                        $params + ['fortype' => 'course', 'tab' => 'cpeditlogcourses']
+                    ),
+                    get_string('courses')
+                );
+            }
+            if ($config->enableeditcohorts) {
+                $edltab->subtree[] = $this->create_pictab(
+                    'cpeditlogcohorts',
+                    'i/edit',
+                    '',
+                    new \moodle_url(
+                        $CFG->wwwroot . '/blocks/coupon/view/editlog.php',
+                        $params + ['fortype' => 'cohort', 'tab' => 'cpeditlogcohorts']
+                    ),
+                    get_string('cohorts', 'cohort')
+                );
+            }
+            $tabs[] = $edltab;
+        }
+
+        return $tabs;
+    }
+
+    /**
+     * Generate navigation tabs
+     *
+     * @param \context $context current context to work in (needed to determine capabilities).
+     * @param string $selected selected tab
+     * @param array $params any paramaters needed for the base url
+     */
+    public function get_tabs($context, $selected, $params = []) {
+        $tabs = $this->get_tab_defs($context, $selected, $params);
+        // Correct for settings.
+        $htabs = array_map('trim', explode(',', get_config('block_coupon', 'hidetabs')));
+        $vtabs = [];
+        foreach ($tabs as $tab) {
+            if ($tab->id == $selected || !in_array($tab->id, $htabs)) {
+                $vtabs[] = $tab;
+            }
+        }
+        return $this->tabtree($vtabs, $selected);
     }
 
     /**
@@ -183,61 +300,94 @@ class renderer extends plugin_renderer_base {
 
         $config = get_config('block_coupon');
 
-        $requesttab = $this->create_pictab('cpmyrequests', 'i/checkpermissions', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php', $params),
-                get_string('tab:requests', 'block_coupon'));
-        $requesttab->subtree[] = $this->create_pictab('myrequests', null, '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php',
-                        $params + ['action' => 'list']),
-                get_string('tab:listrequests', 'block_coupon'));
+        $requesttab = $this->create_pictab(
+            'cpmyrequests',
+            'i/checkpermissions',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php', $params),
+            get_string('tab:requests', 'block_coupon')
+        );
+        $requesttab->subtree[] = $this->create_pictab(
+            'myrequests',
+            null,
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php', $params + ['action' => 'list']),
+            get_string('tab:listrequests', 'block_coupon')
+        );
         switch ($selected) {
             case 'newrequest':
-                $requesttab->subtree[] = $this->create_pictab('newrequest', null, '',
-                        new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php',
-                                $params + ['action' => 'newrequest']),
-                        get_string('str:request:add', 'block_coupon'));
+                $requesttab->subtree[] = $this->create_pictab(
+                    'newrequest',
+                    null,
+                    '',
+                    new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php', $params + ['action' => 'newrequest']),
+                    get_string('str:request:add', 'block_coupon')
+                );
                 break;
             case 'delete':
-                $requesttab->subtree[] = $this->create_pictab('delete', null, '',
-                        new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php',
-                                $params + ['action' => 'delete']),
-                        get_string('delete:request:header', 'block_coupon'));
+                $requesttab->subtree[] = $this->create_pictab(
+                    'delete',
+                    null,
+                    '',
+                    new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php', $params + ['action' => 'delete']),
+                    get_string('delete:request:header', 'block_coupon')
+                );
                 break;
             case 'details':
-                $requesttab->subtree[] = $this->create_pictab('details', null, '',
-                        new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php',
-                                $params + ['action' => 'details']),
-                        get_string('str:request:details', 'block_coupon'));
+                $requesttab->subtree[] = $this->create_pictab(
+                    'details',
+                    null,
+                    '',
+                    new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/requests.php', $params + ['action' => 'details']),
+                    get_string('str:request:details', 'block_coupon')
+                );
                 break;
         }
         $tabs[] = $requesttab;
 
         if (!empty($config->enablemycouponsforru)) {
-            $couponstab = $this->create_pictab('cpmycoupons', 'i/print', '',
-                    new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/coupons.php', $params),
-                    get_string('tab:cpmycoupons', 'block_coupon'));
-            $couponstab->subtree[] = $this->create_pictab('mycoupons-used', null, '',
-                    new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/coupons.php',
-                            $params + ['action' => 'used']),
-                    get_string('tab:used', 'block_coupon'));
-            $couponstab->subtree[] = $this->create_pictab('mycoupons-unused', null, '',
-                    new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/coupons.php',
-                            $params + ['action' => 'unused']),
-                    get_string('tab:unused', 'block_coupon'));
+            $couponstab = $this->create_pictab(
+                'cpmycoupons',
+                'i/print',
+                '',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/coupons.php', $params),
+                get_string('tab:cpmycoupons', 'block_coupon')
+            );
+            $couponstab->subtree[] = $this->create_pictab(
+                'mycoupons-used',
+                null,
+                '',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/coupons.php', $params + ['action' => 'used']),
+                get_string('tab:used', 'block_coupon')
+            );
+            $couponstab->subtree[] = $this->create_pictab(
+                'mycoupons-unused',
+                null,
+                '',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/coupons.php', $params + ['action' => 'unused']),
+                get_string('tab:unused', 'block_coupon')
+            );
             $tabs[] = $couponstab;
         }
 
         if (!empty($config->enablemyprogressforru)) {
-            $reportstab = $this->create_pictab('cpmyreports', 'i/report', '',
-                    new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/reports.php', $params),
-                    get_string('tab:report', 'block_coupon'));
+            $reportstab = $this->create_pictab(
+                'cpmyreports',
+                'i/report',
+                '',
+                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/reports.php', $params),
+                get_string('tab:report', 'block_coupon')
+            );
             $tabs[] = $reportstab;
         }
 
-        $batchlisttab = $this->create_pictab('cpmybatches', 'i/down', '',
-                new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/batches.php',
-                        $params + ['action' => 'batchlist']),
-                get_string('tab:downloadbatchlist', 'block_coupon'));
+        $batchlisttab = $this->create_pictab(
+            'cpmybatches',
+            'i/down',
+            '',
+            new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/my/batches.php', $params + ['action' => 'batchlist']),
+            get_string('tab:downloadbatchlist', 'block_coupon')
+        );
         $tabs[] = $batchlisttab;
 
         return $this->tabtree($tabs, $selected);
@@ -254,8 +404,14 @@ class renderer extends plugin_renderer_base {
      * @param boolean $iconbeforetext override default Moodle to place icon BEFORE text
      * @return string HTML fragment
      */
-    public function action_icon($url, pix_icon $pixicon, ?component_action $action = null,
-            ?array $attributes = null, $linktext = false, $iconbeforetext = false) {
+    public function action_icon(
+        $url,
+        pix_icon $pixicon,
+        ?component_action $action = null,
+        ?array $attributes = null,
+        $linktext = false,
+        $iconbeforetext = false
+    ) {
         if (!($url instanceof moodle_url)) {
             $url = new moodle_url($url);
         }
@@ -280,5 +436,4 @@ class renderer extends plugin_renderer_base {
             return $this->action_link($url, $text . $icon, $action, $attributes);
         }
     }
-
 }

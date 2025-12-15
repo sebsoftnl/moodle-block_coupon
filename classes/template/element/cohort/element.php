@@ -32,7 +32,6 @@ namespace block_coupon\template\element\cohort;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class element extends \block_coupon\template\element {
-
     /**
      * Handles rendering the element on the pdf.
      *
@@ -84,5 +83,4 @@ class element extends \block_coupon\template\element {
         }
         return (object)['cohorts' => $cohorts];
     }
-
 }

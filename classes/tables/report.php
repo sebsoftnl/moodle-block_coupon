@@ -29,10 +29,7 @@
 
 namespace block_coupon\tables;
 
-defined('MOODLE_INTERNAL') || die();
-
 use block_coupon\helper;
-require_once($CFG->libdir . '/tablelib.php');
 
 /**
  * block_coupon\tables\report
@@ -43,8 +40,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class report extends \table_sql {
-
+class report extends base {
     /**
      * Do we render the history or the current status?
      *
@@ -53,37 +49,13 @@ class report extends \table_sql {
     protected $ownerid;
 
     /**
-     *
-     * @var \block_coupon\filtering\filtering
-     */
-    protected $filtering;
-
-    /**
-     * Get filtering instance
-     * @return \block_coupon\filtering\filtering
-     */
-    public function get_filtering() {
-        return $this->filtering;
-    }
-
-    /**
-     * Set filtering instance
-     * @param \block_coupon\filtering\filtering $filtering
-     * @return \block_coupon\tables\coupons
-     */
-    public function set_filtering(\block_coupon\filtering\filtering $filtering) {
-        $this->filtering = $filtering;
-        return $this;
-    }
-
-    /**
      * Create a new instance of the logtable
      *
      * @param int $ownerid if set, display only report from given owner
      */
     public function __construct($ownerid = null) {
         global $USER;
-        parent::__construct(__CLASS__. '-' . $USER->id . '-' . ((int)$ownerid));
+        parent::__construct(__CLASS__ . '-' . $USER->id . '-' . ((int)$ownerid));
         $this->ownerid = (int)$ownerid;
     }
 
@@ -131,7 +103,7 @@ class report extends \table_sql {
         $queries = $this->get_query(true);
         $total = 0;
         foreach ($queries as $parts) {
-            list($sql, $params) = $parts;
+            [$sql, $params] = $parts;
             $total += $DB->count_records_sql($sql, $params);
         }
         return $total;
@@ -146,15 +118,15 @@ class report extends \table_sql {
     protected function get_query($forcount = false) {
         $config = get_config('block_coupon');
         $dfield = $this->config->coursedisplay ?? 'fullname';
-        $coursefield = 'c.'.$dfield;
+        $coursefield = 'c.' . $dfield;
 
         global $DB;
         $q1params = [];
         $q2params = [];
         $q3params = [];
-        $fields = $DB->sql_concat('c.id', '\'-\'', 'bc.id') . ' as idx,
-               bc.*, c.id as courseid, '.$coursefield.' as coursename, c.idnumber as courseidnumber, u.email,
-               ' . helper::get_all_user_name_fields(true, 'u');
+        $fields = $DB->sql_concat('c.id', '\'-\'', 'bc.id') . ' as idx, bc.*, c.id as courseid, ' .
+                $coursefield . ' as coursename, c.idnumber as courseidnumber, u.email, ' .
+                helper::get_all_user_name_fields(true, 'u');
         $q1 = 'SELECT ' . $fields . ', null as cohortname ' .
                'FROM {block_coupon} bc ' .
                'JOIN {block_coupon_courses} cc ON cc.couponid=bc.id ' .
@@ -205,14 +177,14 @@ class report extends \table_sql {
      * @param boolean $useinitialsbar do you want to use the initials bar. Bar
      * will only be used if there is a fullname column defined for the table.
      */
-    public function query_db($pagesize, $useinitialsbar=true) {
+    public function query_db($pagesize, $useinitialsbar = true) {
         global $DB;
 
         // Get count / data (modified version to parent).
-        list($sql, $params) = $this->get_query(false);
+        [$sql, $params] = $this->get_query(false);
 
         if (!$this->is_downloading()) {
-            $total = $DB->count_records_sql('SELECT COUNT(*) FROM ('.$sql.') c', $params);
+            $total = $DB->count_records_sql('SELECT COUNT(*) FROM (' . $sql . ') c', $params);
             $this->pagesize($pagesize, $total);
         }
 
@@ -225,13 +197,13 @@ class report extends \table_sql {
         // Add filtering rules.
         $where = [];
         if (!empty($this->filtering)) {
-            list($fsql, $fparams) = $this->filtering->get_sql_filter();
+            [$fsql, $fparams] = $this->filtering->get_sql_filter();
             if (!empty($fsql)) {
                 $where[] = $fsql;
                 $params += $fparams;
             }
         }
-        $sql = 'SELECT * FROM ('.$sql.') c ';
+        $sql = 'SELECT * FROM (' . $sql . ') c ';
         if (!empty($where)) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
@@ -266,7 +238,7 @@ class report extends \table_sql {
      * @param boolean $useinitialsbar
      * @param mixed $downloadhelpbutton unused
      */
-    public function out($pagesize, $useinitialsbar, $downloadhelpbutton='') {
+    public function out($pagesize, $useinitialsbar, $downloadhelpbutton = '') {
         $this->setup();
         $this->query_db($pagesize, $useinitialsbar);
         $this->build_table();
@@ -356,32 +328,6 @@ class report extends \table_sql {
     }
 
     /**
-     * Return the image tag representing an action image
-     *
-     * @param string $action
-     * @return string HTML image tag
-     */
-    protected function get_action_image($action) {
-        global $OUTPUT;
-        return '<img src="' . $OUTPUT->image_url($action, 'block_coupon') . '"/>';
-    }
-
-    /**
-     * Return a string containing the link to an action
-     *
-     * @param \stdClass $row
-     * @param string $action
-     * @return string link representing the action with an image
-     */
-    protected function get_action($row, $action) {
-        $actionstr = 'str' . $action;
-        return '<a href="' . new \moodle_url($this->baseurl,
-                ['action' => $action, 'id' => $row->id]) .
-                '" alt="' . $this->{$actionstr} .
-                '">' . $this->get_action_image($action) . '</a>';
-    }
-
-    /**
      * Define columns for output table and define the headers through automated
      * lookup of the language strings.
      *
@@ -403,5 +349,4 @@ class report extends \table_sql {
         }
         $this->define_headers($headers);
     }
-
 }

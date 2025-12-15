@@ -45,7 +45,6 @@ require_once($CFG->dirroot . '/lib/pdflib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class pdf extends \pdf {
-
     /**
      * full path to font directory
      * @var string
@@ -247,12 +246,8 @@ class pdf extends \pdf {
      */
     protected function generate_preview_courses() {
         global $DB;
-        $rs = $DB->get_records_list('course', 'id', $this->previewcourses, '', 'id,shortname');
-        $menu = [];
-        foreach ($rs as $record) {
-            $menu[$record->id] = $record->shortname;
-        }
-        return $menu;
+        $rs = $DB->get_records_list('course', 'id', $this->previewcourses, '', 'id,shortname,fullname');
+        return $rs;
     }
 
     /**
@@ -406,8 +401,8 @@ class pdf extends \pdf {
                 $this->logos[$coupon->logoid] = $CFG->dirroot . '/blocks/coupon/pix/couponlogo.png';
                 $this->logotemplates[$coupon->logoid] = $this->startTemplate();
                 $dpi = 300; // Could also be 96? Seems the default.
-                $this->Image($this->logos[$coupon->logoid], 0, 0, 0, 0,
-                        '', '', '', false, $dpi, '', false, false, 1, true, false, true);
+                $l = $this->logos[$coupon->logoid];
+                $this->Image($l, 0, 0, 0, 0, '', '', '', false, $dpi, '', false, false, 1, true, false, true);
                 $this->endTemplate();
                 break;
             default:
@@ -416,8 +411,8 @@ class pdf extends \pdf {
                 $this->logos[$coupon->logoid] = $tempfile->get_filepath();
                 $this->logotemplates[$coupon->logoid] = $this->startTemplate();
                 $dpi = 300; // Could also be 96? Seems the default.
-                $this->Image($this->logos[$coupon->logoid], 0, 0, 0, 0,
-                        '', '', '', false, $dpi, '', false, false, 1, true, false, true);
+                $l = $this->logos[$coupon->logoid];
+                $this->Image($l, 0, 0, 0, 0, '', '', '', false, $dpi, '', false, false, 1, true, false, true);
                 $this->endTemplate();
                 // Destroy tempfile.
                 unset($tempfile);
@@ -453,16 +448,64 @@ class pdf extends \pdf {
             $offsets = $this->get_bot_offsets();
 
             if ((bool)$coupon->renderqrcode) {
-                $this->MultiCell(135, 50, $txtmain, false, 'C', false, 1,
-                        15 + $offsets->main->x, 75 + $offsets->main->y, true, 0, true);
+                $this->MultiCell(
+                    135,
+                    50,
+                    $txtmain,
+                    false,
+                    'C',
+                    false,
+                    1,
+                    15 + $offsets->main->x,
+                    75 + $offsets->main->y,
+                    true,
+                    0,
+                    true
+                );
             } else {
-                $this->MultiCell(150, 150, $txtmain, false, 'C', false, 1,
-                        15 + $offsets->main->x, 75 + $offsets->main->y, true, 0, true);
+                $this->MultiCell(
+                    150,
+                    150,
+                    $txtmain,
+                    false,
+                    'C',
+                    false,
+                    1,
+                    15 + $offsets->main->x,
+                    75 + $offsets->main->y,
+                    true,
+                    0,
+                    true
+                );
             }
-            $this->MultiCell(90, 100, $txtbotleft, false, 'L', false, 2,
-                    10 + $offsets->left->x, 210 + $offsets->left->y, true, 0, true);
-            $this->MultiCell(90, 100, $txtbotright, false, 'L', false, 2,
-                    115 + $offsets->right->x, 210 + $offsets->right->y, true, 0, true);
+            $this->MultiCell(
+                90,
+                100,
+                $txtbotleft,
+                false,
+                'L',
+                false,
+                2,
+                10 + $offsets->left->x,
+                210 + $offsets->left->y,
+                true,
+                0,
+                true
+            );
+            $this->MultiCell(
+                90,
+                100,
+                $txtbotright,
+                false,
+                'L',
+                false,
+                2,
+                115 + $offsets->right->x,
+                210 + $offsets->right->y,
+                true,
+                0,
+                true
+            );
             // QR.
             if ((bool)$coupon->renderqrcode) {
                 $url = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/qrin.php', [
@@ -503,7 +546,7 @@ class pdf extends \pdf {
         ];
         if ((int)$coupon->enrolperiod === 0) {
             $accesstime = get_string('unlimited_access', 'block_coupon');
-        } else if ($coupon->typ == generatoroptions::ENROLEXTENSION ) {
+        } else if ($coupon->typ == generatoroptions::ENROLEXTENSION) {
             $accesstime = get_string('extendaccess', 'block_coupon', format_time($coupon->enrolperiod));
         } else {
             $accesstime = format_time($coupon->enrolperiod);
@@ -518,9 +561,9 @@ class pdf extends \pdf {
         $coursenames = array_column($courses, 'shortname');
 
         $replace = [
-            '<div style="text-align: center; font-size: 200%; font-weight: bold">'.$coupon->submission_code.'</div>',
+            '<div style="text-align: center; font-size: 200%; font-weight: bold">' . $coupon->submission_code . '</div>',
             $accesstime,
-            '<b>'.implode(', ', $coursenames).'</b>',
+            '<b>' . implode(', ', $coursenames) . '</b>',
             $rolename,
         ];
 
@@ -601,5 +644,4 @@ class pdf extends \pdf {
         }
         return $offsets;
     }
-
 }

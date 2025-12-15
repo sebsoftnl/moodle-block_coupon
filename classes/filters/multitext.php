@@ -31,7 +31,7 @@ namespace block_coupon\filters;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/user/filters/lib.php');
+require_once($CFG->dirroot . '/user/filters/lib.php');
 
 /**
  * Generic filter for text fields.
@@ -63,12 +63,14 @@ class multitext extends \user_filter_type {
      * @return array of comparison operators
      */
     public function get_operators() {
-        return [0 => get_string('contains', 'filters'),
-                     1 => get_string('doesnotcontain', 'filters'),
-                     2 => get_string('isequalto', 'filters'),
-                     3 => get_string('startswith', 'filters'),
-                     4 => get_string('endswith', 'filters'),
-                     5 => get_string('isempty', 'filters')];
+        return [
+            0 => get_string('contains', 'filters'),
+             1 => get_string('doesnotcontain', 'filters'),
+             2 => get_string('isequalto', 'filters'),
+             3 => get_string('startswith', 'filters'),
+             4 => get_string('endswith', 'filters'),
+             5 => get_string('isempty', 'filters'),
+        ];
     }
 
     /**
@@ -77,15 +79,15 @@ class multitext extends \user_filter_type {
      */
     public function setupForm(&$mform) { // @codingStandardsIgnoreLine Can't change parent behaviour.
         $objs = [];
-        $objs['select'] = $mform->createElement('select', $this->_name.'_op', null, $this->get_operators());
+        $objs['select'] = $mform->createElement('select', $this->_name . '_op', null, $this->get_operators());
         $objs['text'] = $mform->createElement('text', $this->_name, null);
         $objs['select']->setLabel(get_string('limiterfor', 'filters', $this->_label));
         $objs['text']->setLabel(get_string('valuefor', 'filters', $this->_label));
-        $grp =& $mform->addElement('group', $this->_name.'_grp', $this->_label, $objs, '', false);
+        $grp =& $mform->addElement('group', $this->_name . '_grp', $this->_label, $objs, '', false);
         $mform->setType($this->_name, PARAM_RAW);
-        $mform->disabledIf($this->_name, $this->_name.'_op', 'eq', 5);
+        $mform->disabledIf($this->_name, $this->_name . '_op', 'eq', 5);
         if ($this->_advanced) {
-            $mform->setAdvanced($this->_name.'_grp');
+            $mform->setAdvanced($this->_name . '_grp');
         }
     }
 
@@ -96,7 +98,7 @@ class multitext extends \user_filter_type {
      */
     public function check_data($formdata) {
         $field    = $this->_name;
-        $operator = $field.'_op';
+        $operator = $field . '_op';
 
         $func = is_array($formdata) ? 'array_key_exists' : 'property_exists';
         $args = is_array($formdata) ? [$field, $formdata] : [$formdata, $field];
@@ -129,11 +131,11 @@ class multitext extends \user_filter_type {
             $sql = [];
             $params = [];
             foreach ($this->fields as $field) {
-                list($tmpsql, $tmpparams) = $this->internal_get_sql_filter($data, $field);
+                [$tmpsql, $tmpparams] = $this->internal_get_sql_filter($data, $field);
                 $sql[] = $tmpsql;
                 $params = array_merge($params, $tmpparams);
             }
-            return ['('.implode(' OR ', $sql).')', $params];
+            return ['(' . implode(' OR ', $sql) . ')', $params];
         }
     }
 
@@ -146,7 +148,7 @@ class multitext extends \user_filter_type {
     public function internal_get_sql_filter($data, $field) {
         global $DB;
         static $counter = 0;
-        $name = 'ex_multitext'.$counter++;
+        $name = 'ex_multitext' . $counter++;
 
         $operator = $data['operator'];
         $value    = $data['value'];
@@ -157,7 +159,7 @@ class multitext extends \user_filter_type {
             return '';
         }
 
-        switch($operator) {
+        switch ($operator) {
             case 0: // Contains.
                 $res = $DB->sql_like($field, ":$name", false, false);
                 $params[$name] = "%$value%";
@@ -200,7 +202,7 @@ class multitext extends \user_filter_type {
 
         $a = new \stdClass();
         $a->label    = $this->label;
-        $a->value    = '"'.s($value).'"';
+        $a->value    = '"' . s($value) . '"';
         $a->operator = $operators[$operator];
 
         switch ($operator) {

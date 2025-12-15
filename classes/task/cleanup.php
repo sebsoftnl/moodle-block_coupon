@@ -41,7 +41,6 @@ use block_coupon\helper;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cleanup extends \core\task\scheduled_task {
-
     /**
      * Return the localised name for this task
      *
@@ -63,12 +62,26 @@ class cleanup extends \core\task\scheduled_task {
         if ((bool)$config->enablecleanup) {
             $timecheck = time() - $config->cleanupage;
             // Remove unused coupons older than xxx.
-            $couponids = array_merge($couponids, $DB->get_fieldset_select('block_coupon', 'id',
-                    'userid IS NULL AND timecreated < ? AND (timeexpired IS NULL OR timeexpired = 0)', [$timecheck]));
+            $couponids = array_merge(
+                $couponids,
+                $DB->get_fieldset_select(
+                    'block_coupon',
+                    'id',
+                    'userid IS NULL AND timecreated < ? AND (timeexpired IS NULL OR timeexpired = 0)',
+                    [$timecheck]
+                )
+            );
         }
         // Now clean up expired coupons.
-        $couponids = array_merge($couponids, $DB->get_fieldset_select('block_coupon', 'id',
-                'userid IS NULL AND timeexpired IS NOT NULL AND timeexpired < ?', [time()]));
+        $couponids = array_merge(
+            $couponids,
+            $DB->get_fieldset_select(
+                'block_coupon',
+                'id',
+                'userid IS NULL AND timeexpired IS NOT NULL AND timeexpired < ?',
+                [time()]
+            )
+        );
         if (!empty($couponids)) {
             // Delegated transaction to ensure everything is removed.
             $transaction = $DB->start_delegated_transaction();
@@ -82,5 +95,4 @@ class cleanup extends \core\task\scheduled_task {
         // Standard cleaning, just to be sure.
         helper::cleanup_invalid_links();
     }
-
 }

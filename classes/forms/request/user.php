@@ -43,7 +43,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class user extends \moodleform {
-
     /**
      * form definition
      */
@@ -51,7 +50,7 @@ class user extends \moodleform {
         global $CFG;
         $mform = & $this->_form;
 
-        list($instance, $user) = $this->_customdata;
+        [$instance, $user] = $this->_customdata;
 
         // Register elements.
         $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcourses.php';
@@ -74,21 +73,41 @@ class user extends \moodleform {
         $mform->addElement('static', '_xother', '', get_string('othersettings', 'block_coupon') . '<hr/>');
 
         // Logo selection.
-        $mform->addElement('static', '_logo', get_string('label:image', 'block_coupon'),
-                get_string('forcelogo_exp', 'block_coupon'));
-        $mform->addElement('advcheckbox', 'allowselectlogo', '',
-                get_string('userconfig:allowselectlogo', 'block_coupon'));
+        $mform->addElement(
+            'static',
+            '_logo',
+            get_string('label:image', 'block_coupon'),
+            get_string('forcelogo_exp', 'block_coupon')
+        );
+        $mform->addElement(
+            'advcheckbox',
+            'allowselectlogo',
+            '',
+            get_string('userconfig:allowselectlogo', 'block_coupon')
+        );
         $mform->setDefault('allowselectlogo', 1);
-        $mform->addElement('select', 'logo', get_string('label:forcelogo', 'block_coupon'),
-                \block_coupon\logostorage::get_file_menu());
+        $mform->addElement(
+            'select',
+            'logo',
+            get_string('label:forcelogo', 'block_coupon'),
+            \block_coupon\logostorage::get_file_menu()
+        );
         $mform->hideIf('logo', 'allowselectlogo', 'checked');
         $mform->addHelpButton('logo', 'label:forcelogo', 'block_coupon');
 
         // Role selection.
-        $mform->addElement('static', '_role', get_string('label:coupon_role', 'block_coupon'),
-                get_string('forcerole_exp', 'block_coupon'));
-        $mform->addElement('advcheckbox', 'allowselectrole', '',
-                get_string('userconfig:allowselectrole', 'block_coupon'));
+        $mform->addElement(
+            'static',
+            '_role',
+            get_string('label:coupon_role', 'block_coupon'),
+            get_string('forcerole_exp', 'block_coupon')
+        );
+        $mform->addElement(
+            'advcheckbox',
+            'allowselectrole',
+            '',
+            get_string('userconfig:allowselectrole', 'block_coupon')
+        );
         $mform->setDefault('allowselectrole', 1);
         $roles = \block_coupon\helper::get_role_menu(null, true);
         $mform->addElement('select', 'role', get_string('label:forcerole', 'block_coupon'), $roles);
@@ -96,36 +115,58 @@ class user extends \moodleform {
         $mform->addHelpButton('role', 'label:forcerole', 'block_coupon');
 
         // PDF Generator selection.
-        $mform->addElement('advcheckbox', 'allowselectseperatepdf',
-                get_string('label:generate_pdfs', 'block_coupon'),
-                get_string('userconfig:allowselectseperatepdf', 'block_coupon'));
+        $mform->addElement(
+            'advcheckbox',
+            'allowselectseperatepdf',
+            get_string('label:generate_pdfs', 'block_coupon'),
+            get_string('userconfig:allowselectseperatepdf', 'block_coupon')
+        );
         $mform->setDefault('allowselectseperatepdf', 0);
-        $mform->addElement('advcheckbox', 'seperatepdfdefault', '',
-                get_string('userconfig:seperatepdf:default', 'block_coupon'));
+
+        $mform->addElement(
+            'advcheckbox',
+            'seperatepdfdefault',
+            '',
+            get_string('userconfig:seperatepdf:default', 'block_coupon')
+        );
         $mform->setDefault('seperatepdfdefault', 0);
         $mform->disabledIf('seperatepdfdefault', 'allowselectseperatepdf', 'checked');
         $mform->addHelpButton('seperatepdfdefault', 'label:generate_pdfs', 'block_coupon');
 
         // QR Generator selection.
-        $mform->addElement('advcheckbox', 'allowselectqr',
-                get_string('label:renderqrcode', 'block_coupon'),
-                get_string('userconfig:allowselectqr', 'block_coupon'));
+        $mform->addElement(
+            'advcheckbox',
+            'allowselectqr',
+            get_string('label:renderqrcode', 'block_coupon'),
+            get_string('userconfig:allowselectqr', 'block_coupon')
+        );
         $mform->setDefault('allowselectqr', 1);
-        $mform->addElement('advcheckbox', 'qrdefault', '',
-                get_string('userconfig:renderqrcode:default', 'block_coupon'));
+
+        $mform->addElement(
+            'advcheckbox',
+            'qrdefault',
+            '',
+            get_string('userconfig:renderqrcode:default', 'block_coupon')
+        );
         $mform->setDefault('qrdefault', 0);
         $mform->disabledIf('qrdefault', 'allowselectqr', 'checked');
         $mform->addHelpButton('qrdefault', 'label:renderqrcode', 'block_coupon');
 
         // Enrolment period selection.
-        $mform->addElement('advcheckbox', 'allowselectenrolperiod',
-                get_string('label:enrolment_period', 'block_coupon'),
-                get_string('userconfig:allowselectenrolperiod', 'block_coupon'));
+        $mform->addElement(
+            'advcheckbox',
+            'allowselectenrolperiod',
+            get_string('label:enrolment_period', 'block_coupon'),
+            get_string('userconfig:allowselectenrolperiod', 'block_coupon')
+        );
         $mform->setDefault('allowselectenrolperiod', 1);
 
-        $mform->addElement('duration', 'enrolperioddefault',
-                get_string('label:enrolment_perioddefault', 'block_coupon'),
-                ['size' => 40, 'optional' => false]);
+        $mform->addElement(
+            'duration',
+            'enrolperioddefault',
+            get_string('label:enrolment_perioddefault', 'block_coupon'),
+            ['size' => 40, 'optional' => false]
+        );
         $mform->setDefault('enrolperioddefault', '0');
         $mform->addHelpButton('enrolperioddefault', 'label:enrolment_period', 'block_coupon');
 
@@ -155,5 +196,4 @@ class user extends \moodleform {
         }
         return $errors;
     }
-
 }

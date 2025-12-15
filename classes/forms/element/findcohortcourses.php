@@ -46,7 +46,6 @@ require_once($CFG->libdir . '/form/autocomplete.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class findcohortcourses extends findcourses {
-
     /**
      * Cohort ID we're looking up potential courses for.
      * @var int
@@ -104,8 +103,11 @@ class findcohortcourses extends findcourses {
         $values = (array) $value;
         $ids = [];
         foreach ($values as $onevalue) {
-            if (!empty($onevalue) && (!$this->optionExists($onevalue)) &&
-                    ($onevalue !== '_qf__force_multiselect_submission')) {
+            if (
+                !empty($onevalue) &&
+                (!$this->optionExists($onevalue)) &&
+                ($onevalue !== '_qf__force_multiselect_submission')
+            ) {
                 array_push($ids, $onevalue);
             }
         }
@@ -148,5 +150,4 @@ class findcohortcourses extends findcourses {
         }
         return $courses;
     }
-
 }

@@ -39,7 +39,6 @@ namespace block_coupon;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class eventobservers {
-
     /**
      * Handle course deleted event
      *
@@ -53,8 +52,8 @@ class eventobservers {
         }
         $DB->delete_records('block_coupon_courses', ['courseid' => $event->objectid]);
 
-        list($insql, $params) = $DB->get_in_or_equal($couponids);
-        $remainingcouponids = $DB->get_fieldset_select('block_coupon_courses', 'DISTINCT couponid', 'couponid '.$insql, $params);
+        [$insql, $params] = $DB->get_in_or_equal($couponids);
+        $remainingcouponids = $DB->get_fieldset_select('block_coupon_courses', 'DISTINCT couponid', 'couponid ' . $insql, $params);
 
         $deletecouponids = array_diff($couponids, $remainingcouponids);
         $DB->delete_records_list('block_coupon', 'id ', $deletecouponids);
@@ -74,8 +73,8 @@ class eventobservers {
         }
         $DB->delete_records('block_coupon_cohorts', ['cohortid' => $event->objectid]);
 
-        list($insql, $params) = $DB->get_in_or_equal($couponids);
-        $remainingcouponids = $DB->get_fieldset_select('block_coupon_cohorts', 'DISTINCT couponid', 'couponid '.$insql, $params);
+        [$insql, $params] = $DB->get_in_or_equal($couponids);
+        $remainingcouponids = $DB->get_fieldset_select('block_coupon_cohorts', 'DISTINCT couponid', 'couponid ' . $insql, $params);
 
         $deletecouponids = array_diff($couponids, $remainingcouponids);
         $DB->delete_records_list('block_coupon', 'id ', $deletecouponids);
@@ -92,5 +91,4 @@ class eventobservers {
         $DB->delete_records('block_coupon_rusers', ['userid' => $event->objectid]);
         $DB->delete_records('block_coupon_requests', ['userid' => $event->objectid]);
     }
-
 }

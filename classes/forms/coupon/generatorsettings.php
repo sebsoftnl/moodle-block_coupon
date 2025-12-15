@@ -42,7 +42,6 @@ use block_coupon\helper;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class generatorsettings extends baseform {
-
     /**
      * Get reference to database
      * @return \moodle_database
@@ -63,7 +62,7 @@ class generatorsettings extends baseform {
         $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/durationext.php';
         \MoodleQuickForm::registerElementType('durationext', $path, '\block_coupon\forms\element\durationext');
 
-        list($this->generatoroptions) = $this->_customdata;
+        [$this->generatoroptions] = $this->_customdata;
 
         // Nasty++.
         \MoodleQuickForm::registerRule('positiveint', 'regex', '/(^\d\d*$)/');
@@ -145,5 +144,4 @@ class generatorsettings extends baseform {
         helper::validate_codesize($data, $err);
         return $err;
     }
-
 }

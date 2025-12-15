@@ -42,7 +42,6 @@ use block_coupon\helper;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class campaigntype extends baseform {
-
     /**
      * Get reference to database
      * @return \moodle_database
@@ -58,7 +57,7 @@ class campaigntype extends baseform {
     public function definition() {
         $mform = & $this->_form;
 
-        list($this->generatoroptions) = $this->_customdata;
+        [$this->generatoroptions] = $this->_customdata;
 
         $mform->addElement('header', 'header', get_string('heading:generatormethod', 'block_coupon'));
         if (!$strinfo = get_config('block_coupon', 'info_coupon_course')) {
@@ -87,5 +86,4 @@ class campaigntype extends baseform {
         $err = parent::validation($data, $files);
         return $err;
     }
-
 }

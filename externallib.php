@@ -44,114 +44,6 @@ use Exception;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_coupon_external extends external_api {
-
-    /**
-     * Get all non-sidewide and visible courses.
-     *
-     * @return array
-     */
-    public static function get_courses() {
-        $rs = \block_coupon\helper::get_visible_courses('id,shortname,fullname,idnumber');
-        return array_values($rs);
-    }
-
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function get_courses_parameters() {
-        return new external_function_parameters([]);
-    }
-
-    /**
-     * Returns description of method return parameters
-     *
-     * @return external_multiple_structure
-     */
-    public static function get_courses_returns() {
-        return new external_multiple_structure(
-                new external_single_structure([
-                    'id' => new external_value(PARAM_INT, 'course record id'),
-                    'shortname' => new external_value(PARAM_TEXT, 'course short name'),
-                    'fullname' => new external_value(PARAM_TEXT, 'course full name'),
-                    'idnumber' => new external_value(PARAM_RAW, 'course id number'),
-                        ])
-        );
-    }
-
-    /**
-     * Get all cohorts.
-     *
-     * @return array
-     */
-    public static function get_cohorts() {
-        $rs = \block_coupon\helper::get_cohorts('id,name,idnumber');
-        return array_values($rs);
-    }
-
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function get_cohorts_parameters() {
-        return new external_function_parameters([]);
-    }
-
-    /**
-     * Returns description of method return parameters
-     *
-     * @return external_multiple_structure
-     */
-    public static function get_cohorts_returns() {
-        return new external_multiple_structure(
-                new external_single_structure([
-                    'id' => new external_value(PARAM_INT, 'cohort record id'),
-                    'name' => new external_value(PARAM_TEXT, 'cohort name'),
-                    'idnumber' => new external_value(PARAM_RAW, 'cohort id number'),
-                        ])
-        );
-    }
-
-    /**
-     * Get all groups of the given course id.
-     *
-     * @param int $courseid course id
-     * @return array
-     */
-    public static function get_course_groups($courseid) {
-        global $CFG;
-        require_once($CFG->libdir . '/grouplib.php');
-        $rs = groups_get_all_groups($courseid, 0, 0, 'g.id, g.name');
-        return array_values($rs);
-    }
-
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function get_course_groups_parameters() {
-        return new external_function_parameters([
-            'courseid' => new external_value(PARAM_INT, 'course record id'),
-        ]);
-    }
-
-    /**
-     * Returns description of method return parameters
-     *
-     * @return external_multiple_structure
-     */
-    public static function get_course_groups_returns() {
-        return new external_multiple_structure(
-                new external_single_structure([
-                    'id' => new external_value(PARAM_INT, 'group record id'),
-                    'name' => new external_value(PARAM_TEXT, 'group name'),
-                        ])
-        );
-    }
-
     /**
      * Builds the coupons for the given course and returns the coupon codes.
      *
@@ -163,7 +55,14 @@ class block_coupon_external extends external_api {
      */
     public static function request_coupon_codes_for_course($amount, $courses, $groups = null, $enrolperiod = 0) {
         // Get to work and have generator and options.
-        list($generator, $unused) = static::p_request_coupon_codes_for_course($amount, $courses, $groups, $enrolperiod);
+        [$generator, $unused] = static::p_request_coupon_codes_for_course(
+            $amount,
+            $courses,
+            $groups,
+            $enrolperiod,
+            'helvetica',
+            ''
+        );
         // We made it, so return the generated codes.
         return $generator->get_generated_couponcodes();
     }
@@ -177,12 +76,14 @@ class block_coupon_external extends external_api {
         return new external_function_parameters([
             'amount' => new external_value(PARAM_INT, 'amount of coupons to be generated'),
             'courses' => new external_multiple_structure(
-                    new external_value(PARAM_INT, 'array of IDs of the courses the coupons will be generated for')
+                new external_value(PARAM_INT, 'array of IDs of the courses the coupons will be generated for')
             ),
             'groups' => new external_multiple_structure(
-                    new external_value(PARAM_INT, 'array of IDs of all groups the users will be added to after using a Coupon'),
-                    '', VALUE_DEFAULT, []
-                    // We MUST default to an array. The webservice validation implementation is LACKING nullability.
+                new external_value(PARAM_INT, 'array of IDs of all groups the users will be added to after using a Coupon'),
+                '',
+                VALUE_DEFAULT,
+                []
+                // We MUST default to an array. The webservice validation implementation is LACKING nullability.
             ),
             'enrolperiod' => new external_value(PARAM_INT, 'enrolment period in SECONDS', VALUE_DEFAULT, 0, NULL_NOT_ALLOWED),
         ]);
@@ -195,7 +96,7 @@ class block_coupon_external extends external_api {
      */
     public static function request_coupon_codes_for_course_returns() {
         return new external_multiple_structure(
-                new external_value(PARAM_TEXT, 'coupon code')
+            new external_value(PARAM_TEXT, 'coupon code')
         );
     }
 
@@ -212,18 +113,30 @@ class block_coupon_external extends external_api {
      *
      * @return boolean $result
      */
-    public static function generate_coupons_for_course($email, $amount, $courses,
-            $groups = null, $generatesinglepdfs = false, $enrolperiod = 0, $font = 'helvetica') {
+    public static function generate_coupons_for_course(
+        $email,
+        $amount,
+        $courses,
+        $groups = null,
+        $generatesinglepdfs = false,
+        $enrolperiod = 0,
+        $font = 'helvetica'
+    ) {
         global $DB;
 
         // Let our other method do the magic of generating.
-        list($generator, $generatoroptions) = static::p_request_coupon_codes_for_course($amount,
-                        $courses, $groups, $enrolperiod, $font);
+        [$generator, $generatoroptions] = static::p_request_coupon_codes_for_course(
+            $amount,
+            $courses,
+            $groups,
+            $enrolperiod,
+            $font,
+            $email
+        );
         $generatedcodes = $generator->get_generated_couponcodes();
         // Get coupons and send off.
         $coupons = $DB->get_records_list('block_coupon', 'submission_code', $generatedcodes);
-        list($status, $batchid, $ts) = block_coupon\helper::mail_coupons($coupons, $email, $generatesinglepdfs,
-                        false, false, $generatoroptions->batchid, $generatoroptions->font);
+        [$status, $batchid, $ts] = block_coupon\helper::mail_coupons($coupons, $generatoroptions);
 
         return $status;
     }
@@ -238,18 +151,33 @@ class block_coupon_external extends external_api {
             'email' => new external_value(PARAM_EMAIL, 'email address the coupons will be sent to'),
             'amount' => new external_value(PARAM_INT, 'amount of coupons to be generated'),
             'courses' => new external_multiple_structure(
-                    new external_value(PARAM_INT, 'array of IDs of the courses the coupons will be generated for')
+                new external_value(PARAM_INT, 'array of IDs of the courses the coupons will be generated for')
             ),
             'groups' => new external_multiple_structure(
-                    new external_value(PARAM_INT, 'array of IDs of all groups the users will be added to after using a Coupon'),
-                    '', VALUE_DEFAULT, []
-                    // We MUST default to an array. The webservice validation implementation is LACKING nullability.
+                new external_value(
+                    PARAM_INT,
+                    'array of IDs of all groups the users will be added to after using a Coupon'
+                ),
+                '',
+                VALUE_DEFAULT,
+                []
+                // We MUST default to an array. The webservice validation implementation is LACKING nullability.
             ),
-            'generatesinglepdfs' => new external_value(PARAM_BOOL,
-                    'will generate one PDF file for each coupon if true', VALUE_DEFAULT, false, NULL_NOT_ALLOWED),
+            'generatesinglepdfs' => new external_value(
+                PARAM_BOOL,
+                'will generate one PDF file for each coupon if true',
+                VALUE_DEFAULT,
+                false,
+                NULL_NOT_ALLOWED
+            ),
             'enrolperiod' => new external_value(PARAM_INT, 'enrolment period in SECONDS', VALUE_DEFAULT, 0, NULL_NOT_ALLOWED),
-            'font' => new external_value(PARAM_TEXT,
-                    'font to use for the PDF', VALUE_DEFAULT, 'helvetica', NULL_NOT_ALLOWED),
+            'font' => new external_value(
+                PARAM_TEXT,
+                'font to use for the PDF',
+                VALUE_DEFAULT,
+                'helvetica',
+                NULL_NOT_ALLOWED
+            ),
         ]);
     }
 
@@ -271,7 +199,7 @@ class block_coupon_external extends external_api {
      */
     public static function request_coupon_codes_for_cohorts($amount, $cohorts) {
         // Get to work and have generator and options.
-        list($generator, $unused) = static::p_request_coupon_codes_for_cohorts($amount, $cohorts);
+        [$generator, $unused] = static::p_request_coupon_codes_for_cohorts($amount, $cohorts);
         // We made it, so return the generated IDs.
         return $generator->get_generated_couponcodes();
     }
@@ -285,7 +213,7 @@ class block_coupon_external extends external_api {
         return new external_function_parameters([
             'amount' => new external_value(PARAM_INT, 'amount of coupons to be generated'),
             'cohorts' => new external_multiple_structure(
-                    new external_value(PARAM_INT, 'array of IDs of the cohorts the coupons will be generated for')
+                new external_value(PARAM_INT, 'array of IDs of the cohorts the coupons will be generated for')
             ),
         ]);
     }
@@ -297,7 +225,7 @@ class block_coupon_external extends external_api {
      */
     public static function request_coupon_codes_for_cohorts_returns() {
         return new external_multiple_structure(
-                new external_value(PARAM_TEXT, 'coupon code')
+            new external_value(PARAM_TEXT, 'coupon code')
         );
     }
 
@@ -312,17 +240,27 @@ class block_coupon_external extends external_api {
      *
      * @return boolean $result
      */
-    public static function generate_coupons_for_cohorts($email, $amount, $cohorts,
-            $generatesinglepdfs = false, $font = 'helvetica') {
+    public static function generate_coupons_for_cohorts(
+        $email,
+        $amount,
+        $cohorts,
+        $generatesinglepdfs = false,
+        $font = 'helvetica'
+    ) {
         global $DB;
 
         // Let our other method do the magic of generating.
-        list($generator, $generatoroptions) = static::p_request_coupon_codes_for_cohorts($amount, $cohorts, $font);
+        [$generator, $generatoroptions] = static::p_request_coupon_codes_for_cohorts(
+            $amount,
+            $cohorts,
+            $font,
+            $email,
+            $generatesinglepdfs
+        );
         $generatedcodes = $generator->get_generated_couponcodes();
         // Get coupons and send off.
         $coupons = $DB->get_records_list('block_coupon', 'submission_code', $generatedcodes);
-        list($status, $batchid, $ts) = block_coupon\helper::mail_coupons($coupons, $email, $generatesinglepdfs,
-                        false, false, $generatoroptions->batchid, $generatoroptions->font);
+        [$status, $batchid, $ts] = block_coupon\helper::mail_coupons($coupons, $generatoroptions);
 
         return $status;
     }
@@ -337,10 +275,15 @@ class block_coupon_external extends external_api {
             'email' => new external_value(PARAM_EMAIL, 'email address the coupons will be sent to'),
             'amount' => new external_value(PARAM_INT, 'amount of coupons to be generated'),
             'cohorts' => new external_multiple_structure(
-                    new external_value(PARAM_INT, 'array of IDs of the cohorts the coupons will be generated for')
+                new external_value(PARAM_INT, 'array of IDs of the cohorts the coupons will be generated for')
             ),
-            'generatesinglepdfs' => new external_value(PARAM_BOOL,
-                    'will generate one PDF file for each coupon if true', VALUE_DEFAULT, false, NULL_NOT_ALLOWED),
+            'generatesinglepdfs' => new external_value(
+                PARAM_BOOL,
+                'will generate one PDF file for each coupon if true',
+                VALUE_DEFAULT,
+                false,
+                NULL_NOT_ALLOWED
+            ),
         ]);
     }
 
@@ -371,7 +314,7 @@ class block_coupon_external extends external_api {
         $coupons = block_coupon\helper::get_all_coupons($type, $ownerid, $fromdate, $todate);
         // Cache-load courses/cohorts.
         $couponids = array_keys($coupons);
-        list($cinsql, $cparams) = $DB->get_in_or_equal($couponids);
+        [$cinsql, $cparams] = $DB->get_in_or_equal($couponids);
         $courseids = $DB->get_fieldset_select('block_coupon_courses', 'courseid', "couponid $cinsql", $cparams);
         $cohortids = $DB->get_fieldset_select('block_coupon_cohorts', 'cohortid', "couponid $cinsql", $cparams);
         $courses = $DB->get_records_list('course', 'id', $courseids, '', 'id, fullname as name, idnumber');
@@ -461,34 +404,51 @@ class block_coupon_external extends external_api {
      */
     public static function get_coupon_reports_returns() {
         return new external_multiple_structure(
-                new external_single_structure([
-                    'submission_code' => new external_value(PARAM_ALPHANUMEXT, 'coupon submission code'),
-                    'timecreated' => new external_value(PARAM_TEXT, 'creation time of coupon'),
-                    'claimed' => new external_value(PARAM_INT, '1 if coupon is claimed, 0 otherwise'),
-                    'typ' => new external_value(PARAM_ALPHA, 'coupon type'),
-                    'userfullname' => new external_value(PARAM_TEXT, 'fullname of user who claimed coupon'),
-                    'useremail' => new external_value(PARAM_EMAIL, 'email address of user who claimed coupon'),
-                    'useridnumber' => new external_value(PARAM_TEXT, 'idnumber of user who claimed coupon'),
-                    'courses' => new external_multiple_structure(new external_single_structure([
-                                'name' => new external_value(PARAM_TEXT, 'course full name'),
-                                'idnumber' => new external_value(PARAM_TEXT, 'course idnumber'),
-                                'datestarted' => new external_value(PARAM_TEXT,
-                                        'if claimed, represent date the user started the course', VALUE_OPTIONAL),
-                                'datecompleted' => new external_value(PARAM_TEXT,
-                                        'if claimed, represent date of course completion', VALUE_OPTIONAL),
-                                'finalgrade' => new external_value(PARAM_TEXT,
-                                        'if completed, represent course final grade', VALUE_OPTIONAL),
-                                'requiredgrade' => new external_value(PARAM_TEXT,
-                                        'if completed, represents required course grade', VALUE_OPTIONAL),
-                                    ]),
-                            'courses related to this coupon', VALUE_OPTIONAL),
-                    'cohorts' => new external_multiple_structure(new external_single_structure([
-                                'name' => new external_value(PARAM_TEXT, 'cohort name'),
-                                'idnumber' => new external_value(PARAM_TEXT, 'cohort idnumber'),
-                                    ]),
-                            'cohorts related to this coupon', VALUE_OPTIONAL),
-                        ]
-                )
+            new external_single_structure([
+                'submission_code' => new external_value(PARAM_ALPHANUMEXT, 'coupon submission code'),
+                'timecreated' => new external_value(PARAM_TEXT, 'creation time of coupon'),
+                'claimed' => new external_value(PARAM_INT, '1 if coupon is claimed, 0 otherwise'),
+                'typ' => new external_value(PARAM_ALPHA, 'coupon type'),
+                'userfullname' => new external_value(PARAM_TEXT, 'fullname of user who claimed coupon'),
+                'useremail' => new external_value(PARAM_EMAIL, 'email address of user who claimed coupon'),
+                'useridnumber' => new external_value(PARAM_TEXT, 'idnumber of user who claimed coupon'),
+                'courses' => new external_multiple_structure(
+                    new external_single_structure([
+                        'name' => new external_value(PARAM_TEXT, 'course full name'),
+                        'idnumber' => new external_value(PARAM_TEXT, 'course idnumber'),
+                        'datestarted' => new external_value(
+                            PARAM_TEXT,
+                            'if claimed, represent date the user started the course',
+                            VALUE_OPTIONAL
+                        ),
+                        'datecompleted' => new external_value(
+                            PARAM_TEXT,
+                            'if claimed, represent date of course completion',
+                            VALUE_OPTIONAL
+                        ),
+                        'finalgrade' => new external_value(
+                            PARAM_TEXT,
+                            'if completed, represent course final grade',
+                            VALUE_OPTIONAL
+                        ),
+                        'requiredgrade' => new external_value(
+                            PARAM_TEXT,
+                            'if completed, represents required course grade',
+                            VALUE_OPTIONAL
+                        ),
+                    ]),
+                    'courses related to this coupon',
+                    VALUE_OPTIONAL
+                ),
+                'cohorts' => new external_multiple_structure(
+                    new external_single_structure([
+                        'name' => new external_value(PARAM_TEXT, 'cohort name'),
+                        'idnumber' => new external_value(PARAM_TEXT, 'cohort idnumber'),
+                    ]),
+                    'cohorts related to this coupon',
+                    VALUE_OPTIONAL
+                ),
+            ])
         );
     }
 
@@ -526,14 +486,14 @@ class block_coupon_external extends external_api {
         $where[] = '(' . implode(' OR ', $qwhere) . ')';
 
         $sql = "SELECT id, username, " . \block_coupon\helper::get_all_user_name_fields(true, 'u') . " FROM {user} u
-             WHERE " . implode(" AND ", $where) .
+                WHERE " . implode(" AND ", $where) .
                 " ORDER BY firstname ASC";
         $rs = $DB->get_recordset_sql($sql, $qparams);
         $users = [];
         foreach ($rs as $user) {
             $users[] = (object) [
-                        'id' => $user->id,
-                        'name' => fullname($user) . ' (' . $user->username . ')',
+                'id' => $user->id,
+                'name' => fullname($user) . ' (' . $user->username . ')',
             ];
         }
         $rs->close();
@@ -548,8 +508,13 @@ class block_coupon_external extends external_api {
      */
     public static function find_users_parameters() {
         return new external_function_parameters([
-            'query' => new external_value(PARAM_TEXT,
-                    'search string', VALUE_REQUIRED, null, NULL_NOT_ALLOWED),
+            'query' => new external_value(
+                PARAM_TEXT,
+                'search string',
+                VALUE_REQUIRED,
+                null,
+                NULL_NOT_ALLOWED
+            ),
         ]);
     }
 
@@ -560,107 +525,11 @@ class block_coupon_external extends external_api {
      */
     public static function find_users_returns() {
         return new external_multiple_structure(
-                new external_single_structure([
-                    'id' => new external_value(PARAM_INT, 'user id'),
-                    'name' => new external_value(PARAM_TEXT, 'name'),
-                        ])
+            new external_single_structure([
+                'id' => new external_value(PARAM_INT, 'user id'),
+                'name' => new external_value(PARAM_TEXT, 'name'),
+            ])
         );
-    }
-
-    /**
-     * Returns courses based on search query.
-     *
-     * @param string $query search string
-     * @return array $courses
-     */
-    public static function find_courses($query) {
-        global $DB;
-
-        $where = [];
-        $qparams = [];
-        // Dont include the SITE.
-        $where[] = 'c.id <> ' . SITEID;
-        $where[] = 'c.visible = 1';
-
-        $query = "%{$query}%";
-        $qwhere = [];
-        $qwhere[] = $DB->sql_like('c.shortname', '?', false, false);
-        $qparams[] = $query;
-
-        $qwhere[] = $DB->sql_like('c.fullname', '?', false, false);
-        $qparams[] = $query;
-
-        $qwhere[] = $DB->sql_like('c.idnumber', '?', false, false);
-        $qparams[] = $query;
-
-        $where[] = '(' . implode(' OR ', $qwhere) . ')';
-
-        $sql = " FROM {course} c
-             WHERE " . implode(" AND ", $where) .
-                " ORDER BY shortname ASC";
-        $counter = $DB->get_field_sql('SELECT COUNT(id) ' . $sql, $qparams);
-        $maxitems = 100;
-        if ($counter > $maxitems) {
-            return (object)[
-                'overflow' => true,
-                'overflowstr' => '<div class="alert alert-danger">'.get_string('err:overflow', 'block_coupon', $maxitems).'</div>',
-                'maxresults' => $maxitems,
-            ];
-        }
-
-        $rs = $DB->get_recordset_sql("SELECT id, shortname, fullname, idnumber " . $sql, $qparams);
-        $courses = [];
-
-        $config = get_config('block_coupon');
-        $dfield = $config->coursedisplay ?? 'fullname';
-        $appendidnumber = $config->coursenameappendidnumber ?? true;
-
-        foreach ($rs as $course) {
-            $name = $course->{$dfield};
-            if ($appendidnumber) {
-                $name .= (empty($course->idnumber) ? '' : ' (' . $course->idnumber . ')');
-            }
-            $courses[] = (object) [
-                'id' => $course->id,
-                'name' => $name,
-            ];
-        }
-        $rs->close();
-
-        return (object)[
-            'maxresults' => $maxitems,
-            'data' => $courses,
-        ];
-    }
-
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function find_courses_parameters() {
-        return new external_function_parameters([
-            'query' => new external_value(PARAM_TEXT,
-                    'search string', VALUE_REQUIRED, null, NULL_NOT_ALLOWED),
-        ]);
-    }
-
-    /**
-     * Returns description of method return parameters
-     *
-     * @return external_value
-     */
-    public static function find_courses_returns() {
-        $cstruct = new external_single_structure([
-            'id' => new external_value(PARAM_INT, 'course id'),
-            'name' => new external_value(PARAM_TEXT, 'name'),
-        ]);
-        return new external_single_structure([
-            'maxresults' => new external_value(PARAM_INT),
-            'overflow' => new external_value(PARAM_BOOL, 'Provided as true when too many results', VALUE_OPTIONAL),
-            'overflowstr' => new external_value(PARAM_CLEANHTML, 'Provided when too many results', VALUE_OPTIONAL),
-            'data' => new external_multiple_structure($cstruct, 'result data', VALUE_OPTIONAL),
-        ]);
     }
 
     /**
@@ -676,7 +545,7 @@ class block_coupon_external extends external_api {
         // Exclusions.
         $excludeids = helper::get_unconnected_cohort_courses($cohortid, true);
         $excludeids[] = SITEID;
-        list($idnotinsql, $qparams) = $DB->get_in_or_equal($excludeids, SQL_PARAMS_QM, 'unused', true, 0);
+        [$idnotinsql, $qparams] = $DB->get_in_or_equal($excludeids, SQL_PARAMS_QM, 'unused', true, 0);
 
         $where = [];
         $where[] = "c.id {$idnotinsql}";
@@ -695,14 +564,14 @@ class block_coupon_external extends external_api {
         $where[] = '(' . implode(' OR ', $qwhere) . ')';
 
         $sql = "SELECT id, shortname, fullname, idnumber FROM {course} c
-             WHERE " . implode(" AND ", $where) .
+                WHERE " . implode(" AND ", $where) .
                 " ORDER BY fullname ASC";
         $rs = $DB->get_recordset_sql($sql, $qparams);
         $courses = [];
         foreach ($rs as $course) {
             $courses[] = (object) [
-                        'id' => $course->id,
-                        'name' => $course->fullname . (empty($course->idnumber) ? '' : ' (' . $course->idnumber . ')'),
+                'id' => $course->id,
+                'name' => $course->fullname . (empty($course->idnumber) ? '' : ' (' . $course->idnumber . ')'),
             ];
         }
         $rs->close();
@@ -717,10 +586,20 @@ class block_coupon_external extends external_api {
      */
     public static function find_potential_cohort_courses_parameters() {
         return new external_function_parameters([
-            'cohortid' => new external_value(PARAM_INT,
-                    'cohort id to search for', VALUE_REQUIRED, null, NULL_NOT_ALLOWED),
-            'query' => new external_value(PARAM_TEXT,
-                    'search string', VALUE_REQUIRED, null, NULL_NOT_ALLOWED),
+            'cohortid' => new external_value(
+                PARAM_INT,
+                'cohort id to search for',
+                VALUE_REQUIRED,
+                null,
+                NULL_NOT_ALLOWED
+            ),
+            'query' => new external_value(
+                PARAM_TEXT,
+                'search string',
+                VALUE_REQUIRED,
+                null,
+                NULL_NOT_ALLOWED
+            ),
         ]);
     }
 
@@ -731,65 +610,11 @@ class block_coupon_external extends external_api {
      */
     public static function find_potential_cohort_courses_returns() {
         return new external_multiple_structure(
-                new external_single_structure([
-                    'id' => new external_value(PARAM_INT, 'course id'),
-                    'name' => new external_value(PARAM_TEXT, 'name'),
-                        ])
+            new external_single_structure([
+                'id' => new external_value(PARAM_INT, 'course id'),
+                'name' => new external_value(PARAM_TEXT, 'name'),
+            ])
         );
-    }
-
-    /**
-     * Returns cohorts based on search query.
-     *
-     * @param string $query search string
-     * @return array $cohorts
-     */
-    public static function find_cohorts($query) {
-        global $CFG;
-        require_once($CFG->dirroot . '/cohort/lib.php');
-        $rs = cohort_get_all_cohorts(0, 0, $query);
-        $cohorts = [];
-        foreach ($rs['cohorts'] as $cohort) {
-            $cohorts[] = (object) [
-                        'id' => $cohort->id,
-                        'name' => $cohort->name . (empty($cohort->idnumber) ? '' : ' (' . $cohort->idnumber . ')'),
-            ];
-        }
-
-        return (object)[
-            'maxresults' => 0,
-            'data' => $cohorts,
-        ];
-    }
-
-    /**
-     * Returns description of method parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function find_cohorts_parameters() {
-        return new external_function_parameters([
-            'query' => new external_value(PARAM_TEXT,
-                    'search string', VALUE_REQUIRED, null, NULL_NOT_ALLOWED),
-        ]);
-    }
-
-    /**
-     * Returns description of method return parameters
-     *
-     * @return external_multiple_structure
-     */
-    public static function find_cohorts_returns() {
-        $cstruct = new external_single_structure([
-            'id' => new external_value(PARAM_INT, 'cohort id'),
-            'name' => new external_value(PARAM_TEXT, 'name'),
-        ]);
-        return new external_single_structure([
-            'maxresults' => new external_value(PARAM_INT),
-            'overflow' => new external_value(PARAM_BOOL, 'Provided as true when too many results', VALUE_OPTIONAL),
-            'overflowstr' => new external_value(PARAM_CLEANHTML, 'Provided when too many results', VALUE_OPTIONAL),
-            'data' => new external_multiple_structure($cstruct, 'result data', VALUE_OPTIONAL),
-        ]);
     }
 
     /**
@@ -800,11 +625,18 @@ class block_coupon_external extends external_api {
      * @param array $groups Array of IDs of all groups the users will be added to after using a Coupon.
      * @param int $enrolperiod enrolment period in SECONDS
      * @param string $font the font to apply with the PDF
+     * @param string $emailto string with the email to send the coupons
      *
      * @return array array containing generator instance and generator options.
      */
-    private static function p_request_coupon_codes_for_course($amount, $courses, $groups = null,
-            $enrolperiod = 0, $font = 'helvetica') {
+    private static function p_request_coupon_codes_for_course(
+        $amount,
+        $courses,
+        $groups = null,
+        $enrolperiod = 0,
+        $font = 'helvetica',
+        $emailto = ''
+    ) {
         global $USER;
 
         // Get max length for the coupon code.
@@ -821,7 +653,7 @@ class block_coupon_external extends external_api {
         $generatoroptions->courses = $courses;
         $generatoroptions->csvrecipients = [];
         $generatoroptions->emailbody = '';
-        $generatoroptions->emailto = '';
+        $generatoroptions->emailto = $emailto;
         $generatoroptions->enrolperiod = $enrolperiod;
         $generatoroptions->extendusers = [];
         $generatoroptions->generatesinglepdfs = true;
@@ -840,7 +672,7 @@ class block_coupon_external extends external_api {
         // Check if we succeeded.
         if ($rs !== true) {
             $errors = $generator->get_errors();
-            throw new block_coupon\exception('err:generating:coupons', implode("\n", $errors));
+            throw new \block_coupon\exception('err:generating:coupons', implode("\n", $errors));
         }
 
         // We made it, so return the generator and options.
@@ -853,10 +685,18 @@ class block_coupon_external extends external_api {
      * @param int $amount Amount of coupons to be generated.
      * @param array $cohorts Array of IDs of the cohorts the coupons will be generated for.
      * @param string $font the font to apply with the PDF
+     * @param string $emailto string with the email to send the coupons
+     * @param boolean $generatesinglepdfs Will generate one PDF file for each coupon if true.
      *
      * @return array array containing generator instance and generator options.
      */
-    private static function p_request_coupon_codes_for_cohorts($amount, $cohorts, $font = 'helvetica') {
+    private static function p_request_coupon_codes_for_cohorts(
+        $amount,
+        $cohorts,
+        $font = 'helvetica',
+        $emailto = '',
+        $generatesinglepdfs = false
+    ) {
         global $USER;
 
         // Get max length for the coupon code.
@@ -871,10 +711,10 @@ class block_coupon_external extends external_api {
         $generatoroptions->courses = [];
         $generatoroptions->csvrecipients = [];
         $generatoroptions->emailbody = '';
-        $generatoroptions->emailto = '';
+        $generatoroptions->emailto = $emailto;
         $generatoroptions->enrolperiod = 0;
         $generatoroptions->extendusers = [];
-        $generatoroptions->generatesinglepdfs = true;
+        $generatoroptions->generatesinglepdfs = $generatesinglepdfs;
         $generatoroptions->groups = [];
         $generatoroptions->logoid = 0;
         $generatoroptions->ownerid = $USER->id;
@@ -890,7 +730,7 @@ class block_coupon_external extends external_api {
         // Check if we succeeded.
         if ($rs !== true) {
             $errors = $generator->get_errors();
-            throw new block_coupon\exception('err:generating:coupons', implode("\n", $errors));
+            throw new \block_coupon\exception('err:generating:coupons', implode("\n", $errors));
         }
 
         // We made it, so return the generator and options.
@@ -906,9 +746,7 @@ class block_coupon_external extends external_api {
         global $USER, $DB;
         try {
             // We always must pass webservice params through validate_parameters.
-            $params = self::validate_parameters(
-                            self::claim_coupon_parameters(), ['code' => $code]
-            );
+            $params = self::validate_parameters(self::claim_coupon_parameters(), ['code' => $code]);
 
             // We always must call validate_context in a webservice.
             self::validate_context(\context_system::instance());
@@ -977,9 +815,7 @@ class block_coupon_external extends external_api {
      */
     public static function delete_coupons_parameters() {
         return new external_function_parameters([
-            'ids' => new external_multiple_structure(
-                    new external_value(PARAM_INT, 'Coupon ID')
-            ),
+            'ids' => new external_multiple_structure(new external_value(PARAM_INT, 'Coupon ID')),
         ]);
     }
 
@@ -1048,7 +884,6 @@ class block_coupon_external extends external_api {
         }
     }
 
-
     /**
      * Returns batches based on search query.
      *
@@ -1079,8 +914,7 @@ class block_coupon_external extends external_api {
             $params['batchid'] = $query;
 
             $sql = "FROM {block_coupon}
-                 WHERE " . implode(" AND ", $where) .
-                    " ORDER BY batchid ASC";
+                 WHERE " . implode(" AND ", $where);
 
             $counter = $DB->get_field_sql('SELECT COUNT(batchid) ' . $sql, $params);
             $maxitems = 100;
@@ -1093,6 +927,7 @@ class block_coupon_external extends external_api {
                 ];
             }
 
+            $sql .= " ORDER BY batchid ASC";
             $rs = $DB->get_fieldset_sql('SELECT batchid ' . $sql, $params);
             return (object)[
                 'maxresults' => $maxitems,
@@ -1110,10 +945,20 @@ class block_coupon_external extends external_api {
      */
     public static function find_batches_parameters() {
         return new external_function_parameters([
-            'query' => new external_value(PARAM_TEXT,
-                    'search string', VALUE_REQUIRED, null, NULL_NOT_ALLOWED),
-            'owneronly' => new external_value(PARAM_BOOL,
-                    'Owner only marking', VALUE_DEFAULT, false, NULL_NOT_ALLOWED),
+            'query' => new external_value(
+                PARAM_TEXT,
+                'search string',
+                VALUE_REQUIRED,
+                null,
+                NULL_NOT_ALLOWED
+            ),
+            'owneronly' => new external_value(
+                PARAM_BOOL,
+                'Owner only marking',
+                VALUE_DEFAULT,
+                false,
+                NULL_NOT_ALLOWED
+            ),
         ]);
     }
 
@@ -1128,9 +973,10 @@ class block_coupon_external extends external_api {
             'overflow' => new external_value(PARAM_BOOL, 'Provided as true when too many results', VALUE_OPTIONAL),
             'overflowstr' => new external_value(PARAM_CLEANHTML, 'Provided when too many results', VALUE_OPTIONAL),
             'data' => new external_multiple_structure(
-                    new external_value(PARAM_ALPHANUMEXT, 'batchid'),
-                    'result data', VALUE_OPTIONAL),
+                new external_value(PARAM_TEXT, 'batchid'),
+                'result data',
+                VALUE_OPTIONAL
+            ),
         ]);
     }
-
 }

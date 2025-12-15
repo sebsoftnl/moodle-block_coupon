@@ -48,7 +48,6 @@ require_once($CFG->libdir . '/form/editor.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class colourpicker extends \MoodleQuickForm_editor {
-
     /**
      * Sets the value of the form element
      *
@@ -76,10 +75,21 @@ class colourpicker extends \MoodleQuickForm_editor {
         $PAGE->requires->js_init_call('M.util.init_colour_picker', [$this->getAttribute('id'), null]);
         $content = '<label class="accesshide" for="' . $this->getAttribute('id') . '" >' . $this->getLabel() . '</label>';
         $content .= html_writer::start_tag('div', ['class' => 'form-colourpicker defaultsnext']);
-        $content .= html_writer::tag('div', $OUTPUT->pix_icon('i/loading', get_string('loading', 'admin'), 'moodle',
-            ['class' => 'loadingicon']), ['class' => 'admin_colourpicker clearfix']);
-        $content .= html_writer::empty_tag('input', ['type' => 'text', 'id' => $this->getAttribute('id'),
-            'name' => $this->getName(), 'value' => $this->getValue(), 'size' => '12']);
+        $content .= html_writer::tag(
+            'div',
+            $OUTPUT->pix_icon('i/loading', get_string('loading', 'admin'), 'moodle', ['class' => 'loadingicon']),
+            ['class' => 'admin_colourpicker clearfix']
+        );
+        $content .= html_writer::empty_tag(
+            'input',
+            [
+                'type' => 'text',
+                'id' => $this->getAttribute('id'),
+                'name' => $this->getName(),
+                'value' => $this->getValue(),
+                'size' => '12',
+            ]
+        );
         $content .= html_writer::end_tag('div');
 
         return $content;
@@ -96,5 +106,4 @@ class colourpicker extends \MoodleQuickForm_editor {
         $context['html'] = $this->toHtml();
         return $context;
     }
-
 }

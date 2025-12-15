@@ -42,7 +42,6 @@ use block_coupon\helper;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ctpage extends baseform {
-
     /**
      * form definition
      */
@@ -54,7 +53,7 @@ class ctpage extends baseform {
         $path = $CFG->dirroot . '/blocks/coupon/classes/forms/element/durationext.php';
         \MoodleQuickForm::registerElementType('durationext', $path, '\block_coupon\forms\element\durationext');
 
-        list($this->generatoroptions) = $this->_customdata;
+        [$this->generatoroptions] = $this->_customdata;
 
         // Nasty++.
         \MoodleQuickForm::registerRule('positiveint', 'regex', '/(^\d\d*$)/');
@@ -78,8 +77,11 @@ class ctpage extends baseform {
                 $mform->addHelpButton('coupon_amount', 'label:coupon_amount', 'block_coupon');
 
                 // Use alternative email address.
-                $mform->addElement('advcheckbox', 'use_alternative_email',
-                        get_string('label:use_alternative_email', 'block_coupon'));
+                $mform->addElement(
+                    'advcheckbox',
+                    'use_alternative_email',
+                    get_string('label:use_alternative_email', 'block_coupon')
+                );
                 $mform->setType('use_alternative_email', PARAM_BOOL);
                 $mform->setDefault('use_alternative_email', $usealternativeemail);
                 $mform->addHelpButton('use_alternative_email', 'label:alternative_email', 'block_coupon');
@@ -117,8 +119,12 @@ class ctpage extends baseform {
                 $mform->addElement('header', 'manualform', get_string('heading:manualForm', 'block_coupon'));
 
                 // Textarea recipients.
-                $mform->addElement('textarea', 'coupon_recipients_manual',
-                        get_string("label:coupon_recipients", 'block_coupon'), 'rows="10" cols="100"');
+                $mform->addElement(
+                    'textarea',
+                    'coupon_recipients_manual',
+                    get_string("label:coupon_recipients", 'block_coupon'),
+                    'rows="10" cols="100"'
+                );
                 $mform->addRule('coupon_recipients_manual', get_string('required'), 'required', null, 'client');
                 $mform->addHelpButton('coupon_recipients_manual', 'label:coupon_recipients_txt', 'block_coupon');
                 $mform->setDefault('coupon_recipients_manual', 'E-mail,Gender,Name');
@@ -135,8 +141,11 @@ class ctpage extends baseform {
                 $mform->addHelpButton('email_body_manual', 'label:email_body', 'block_coupon');
 
                 // When do we send the coupons?
-                $mform->addElement('date_selector', 'date_send_coupons_manual',
-                        get_string('label:date_send_coupons', 'block_coupon'));
+                $mform->addElement(
+                    'date_selector',
+                    'date_send_coupons_manual',
+                    get_string('label:date_send_coupons', 'block_coupon')
+                );
                 $mform->addRule('date_send_coupons_manual', get_string('required'), 'required');
                 $mform->addHelpButton('date_send_coupons_manual', 'label:date_send_coupons', 'block_coupon');
 
@@ -171,8 +180,13 @@ class ctpage extends baseform {
 
                 // Filepicker.
                 $urldownloadcsv = new \moodle_url($CFG->wwwroot . '/blocks/coupon/sample.csv');
-                $mform->addElement('filepicker', 'coupon_recipients',
-                        get_string('label:coupon_recipients', 'block_coupon'), null, ['accepted_types' => 'csv']);
+                $mform->addElement(
+                    'filepicker',
+                    'coupon_recipients',
+                    get_string('label:coupon_recipients', 'block_coupon'),
+                    null,
+                    ['accepted_types' => 'csv']
+                );
                 $mform->addHelpButton('coupon_recipients', 'label:coupon_recipients', 'block_coupon');
                 $mform->addElement('static', 'coupon_recipients_desc', '', get_string('coupon_recipients_desc', 'block_coupon'));
                 $mform->addElement('static', 'sample_csv', '', '<a href="' . $urldownloadcsv
@@ -227,5 +241,4 @@ class ctpage extends baseform {
         $errors = parent::validation($data, $files);
         return $errors;
     }
-
 }

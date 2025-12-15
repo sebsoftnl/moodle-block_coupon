@@ -43,7 +43,6 @@ use block_coupon\forms\logo;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class logomanager {
-
     /**
      * @var \moodle_page
      */
@@ -113,5 +112,4 @@ class logomanager {
         $url->params($mergeparams);
         return $url;
     }
-
 }

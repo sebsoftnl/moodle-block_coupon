@@ -44,7 +44,6 @@ define('COUPON_DATE_EXPIRES', '-1');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class element extends \block_coupon\template\element {
-
     /**
      * This function renders the form elements when adding a element.
      *
@@ -54,7 +53,7 @@ class element extends \block_coupon\template\element {
         // Get the possible date options.
         $dateoptions = [];
         $dateoptions[COUPON_DATE_CURRENT_DATE] = get_string('currentdate', 'block_coupon');
-        $dateoptions[COUPON_DATE_EXPIRY_ONE] = get_string('expirydate', 'block_coupon');
+        $dateoptions[COUPON_DATE_EXPIRES] = get_string('expirydate', 'block_coupon');
 
         $mform->addElement('select', 'dateitem', get_string('dateitem', 'block_coupon'), $dateoptions);
         $mform->addHelpButton('dateitem', 'dateitem', 'block_coupon');

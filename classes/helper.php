@@ -41,7 +41,6 @@ namespace block_coupon;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class helper {
-
     /**
      * __construct() HIDE: WE'RE STATIC
      */
@@ -366,7 +365,6 @@ class helper {
      * @return boolean|\stdClass
      */
     final public static function get_recipients_from_csv($recipientsstr, $delimiter = ',') {
-
         $recipients = [];
         $count = 0;
 
@@ -378,17 +376,14 @@ class helper {
         }
         // Split up in columns.
         foreach ($csvdata as &$row) {
-
             // Get the next row.
             $row = str_getcsv($row, $delimiter);
 
             // Check if we're looking at the first row.
             if ($count == 0) {
-
                 $expectedrow = [];
                 // Set the columns we'll need.
                 foreach ($row as $key => &$column) {
-
                     $column = trim(strtolower($column));
                     if (!in_array($column, $expectedcolumns)) {
                         continue;
@@ -428,7 +423,6 @@ class helper {
      * @return array|true true if valid, array or error messages if invalid
      */
     final public static function validate_coupon_recipients($csvdata, $delimiter) {
-
         $error = false;
         $maxcoupons = get_config('block_coupon', 'max_coupons');
 
@@ -499,9 +493,12 @@ class helper {
         global $DB;
         $sqls = [];
         $params = [];
-        $sqls[] = 'SELECT c.id,c.shortname FROM {course} c JOIN {block_coupon_courses} cc ON cc.courseid=c.id AND cc.couponid = ?';
+        $sqls[] = 'SELECT c.id,c.shortname,c.fullname
+                   FROM {course} c
+                   JOIN {block_coupon_courses} cc ON cc.courseid=c.id AND cc.couponid = ?';
         $params[] = $coupon->id;
-        $sqls[] = 'SELECT c.id,c.shortname FROM {block_coupon_cohorts} cc
+        $sqls[] = 'SELECT c.id,c.shortname, c.fullname as fullname
+                FROM {block_coupon_cohorts} cc
                 JOIN {enrol} e ON (e.customint1=cc.cohortid AND e.enrol=?)
                 JOIN {course} c ON e.courseid=c.id
                 WHERE cc.couponid = ?';
@@ -519,7 +516,7 @@ class helper {
      */
     public static function get_coupon_cohorts($coupon) {
         global $DB;
-        $sql = 'SELECT c.id, c.shortname, c.fullname
+        $sql = 'SELECT c.id, c.name
                 FROM {block_coupon_cohorts} cc
                 JOIN {cohort} c ON cc.cohortid=c.id
                 WHERE cc.couponid = ?';
@@ -621,7 +618,7 @@ class helper {
             $params['timeafter'] = $options->timeafter;
         }
         // Usage.
-        switch($options->used) {
+        switch ($options->used) {
             case 2: // Unused.
                 $where[] = '(userid IS NULL or userid = 0 OR claimed = 0)';
                 break;
@@ -637,25 +634,25 @@ class helper {
             // Course coupons.
             $subselect = 'SELECT DISTINCT couponid FROM {block_coupon_courses}';
             if (!empty($options->course)) {
-                list($insql, $inparams) = $DB->get_in_or_equal($options->course, SQL_PARAMS_NAMED, 'courseid', true, 0);
+                [$insql, $inparams] = $DB->get_in_or_equal($options->course, SQL_PARAMS_NAMED, 'courseid', true, 0);
                 $subselect .= ' WHERE courseid ' . $insql;
-                $where[] = 'id IN ('.$subselect.')';
+                $where[] = 'id IN (' . $subselect . ')';
                 $params += $inparams;
             }
         } else if ($options->type == 2) {
             // Cohort coupons.
             $subselect = 'SELECT DISTINCT couponid FROM {block_coupon_cohorts}';
             if (!empty($options->cohort)) {
-                list($insql, $inparams) = $DB->get_in_or_equal($options->cohort, SQL_PARAMS_NAMED, 'cohortid', true, 0);
+                [$insql, $inparams] = $DB->get_in_or_equal($options->cohort, SQL_PARAMS_NAMED, 'cohortid', true, 0);
                 $subselect .= ' WHERE cohortid ' . $insql;
-                $where[] = 'id IN ('.$subselect.')';
+                $where[] = 'id IN (' . $subselect . ')';
                 $params += $inparams;
             }
         } else if ($options->type == 3) {
             // Batch coupons.
             if (!empty($options->batchid)) {
-                list($insql, $inparams) = $DB->get_in_or_equal($options->batchid, SQL_PARAMS_NAMED, 'batchid', true, 0);
-                $where[] = 'batchid '.$insql;
+                [$insql, $inparams] = $DB->get_in_or_equal($options->batchid, SQL_PARAMS_NAMED, 'batchid', true, 0);
+                $where[] = 'batchid ' . $insql;
                 $params += $inparams;
             }
         }
@@ -664,7 +661,6 @@ class helper {
             $sqlparts[] = 'WHERE ' . implode(' AND ', $where);
         }
         return [implode(' ', $sqlparts), $params];
-
     }
 
     /**
@@ -673,7 +669,7 @@ class helper {
      */
     public static function cleanup_coupons($options) {
         global $DB;
-        list($idquery, $idparams) = self::cleanup_coupons_query($options, 'SELECT', 'id');
+        [$idquery, $idparams] = self::cleanup_coupons_query($options, 'SELECT', 'id');
         $couponids = $DB->get_fieldset_sql($idquery, $idparams);
         if (!empty($couponids)) {
             $DB->delete_records_list('block_coupon', 'id', $couponids);
@@ -703,7 +699,7 @@ class helper {
      */
     public static function count_cleanup_coupons($options) {
         global $DB;
-        list($idquery, $idparams) = self::cleanup_coupons_query($options, 'SELECT', 'id');
+        [$idquery, $idparams] = self::cleanup_coupons_query($options, 'SELECT', 'id');
         $couponids = $DB->get_fieldset_sql($idquery, $idparams);
         return count($couponids);
     }
@@ -748,12 +744,30 @@ class helper {
     public static function add_generator_method_options($mform) {
         // Determine which type of settings we'll use.
         $radioarray = [];
-        $radioarray[] = & $mform->createElement('radio', 'showform', '',
-                get_string('showform-amount', 'block_coupon'), 'amount', ['onchange' => 'showHide(this.value)']);
-        $radioarray[] = & $mform->createElement('radio', 'showform', '',
-                get_string('showform-csv', 'block_coupon'), 'csv', ['onchange' => 'showHide(this.value)']);
-        $radioarray[] = & $mform->createElement('radio', 'showform', '',
-                get_string('showform-manual', 'block_coupon'), 'manual', ['onchange' => 'showHide(this.value)']);
+        $radioarray[] = & $mform->createElement(
+            'radio',
+            'showform',
+            '',
+            get_string('showform-amount', 'block_coupon'),
+            'amount',
+            ['onchange' => 'showHide(this.value)']
+        );
+        $radioarray[] = & $mform->createElement(
+            'radio',
+            'showform',
+            '',
+            get_string('showform-csv', 'block_coupon'),
+            'csv',
+            ['onchange' => 'showHide(this.value)']
+        );
+        $radioarray[] = & $mform->createElement(
+            'radio',
+            'showform',
+            '',
+            get_string('showform-manual', 'block_coupon'),
+            'manual',
+            ['onchange' => 'showHide(this.value)']
+        );
         $mform->addGroup($radioarray, 'radioar', get_string('label:showform', 'block_coupon'), ['<br/>'], false);
         $mform->setDefault('showform', 'amount');
     }
@@ -892,12 +906,21 @@ class helper {
 
         // Filepicker.
         $urldownloadcsv = new \moodle_url($CFG->wwwroot . '/blocks/coupon/sample.csv');
-        $mform->addElement('filepicker', 'coupon_recipients',
-                get_string('label:coupon_recipients', 'block_coupon'), null, ['accepted_types' => 'csv']);
+        $mform->addElement(
+            'filepicker',
+            'coupon_recipients',
+            get_string('label:coupon_recipients', 'block_coupon'),
+            null,
+            ['accepted_types' => 'csv']
+        );
         $mform->addHelpButton('coupon_recipients', 'label:coupon_recipients', 'block_coupon');
         $mform->addElement('static', 'coupon_recipients_desc', '', get_string('coupon_recipients_desc', 'block_coupon'));
-        $mform->addElement('static', 'sample_csv', '', '<a href="' . $urldownloadcsv
-                . '" target="_blank">' . get_string('download-sample-csv', 'block_coupon') . '</a>');
+        $mform->addElement(
+            'static',
+            'sample_csv',
+            '',
+            '<a href="' . $urldownloadcsv . '" target="_blank">' . get_string('download-sample-csv', 'block_coupon') . '</a>'
+        );
 
         $choices = self::get_delimiter_list();
         $mform->addElement('select', 'csvdelimiter', get_string('csvdelimiter', 'tool_uploaduser'), $choices);
@@ -952,8 +975,12 @@ class helper {
         $mform->addElement('header', 'manualForm', get_string('heading:manualForm', 'block_coupon'));
 
         // Textarea recipients.
-        $mform->addElement('textarea', 'coupon_recipients_manual',
-                get_string("label:coupon_recipients", 'block_coupon'), 'rows="10" cols="100"');
+        $mform->addElement(
+            'textarea',
+            'coupon_recipients_manual',
+            get_string("label:coupon_recipients", 'block_coupon'),
+            'rows="10" cols="100"'
+        );
         $mform->addRule('coupon_recipients_manual', get_string('required'), 'required', null, 'client');
         $mform->addHelpButton('coupon_recipients_manual', 'label:coupon_recipients_txt', 'block_coupon');
         $mform->setDefault('coupon_recipients_manual', 'E-mail,Gender,Name');
@@ -1148,9 +1175,13 @@ class helper {
         }
 
         // Generate!
-        list($filename, $relativefilename) = static::generate_coupons($coupons,
-                $generatoroptions->generatesinglepdfs, $generatoroptions->batchid,
-                $ts, $generatoroptions->font);
+        [$filename, $relativefilename] = static::generate_coupons(
+            $coupons,
+            $generatoroptions->generatesinglepdfs,
+            $generatoroptions->batchid,
+            $ts,
+            $generatoroptions->font
+        );
 
         if (!empty($generatoroptions->emailto)) {
             $user->email = $generatoroptions->emailto;
@@ -1158,8 +1189,10 @@ class helper {
 
         $from = \core_user::get_noreply_user();
 
-        $downloadurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php',
-                ['bid' => $generatoroptions->batchid, 't' => $ts]);
+        $downloadurl = new \moodle_url(
+            $CFG->wwwroot . '/blocks/coupon/download.php',
+            ['bid' => $generatoroptions->batchid, 't' => $ts]
+        );
         $a = new \stdClass();
         $a->fullname = fullname($user);
         $a->signoff = generate_email_signoff();
@@ -1225,16 +1258,37 @@ class helper {
      * @param int $wordwrapwidth custom word wrap width, default 79
      * @return bool Returns true if mail was sent OK and false if there was an error.
      */
-    public static function do_email_to_user($user, $from, $subject, $messagetext, $messagehtml = '',
-            $attachment = '', $attachname = '', $usetrueaddress = true,
-            $replyto = '', $replytoname = '', $wordwrapwidth = 79) {
+    public static function do_email_to_user(
+        $user,
+        $from,
+        $subject,
+        $messagetext,
+        $messagehtml = '',
+        $attachment = '',
+        $attachname = '',
+        $usetrueaddress = true,
+        $replyto = '',
+        $replytoname = '',
+        $wordwrapwidth = 79
+    ) {
         global $CFG, $DB;
         $debuglevel = $CFG->debug;
         $CFG->debug = DEBUG_DEVELOPER; // Highest level.
 
         ob_start();
-        $result = email_to_user($user, $from, $subject, $messagetext, $messagehtml,
-                $attachment, $attachname, $usetrueaddress, $replyto, $replytoname, $wordwrapwidth);
+        $result = email_to_user(
+            $user,
+            $from,
+            $subject,
+            $messagetext,
+            $messagehtml,
+            $attachment,
+            $attachname,
+            $usetrueaddress,
+            $replyto,
+            $replytoname,
+            $wordwrapwidth
+        );
         $debugstr = ob_get_clean();
         if ($result === false || !empty($debugstr)) {
             $debugstr = 'Sending email to ' . fullname($user) . ' (' . $user->email . ') from ' .
@@ -1281,7 +1335,7 @@ class helper {
         $relativefilename = '';
         $sendpdf = (bool)get_config('block_coupon', 'personalsendpdf') || (bool)!$coupon->codeonly;
         if ($sendpdf) {
-            list($relativefilename, $filename) = static::generate_personalized_coupon($coupon);
+            [$relativefilename, $filename] = static::generate_personalized_coupon($coupon);
         }
 
         // Possibly split first/lastname.
@@ -1306,8 +1360,15 @@ class helper {
         // Try to force &amp; issue in "format_text_email" AGAIN.
         // Various tests have shown the text based email STILL displays "&amp;" entities.
         $messagetext = str_replace('&amp;', '&', $messagetext);
-        $mailstatus = static::do_email_to_user($recipient, $from, $subject, $messagetext, $messagehtml,
-                $relativefilename, $relativefilename);
+        $mailstatus = static::do_email_to_user(
+            $recipient,
+            $from,
+            $subject,
+            $messagetext,
+            $messagehtml,
+            $relativefilename,
+            $relativefilename
+        );
 
         if ($mailstatus) {
             // Set the coupons to send state.
@@ -1352,11 +1413,11 @@ class helper {
         }
 
         $identifier = uniqid($coupon->id);
-        $relativefilename = 'coupon_' . $identifier. '.pdf';
+        $relativefilename = 'coupon_' . $identifier . '.pdf';
         $filename = "{$CFG->dataroot}/{$relativefilename}";
 
         if ($template !== null) {
-            list($relativefilename, $filename) = $template->generate_pdf([$coupon], false, null, false, $relativefilename);
+            [$relativefilename, $filename] = $template->generate_pdf([$coupon], false, null, false, $relativefilename);
         } else {
             $identifier = uniqid($coupon->id);
             // Generate the PDF.
@@ -1387,8 +1448,13 @@ class helper {
      *
      * @return string
      */
-    public static function get_all_user_name_fields($returnsql = false, $tableprefix = '',
-            $prefix = '', $fieldprefix = '', $order = false) {
+    public static function get_all_user_name_fields(
+        $returnsql = false,
+        $tableprefix = '',
+        $prefix = '',
+        $fieldprefix = '',
+        $order = false
+    ) {
         if (class_exists('\core_user\fields', true)) {
             // This is Moodle 3.11+.
             $usql = \core_user\fields::for_name()->get_sql($tableprefix, true, $fieldprefix, '', false);
@@ -1483,8 +1549,11 @@ class helper {
         if ($data['expirationmethod'] == 1) {
             // By date.
             if ($data['expiresat'] <= $daterestrict) {
-                $errors['expiresat'] = get_string('err:expiration:date', 'block_coupon',
-                        userdate($daterestrict, get_string('strftimedate', 'langconfig')));
+                $errors['expiresat'] = get_string(
+                    'err:expiration:date',
+                    'block_coupon',
+                    userdate($daterestrict, get_string('strftimedate', 'langconfig'))
+                );
             }
         }
         return $errors;
@@ -1577,7 +1646,7 @@ class helper {
                 'batchid' => $batchid,
                 'timeid' => $timeid,
             ];
-            throw new block_coupon\exception('err:download-not-exists', $a);
+            throw new \block_coupon\exception('err:download-not-exists', $a);
         }
 
         if (!$dodl) {
@@ -1639,8 +1708,12 @@ class helper {
      * @param string|bool $emailbody email body or false of it'll be autogenerated
      * @param boolean $initiatedbycron whether or not this method was called by cron
      */
-    final public static function mail_coupons($coupons, coupon\generatoroptions $generatoroptions,
-            $emailbody = false, $initiatedbycron = false) {
+    final public static function mail_coupons(
+        $coupons,
+        coupon\generatoroptions $generatoroptions,
+        $emailbody = false,
+        $initiatedbycron = false
+    ) {
         global $DB, $CFG;
         raise_memory_limit(MEMORY_HUGE);
 
@@ -1650,8 +1723,7 @@ class helper {
             $generatoroptions->batchid = uniqid();
         }
         // Generate!
-        list($filename, $relativefilename) = static::generate_coupons($coupons,
-                $generatoroptions, $ts);
+        [$filename, $relativefilename] = static::generate_coupons($coupons, $generatoroptions, $ts);
 
         // Attempt to send email...
         global $USER;
@@ -1676,8 +1748,10 @@ class helper {
         if ($emailbody !== false) {
             $messagehtml = $emailbody;
         } else {
-            $downloadurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php',
-                    ['bid' => $generatoroptions->batchid, 't' => $ts]);
+            $downloadurl = new \moodle_url(
+                $CFG->wwwroot . '/blocks/coupon/download.php',
+                ['bid' => $generatoroptions->batchid, 't' => $ts]
+            );
             $bodyparams = [
                 'fullname' => fullname($USER),
                 'signoff' => generate_email_signoff(),
@@ -1778,10 +1852,9 @@ class helper {
             }
 
             return [$relativefilename, $filename];
-
         } else {
             $rfn = "coupons-{$generatoroptions->batchid}-{$ts}.pdf";
-            list($relativefilename, $filename) = $template->generate_pdf($coupons, false, null, false, $rfn);
+            [$relativefilename, $filename] = $template->generate_pdf($coupons, false, null, false, $rfn);
             return [$relativefilename, $filename];
         }
     }
@@ -1872,8 +1945,14 @@ class helper {
      * @param int|null $status
      * @return bool success
      */
-    public static function enrol_try_internal_enrol($courseid, $userid, $roleid = null,
-            $timestart = 0, $timeend = 0, $status = null) {
+    public static function enrol_try_internal_enrol(
+        $courseid,
+        $userid,
+        $roleid = null,
+        $timestart = 0,
+        $timeend = 0,
+        $status = null
+    ) {
         global $DB;
 
         // Note: this is hardcoded to manual plugin for now.
@@ -1929,11 +2008,262 @@ class helper {
                 false : ($CFG->forced_plugin_settings['block_coupon']['claimworkflow'] == 2);
 
         $helpstr = '';
-        $helpstr .= '<li>'.get_string('claimworkflow1_help', 'block_coupon').'</li>';
+        $helpstr .= '<li>' . get_string('claimworkflow1_help', 'block_coupon') . '</li>';
         if ($cwf) {
-            $helpstr .= '<li>'.get_string('claimworkflow2_help', 'block_coupon').'</li>';
+            $helpstr .= '<li>' . get_string('claimworkflow2_help', 'block_coupon') . '</li>';
         }
         return $helpstr;
     }
 
+    /**
+     * Load unused course coupon / link records
+     *
+     * @param int $courseid
+     * @param bool $idsonly
+     * @param string $fields
+     * @return array
+     */
+    protected static function get_unused_course_coupons($courseid, $idsonly = true, $fields = 'c.*') {
+        global $DB;
+        if ($idsonly) {
+            $fields = 'DISTINCT c.id';
+        }
+        $sql = "SELECT {$fields}
+            FROM {block_coupon} c
+            JOIN {block_coupon_courses} cc ON cc.couponid = c.id
+            WHERE c.claimed = 0
+            AND cc.courseid = ?
+            ";
+        $params = [$courseid];
+        if ($idsonly) {
+            return $DB->get_fieldset_sql($sql, $params);
+        } else {
+            return $DB->get_recordset_sql($sql, $params);
+        }
+    }
+
+    /**
+     * Replace linked course for a new one in ALL UNUSED coupons.
+     *
+     * @param int $oldcourseid
+     * @param int $newcourseid
+     */
+    public static function replace_coupon_course($oldcourseid, $newcourseid) {
+        global $DB, $USER;
+        $now = time();
+        $procid = md5((string)microtime(true) . random_string(10));
+        // Fetch UNUSED coupons.
+        $dbt = $DB->start_delegated_transaction();
+        $couponcourses = static::get_unused_course_coupons($oldcourseid, false, 'cc.*');
+        foreach ($couponcourses as $couponcourse) {
+            // Update record.
+            $couponcourse->courseid = $newcourseid;
+            $DB->update_record('block_coupon_courses', $couponcourse);
+
+            // Add log.
+            $logrec = (object)[
+                'couponid' => $couponcourse->couponid,
+                'typ' => 'course',
+                'oldrefid' => $oldcourseid,
+                'newrefid' => $newcourseid,
+                'procid' => $procid,
+                'usermodified' => $USER->id,
+                'timemodified' => $now,
+            ];
+            $DB->insert_record('block_coupon_modifications', $logrec);
+
+            // Trigger event.
+            $event = event\coupon_course_replaced::create([
+                'context' => \context_system::instance(),
+                'objectid' => $couponcourse->couponid,
+                'userid' => $USER->id,
+                'other' => [
+                    'courseid' => $oldcourseid,
+                    'newcourseid' => $newcourseid,
+                ],
+            ]);
+            $event->trigger();
+        }
+        $dbt->allow_commit();
+    }
+
+    /**
+     * Undo course modification
+     *
+     * @param mixed $identifier
+     * @param bool $byproc
+     * @param array $notifications
+     */
+    public static function undo_course_modification($identifier, $byproc = true, array &$notifications = []) {
+        global $DB;
+
+        $dbt = $DB->start_delegated_transaction();
+        $c = $byproc ? ['procid' => $identifier] : ['id' => $identifier];
+        $recordset = $DB->get_recordset('block_coupon_modifications', $c);
+
+        $successcount = 0;
+        $errorcount = 0;
+        $logidstoremove = [];
+
+        foreach ($recordset as $record) {
+            $coupon = $DB->get_record('block_coupon', ['id' => $record->couponid]);
+            if (empty($coupon->id) || $coupon->claimed == 1) {
+                $errorcount++;
+                continue;
+            }
+            $link = $DB->get_record('block_coupon_courses', ['couponid' => $record->couponid, 'courseid' => $record->newrefid]);
+            if (empty($link->id)) {
+                // Non-existent.
+                $errorcount++;
+                continue;
+            }
+            // Reset course.
+            $link->courseid = $record->oldrefid;
+            $DB->update_record('block_coupon_courses', $link);
+            // Remove tracking record.
+            $logidstoremove[] = $record->id;
+            $successcount++;
+        }
+
+        $recordset->close();
+
+        if (!empty($logidstoremove)) {
+            $DB->delete_records_list('block_coupon_modifications', 'id', $logidstoremove);
+        }
+
+        if ($errorcount > 0) {
+            $notifications[] = ['msg' => get_string('revert:numfailed', 'block_coupon', $errorcount), 'type' => 'warning'];
+        }
+        if ($successcount > 0) {
+            $notifications[] = ['msg' => get_string('revert:numsuccess', 'block_coupon', $successcount), 'type' => 'success'];
+        }
+
+        $dbt->allow_commit();
+    }
+
+    /**
+     * Load unused cohort coupon / link records
+     *
+     * @param int $cohortid
+     * @param bool $idsonly
+     * @param string $fields
+     * @return array
+     */
+    protected static function get_unused_cohort_coupons($cohortid, $idsonly = true, $fields = 'c.*') {
+        global $DB;
+        if ($idsonly) {
+            $fields = 'DISTINCT c.id';
+        }
+        $sql = "SELECT {$fields}
+            FROM {block_coupon} c
+            JOIN {block_coupon_cohorts} cc ON cc.couponid = c.id
+            WHERE c.claimed = 0
+            AND cc.cohortid = ?
+            ";
+        $params = [$cohortid];
+        if ($idsonly) {
+            return $DB->get_fieldset_sql($sql, $params);
+        } else {
+            return $DB->get_recordset_sql($sql, $params);
+        }
+    }
+
+    /**
+     * Replace linked cohort for a new one in ALL UNUSED coupons.
+     *
+     * @param int $oldcohortid
+     * @param int $newcohortid
+     */
+    public static function replace_coupon_cohort($oldcohortid, $newcohortid) {
+        global $DB, $USER;
+        $now = time();
+        $procid = md5((string)microtime(true) . random_string(10));
+        // Fetch UNUSED coupons.
+        $dbt = $DB->start_delegated_transaction();
+        $couponcohorts = static::get_unused_cohort_coupons($oldcohortid, false, 'cc.*');
+        foreach ($couponcohorts as $couponcohort) {
+            // Update record.
+            $couponcohort->cohortid = $newcohortid;
+            $DB->update_record('block_coupon_cohorts', $couponcohort);
+
+            // Add log.
+            $logrec = (object)[
+                'couponid' => $couponcohort->couponid,
+                'typ' => 'cohort',
+                'oldrefid' => $oldcohortid,
+                'newrefid' => $newcohortid,
+                'procid' => $procid,
+                'usermodified' => $USER->id,
+                'timemodified' => $now,
+            ];
+            $DB->insert_record('block_coupon_modifications', $logrec);
+
+            // Trigger event.
+            $event = event\coupon_cohort_replaced::create([
+                'context' => \context_system::instance(),
+                'objectid' => $couponcohort->couponid,
+                'userid' => $USER->id,
+                'other' => [
+                    'cohortid' => $oldcohortid,
+                    'newcohortid' => $newcohortid,
+                ],
+            ]);
+            $event->trigger();
+        }
+        $dbt->allow_commit();
+    }
+
+    /**
+     * Undo cohort modification
+     *
+     * @param mixed $identifier
+     * @param bool $byproc
+     * @param array $notifications
+     */
+    public static function undo_cohort_modification($identifier, $byproc = true, array &$notifications = []) {
+        global $DB;
+
+        $dbt = $DB->start_delegated_transaction();
+        $c = $byproc ? ['procid' => $identifier] : ['id' => $identifier];
+        $recordset = $DB->get_recordset('block_coupon_modifications', $c);
+
+        $successcount = 0;
+        $errorcount = 0;
+        $logidstoremove = [];
+
+        foreach ($recordset as $record) {
+            $coupon = $DB->get_record('block_coupon', ['id' => $record->couponid]);
+            if (empty($coupon->id) || $coupon->claimed == 1) {
+                $errorcount++;
+                continue;
+            }
+            $link = $DB->get_record('block_coupon_cohorts', ['couponid' => $record->couponid, 'cohortid' => $record->newrefid]);
+            if (empty($link->id)) {
+                // Non-existent.
+                $errorcount++;
+                continue;
+            }
+            // Reset course.
+            $link->courseid = $record->oldrefid;
+            $DB->update_record('block_coupon_cohorts', $link);
+            // Remove tracking record.
+            $logidstoremove[] = $record->id;
+            $successcount++;
+        }
+
+        $recordset->close();
+
+        if (!empty($logidstoremove)) {
+            $DB->delete_records_list('block_coupon_modifications', 'id', $logidstoremove);
+        }
+
+        if ($errorcount > 0) {
+            $notifications[] = ['msg' => get_string('revert:numfailed', 'block_coupon', $errorcount), 'type' => 'warning'];
+        }
+        if ($successcount > 0) {
+            $notifications[] = ['msg' => get_string('revert:numsuccess', 'block_coupon', $successcount), 'type' => 'success'];
+        }
+
+        $dbt->allow_commit();
+    }
 }

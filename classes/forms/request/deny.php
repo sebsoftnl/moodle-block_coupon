@@ -43,14 +43,13 @@ require_once($CFG->libdir . '/formslib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class deny extends \moodleform {
-
     /**
      * form definition
      */
     public function definition() {
         $mform = & $this->_form;
 
-        list($heading, $info) = $this->_customdata;
+        [$heading, $info] = $this->_customdata;
 
         $mform->addElement('header', 'header', $heading);
         $mform->addElement('static', 'info', '', $info);
@@ -60,5 +59,4 @@ class deny extends \moodleform {
 
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'));
     }
-
 }

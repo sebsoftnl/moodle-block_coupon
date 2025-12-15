@@ -467,9 +467,12 @@ class Rearrange {
 
 }
 
-export default {
-    init: function(selector, templateid, page, elements) {
-        new Rearrange(templateid, page, elements);
-        new RearrangeArea(selector);
-    }
+const getElementsForPage = (templateid, pageid) => {
+    return Service.getElementsForPage(templateid, pageid);
+};
+
+export const init = async(selector, templateid, page) => {
+    const elements = await getElementsForPage(templateid, page.id);
+    new Rearrange(templateid, page, elements);
+    new RearrangeArea(selector);
 };

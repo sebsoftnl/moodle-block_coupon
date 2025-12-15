@@ -43,7 +43,6 @@ use block_coupon\exception;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class enrolext extends typebase implements icoupontype {
-
     /**
      * Claim coupon.
      * @param int $foruserid user that claims coupon. Current userid if not given.
@@ -85,8 +84,16 @@ class enrolext extends typebase implements icoupontype {
                 continue;
             }
             // Now we can update enrolment.
-            if (!$instances = $DB->get_records('enrol', ['enrol' => 'manual',
-                'courseid' => $couponcourse->courseid, 'status' => ENROL_INSTANCE_ENABLED], 'sortorder,id ASC')) {
+            $instances = $instances = $DB->get_records(
+                'enrol',
+                [
+                    'enrol' => 'manual',
+                    'courseid' => $couponcourse->courseid,
+                    'status' => ENROL_INSTANCE_ENABLED,
+                ],
+                'sortorder,id ASC'
+            );
+            if (empty($instances)) {
                 return false;
             }
             $instance = reset($instances);
@@ -146,5 +153,4 @@ class enrolext extends typebase implements icoupontype {
             throw new exception('error:already-enrolled-in-courses');
         }
     }
-
 }

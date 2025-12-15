@@ -35,15 +35,14 @@ function xmldb_block_coupon_install() {
 
     // IF we have a custom logo, please place into Moodle's Filesystem.
     // This should NOT happen, but it could (e.g de-installation of a previous version).
-    $logofile = $CFG->dataroot.'/coupon_logos/couponlogo.png';
+    $logofile = $CFG->dataroot . '/coupon_logos/couponlogo.png';
     if (file_exists($logofile)) {
         // Store.
         $content = file_get_contents($logofile);
         \block_coupon\logostorage::store_from_content('couponlogo.png', $content);
         // Delete original.
         unlink($logofile);
-        // ANd remove dir.
+        // And remove dir.
         remove_dir(dirname($logofile));
     }
-
 }

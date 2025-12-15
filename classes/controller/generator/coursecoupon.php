@@ -45,7 +45,6 @@ use block_coupon\coupon\generatoroptions;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursecoupon {
-
     /**
      * @var \moodle_page
      */
@@ -110,6 +109,7 @@ class coursecoupon {
                 break;
             case 1:
                 $this->process_page_1();
+                break;
             default:
                 break;
         }
@@ -137,7 +137,7 @@ class coursecoupon {
             $generatoroptions->roleid = $data->coupon_role;
             $generatoroptions->enrolperiod = (empty($data->enrolment_period)) ? null : $data->enrolment_period;
 
-            list($insql, $params) = $DB->get_in_or_equal($data->coupon_courses, SQL_PARAMS_QM, '', true, 0);
+            [$insql, $params] = $DB->get_in_or_equal($data->coupon_courses, SQL_PARAMS_QM, '', true, 0);
             $hasgroups = ($DB->count_records_select("groups", "courseid {$insql}", $params, 'COUNT(id)') > 0);
 
             // Serialize generatoroptions to session.
@@ -202,7 +202,7 @@ class coursecoupon {
         $mform = new \block_coupon\forms\coupon\campaigntype($url, [$generatoroptions]);
 
         if ($mform->is_previous()) {
-            list($insql, $params) = $DB->get_in_or_equal($generatoroptions->courses, SQL_PARAMS_QM, '', true, 0);
+            [$insql, $params] = $DB->get_in_or_equal($generatoroptions->courses, SQL_PARAMS_QM, '', true, 0);
             $hasgroups = ($DB->count_records_select("groups", "courseid {$insql}", $params, 'COUNT(id)') > 0);
 
             $redirecturl = $this->get_url(['page' => $hasgroups ? 2 : 1]);
@@ -362,7 +362,6 @@ class coursecoupon {
             // And reload page.
             redirect($url);
         } else if ($data = $mform->get_data()) {
-
             // Get recipients.
             switch ($generatoroptions->generatormethod) {
                 case 'csv':
@@ -429,7 +428,6 @@ class coursecoupon {
             generatoroptions::clean_session();
             redirect(new moodle_url($CFG->wwwroot . '/course/view.php', ['id' => $this->page->course->id]));
         } else if ($data = $mform->get_data()) {
-
             // Get recipients.
             if ($generatoroptions->generatormethod == 'csv') {
                 // Parse CSV.
@@ -504,7 +502,7 @@ class coursecoupon {
                 if (!$generatoroptions->generatecodesonly) {
                     // Generate and send off.
                     $coupons = $DB->get_records_list('block_coupon', 'id', $generator->get_generated_couponids());
-                    list($rs, $batchid, $ts) = helper::mail_coupons($coupons, $generatoroptions, false, false);
+                    [$rs, $batchid, $ts] = helper::mail_coupons($coupons, $generatoroptions, false, false);
 
                     $dlurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php', ['bid' => $batchid, 't' => $ts]);
                     $dllink = \html_writer::link($dlurl, get_string('here', 'block_coupon'));
@@ -562,5 +560,4 @@ class coursecoupon {
         $url->params($mergeparams);
         return $url;
     }
-
 }

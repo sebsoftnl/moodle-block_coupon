@@ -45,7 +45,6 @@ use block_coupon\helper;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course extends typebase implements icoupontype {
-
     /**
      * CFW_STD
      */
@@ -135,8 +134,16 @@ class course extends typebase implements icoupontype {
             // Do settings dictate we re-activate suspended enrolments?
             if ($doupdate) {
                 $newstatus = $reactivatesuspended ? ENROL_USER_ACTIVE : null; // Value "null" means keep "as is".
-                if (!helper::enrol_try_internal_enrol($couponcourse->courseid, $foruserid,
-                        $role->id, time(), $endenrolment, $newstatus)) {
+                if (
+                    !helper::enrol_try_internal_enrol(
+                        $couponcourse->courseid,
+                        $foruserid,
+                        $role->id,
+                        time(),
+                        $endenrolment,
+                        $newstatus
+                    )
+                ) {
                     throw new exception('error:unable_to_enrol');
                 }
                 // Mark the context for cache refresh.
@@ -262,7 +269,6 @@ class course extends typebase implements icoupontype {
                         $courselist[] = $this->get_coursename_display($course, $context);
                     } else if ($enrolled && !$activelyenrolled) {
                         $suspendedcourselist[] = $this->get_coursename_display($course, $context);
-
                     }
                 }
 
@@ -323,5 +329,4 @@ class course extends typebase implements icoupontype {
 
         return $name;
     }
-
 }

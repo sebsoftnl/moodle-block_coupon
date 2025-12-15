@@ -40,7 +40,6 @@ require_once($CFG->dirroot . '/grade/querylib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class element_helper {
-
     /**
      * @var int the top-left of element
      */
@@ -64,7 +63,7 @@ class element_helper {
      * @param string $content the content to render
      */
     public static function render_content($pdf, $element, $content) {
-        list($font, $attr) = self::get_font($element);
+        [$font, $attr] = self::get_font($element);
         $pdf->setFont($font, $attr, $element->get_fontsize());
         $fontcolour = \TCPDF_COLORS::convertHTMLColorToDec($element->get_colour(), $fontcolour);
         $pdf->SetTextColor($fontcolour['R'], $fontcolour['G'], $fontcolour['B']);
@@ -116,7 +115,7 @@ class element_helper {
      * @return string the html
      */
     public static function render_html_content($element, $content) {
-        list($font, $attr) = self::get_font($element);
+        [$font, $attr] = self::get_font($element);
         $fontstyle = 'font-family: ' . $font;
         if (strpos($attr, 'B') !== false) {
             $fontstyle .= '; font-weight: bold';
@@ -532,5 +531,4 @@ class element_helper {
         \core_collator::asort($options);
         return $options;
     }
-
 }

@@ -39,7 +39,6 @@ namespace block_coupon;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class exception extends \moodle_exception {
-
     /**
      * Create a new instance of the exception
      *
@@ -51,5 +50,4 @@ class exception extends \moodle_exception {
     public function __construct($errorcode, $link = '', $a = null, $debuginfo = null) {
         parent::__construct($errorcode, 'block_coupon', $link, $a, $debuginfo);
     }
-
 }

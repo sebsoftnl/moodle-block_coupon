@@ -41,7 +41,6 @@ use block_coupon\filtering\filtering;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class errorreport extends filtering {
-
     /**
      * Return all default filter names and advanced status
      * @return array
@@ -64,22 +63,38 @@ class errorreport extends filtering {
     public function get_field($fieldname, $advanced) {
         switch ($fieldname) {
             case 'timecreated':
-                return new \user_filter_date('timecreated',
-                        get_string('report:heading:timecreated', 'block_coupon'), $advanced, 'c.timecreated');
+                return new \user_filter_date(
+                    'timecreated',
+                    get_string('report:heading:timecreated', 'block_coupon'),
+                    $advanced,
+                    'c.timecreated'
+                );
             case 'couponcode':
-                return new \user_filter_text('couponcode',
-                        get_string('report:coupon_code', 'block_coupon'), $advanced, 'c.submission_code');
+                return new \user_filter_text(
+                    'couponcode',
+                    get_string('report:coupon_code', 'block_coupon'),
+                    $advanced,
+                    'c.submission_code'
+                );
             case 'batchid':
-                return new \user_filter_text('batchid',
-                        get_string('label:batchid', 'block_coupon'), $advanced, 'c.batchid');
+                return new \user_filter_text(
+                    'batchid',
+                    get_string('label:batchid', 'block_coupon'),
+                    $advanced,
+                    'c.batchid'
+                );
             case 'errortype':
                 // Only one type for now, but supported as filter option.
                 $types = ['email' => 'E-mail'];
-                return new \user_filter_select('errortype',
-                        get_string('report:heading:errortype', 'block_coupon'), $advanced, 'e.errortype', $types);
+                return new \user_filter_select(
+                    'errortype',
+                    get_string('report:heading:errortype', 'block_coupon'),
+                    $advanced,
+                    'e.errortype',
+                    $types
+                );
             default:
                 return null;
         }
     }
-
 }

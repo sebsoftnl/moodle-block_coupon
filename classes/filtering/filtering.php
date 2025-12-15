@@ -47,13 +47,14 @@ require_once($CFG->dirroot . '/user/filters/select.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class filtering {
-
+    // @codingStandardsIgnoreStart
     /** @var array */
     public $_fields;
     /** @var addfilterform */
     public $_addform;
     /** @var activefilterform */
     public $_activeform;
+    // @codingStandardsIgnoreEnd
 
     /**
      * Contructor
@@ -114,7 +115,6 @@ abstract class filtering {
         if ($adddata = $this->_activeform->get_data()) {
             if (!empty($adddata->removeall)) {
                 $SESSION->coupon_report_filtering = [];
-
             } else if (!empty($adddata->removeselected) && !empty($adddata->filter)) {
                 foreach ($adddata->filter as $fname => $instances) {
                     foreach ($instances as $i => $val) {
@@ -159,7 +159,7 @@ abstract class filtering {
      * @param array|null $params named params (recommended prefix ex)
      * @return array sql string and $params
      */
-    public function get_sql_filter($extra='', ?array $params = null) {
+    public function get_sql_filter($extra = '', ?array $params = null) {
         global $SESSION;
 
         $sqls = [];
@@ -175,7 +175,7 @@ abstract class filtering {
                 }
                 $field = $this->_fields[$fname];
                 foreach ($datas as $i => $data) {
-                    list($s, $p) = $field->get_sql_filter($data);
+                    [$s, $p] = $field->get_sql_filter($data);
                     $sqls[] = $s;
                     $params = $params + $p;
                 }
@@ -203,5 +203,4 @@ abstract class filtering {
     public function display_active() {
         $this->_activeform->display();
     }
-
 }

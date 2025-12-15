@@ -87,7 +87,6 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2016011000, 'coupon');
-
     }
 
     if ($oldversion < 2017050100) {
@@ -104,16 +103,16 @@ function xmldb_block_coupon_upgrade($oldversion) {
         // Detect all coupon types and set them.
         // Set cohort types.
         $cids = $DB->get_fieldset_sql('SELECT DISTINCT couponid FROM {block_coupon_cohorts}');
-        list($insql, $params) = $DB->get_in_or_equal($cids, SQL_PARAMS_QM, 'unused', true, 0);
+        [$insql, $params] = $DB->get_in_or_equal($cids, SQL_PARAMS_QM, 'unused', true, 0);
         array_unshift($params, 'cohort');
-        $DB->execute('UPDATE {block_coupon} SET typ = ? WHERE id '.$insql, $params);
+        $DB->execute('UPDATE {block_coupon} SET typ = ? WHERE id ' . $insql, $params);
         // Set course types.
-        list($notinsql, $params) = $DB->get_in_or_equal($cids, SQL_PARAMS_QM, 'unused', false, 0);
+        [$notinsql, $params] = $DB->get_in_or_equal($cids, SQL_PARAMS_QM, 'unused', false, 0);
         array_unshift($params, 'course');
-        $DB->execute('UPDATE {block_coupon} SET typ = ? WHERE id '.$notinsql, $params);
+        $DB->execute('UPDATE {block_coupon} SET typ = ? WHERE id ' . $notinsql, $params);
 
         // Now IF we have a custom logo, please place into Moodle's Filesystem.
-        $logofile = $CFG->dataroot.'/coupon_logos/couponlogo.png';
+        $logofile = $CFG->dataroot . '/coupon_logos/couponlogo.png';
         if (file_exists($logofile)) {
             // Store.
             $content = file_get_contents($logofile);
@@ -126,7 +125,6 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2017050100, 'coupon');
-
     }
 
     if ($oldversion < 2017050102) {
@@ -143,7 +141,6 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2017050102, 'coupon');
-
     }
 
     if ($oldversion < 2017050103) {
@@ -153,7 +150,6 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2017050103, 'coupon');
-
     }
 
     if ($oldversion < 2017052402) {
@@ -167,7 +163,6 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2017052402, 'coupon');
-
     }
 
     if ($oldversion < 2017092503) {
@@ -181,7 +176,6 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2017092503, 'coupon');
-
     }
 
     if ($oldversion < 2018050301) {
@@ -218,7 +212,6 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2018050301, 'coupon');
-
     }
 
     if ($oldversion < 2018050302) {
@@ -231,7 +224,6 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2018050302, 'coupon');
-
     }
 
     if ($oldversion < 2018050303) {
@@ -246,8 +238,8 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2018050303, 'coupon');
-
     }
+
     if ($oldversion < 2019031804) {
         // Add batchid field to coupon table.
         $table = new xmldb_table('block_coupon_errors');
@@ -258,7 +250,6 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2019031804, 'coupon');
-
     }
 
     if ($oldversion < 2020010802) {
@@ -271,7 +262,6 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2020010802, 'coupon');
-
     }
 
     if ($oldversion < 2020010805) {
@@ -304,7 +294,6 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2020010805, 'coupon');
-
     }
 
     if ($oldversion < 2020010815) {
@@ -334,7 +323,6 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2020010815, 'coupon');
-
     }
 
     if ($oldversion < 2020010816) {
@@ -544,6 +532,34 @@ function xmldb_block_coupon_upgrade($oldversion) {
 
         // Block_coupon savepoint reached.
         upgrade_block_savepoint(true, 2024040902, 'coupon');
+    }
+
+    if ($oldversion < 2025070701) {
+        $table = new xmldb_table('block_coupon_modifications');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('couponid', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'id');
+        $table->add_field('typ', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, null, 'couponid');
+        $table->add_field('oldrefid', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'typ');
+        $table->add_field('newrefid', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'oldrefid');
+        $table->add_field('procid', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null, 'newrefid');
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'idnumber');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '18', null, XMLDB_NOTNULL, null, null, 'usermodified');
+        // Add keys.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        // Add indices.
+        $table->add_index('idx-couponid', XMLDB_INDEX_NOTUNIQUE, ['couponid']);
+        $table->add_index('idx-typ', XMLDB_INDEX_NOTUNIQUE, ['couponid']);
+        $table->add_index('idx-oldrefid', XMLDB_INDEX_NOTUNIQUE, ['oldrefid']);
+        $table->add_index('idx-newrefid', XMLDB_INDEX_NOTUNIQUE, ['newrefid']);
+        $table->add_index('idx-usermodified', XMLDB_INDEX_NOTUNIQUE, ['usermodified']);
+        $table->add_index('idx-procid', XMLDB_INDEX_NOTUNIQUE, ['procid']);
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Block_coupon savepoint reached.
+        upgrade_block_savepoint(true, 2025070701, 'coupon');
     }
 
     return true;

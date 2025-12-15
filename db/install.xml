@@ -288,5 +288,28 @@
         <INDEX NAME="cmid" UNIQUE="false" FIELDS="cmid"/>
       </INDEXES>
     </TABLE>
+    <TABLE NAME="block_coupon_modifications" COMMENT="block_coupon_modifications table retrofitted from MySQL">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="couponid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="typ" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="oldrefid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="newrefid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="procid" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="usermodified" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="id" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="couponid" UNIQUE="false" FIELDS="couponid"/>
+        <INDEX NAME="typ" UNIQUE="false" FIELDS="typ"/>
+        <INDEX NAME="oldrefid" UNIQUE="false" FIELDS="oldrefid"/>
+        <INDEX NAME="newrefid" UNIQUE="false" FIELDS="newrefid"/>
+        <INDEX NAME="usermodified" UNIQUE="false" FIELDS="usermodified"/>
+        <INDEX NAME="idx-procid" UNIQUE="false" FIELDS="procid"/>
+      </INDEXES>
+    </TABLE>
   </TABLES>
 </XMLDB>

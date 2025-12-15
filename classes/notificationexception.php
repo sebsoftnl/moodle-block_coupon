@@ -41,7 +41,6 @@ namespace block_coupon;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class notificationexception extends \moodle_exception {
-
     /**
      * @var string
      */
@@ -78,5 +77,4 @@ class notificationexception extends \moodle_exception {
     public function notify() {
         \core\notification::add($this->getMessage(), $this->notificationtype);
     }
-
 }

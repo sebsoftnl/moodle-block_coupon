@@ -45,7 +45,6 @@ use block_coupon\coupon\generatoroptions;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class extendenrolmentcoupon {
-
     /**
      * @var \moodle_page
      */
@@ -104,8 +103,10 @@ class extendenrolmentcoupon {
         if (!empty($courseid) && $courseid > 1) {
             // Validate course.
             if (!$DB->record_exists('course', ['id' => $courseid])) {
-                redirect(new moodle_url($CFG->wwwroot . '/my'),
-                        get_string('generator:extendenrolment:invalidcourse', 'block_coupon'));
+                redirect(
+                    new moodle_url($CFG->wwwroot . '/my'),
+                    get_string('generator:extendenrolment:invalidcourse', 'block_coupon')
+                );
             }
             // We have a valid course. Prepare generator options and continue to page 2.
             generatoroptions::clean_session();
@@ -123,8 +124,10 @@ class extendenrolmentcoupon {
         // Load generator options.
         $generatoroptions = generatoroptions::from_session();
         // Create form.
-        $mform = new \block_coupon\forms\coupon\extendenrolment\coursevars($url,
-                ['generatoroptions' => $generatoroptions, 'coursemultiselect' => false]);
+        $mform = new \block_coupon\forms\coupon\extendenrolment\coursevars(
+            $url,
+            ['generatoroptions' => $generatoroptions, 'coursemultiselect' => false]
+        );
 
         if ($mform->is_cancelled()) {
             generatoroptions::clean_session();
@@ -417,7 +420,7 @@ class extendenrolmentcoupon {
             if (!$generatoroptions->generatecodesonly) {
                 // Generate and send off.
                 $coupons = $DB->get_records_list('block_coupon', 'id', $generator->get_generated_couponids());
-                list($rs, $batchid, $ts) = helper::mail_coupons($coupons, $generatoroptions, false, false);
+                [$rs, $batchid, $ts] = helper::mail_coupons($coupons, $generatoroptions, false, false);
 
                 $dlurl = new \moodle_url($CFG->wwwroot . '/blocks/coupon/download.php', ['bid' => $batchid, 't' => $ts]);
                 $dllink = \html_writer::link($dlurl, get_string('here', 'block_coupon'));
@@ -467,5 +470,4 @@ class extendenrolmentcoupon {
         $url->params($mergeparams);
         return $url;
     }
-
 }

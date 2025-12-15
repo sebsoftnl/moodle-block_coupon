@@ -42,14 +42,13 @@ use block_coupon\coupon\generatoroptions;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursegroups extends baseform {
-
     /**
      * form definition
      */
     public function definition() {
         $mform = & $this->_form;
 
-        list($this->generatoroptions) = $this->_customdata;
+        [$this->generatoroptions] = $this->_customdata;
 
         $mform->addElement('header', 'header', get_string('heading:coursegroups', 'block_coupon'));
         if (!$strinfo = get_config('block_coupon', 'info_coupon_course_groups')) {
@@ -62,7 +61,6 @@ class coursegroups extends baseform {
         // Display which course we selected.
         $groupoptions = [];
         foreach ($this->generatoroptions->courses as $courseid) {
-
             // Collect data.
             if (!$course = $this->db()->get_record('course', ['id' => $courseid])) {
                 throw new \moodle_exception('error:course-not-found', 'block_coupon');
@@ -93,8 +91,7 @@ class coursegroups extends baseform {
             // Shouldn't happen cause it'll just skip this step if no groups are connected.
             $this->add_course_groups($groupoptions);
         } else {
-            $mform->addElement('static', 'coupon_groups', '',
-                    get_string('label:no_groups_selected', 'block_coupon'));
+            $mform->addElement('static', 'coupon_groups', '', get_string('label:no_groups_selected', 'block_coupon'));
         }
 
         $this->add_action_buttons(true, get_string('button:next', 'block_coupon'), true);
@@ -174,5 +171,4 @@ class coursegroups extends baseform {
         }
         parent::set_data($defaultvalues);
     }
-
 }

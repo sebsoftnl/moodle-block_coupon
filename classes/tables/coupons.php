@@ -29,10 +29,6 @@
 
 namespace block_coupon\tables;
 
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->libdir . '/tablelib.php');
-
 /**
  * block_coupon\tables\coupons
  *
@@ -42,8 +38,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class coupons extends \table_sql {
-
+class coupons extends base {
     /**
      * Filter to display used coupons only
      */
@@ -79,16 +74,14 @@ class coupons extends \table_sql {
      */
     protected $strdelete;
     /**
+     * @var string
+     */
+    protected $stredit;
+    /**
      * Localised delete confirmation string
      * @var string
      */
     protected $strdeleteconfirm;
-
-    /**
-     *
-     * @var \block_coupon\filtering\filtering
-     */
-    protected $filtering;
 
     /**
      * Should we render actions at all?
@@ -112,22 +105,11 @@ class coupons extends \table_sql {
     protected $config;
 
     /**
-     * Get filtering instance
-     * @return \block_coupon\filtering\filtering
+     * Other user columns
+     *
+     * @var array
      */
-    public function get_filtering() {
-        return $this->filtering;
-    }
-
-    /**
-     * Set filtering instance
-     * @param \block_coupon\filtering\filtering $filtering
-     * @return \block_coupon\tables\coupons
-     */
-    public function set_filtering(\block_coupon\filtering\filtering $filtering) {
-        $this->filtering = $filtering;
-        return $this;
-    }
+    protected $otherusercolumns;
 
     /**
      * Should we use an action menu for the actions?
@@ -168,7 +150,7 @@ class coupons extends \table_sql {
      */
     public function __construct($ownerid = null, $filter = 3) {
         global $USER;
-        parent::__construct(__CLASS__. '-' . $USER->id . '-' . ((int)$ownerid . '-' . $filter));
+        parent::__construct(__CLASS__ . '-' . $USER->id . '-' . ((int)$ownerid . '-' . $filter));
         $this->ownerid = (int)$ownerid;
         $this->filter = (int)$filter;
         $this->sortable(true, 'c.senddate', 'DESC');
@@ -180,6 +162,7 @@ class coupons extends \table_sql {
         $this->no_sorting('roleid');
         $this->no_sorting('action');
         $this->strdelete = get_string('action:coupon:delete', 'block_coupon');
+        $this->stredit = get_string('edit');
         $this->strdeleteconfirm = get_string('action:coupon:delete:confirm', 'block_coupon');
 
         $this->otherusercolumns = [];
@@ -249,8 +232,15 @@ class coupons extends \table_sql {
             case self::USED:
             case self::PERSONAL:
                 array_splice($columns, 1, 0, ['usedby', 'timeclaimed']);
-                array_splice($headers, 1, 0, [get_string('th:usedby', 'block_coupon'),
-                    get_string('th:claimedon', 'block_coupon')]);
+                array_splice(
+                    $headers,
+                    1,
+                    0,
+                    [
+                        get_string('th:usedby', 'block_coupon'),
+                        get_string('th:claimedon', 'block_coupon'),
+                    ]
+                );
                 break;
             default:
                 // Has no extra columns.
@@ -258,7 +248,6 @@ class coupons extends \table_sql {
         }
         $this->define_columns($columns);
         $this->define_headers($headers);
-
     }
 
     /**
@@ -313,7 +302,7 @@ class coupons extends \table_sql {
 
         // Add filtering rules.
         if (!empty($this->filtering)) {
-            list($fsql, $fparams) = $this->filtering->get_sql_filter();
+            [$fsql, $fparams] = $this->filtering->get_sql_filter();
             if (!empty($fsql)) {
                 $where[] = $fsql;
                 $params += $fparams;
@@ -367,7 +356,7 @@ class coupons extends \table_sql {
      */
     public function col_owner($row) {
         // This is a nasty hack, but it works.
-        $mrow = new \stdClass;
+        $mrow = new \stdClass();
         $mrow->userid = $row->ownerid;
         $match = null;
         foreach ($row as $k => $v) {
@@ -535,16 +524,6 @@ class coupons extends \table_sql {
     }
 
     /**
-     * Render visual representation of the 'timecreated' column for use in the table
-     *
-     * @param \stdClass $row
-     * @return string time string
-     */
-    public function col_timecreated($row) {
-        return userdate($row->timecreated);
-    }
-
-    /**
      * Render visual representation of the 'timeclaimed' column for use in the table
      *
      * @param \stdClass $row
@@ -564,18 +543,53 @@ class coupons extends \table_sql {
      * @return string actions
      */
     public function col_action($row) {
+        global $OUTPUT;
         $actions = [];
 
         global $PAGE;
         $renderer = $PAGE->get_renderer('block_coupon');
-        $actions[] = $renderer->action_icon(new \moodle_url($this->baseurl,
-                ['action' => 'delete', 'itemid' => $row->id, 'sesskey' => sesskey()]),
-                new \pix_icon('i/delete', $this->strdelete, 'moodle', ['class' => 'icon',
-                    'onclick' => 'return confirm(\'' . $this->strdeleteconfirm . '\');']),
-                null,
-                ['alt' => $this->strdelete],
-                $this->useactionmenu ? $this->strdelete : null,
-                true);
+        $actions[] = $renderer->action_icon(
+            new \moodle_url(
+                $this->baseurl,
+                ['action' => 'delete', 'itemid' => $row->id, 'sesskey' => sesskey()]
+            ),
+            new \pix_icon(
+                'i/delete',
+                $this->strdelete,
+                'moodle',
+                ['class' => 'icon', 'onclick' => 'return confirm(\'' . $this->strdeleteconfirm . '\');']
+            ),
+            null,
+            ['alt' => $this->strdelete],
+            $this->useactionmenu ? $this->strdelete : null,
+            true
+        );
+
+        if ($this->filter == static::UNUSED) {
+            // UNUSED, aso we allow editing IF applicable.
+            if ($row->typ == 'course' && $this->config->enableeditcourses) {
+                $editlink = new \moodle_url('#');
+                $actions[] = $renderer->action_icon(
+                    $editlink,
+                    new \pix_icon('i/edit', $this->stredit, 'moodle', ['class' => 'icon']),
+                    null,
+                    ['alt' => $this->stredit, 'data-action' => 'editcoupon', 'data-id' => $row->id, 'data-typ' => $row->typ],
+                    $this->useactionmenu ? $this->stredit : null,
+                    true
+                );
+            }
+            if ($row->typ == 'cohort' && $this->config->enableeditcohorts) {
+                $editlink = new \moodle_url('#');
+                $actions[] = $renderer->action_icon(
+                    $editlink,
+                    new \pix_icon('i/edit', $this->stredit, 'moodle', ['class' => 'icon']),
+                    null,
+                    ['alt' => $this->stredit, 'data-action' => 'editcoupon', 'data-id' => $row->id, 'data-typ' => $row->typ],
+                    $this->useactionmenu ? $this->stredit : null,
+                    true
+                );
+            }
+        }
 
         if ($this->useactionmenu) {
             $m = new \action_menu($actions);
@@ -584,37 +598,4 @@ class coupons extends \table_sql {
             return implode('', $actions);
         }
     }
-
-    /**
-     * Return the image tag representing an action image
-     *
-     * @param string $action
-     * @return string HTML image tag
-     */
-    protected function get_action_image($action) {
-        global $OUTPUT;
-        return '<img src="' . $OUTPUT->image_url($action, 'block_coupon') . '"/>';
-    }
-
-    /**
-     * Return a string containing the link to an action
-     *
-     * @param \stdClass $row
-     * @param string $action
-     * @param boolean $confirm true to enable javascript confirmation of this action
-     * @return string link representing the action with an image
-     */
-    protected function get_action($row, $action, $confirm = false) {
-        $actionstr = 'str' . $action;
-        $onclick = '';
-        if ($confirm) {
-            $actionconfirmstr = 'str' . $action . 'confirm';
-            $onclick = ' onclick="return confirm(\'' . $this->{$actionconfirmstr} . '\');"';
-        }
-        return '<a ' . $onclick . 'href="' . new \moodle_url($this->baseurl,
-                ['action' => $action, 'itemid' => $row->id, 'sesskey' => sesskey()]) .
-                '" alt="' . $this->{$actionstr} .
-                '">' . $this->get_action_image($action) . '</a>';
-    }
-
 }

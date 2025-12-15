@@ -29,10 +29,7 @@
 
 namespace block_coupon\tables;
 
-defined('MOODLE_INTERNAL') || die();
-
 use block_coupon\helper;
-require_once($CFG->libdir . '/tablelib.php');
 
 /**
  * block_coupon\tables\errorreport
@@ -43,8 +40,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class errorreport extends \table_sql {
-
+class errorreport extends base {
     /**
      * Do we render the history or the current status?
      *
@@ -57,29 +53,6 @@ class errorreport extends \table_sql {
      * @var string
      */
     protected $strdelete;
-    /**
-     *
-     * @var \block_coupon\filtering\filtering
-     */
-    protected $filtering;
-
-    /**
-     * Get filtering instance
-     * @return \block_coupon\filtering\filtering
-     */
-    public function get_filtering() {
-        return $this->filtering;
-    }
-
-    /**
-     * Set filtering instance
-     * @param \block_coupon\filtering\filtering $filtering
-     * @return \block_coupon\tables\coupons
-     */
-    public function set_filtering(\block_coupon\filtering\filtering $filtering) {
-        $this->filtering = $filtering;
-        return $this;
-    }
 
     /**
      * Create a new instance of the logtable
@@ -88,7 +61,7 @@ class errorreport extends \table_sql {
      */
     public function __construct($ownerid = null) {
         global $USER;
-        parent::__construct(__CLASS__. '-' . $USER->id . '-' . ((int)$ownerid));
+        parent::__construct(__CLASS__ . '-' . $USER->id . '-' . ((int)$ownerid));
         $this->ownerid = (int)$ownerid;
         $this->strdelete = get_string('action:error:delete', 'block_coupon');
     }
@@ -115,7 +88,7 @@ class errorreport extends \table_sql {
         $queries = $this->get_query(true);
         $total = 0;
         foreach ($queries as $parts) {
-            list($sql, $params) = $parts;
+            [$sql, $params] = $parts;
             $total += $DB->count_records_sql($sql, $params);
         }
         return $total;
@@ -142,7 +115,7 @@ class errorreport extends \table_sql {
 
         // Add filtering rules.
         if (!empty($this->filtering)) {
-            list($fsql, $fparams) = $this->filtering->get_sql_filter();
+            [$fsql, $fparams] = $this->filtering->get_sql_filter();
             if (!empty($fsql)) {
                 $where[] = $fsql;
                 $params += $fparams;
@@ -163,14 +136,14 @@ class errorreport extends \table_sql {
      * @param boolean $useinitialsbar do you want to use the initials bar. Bar
      * will only be used if there is a fullname column defined for the table.
      */
-    public function query_db($pagesize, $useinitialsbar=true) {
+    public function query_db($pagesize, $useinitialsbar = true) {
         global $DB;
 
         // Get count / data (modified version to parent).
-        list($sql, $params) = $this->get_query(false);
+        [$sql, $params] = $this->get_query(false);
 
         if (!$this->is_downloading()) {
-            $total = $DB->count_records_sql('SELECT COUNT(*) FROM ('.$sql.') t', $params);
+            $total = $DB->count_records_sql('SELECT COUNT(*) FROM (' . $sql . ') t', $params);
             $this->pagesize($pagesize, $total);
         }
 
@@ -179,7 +152,7 @@ class errorreport extends \table_sql {
         if ($sort) {
             $sort = "ORDER BY $sort";
         }
-        $sql = 'SELECT * FROM ('.$sql.') t ' . $sort;
+        $sql = 'SELECT * FROM (' . $sql . ') t ' . $sort;
 
         if (!$this->is_downloading()) {
             $reportdata = $DB->get_records_sql($sql, $params, $this->get_page_start(), $this->get_page_size());
@@ -197,7 +170,7 @@ class errorreport extends \table_sql {
      * @param boolean $useinitialsbar
      * @param mixed $downloadhelpbutton unused
      */
-    public function out($pagesize, $useinitialsbar, $downloadhelpbutton='') {
+    public function out($pagesize, $useinitialsbar, $downloadhelpbutton = '') {
         $this->setup();
         $this->query_db($pagesize, $useinitialsbar);
         $this->build_table();
@@ -227,32 +200,6 @@ class errorreport extends \table_sql {
     }
 
     /**
-     * Return the image tag representing an action image
-     *
-     * @param string $action
-     * @return string HTML image tag
-     */
-    protected function get_action_image($action) {
-        global $OUTPUT;
-        return '<img src="' . $OUTPUT->image_url($action, 'block_coupon') . '"/>';
-    }
-
-    /**
-     * Return a string containing the link to an action
-     *
-     * @param \stdClass $row
-     * @param string $action
-     * @return string link representing the action with an image
-     */
-    protected function get_action($row, $action) {
-        $actionstr = 'str' . $action;
-        return '<a href="' . new \moodle_url($this->baseurl,
-                ['action' => $action, 'itemid' => $row->id, 'sesskey' => sesskey()]) .
-                '" alt="' . $this->{$actionstr} .
-                '">' . $this->get_action_image($action) . '</a>';
-    }
-
-    /**
      * Define columns for output table and define the headers through automated
      * lookup of the language strings.
      *
@@ -270,5 +217,4 @@ class errorreport extends \table_sql {
         }
         $this->define_headers($headers);
     }
-
 }

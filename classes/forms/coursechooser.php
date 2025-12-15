@@ -43,7 +43,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursechooser extends \moodleform {
-
     /**
      * @var array
      */
@@ -65,23 +64,27 @@ class coursechooser extends \moodleform {
     public function definition() {
         $mform = & $this->_form;
 
-        list($this->courses, $this->coursegrouping, $this->typeproc) = $this->_customdata;
+        [$this->courses, $this->coursegrouping, $this->typeproc] = $this->_customdata;
 
         // Add explanation.
-        $mform->addElement('static', '_desc', get_string('view:selectcourses:title', 'block_coupon'),
-                get_string('choose:courses:explain', 'block_coupon', $this->coursegrouping));
+        $mform->addElement(
+            'static',
+            '_desc',
+            get_string('view:selectcourses:title', 'block_coupon'),
+            get_string('choose:courses:explain', 'block_coupon', $this->coursegrouping)
+        );
 
         // Add choices.
         if ($this->coursegrouping->maxamount == 1) {
             foreach ($this->courses as $course) {
                 $mform->addElement('radio', 'course', '', format_string(
-                        $course->fullname,
-                        true,
-                        [
-                            'filter' => true,
-                            'context' => \context_course::instance($course->id),
-                        ]
-                    ), $course->id);
+                    $course->fullname,
+                    true,
+                    [
+                        'filter' => true,
+                        'context' => \context_course::instance($course->id),
+                    ]
+                ), $course->id);
             }
         } else {
             foreach ($this->courses as $course) {
@@ -161,5 +164,4 @@ class coursechooser extends \moodleform {
 
         return $data;
     }
-
 }

@@ -43,7 +43,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class validator extends \moodleform {
-
     /**
      * form definition
      */
@@ -94,5 +93,4 @@ class validator extends \moodleform {
         $class = get_class($this);
         return preg_replace('/[^a-z0-9_]/i', '_', $class);
     }
-
 }

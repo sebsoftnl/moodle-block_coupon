@@ -79,12 +79,24 @@ $wctx = (object)[
 ];
 
 // Create the buttons to save the position of the elements.
-$wctx->buttons[] = $OUTPUT->single_button(new moodle_url('/blocks/coupon/view/templates/edit.php', ['tid' => $template->get_id()]),
-        get_string('saveandclose', 'block_coupon'), 'get', ['class' => 'savepositionsbtn']);
-$wctx->buttons[] = $OUTPUT->single_button(new moodle_url('/blocks/coupon/view/templates/rearrange.php', ['pid' => $pid]),
-        get_string('saveandcontinue', 'block_coupon'), 'get', ['class' => 'applypositionsbtn']);
-$wctx->buttons[] = $OUTPUT->single_button(new moodle_url('/blocks/coupon/view/templates/edit.php', ['tid' => $template->get_id()]),
-        get_string('close', 'block_coupon'), 'get', ['class' => 'cancelbtn']);
+$wctx->buttons[] = $OUTPUT->single_button(
+    new moodle_url('/blocks/coupon/view/templates/edit.php', ['tid' => $template->get_id()]),
+    get_string('saveandclose', 'block_coupon'),
+    'get',
+    ['class' => 'savepositionsbtn']
+);
+$wctx->buttons[] = $OUTPUT->single_button(
+    new moodle_url('/blocks/coupon/view/templates/rearrange.php', ['pid' => $pid]),
+    get_string('saveandcontinue', 'block_coupon'),
+    'get',
+    ['class' => 'applypositionsbtn']
+);
+$wctx->buttons[] = $OUTPUT->single_button(
+    new moodle_url('/blocks/coupon/view/templates/edit.php', ['tid' => $template->get_id()]),
+    get_string('close', 'block_coupon'),
+    'get',
+    ['class' => 'cancelbtn']
+);
 
 if ($elements) {
     foreach ($elements as $element) {
@@ -134,7 +146,7 @@ if ($elements) {
 /** @var moodle_page $PAGE */
 $PAGE->requires->css('/blocks/coupon/tplstyles.css');
 $PAGE->requires->js_call_amd('block_coupon/templates/elements', 'init', ['#right-container']);
-$PAGE->requires->js_call_amd('block_coupon/templates/rearrange-area', 'init', ['#pdf', $template->get_id(), $page, $elements]);
+$PAGE->requires->js_call_amd('block_coupon/templates/rearrange-area', 'init', ['#pdf', $template->get_id(), $page]);
 
 $renderer = $PAGE->get_renderer('block_coupon');
 echo $OUTPUT->header();

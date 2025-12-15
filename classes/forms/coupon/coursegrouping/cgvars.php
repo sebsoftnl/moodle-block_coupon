@@ -42,14 +42,13 @@ use block_coupon\helper;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cgvars extends baseform {
-
     /**
      * form definition
      */
     public function definition() {
         $mform = & $this->_form;
 
-        list($this->generatoroptions) = $this->_customdata;
+        [$this->generatoroptions] = $this->_customdata;
 
         $mform->addElement('header', 'header', get_string('heading:coursegroupingandvars', 'block_coupon'));
 
@@ -63,15 +62,24 @@ class cgvars extends baseform {
         $roles = helper::get_role_menu(null, true);
         $attributes = [];
         // Role id.
-        $selectrole = &$mform->addElement('select', 'coupon_role',
-                get_string('label:coupon_role', 'block_coupon'), $roles, $attributes);
+        $selectrole = &$mform->addElement(
+            'select',
+            'coupon_role',
+            get_string('label:coupon_role', 'block_coupon'),
+            $roles,
+            $attributes
+        );
         $selectrole->setMultiple(false);
         $mform->setDefault('coupon_role', helper::get_default_coupon_role()->id);
         $mform->addHelpButton('coupon_role', 'label:coupon_role', 'block_coupon');
 
         // Configurable enrolment time.
-        $mform->addElement('duration', 'enrolment_period',
-                get_string('label:enrolment_period', 'block_coupon'), ['size' => 40, 'optional' => true]);
+        $mform->addElement(
+            'duration',
+            'enrolment_period',
+            get_string('label:enrolment_period', 'block_coupon'),
+            ['size' => 40, 'optional' => true]
+        );
         $mform->setDefault('enrolment_period', get_config('block_coupon', 'defaultenrolmentperiod'));
         $mform->addHelpButton('enrolment_period', 'label:enrolment_period', 'block_coupon');
 
@@ -81,7 +89,7 @@ class cgvars extends baseform {
         $data = [];
         if (!empty($this->generatoroptions->groupings)) {
             $data['coursegroupingid'] = $multiselect ?
-                    $this->generatoroptions->groupings : reset($this->generatoroptions->groupings);
+                $this->generatoroptions->groupings : reset($this->generatoroptions->groupings);
         }
         $data['roleid'] = $this->generatoroptions->roleid ?? helper::get_default_coupon_role()->id;
         $data['enrolperiod'] = $this->generatoroptions->enrolperiod ?? null;
@@ -99,5 +107,4 @@ class cgvars extends baseform {
         $err = parent::validation($data, $files);
         return $err;
     }
-
 }

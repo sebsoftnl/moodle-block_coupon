@@ -44,7 +44,6 @@ use html_writer;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cleanup {
-
     /**
      * @var \moodle_page
      */
@@ -82,8 +81,10 @@ class cleanup {
 
         $this->page->navbar->add(get_string($title, 'block_coupon'));
 
-        $url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/cleanup.php',
-                ['id' => $this->page->url->param('id'), 'tab' => 'cpcleaner']);
+        $url = new moodle_url(
+            $CFG->wwwroot . '/blocks/coupon/view/cleanup.php',
+            ['id' => $this->page->url->param('id'), 'tab' => 'cpcleaner']
+        );
         $this->page->set_url($url);
 
         $this->page->set_title(get_string($title, 'block_coupon'));
@@ -116,12 +117,14 @@ class cleanup {
             redirect($redirect);
         } else if ($data = $mform->get_data()) {
             // Redirect to confirmation.
-            $redirect = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/cleanup.php',
+            $redirect = new moodle_url(
+                $CFG->wwwroot . '/blocks/coupon/view/cleanup.php',
                 [
                     'id' => $this->page->url->param('id'),
                     'data' => base64_encode(json_encode($data)),
                     'action' => 'confirm',
-                ]);
+                ]
+            );
             redirect($redirect);
         }
 
@@ -143,27 +146,33 @@ class cleanup {
     protected function process_confirm($owner) {
         global $CFG;
         $data = required_param('data', PARAM_RAW);
-        $redirect = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/cleanup.php',
-                    ['id' => $this->page->url->param('id')]);
+        $redirect = new moodle_url(
+            $CFG->wwwroot . '/blocks/coupon/view/cleanup.php',
+            ['id' => $this->page->url->param('id')]
+        );
 
         $options = json_decode(base64_decode($data));
         // FORCE ownerid in options, this prevents injection/security issues in ownership.
         $options->ownerid = (empty($owner) ? 0 : $owner);
         $confirmdata = new \block_coupon\output\component\cleanupconfirm($options);
-        $rendered = $this->renderer->render_from_template('block_coupon/cleanupconfirm',
-                $confirmdata->export_for_template($this->renderer));
+        $rendered = $this->renderer->render_from_template(
+            'block_coupon/cleanupconfirm',
+            $confirmdata->export_for_template($this->renderer)
+        );
 
         $formoptions = [
             get_string('cleanup:confirm:header', 'block_coupon'),
             $rendered,
             get_string('cleanup:confirm:confirmmessage', 'block_coupon'),
         ];
-        $url = new moodle_url($CFG->wwwroot . '/blocks/coupon/view/cleanup.php',
+        $url = new moodle_url(
+            $CFG->wwwroot . '/blocks/coupon/view/cleanup.php',
             [
                 'id' => $this->page->url->param('id'),
                 'data' => base64_encode(json_encode($options)),
                 'action' => 'confirm',
-            ]);
+            ]
+        );
         $mform = new \block_coupon\forms\confirmation($url, $formoptions);
         if ($mform->is_cancelled()) {
             redirect($redirect);
@@ -196,5 +205,4 @@ class cleanup {
         $url->params($mergeparams);
         return $url;
     }
-
 }

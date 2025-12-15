@@ -34,7 +34,6 @@ use block_coupon\template\element_factory;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class template {
-
     /**
      * @var int $id The id of the template.
      */
@@ -276,8 +275,13 @@ class template {
      * @param string $relativefilename relative filename (relative to $CFG->dataroot)
      * @return string|void Can return the PDF in string format if specified.
      */
-    public function generate_pdf(array $coupons = [], bool $preview = false,
-            ?int $userid = null, bool $return = false, $relativefilename = null) {
+    public function generate_pdf(
+        array $coupons = [],
+        bool $preview = false,
+        ?int $userid = null,
+        bool $return = false,
+        $relativefilename = null
+    ) {
         global $CFG, $DB, $USER;
 
         if (empty($userid)) {
@@ -608,5 +612,4 @@ class template {
         require_once($CFG->dirroot . '/lib/filelib.php');
         file_save_draft_area_files($draftitemid, $contextid, 'block_coupon', $filearea, 0);
     }
-
 }

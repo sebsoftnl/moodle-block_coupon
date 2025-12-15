@@ -42,7 +42,6 @@ require_once($CFG->dirroot . '/user/selector/lib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coupon_used extends \core\event\base {
-
     /**
      * Initialise required event data properties.
      */
@@ -88,5 +87,4 @@ class coupon_used extends \core\event\base {
             $this->relateduserid = $this->objectid;
         }
     }
-
 }

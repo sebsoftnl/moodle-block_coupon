@@ -44,7 +44,6 @@ use html_writer;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coupons {
-
     /**
      * @var \moodle_page
      */
@@ -123,7 +122,7 @@ class coupons {
         $table = new \block_coupon\tables\coupons($ownerid, $filter);
         $table->baseurl = $this->page->url;
 
-        $skipfields = ['mybatchselect' => 1];
+        $skipfields = ['mybatchselect' => 1, 'coursegroup' => 1];
         switch ($filter) {
             case \block_coupon\tables\coupons::PERSONAL:
                 $skipfields['claimee'] = 1;
@@ -149,10 +148,30 @@ class coupons {
 
         $selectedtab = '';
         $extrahtml = '';
+        $massactionshtml = '';
         switch ($filter) {
             case \block_coupon\tables\coupons::UNUSED:
                 $selectedtab = 'cpunused';
-                $this->page->requires->js_call_amd('block_coupon/coupons/bulkactions', 'init', []);
+                $this->page->requires->js_call_amd('block_coupon/coupons/bulkactions', 'init', ['.block-coupon-container']);
+
+                if ($config->enableeditcourses ?? false) {
+                    $massactionshtml .= '<li data-action="replacecourses" class="dropdown-item">' .
+                            get_string('replacecourses', 'block_coupon') . '</li>';
+                }
+                if ($config->enableeditcohorts ?? false) {
+                    $massactionshtml .= '<li data-action="replacecohorts" class="dropdown-item">' .
+                            get_string('replacecohorts', 'block_coupon') . '</li>';
+                }
+                if (!empty($massactionshtml)) {
+                    $massactionshtml = '<div class="d-flex flex-row justify-content-center">
+                    <div data-region="massactions">
+                        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" data-type="massaction">' .
+                        get_string('massaction', 'block_coupon') . '
+                             <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">' . $massactionshtml . '</ul></div></div>';
+                }
+
                 $extrahtml = '<div class="d-flex flex-row justify-content-center">
                     <div data-region="bulkactions">
                         <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" data-type="bulkaction">' .
@@ -161,17 +180,16 @@ class coupons {
                              <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li data-action="bulkdelete">' . get_string('delete') . '</li>';
+                            <li data-action="bulkdelete" class="dropdown-item">' . get_string('delete') . '</li>';
                 if ($config->enableeditcourses ?? false) {
-                    $extrahtml .= '<li data-action="editcourses">' . get_string('editcourses', 'block_coupon') . '</li>';
+                    $extrahtml .= '<li data-action="editcourses" class="dropdown-item">' .
+                            get_string('editcourses', 'block_coupon') . '</li>';
                 }
                 if ($config->enableeditcohorts ?? false) {
-                    $extrahtml .= '<li data-action="editcohorts">' . get_string('editcohorts', 'block_coupon') . '</li>';
+                    $extrahtml .= '<li data-action="editcohorts" class="dropdown-item">' .
+                            get_string('editcohorts', 'block_coupon') . '</li>';
                 }
-                $extrahtml .= '</ul>
-                    </div>
-                    </div>
-                    ';
+                $extrahtml .= '</ul></div></div>';
 
                 break;
             case \block_coupon\tables\coupons::USED:
@@ -189,6 +207,7 @@ class coupons {
         echo html_writer::end_div();
         $filtering->display_add();
         $filtering->display_active();
+        echo $massactionshtml;
         echo $table->render(25);
         echo $extrahtml;
         echo html_writer::end_div();

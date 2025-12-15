@@ -33,8 +33,12 @@ if (!$authplugin = signup_is_enabled()) {
         $CFG->registerauth = 'email';
         $authplugin = signup_is_enabled();
     } else {
-        throw new \moodle_exception('notlocalisederrormessage', 'error', '',
-                'Sorry, you may not use this page (signup is not enabled).');
+        throw new \moodle_exception(
+            'notlocalisederrormessage',
+            'error',
+            '',
+            'Sorry, you may not use this page (signup is not enabled).'
+        );
     }
 }
 
@@ -56,8 +60,11 @@ if (isloggedin() && !isguestuser()) {
     // Prevent signing up when already logged in.
     echo $OUTPUT->header();
     echo $OUTPUT->box_start();
-    $logout = new single_button(new moodle_url('/login/logout.php',
-        ['sesskey' => sesskey(), 'loginpage' => 1]), get_string('logout'), 'post');
+    $logout = new single_button(
+        new moodle_url('/login/logout.php', ['sesskey' => sesskey(), 'loginpage' => 1]),
+        get_string('logout'),
+        'post'
+    );
     $continue = new single_button(new moodle_url('/'), get_string('cancel'), 'get');
     echo $OUTPUT->confirm(get_string('cannotsignup', 'error', fullname($USER)), $logout, $continue);
     echo $OUTPUT->box_end();
@@ -86,7 +93,6 @@ $mformsignup = new \block_coupon\forms\coupon\signup();
 
 if ($mformsignup->is_cancelled()) {
     redirect(get_login_url());
-
 } else if ($user = $mformsignup->get_data()) {
     // Add missing required fields.
     $user = signup_setup_new_user($user);

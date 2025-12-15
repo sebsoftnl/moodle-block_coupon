@@ -32,7 +32,6 @@ namespace block_coupon\template\element\text;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class element extends \block_coupon\template\element {
-
     /**
      * This function renders the form elements when adding a template element.
      *
@@ -195,7 +194,7 @@ class element extends \block_coupon\template\element {
         }
         $tr = [];
         foreach ($a as $k => $v) {
-            $tr['###'.$k.'###'] = $v;
+            $tr['###' . $k . '###'] = $v;
         }
         return $tr;
     }
@@ -222,5 +221,4 @@ class element extends \block_coupon\template\element {
         }
         return (object)['courses' => $courses, 'cohorts' => $cohorts];
     }
-
 }

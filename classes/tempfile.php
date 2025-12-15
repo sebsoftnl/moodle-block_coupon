@@ -39,7 +39,6 @@ namespace block_coupon;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tempfile {
-
     /**
      * Full path to created file
      * @var string
@@ -128,5 +127,4 @@ class tempfile {
             unlink($this->filepath);
         }
     }
-
 }

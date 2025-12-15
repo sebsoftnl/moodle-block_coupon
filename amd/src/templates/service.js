@@ -95,10 +95,27 @@ const deleteTemplate = (templateid) => {
     return promises[0];
 };
 
+/**
+ * getElementsForPage
+ *
+ * @param {Integer} templateid
+ * @param {Integer} pageid
+ * @returns {deleteTemplate.promises}
+ */
+const getElementsForPage = (templateid, pageid) => {
+    var promises = Ajax.call([{
+            methodname: 'block_coupon_get_elements_for_page',
+            args: {templateid: templateid, pageid: pageid}
+        }]);
+    promises[0].fail(Notification.exception);
+    return promises[0];
+};
+
 export default {
     duplicateTemplate,
     deleteTemplate,
     updateElementPositions,
     getElementHTML,
-    saveElement
+    saveElement,
+    getElementsForPage
 };

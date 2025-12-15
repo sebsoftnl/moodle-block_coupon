@@ -43,7 +43,6 @@ require_once($CFG->dirroot . '/login/signup_form.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class login_signup_form extends \login_signup_form {
-
     /**
      * Form definition.
      */
@@ -86,5 +85,4 @@ class login_signup_form extends \login_signup_form {
 
         return $errors;
     }
-
 }

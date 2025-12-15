@@ -45,7 +45,6 @@ require_once($CFG->libdir . '/form/autocomplete.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class findcourses extends MoodleQuickForm_autocomplete {
-
     /**
      * Display only visible courses?
      * @var bool
@@ -68,13 +67,16 @@ class findcourses extends MoodleQuickForm_autocomplete {
      *                       Valid options are:
      *                       - multiple bool Whether or not the field accepts more than one values.
      */
-    public function __construct($elementname = null, $elementlabel = null, $options = []) {
+    public function __construct($elementname = null, $elementlabel = null, array $options = []) {
         $validattributes = [
             'ajax' => 'block_coupon/findcourses',
             'multiple' => true,
         ];
-        if (!empty($options['multiple'])) {
-            $validattributes['multiple'] = 'multiple';
+        if (!empty($options['ajax'])) {
+            $validattributes['ajax'] = $options['ajax'];
+        }
+        if (array_key_exists('multiple', $options)) {
+            $validattributes['multiple'] = !empty($options['multiple']);
         }
         if (isset($options['onlyvisible'])) {
             $this->onlyvisible = (bool)$options['onlyvisible'];
@@ -108,8 +110,11 @@ class findcourses extends MoodleQuickForm_autocomplete {
         $values = (array) $value;
         $ids = [];
         foreach ($values as $onevalue) {
-            if (!empty($onevalue) && (!$this->optionExists($onevalue)) &&
-                    ($onevalue !== '_qf__force_multiselect_submission')) {
+            if (
+                !empty($onevalue) &&
+                (!$this->optionExists($onevalue)) &&
+                ($onevalue !== '_qf__force_multiselect_submission')
+            ) {
                 array_push($ids, $onevalue);
             }
         }
@@ -118,18 +123,17 @@ class findcourses extends MoodleQuickForm_autocomplete {
         }
         // Logic here is simulating API.
         $toselect = [];
-        list($insql, $inparams) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'param');
-        $courses = $DB->get_records_select('course', 'id '.$insql, $inparams);
+        [$insql, $inparams] = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'param');
+        $courses = $DB->get_records_select('course', 'id ' . $insql, $inparams);
         foreach ($courses as $course) {
             if ($this->onlyvisible && !$course->visible) {
                 continue;
             }
-            $optionname = $course->shortname . (empty($course->idnumber) ? '' : ' ('.$course->idnumber.')');
+            $optionname = $course->shortname . (empty($course->idnumber) ? '' : ' (' . $course->idnumber . ')');
             $this->addOption($optionname, $course->id, ['selected' => 'selected']);
             array_push($toselect, $course->id);
         }
         $rs = $this->setSelected($toselect);
         return $rs;
     }
-
 }

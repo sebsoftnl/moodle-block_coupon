@@ -39,7 +39,6 @@ namespace block_coupon\coupon;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class pdfoptions {
-
     /**
      * @var bool whether or not we create one single PDF file
      */
@@ -73,5 +72,4 @@ class pdfoptions {
      * @var int
      */
     public $renderqrcode = true;
-
 }

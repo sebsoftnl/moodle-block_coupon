@@ -44,7 +44,6 @@ require_once($CFG->libdir . '/formslib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course extends \moodleform {
-
     /**
      * Allowed options for user
      * @var \stdClass
@@ -58,7 +57,7 @@ class course extends \moodleform {
         global $DB;
         $mform = & $this->_form;
 
-        list($requestinstance, $user) = $this->_customdata;
+        [$requestinstance, $user] = $this->_customdata;
         $this->options = json_decode($requestinstance->configuration);
 
         // Logo selection if applicable.
@@ -86,8 +85,13 @@ class course extends \moodleform {
         }
 
         $attributes = ['size' => min(20, count($arrcoursesselect))];
-        $selectcourse = &$mform->addElement('select', 'coupon_courses',
-                get_string('label:coupon_courses', 'block_coupon'), $arrcoursesselect, $attributes);
+        $selectcourse = &$mform->addElement(
+            'select',
+            'coupon_courses',
+            get_string('label:coupon_courses', 'block_coupon'),
+            $arrcoursesselect,
+            $attributes
+        );
         $selectcourse->setMultiple(true);
         $mform->addRule('coupon_courses', get_string('error:required', 'block_coupon'), 'required', null, 'client');
         $mform->addHelpButton('coupon_courses', 'label:coupon_courses', 'block_coupon');
@@ -95,8 +99,13 @@ class course extends \moodleform {
         // Add role selection if applicable.
         if ($this->get_option($this->options, 'allowselectrole', false)) {
             $roles = helper::get_role_menu(null, true);
-            $mform->addElement('select', 'coupon_role',
-                    get_string('label:coupon_role', 'block_coupon'), $roles, $attributes);
+            $mform->addElement(
+                'select',
+                'coupon_role',
+                get_string('label:coupon_role', 'block_coupon'),
+                $roles,
+                $attributes
+            );
             $mform->setDefault('coupon_role', helper::get_default_coupon_role()->id);
             $mform->addHelpButton('coupon_role', 'label:coupon_role', 'block_coupon');
         } else {
@@ -150,10 +159,16 @@ class course extends \moodleform {
 
         // Enrolment period selection.
         if ($this->get_option($this->options, 'allowselectenrolperiod', false)) {
-            $mform->addElement('duration', 'enrolment_period',
-                    get_string('label:enrolment_period', 'block_coupon'), ['size' => 40, 'optional' => true]);
-            $mform->setDefault('enrolment_period', $this->get_option($this->options, 'enrolperioddefault',
-                    get_config('block_coupon', 'defaultenrolmentperiod')));
+            $mform->addElement(
+                'duration',
+                'enrolment_period',
+                get_string('label:enrolment_period', 'block_coupon'),
+                ['size' => 40, 'optional' => true]
+            );
+            $mform->setDefault(
+                'enrolment_period',
+                $this->get_option($this->options, 'enrolperioddefault', get_config('block_coupon', 'defaultenrolmentperiod'))
+            );
             $mform->addHelpButton('enrolment_period', 'label:enrolment_period', 'block_coupon');
         } else {
             $mform->addElement('hidden', 'enrolment_period');
@@ -183,5 +198,4 @@ class course extends \moodleform {
         }
         return $default;
     }
-
 }

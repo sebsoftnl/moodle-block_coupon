@@ -63,7 +63,7 @@ $font = optional_param('font', $options->font, PARAM_TEXT);
 $templateid = optional_param('templateid', $options->templateid, PARAM_INT);
 
 // Create fake coupon instance.
-$coupon = new stdClass;
+$coupon = new stdClass();
 $coupon->id = 0;
 $coupon->userid = null;
 $coupon->ownerid = $USER->id;

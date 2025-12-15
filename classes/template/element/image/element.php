@@ -34,7 +34,6 @@ use block_coupon\template\element_helper;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class element extends \block_coupon\template\element {
-
     /**
      * @var array The file manager options.
      */
@@ -90,8 +89,13 @@ class element extends \block_coupon\template\element {
             element_helper::render_form_element_position($mform);
         }
 
-        $mform->addElement('filemanager', 'templateimage', get_string('uploadimage', 'block_coupon'), '',
-            $this->filemanageroptions);
+        $mform->addElement(
+            'filemanager',
+            'templateimage',
+            get_string('uploadimage', 'block_coupon'),
+            '',
+            $this->filemanageroptions
+        );
     }
 
     /**
@@ -243,10 +247,24 @@ class element extends \block_coupon\template\element {
 
         // Get the image.
         $fs = get_file_storage();
-        if ($file = $fs->get_file($imageinfo->contextid, 'block_coupon', $imageinfo->filearea, $imageinfo->itemid,
-                $imageinfo->filepath, $imageinfo->filename)) {
-            $url = \moodle_url::make_pluginfile_url($file->get_contextid(), 'block_coupon', 'image', $file->get_itemid(),
-                $file->get_filepath(), $file->get_filename());
+        if (
+            $file = $fs->get_file(
+                $imageinfo->contextid,
+                'block_coupon',
+                $imageinfo->filearea,
+                $imageinfo->itemid,
+                $imageinfo->filepath,
+                $imageinfo->filename
+            )
+        ) {
+            $url = \moodle_url::make_pluginfile_url(
+                $file->get_contextid(),
+                'block_coupon',
+                'image',
+                $file->get_itemid(),
+                $file->get_filepath(),
+                $file->get_filename()
+            );
             $fileimageinfo = $file->get_imageinfo();
             $whratio = $fileimageinfo['width'] / $fileimageinfo['height'];
             // The size of the images to use in the CSS style.
@@ -341,8 +359,14 @@ class element extends \block_coupon\template\element {
 
         $fs = get_file_storage();
 
-        return $fs->get_file($imageinfo->contextid, 'block_coupon', $imageinfo->filearea, $imageinfo->itemid,
-            $imageinfo->filepath, $imageinfo->filename);
+        return $fs->get_file(
+            $imageinfo->contextid,
+            'block_coupon',
+            $imageinfo->filearea,
+            $imageinfo->itemid,
+            $imageinfo->filepath,
+            $imageinfo->filename
+        );
     }
 
     /**
@@ -359,14 +383,15 @@ class element extends \block_coupon\template\element {
         // The array used to store the images.
         $arrfiles = [];
         // Loop through the files uploaded in the system context.
-        if ($files = $fs->get_area_files(\context_system::instance()->id, 'block_coupon', 'image', false, 'filename', false)) {
+        $ctxsys = \context_system::instance();
+        if ($files = $fs->get_area_files($ctxsys->id, 'block_coupon', 'image', false, 'filename', false)) {
             foreach ($files as $hash => $file) {
                 $arrfiles[$file->get_id()] = get_string('systemimage', 'block_coupon', $file->get_filename());
             }
         }
         // Loop through the files uploaded in the course context.
-        if ($files = $fs->get_area_files(\context_course::instance($COURSE->id)->id, 'block_coupon', 'image', false,
-            'filename', false)) {
+        $ctxcourse = \context_course::instance($COURSE->id);
+        if ($files = $fs->get_area_files($ctxcourse->id, 'block_coupon', 'image', false, 'filename', false)) {
             foreach ($files as $hash => $file) {
                 $arrfiles[$file->get_id()] = get_string('courseimage', 'block_coupon', $file->get_filename());
             }
@@ -402,14 +427,16 @@ class element extends \block_coupon\template\element {
         // Check that a file has been selected.
         if (isset($imagedata->filearea)) {
             // If the course file doesn't exist, copy the system file to the course context.
-            if (!$coursefile = $fs->get_file(
-                $coursecontext->id,
-                'block_coupon',
-                $imagedata->filearea,
-                $imagedata->itemid,
-                $imagedata->filepath,
-                $imagedata->filename
-            )) {
+            if (
+                !$coursefile = $fs->get_file(
+                    $coursecontext->id,
+                    'block_coupon',
+                    $imagedata->filearea,
+                    $imagedata->itemid,
+                    $imagedata->filepath,
+                    $imagedata->filename
+                )
+            ) {
                 $systemfile = $fs->get_file(
                     $systemcontext->id,
                     'block_coupon',

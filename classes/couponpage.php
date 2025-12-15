@@ -40,7 +40,6 @@ use context_system;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class couponpage {
-
     /** @var string An internal name for this external page. Must be unique amongst ALL part_of_admin_tree objects */
     public $name;
 
@@ -136,7 +135,7 @@ class couponpage {
      * @param stdClass $context The context the page relates to. Not sure what happens
      *      if you specify something other than system or front page. Defaults to system.
      */
-    public function __construct($name, $visiblename, $url, $reqcapability='moodle/site:config', $context = null) {
+    public function __construct($name, $visiblename, $url, $reqcapability = 'moodle/site:config', $context = null) {
         $this->name        = $name;
         $this->visiblename = $visiblename;
         $this->url         = $url;
@@ -171,5 +170,4 @@ class couponpage {
         }
         return true;
     }
-
 }

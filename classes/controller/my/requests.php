@@ -42,7 +42,6 @@ use html_writer;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class requests {
-
     /**
      * @var \moodle_page
      */
@@ -387,14 +386,17 @@ class requests {
         $options = json_decode($instance->configuration);
         $links = [];
         if (!empty($options->courses)) {
-            $links[] = html_writer::link($this->get_url(['action' => 'newrequest', 't' => 'course']),
-                    get_string('str:request:coursecoupons', 'block_coupon'));
+            $links[] = html_writer::link(
+                $this->get_url(['action' => 'newrequest', 't' => 'course']),
+                get_string('str:request:coursecoupons', 'block_coupon')
+            );
         }
         if (!empty($options->cohorts)) {
-            $links[] = html_writer::link($this->get_url(['action' => 'newrequest', 't' => 'cohort']),
-                    get_string('str:request:cohortcoupons', 'block_coupon'));
+            $links[] = html_writer::link(
+                $this->get_url(['action' => 'newrequest', 't' => 'cohort']),
+                get_string('str:request:cohortcoupons', 'block_coupon')
+            );
         }
         return $links;
     }
-
 }

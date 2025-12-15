@@ -38,7 +38,6 @@ namespace block_coupon;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class emailtemplates {
-
     /**
      * Get template variable definitions
      *
@@ -119,10 +118,9 @@ class emailtemplates {
         }
         $tr = [];
         foreach ($a as $k => $v) {
-            $tr['###'.$k.'###'] = $v;
-            $tr['##'.$k.'##'] = $v;
+            $tr['###' . $k . '###'] = $v;
+            $tr['##' . $k . '##'] = $v;
         }
         return $tr;
     }
-
 }

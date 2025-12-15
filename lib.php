@@ -45,8 +45,14 @@ function block_coupon_extend_navigation_course(navigation_node $parentnode, stdC
     $icon = new \pix_icon('coupons', get_string('coupon:extendenrol', 'block_coupon'), 'block_coupon');
     $conditions = ['cid' => $course->id, 'id' => $biid];
     $action = new \moodle_url($CFG->wwwroot . '/blocks/coupon/view/generator/extendenrolment.php', $conditions);
-    $parentnode->add(get_string('coupon:extendenrol', 'block_coupon'), $action, navigation_node::TYPE_CUSTOM,
-            get_string('coupon:extendenrol', 'block_coupon'), 'cpextendenrol', $icon);
+    $parentnode->add(
+        get_string('coupon:extendenrol', 'block_coupon'),
+        $action,
+        navigation_node::TYPE_CUSTOM,
+        get_string('coupon:extendenrol', 'block_coupon'),
+        'cpextendenrol',
+        $icon
+    );
 }
 
 /**
@@ -119,8 +125,14 @@ function block_coupon_inplace_editable($itemtype, $itemid, $newvalue) {
         $updateelement->name = clean_param($newvalue, PARAM_TEXT);
         $DB->update_record('block_coupon_elements', $updateelement);
 
-        return new \core\output\inplace_editable('block_coupon', 'elementname', $element->id, true,
-                $updateelement->name, $updateelement->name);
+        return new \core\output\inplace_editable(
+            'block_coupon',
+            'elementname',
+            $element->id,
+            true,
+            $updateelement->name,
+            $updateelement->name
+        );
     }
 }
 

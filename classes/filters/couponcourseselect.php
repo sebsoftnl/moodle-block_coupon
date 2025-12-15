@@ -32,7 +32,7 @@ namespace block_coupon\filters;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/user/filters/lib.php');
+require_once($CFG->dirroot . '/user/filters/lib.php');
 
 /**
  * block_coupon\filters\couponcourseselect
@@ -86,22 +86,26 @@ class couponcourseselect extends \user_filter_type {
      * @param object $mform a MoodleForm object to setup
      */
     public function setup_form(&$mform) {
-        $courses = $this->get_coursemenu();
-        if (count($courses) <= 1) {
-            return;
-        }
+        global $CFG;
+
+        \MoodleQuickForm::registerElementType(
+            'findcourses',
+            $CFG->dirroot . '/blocks/coupon/classes/forms/element/findcourses.php',
+            '\\block_coupon\\forms\\element\\findcourses'
+        );
+
         $objs = [];
-        $objs['select'] = $mform->createElement('select', $this->_name.'_op', null, $this->get_operators());
-        $objs['value'] = $mform->createElement('select', $this->_name, null, $courses);
+        $objs['select'] = $mform->createElement('select', $this->_name . '_op', null, $this->get_operators());
+        $objs['value'] = $mform->createElement('findcourses', $this->_name, null, ['multiple' => false, 'noselectionstring' => '']);
         $objs['select']->setLabel(get_string('limiterfor', 'filters', $this->_label));
         $objs['value']->setLabel(get_string('valuefor', 'filters', $this->_label));
-        $mform->addElement('group', $this->_name.'_grp', $this->_label, $objs, '', false);
+        $mform->addElement('group', $this->_name . '_grp', $this->_label, $objs, '', false);
         $mform->setType($this->_name, PARAM_INT);
-        $mform->disabledIf($this->_name, $this->_name.'_op', 'eq', 5);
+        $mform->disabledIf($this->_name, $this->_name . '_op', 'eq', 5);
         if ($this->_advanced) {
-            $mform->setAdvanced($this->_name.'_grp');
+            $mform->setAdvanced($this->_name . '_grp');
         }
-        $mform->setDefault($this->_name.'_op', 2);
+        $mform->setDefault($this->_name . '_op', 2);
     }
 
     /**
@@ -111,7 +115,7 @@ class couponcourseselect extends \user_filter_type {
      */
     public function check_data($formdata) {
         $field    = $this->_name;
-        $operator = $field.'_op';
+        $operator = $field . '_op';
 
         if (property_exists($formdata, $operator)) {
             if (empty($formdata->$field)) {
@@ -136,7 +140,7 @@ class couponcourseselect extends \user_filter_type {
      */
     public function get_sql_filter($data) {
         static $counter = 0;
-        $name = 'ex_couponcourseselect'.$counter++;
+        $name = 'ex_couponcourseselect' . $counter++;
 
         $operator = $data['operator'];
         $value    = $data['value'];
@@ -147,7 +151,7 @@ class couponcourseselect extends \user_filter_type {
             return '';
         }
 
-        switch($operator) {
+        switch ($operator) {
             case 0: // Equals.
                 $res = "cc.courseid = :$name";
                 $params[$name] = "$value";
@@ -177,7 +181,7 @@ class couponcourseselect extends \user_filter_type {
 
         $a = new \stdClass();
         $a->label    = $this->_label;
-        $a->value    = '"'.s($value).'"';
+        $a->value    = '"' . s($value) . '"';
         $a->operator = $operators[$operator];
 
         switch ($operator) {

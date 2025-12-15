@@ -28,8 +28,11 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot . '/lib/formslib.php');
 
-\MoodleQuickForm::registerElementType('bccolourpicker',
-    $CFG->dirroot . '/blocks/coupon/classes/forms/element/colourpicker.php', '\\block_coupon\\forms\\element\\colourpicker');
+\MoodleQuickForm::registerElementType(
+    'bccolourpicker',
+    $CFG->dirroot . '/blocks/coupon/classes/forms/element/colourpicker.php',
+    '\\block_coupon\\forms\\element\\colourpicker'
+);
 
 /**
  * The form for handling editing a template element.
@@ -39,7 +42,6 @@ require_once($CFG->dirroot . '/lib/formslib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_element_form extends \moodleform {
-
     /**
      * @var \block_coupon\element The element object.
      */

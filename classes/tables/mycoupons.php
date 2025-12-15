@@ -39,7 +39,6 @@ namespace block_coupon\tables;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mycoupons extends coupons {
-
     /**
      * Define headers and columns.
      */
@@ -56,7 +55,7 @@ class mycoupons extends coupons {
             get_string('th:roleid', 'block_coupon'),
             get_string('th:batchid', 'block_coupon'),
         ];
-        if ($this->is_downloading() == '' &&!$this->noactions) {
+        if ($this->is_downloading() == '' && !$this->noactions) {
             $columns[] = 'action';
             $headers[] = get_string('th:action', 'block_coupon');
         }
@@ -64,8 +63,14 @@ class mycoupons extends coupons {
             case self::USED:
             case self::PERSONAL:
                 array_splice($columns, 0, 0, ['usedby', 'timeclaimed']);
-                array_splice($headers, 0, 0, [get_string('th:usedby', 'block_coupon'),
-                    get_string('th:claimedon', 'block_coupon')]);
+                array_splice(
+                    $headers,
+                    0,
+                    0,
+                    [   get_string('th:usedby', 'block_coupon'),
+                        get_string('th:claimedon', 'block_coupon'),
+                    ]
+                );
                 break;
             default:
                 // Has no extra columns.
@@ -74,5 +79,4 @@ class mycoupons extends coupons {
         $this->define_columns($columns);
         $this->define_headers($headers);
     }
-
 }

@@ -53,25 +53,22 @@ $services = [
 
 $functions = [
     'block_coupon_get_courses' => [
-        'classname' => 'block_coupon_external',
+        'classname' => '\\block_coupon\\external\\course',
         'methodname' => 'get_courses',
-        'classpath' => 'blocks/coupon/externallib.php',
         'description' => 'Get courses.',
         'type' => 'read',
         'ajax' => true,
     ],
     'block_coupon_get_cohorts' => [
-        'classname' => 'block_coupon_external',
+        'classname' => '\\block_coupon\\external\\cohort',
         'methodname' => 'get_cohorts',
-        'classpath' => 'blocks/coupon/externallib.php',
         'description' => 'Get cohorts.',
         'type' => 'read',
         'ajax' => true,
     ],
     'block_coupon_get_course_groups' => [
-        'classname' => 'block_coupon_external',
+        'classname' => '\\block_coupon\\external\\course',
         'methodname' => 'get_course_groups',
-        'classpath' => 'blocks/coupon/externallib.php',
         'description' => 'Get course groups.',
         'type' => 'read',
         'ajax' => true,
@@ -125,9 +122,15 @@ $functions = [
         'ajax' => true,
     ],
     'block_coupon_find_courses' => [
-        'classname' => 'block_coupon_external',
+        'classname' => '\\block_coupon\\external\\course',
         'methodname' => 'find_courses',
-        'classpath' => 'blocks/coupon/externallib.php',
+        'description' => 'Find courses.',
+        'type' => 'read',
+        'ajax' => true,
+    ],
+    'block_coupon_find_coupon_courses' => [
+        'classname' => '\\block_coupon\\external\\course',
+        'methodname' => 'find_coupon_courses',
         'description' => 'Find courses.',
         'type' => 'read',
         'ajax' => true,
@@ -141,9 +144,15 @@ $functions = [
         'ajax' => true,
     ],
     'block_coupon_find_cohorts' => [
-        'classname' => 'block_coupon_external',
+        'classname' => '\\block_coupon\\external\\cohort',
         'methodname' => 'find_cohorts',
-        'classpath' => 'blocks/coupon/externallib.php',
+        'description' => 'Find cohorts. Only use for AMD please',
+        'type' => 'read',
+        'ajax' => true,
+    ],
+    'block_coupon_find_coupon_cohorts' => [
+        'classname' => '\\block_coupon\\external\\cohort',
+        'methodname' => 'find_coupon_cohorts',
         'description' => 'Find cohorts. Only use for AMD please',
         'type' => 'read',
         'ajax' => true,
@@ -200,6 +209,13 @@ $functions = [
         'methodname' => 'duplicate_template',
         'description' => 'duplicate_template',
         'type' => 'write',
+        'ajax' => true,
+    ],
+    'block_coupon_get_elements_for_page' => [
+        'classname' => '\\block_coupon\\external\\templates',
+        'methodname' => 'get_elements_for_page',
+        'description' => 'get_elements_for_page',
+        'type' => 'read',
         'ajax' => true,
     ],
     'block_coupon_update_element_positions' => [

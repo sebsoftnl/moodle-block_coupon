@@ -41,7 +41,6 @@ use block_coupon\filtering\filtering;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report extends filtering {
-
     /**
      * Return all default filter names and advanced status
      * @return array
@@ -69,14 +68,26 @@ class report extends filtering {
         global $DB;
         switch ($fieldname) {
             case 'timemodified':
-                return new \user_filter_date('timemodified',
-                        get_string('lastmodified'), $advanced, 'c.timemodified');
+                return new \user_filter_date(
+                    'timemodified',
+                    get_string('lastmodified'),
+                    $advanced,
+                    'c.timemodified'
+                );
             case 'timeexpired':
-                return new \user_filter_date('timeexpired',
-                        get_string('report:timeexpired', 'block_coupon'), $advanced, 'c.timeexpired');
+                return new \user_filter_date(
+                    'timeexpired',
+                    get_string('report:timeexpired', 'block_coupon'),
+                    $advanced,
+                    'c.timeexpired'
+                );
             case 'couponcode':
-                return new \user_filter_text('couponcode',
-                        get_string('report:coupon_code', 'block_coupon'), $advanced, 'c.submission_code');
+                return new \user_filter_text(
+                    'couponcode',
+                    get_string('report:coupon_code', 'block_coupon'),
+                    $advanced,
+                    'c.submission_code'
+                );
             case 'cohortid':
                 return new \block_coupon\filters\couponcohortid($advanced, 'c.id');
             case 'courseid':
@@ -86,12 +97,14 @@ class report extends filtering {
             case 'cohort':
                 return new \block_coupon\filters\couponcohortselect($advanced, 'c.id');
             case 'claimee':
-                return new \block_coupon\filters\multitext('claimee',
-                        get_string('claimee', 'block_coupon'), $advanced,
-                        ['firstname', 'lastname', 'email', $DB->sql_fullname('firstname', 'lastname')]);
+                return new \block_coupon\filters\multitext(
+                    'claimee',
+                    get_string('claimee', 'block_coupon'),
+                    $advanced,
+                    ['firstname', 'lastname', 'email', $DB->sql_fullname('firstname', 'lastname')]
+                );
             default:
                 return null;
         }
     }
-
 }

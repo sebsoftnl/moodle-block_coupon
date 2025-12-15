@@ -26,6 +26,7 @@
  * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+// @codingStandardsIgnoreFile Due to Moodle failing the "class implements" alphabetically itself.
 
 namespace block_coupon\privacy;
 
@@ -47,10 +48,10 @@ use core_privacy\local\request\approved_userlist;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
-        \core_privacy\local\metadata\provider,
-        \core_privacy\local\request\plugin\provider,
-        \core_privacy\local\request\core_userlist_provider {
-
+    \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\plugin\provider,
+    \core_privacy\local\request\core_userlist_provider
+{
     /**
      * Provides meta data that is stored about a user with block_coupon
      *
@@ -145,23 +146,23 @@ class provider implements
             $coupons = $DB->get_recordset_sql($sql, $params);
             foreach ($coupons as $coupon) {
                 $alldata[$context->id][] = (object)[
-                        'userid' => $coupon->userid,
-                        'for_user_email' => $coupon->for_user_email,
-                        'for_user_name' => $coupon->for_user_name,
-                        'for_user_gender' => $coupon->for_user_gender,
-                        'email_body' => $coupon->email_body,
-                        'submission_code' => $coupon->submission_code,
-                        'claimed' => transform::yesno($coupon->claimed),
-                        'roleid' => $coupon->roleid,
-                        'timecreated' => transform::datetime($coupon->timecreated),
-                        'timemodified' => transform::datetime($coupon->timemodified),
-                        'timeexpired' => transform::datetime($coupon->timeexpired),
-                    ];
+                    'userid' => $coupon->userid,
+                    'for_user_email' => $coupon->for_user_email,
+                    'for_user_name' => $coupon->for_user_name,
+                    'for_user_gender' => $coupon->for_user_gender,
+                    'email_body' => $coupon->email_body,
+                    'submission_code' => $coupon->submission_code,
+                    'claimed' => transform::yesno($coupon->claimed),
+                    'roleid' => $coupon->roleid,
+                    'timecreated' => transform::datetime($coupon->timecreated),
+                    'timemodified' => transform::datetime($coupon->timemodified),
+                    'timeexpired' => transform::datetime($coupon->timeexpired),
+                ];
             }
             $coupons->close();
 
             // The data is organised in: {?}/ownedcoupons.json.
-            array_walk($alldata, function($coupondata, $contextid) {
+            array_walk($alldata, function ($coupondata, $contextid) {
                 $context = \context::instance_by_id($contextid);
                 writer::with_context($context)->export_related_data(
                     ['block_coupon'],
@@ -177,23 +178,23 @@ class provider implements
             $coupons = $DB->get_recordset_sql($sql, $params);
             foreach ($coupons as $coupon) {
                 $alldata[$context->id][] = (object)[
-                        'userid' => $coupon->userid,
-                        'for_user_email' => $coupon->for_user_email,
-                        'for_user_name' => $coupon->for_user_name,
-                        'for_user_gender' => $coupon->for_user_gender,
-                        'email_body' => $coupon->email_body,
-                        'submission_code' => $coupon->submission_code,
-                        'claimed' => transform::yesno($coupon->claimed),
-                        'roleid' => $coupon->roleid,
-                        'timecreated' => transform::datetime($coupon->timecreated),
-                        'timemodified' => transform::datetime($coupon->timemodified),
-                        'timeexpired' => transform::datetime($coupon->timeexpired),
-                    ];
+                    'userid' => $coupon->userid,
+                    'for_user_email' => $coupon->for_user_email,
+                    'for_user_name' => $coupon->for_user_name,
+                    'for_user_gender' => $coupon->for_user_gender,
+                    'email_body' => $coupon->email_body,
+                    'submission_code' => $coupon->submission_code,
+                    'claimed' => transform::yesno($coupon->claimed),
+                    'roleid' => $coupon->roleid,
+                    'timecreated' => transform::datetime($coupon->timecreated),
+                    'timemodified' => transform::datetime($coupon->timemodified),
+                    'timeexpired' => transform::datetime($coupon->timeexpired),
+                ];
             }
             $coupons->close();
 
             // The data is organised in: {?}/claimedcoupons.json.
-            array_walk($alldata, function($coupondata, $contextid) {
+            array_walk($alldata, function ($coupondata, $contextid) {
                 $context = \context::instance_by_id($contextid);
                 writer::with_context($context)->export_related_data(
                     ['block_coupon'],
@@ -209,15 +210,15 @@ class provider implements
             $couponusers = $DB->get_recordset_sql($sql, $params);
             foreach ($couponusers as $couponuser) {
                 $alldata[$context->id][] = (object)[
-                        'userid' => $couponuser->userid,
-                        'timecreated' => transform::datetime($couponuser->timecreated),
-                        'timemodified' => transform::datetime($couponuser->timemodified),
-                    ];
+                    'userid' => $couponuser->userid,
+                    'timecreated' => transform::datetime($couponuser->timecreated),
+                    'timemodified' => transform::datetime($couponuser->timemodified),
+                ];
             }
             $couponusers->close();
 
             // The data is organised in: {?}/couponrequestusers.json.
-            array_walk($alldata, function($coupondata, $contextid) {
+            array_walk($alldata, function ($coupondata, $contextid) {
                 $context = \context::instance_by_id($contextid);
                 writer::with_context($context)->export_related_data(
                     ['block_coupon'],
@@ -233,19 +234,19 @@ class provider implements
             $couponrequests = $DB->get_recordset_sql($sql, $params);
             foreach ($couponrequests as $couponrequest) {
                 $alldata[$context->id][] = (object)[
-                        'userid' => $couponrequest->userid,
-                        'configuration' => $couponrequest->configuration,
-                        'clientref' => $couponrequest->clientref,
-                        'denied' => $couponrequest->denied,
-                        'finalized' => $couponrequest->finalized,
-                        'timecreated' => transform::datetime($couponrequest->timecreated),
-                        'timemodified' => transform::datetime($couponrequest->timemodified),
-                    ];
+                    'userid' => $couponrequest->userid,
+                    'configuration' => $couponrequest->configuration,
+                    'clientref' => $couponrequest->clientref,
+                    'denied' => $couponrequest->denied,
+                    'finalized' => $couponrequest->finalized,
+                    'timecreated' => transform::datetime($couponrequest->timecreated),
+                    'timemodified' => transform::datetime($couponrequest->timemodified),
+                ];
             }
             $coupons->close();
 
             // The data is organised in: {?}/couponrequests.json.
-            array_walk($alldata, function($coupondata, $contextid) {
+            array_walk($alldata, function ($coupondata, $contextid) {
                 $context = \context::instance_by_id($contextid);
                 writer::with_context($context)->export_related_data(
                     ['block_coupon'],
@@ -274,7 +275,6 @@ class provider implements
         $DB->delete_records('block_coupon_groups');
         $DB->delete_records('block_coupon_courses');
         $DB->delete_records('block_coupon_errors');
-
     }
 
     /**
@@ -374,5 +374,4 @@ class provider implements
             \block_coupon\helper::cleanup_invalid_links();
         }
     }
-
 }

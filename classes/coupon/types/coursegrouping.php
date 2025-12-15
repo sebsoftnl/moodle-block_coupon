@@ -43,7 +43,6 @@ use block_coupon\exception;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class coursegrouping extends typebase implements icoupontype {
-
     /**
      * Claim coupon.
      *
@@ -80,8 +79,12 @@ class coursegrouping extends typebase implements icoupontype {
 
         $coupongrouping = $DB->get_record('block_coupon_groupings', ['couponid' => $this->coupon->id]);
         $coursegrouping = $DB->get_record('block_coupon_coursegroupings', ['id' => $coupongrouping->coursegroupingid]);
-        $groupingcourseids = $DB->get_fieldset_select('block_coupon_cgcourses', 'courseid',
-                'coursegroupingid = ?', [$coursegrouping->id]);
+        $groupingcourseids = $DB->get_fieldset_select(
+            'block_coupon_cgcourses',
+            'courseid',
+            'coursegroupingid = ?',
+            [$coursegrouping->id]
+        );
 
         $selectedcourses = $options->courses;
         // Assert choice.
@@ -92,8 +95,10 @@ class coursegrouping extends typebase implements icoupontype {
         // Assert valid courses!
         $invalidids = array_diff($selectedcourses, $groupingcourseids);
         if (count($invalidids)) {
-            throw new exception('err:coupon:coursegrouping:invalid-selection<br/>' .
-                    implode(',', $invalidids) . '<br/>' . implode(',', $groupingcourseids));
+            throw new exception(
+                'err:coupon:coursegrouping:invalid-selection<br/>' .
+                implode(',', $invalidids) . '<br/>' . implode(',', $groupingcourseids)
+            );
         }
 
         // Set enrolment period.
@@ -120,7 +125,7 @@ class coursegrouping extends typebase implements icoupontype {
         $time = time();
         // Now connect courses in our user tracking table.
         foreach ($selectedcourses as $courseid) {
-            $instance = new \stdClass;
+            $instance = new \stdClass();
             $instance->couponid = $this->coupon->id;
             $instance->courseid = $courseid;
             $instance->timecreated = $time;
@@ -182,5 +187,4 @@ class coursegrouping extends typebase implements icoupontype {
     public function assert_internal_checks($userid) {
         return;
     }
-
 }

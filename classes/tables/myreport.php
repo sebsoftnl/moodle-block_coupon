@@ -39,7 +39,6 @@ namespace block_coupon\tables;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class myreport extends report {
-
     /**
      * Define headers and columns.
      */
@@ -56,5 +55,4 @@ class myreport extends report {
         ];
         $this->define_table_columns($columns);
     }
-
 }

@@ -29,16 +29,12 @@
 
 namespace block_coupon\external;
 
-defined('MOODLE_INTERNAL') || die;
-
-require_once("$CFG->libdir/externallib.php");
-
 use stdClass;
-use external_api;
-use external_value;
-use external_function_parameters;
-use external_multiple_structure;
-use external_single_structure;
+use core_external\external_api;
+use core_external\external_value;
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
 
 /**
  * Webservices implementation for block_coupon
@@ -50,7 +46,6 @@ use external_single_structure;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class templates extends external_api {
-
     /**
      * Get all non-sidewide and visible courses.
      *
@@ -75,7 +70,7 @@ class templates extends external_api {
         $template->require_manage();
 
         foreach ($params['values'] as $value) {
-            $value = (object)$value;
+            $value = (object) $value;
             $element = new stdClass();
             $element->id = $value->id;
             $element->posx = $value->posx;
@@ -119,16 +114,15 @@ class templates extends external_api {
      */
     public static function save_element_parameters() {
         return new external_function_parameters([
-                'templateid' => new external_value(PARAM_INT, 'The template id'),
-                'elementid' => new external_value(PARAM_INT, 'The element id'),
-                'values' => new external_multiple_structure(
-                    new external_single_structure([
-                        'name' => new external_value(PARAM_ALPHANUMEXT, 'The field to update'),
-                        'value' => new external_value(PARAM_RAW, 'The value of the field'),
-                    ])
-                ),
-            ]
-        );
+            'templateid' => new external_value(PARAM_INT, 'The template id'),
+            'elementid' => new external_value(PARAM_INT, 'The element id'),
+            'values' => new external_multiple_structure(
+                new external_single_structure([
+                    'name' => new external_value(PARAM_ALPHANUMEXT, 'The field to update'),
+                    'value' => new external_value(PARAM_RAW, 'The value of the field'),
+                ])
+            ),
+        ]);
     }
 
     /**
@@ -270,14 +264,14 @@ class templates extends external_api {
         try {
             $template->delete();
 
-            return (object)[
-                'result' => true,
-                'message' => get_string('success:template:delete', 'block_coupon', (object)['id' => $id]),
+            return (object) [
+                        'result' => true,
+                        'message' => get_string('success:template:delete', 'block_coupon', (object) ['id' => $id]),
             ];
         } catch (\Exception $e) {
-            return (object)[
-                'result' => false,
-                'message' => get_string('err:template:delete', 'block_coupon') . $e->getMessage(),
+            return (object) [
+                        'result' => false,
+                        'message' => get_string('err:template:delete', 'block_coupon') . $e->getMessage(),
             ];
         }
     }
@@ -316,6 +310,7 @@ class templates extends external_api {
         $params = self::validate_parameters(self::duplicate_template_parameters(), ['id' => $id]);
 
         $context = \context_system::instance();
+        static::validate_context($context);
         require_capability('block/coupon:administration', $context);
 
         $template = $DB->get_record('block_coupon_templates', ['id' => $params['id']], '*', MUST_EXIST);
@@ -329,14 +324,14 @@ class templates extends external_api {
             // Copy the data to the new template.
             $template->copy_to_template($newtemplate);
 
-            return (object)[
-                'result' => true,
-                'message' => get_string('success:template:duplicate', 'block_coupon', (object)['id' => $id]),
+            return (object) [
+                        'result' => true,
+                        'message' => get_string('success:template:duplicate', 'block_coupon', (object) ['id' => $id]),
             ];
         } catch (\Exception $e) {
-            return (object)[
-                'result' => false,
-                'message' => get_string('err:template:duplicate', 'block_coupon') . $e->getMessage(),
+            return (object) [
+                        'result' => false,
+                        'message' => get_string('err:template:duplicate', 'block_coupon') . $e->getMessage(),
             ];
         }
     }
@@ -353,4 +348,119 @@ class templates extends external_api {
         ]);
     }
 
+    /**
+     * Parameter definition for get_elements_for_page
+     *
+     * @return external_function_parameters
+     */
+    public static function get_elements_for_page_parameters() {
+        return new external_function_parameters([
+            'templateid' => new external_value(PARAM_INT, 'template ID'),
+            'pageid' => new external_value(PARAM_INT, 'Page ID'),
+        ]);
+    }
+
+    /**
+     * Return definition for get_elements_for_page
+     *
+     * @return external_
+     */
+    public static function get_elements_for_page_returns() {
+        $elementstruct = new external_single_structure([
+            'id' => new external_value(PARAM_INT, 'element ID'),
+            'pageid' => new external_value(PARAM_INT, 'page ID'),
+            'name' => new external_value(PARAM_RAW, 'name'),
+            'element' => new external_value(PARAM_RAW, 'element'),
+            'data' => new external_value(PARAM_RAW, 'element data'),
+            'font' => new external_value(PARAM_RAW, 'element font'),
+            'fontsize' => new external_value(PARAM_INT, 'element fontsize'),
+            'colour' => new external_value(PARAM_RAW, 'element colour'),
+            'posx' => new external_value(PARAM_INT, 'posX'),
+            'posy' => new external_value(PARAM_INT, 'posY'),
+            'width' => new external_value(PARAM_INT, 'width'),
+            'refpoint' => new external_value(PARAM_INT, 'refpoint'),
+            'alignment' => new external_value(PARAM_ALPHA, 'alignment'),
+            'sequence' => new external_value(PARAM_INT, 'sequence'),
+            'draggable' => new external_value(PARAM_INT, 'draggale'),
+            'visible' => new external_value(PARAM_INT, 'visible'),
+            'class' => new external_value(PARAM_RAW, 'class'),
+            'rendered' => new external_value(PARAM_RAW, 'rendered element'),
+        ]);
+        return new external_multiple_structure($elementstruct);
+    }
+
+    /**
+     * Fetch elements for page.
+     *
+     * @param int $templateid
+     * @param int $pageid
+     * @return array
+     */
+    public static function get_elements_for_page($templateid, $pageid) {
+        global $DB;
+        try {
+            $params = static::validate_parameters(static::get_elements_for_page_parameters(), [
+                'templateid' => $templateid,
+                'pageid' => $pageid,
+            ]);
+
+            // We'll have to validate context to initialise theme etc.
+            // Otherwise we end up with $PAGE->context errors.
+            $context = \core\context\system::instance();
+            static::validate_context($context);
+            require_capability('block/coupon:administration', $context);
+
+            // Implement...
+            $pageelements = $DB->get_records('block_coupon_elements', ['pageid' => $params['pageid']], 'sequence');
+            $elements = [];
+            foreach ($pageelements as $element) {
+                // Get an instance of the element class.
+                if ($e = \block_coupon\template\element_factory::get_element_instance($element)) {
+                    switch ($e->get_refpoint()) {
+                        case \block_coupon\template\element_helper::COUPON_REF_POINT_TOPRIGHT:
+                            $class = 'element refpoint-right';
+                            break;
+                        case \block_coupon\template\element_helper::COUPON_REF_POINT_TOPCENTER:
+                            $class = 'element refpoint-center';
+                            break;
+                        case \block_coupon\template\element_helper::COUPON_REF_POINT_TOPLEFT:
+                        default:
+                            $class = 'element refpoint-left';
+                    }
+                    switch ($e->get_alignment()) {
+                        case \block_coupon\template\element::ALIGN_CENTER:
+                            $class .= ' align-center';
+                            break;
+                        case \block_coupon\template\element::ALIGN_RIGHT:
+                            $class .= ' align-right';
+                            break;
+                        case \block_coupon\template\element::ALIGN_LEFT:
+                        default:
+                            $class .= ' align-left';
+                            break;
+                    }
+
+                    if (!$e->is_draggable_in_html_view()) {
+                        $class .= ' nodrag';
+                    }
+                    if (!$e->is_visible_in_html_view()) {
+                        $class .= ' invisible';
+                    }
+
+                    $el = clone $element;
+                    unset($el->timecreated);
+                    unset($el->timemodified);
+                    $el->draggable = $e->is_draggable_in_html_view();
+                    $el->visible = $e->is_visible_in_html_view();
+                    $el->class = $class;
+                    $el->rendered = $e->render_html();
+                    $elements[] = $el;
+                }
+            }
+
+            return $elements;
+        } catch (Exception $ex) {
+            return [];
+        }
+    }
 }

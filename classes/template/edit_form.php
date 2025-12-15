@@ -28,9 +28,11 @@ defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
 require_once($CFG->dirroot . '/lib/formslib.php');
 
-\MoodleQuickForm::registerElementType('bccolourpicker',
+\MoodleQuickForm::registerElementType(
+    'bccolourpicker',
     $CFG->dirroot . '/blocks/coupon/classes/forms/element/colourpicker.php',
-        '\\block_coupon\\forms\\element\\colourpicker');
+    '\\block_coupon\\forms\\element\\colourpicker'
+);
 
 /**
  * The form for handling the layout of the template instance.
@@ -40,7 +42,6 @@ require_once($CFG->dirroot . '/lib/formslib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class edit_form extends \moodleform {
-
     /**
      * @var int The id of the template being used.
      */
@@ -83,10 +84,10 @@ class edit_form extends \moodleform {
         // Link to add another page, only display it when the template has been created.
         if (isset($this->_customdata['tid'])) {
             $addpagelink = new \moodle_url('/blocks/coupon/view/templates/edit.php', [
-                    'tid' => $this->tid,
-                    'aid' => 1,
-                    'action' => 'addpage',
-                    'sesskey' => sesskey(),
+                'tid' => $this->tid,
+                'aid' => 1,
+                'action' => 'addpage',
+                'sesskey' => sesskey(),
             ]);
             $icon = $OUTPUT->pix_icon('t/switch_plus', get_string('addpage', 'block_coupon'));
             $addpagehtml = \html_writer::link($addpagelink, $icon . get_string('addpage', 'block_coupon'));
@@ -249,20 +250,34 @@ class edit_form extends \moodleform {
             $table->align = ['left', 'left', 'left'];
             // Loop through and add the elements to the table.
             foreach ($elements as $element) {
-                $elementname = new \core\output\inplace_editable('block_coupon', 'elementname', $element->id,
-                    true, format_string($element->name), $element->name);
+                $elementname = new \core\output\inplace_editable(
+                    'block_coupon',
+                    'elementname',
+                    $element->id,
+                    true,
+                    format_string($element->name),
+                    $element->name
+                );
 
                 $row = new \html_table_row();
                 $row->cells[] = $OUTPUT->render($elementname);
                 $row->cells[] = $element->element;
                 // Link to edit this element.
                 $link = new \moodle_url($editelementlink, $editelementlinkparams + ['id' => $element->id, 'action' => 'edit']);
-                $icons = $OUTPUT->action_icon($link, new \pix_icon('t/edit', get_string('edit')), null,
-                    ['class' => 'action-icon edit-icon']);
+                $icons = $OUTPUT->action_icon(
+                    $link,
+                    new \pix_icon('t/edit', get_string('edit')),
+                    null,
+                    ['class' => 'action-icon edit-icon']
+                );
                 // Link to delete the element.
                 $link = new \moodle_url($editlink, $editlinkparams + ['action' => 'deleteelement', 'aid' => $element->id]);
-                $icons .= $OUTPUT->action_icon($link, new \pix_icon('t/delete', get_string('delete')), null,
-                    ['class' => 'action-icon delete-icon']);
+                $icons .= $OUTPUT->action_icon(
+                    $link,
+                    new \pix_icon('t/delete', get_string('delete')),
+                    null,
+                    ['class' => 'action-icon delete-icon']
+                );
                 // Now display any moving arrows if they are needed.
                 if ($numelements > 1) {
                     // Only display the move up arrow if it is not the first.
@@ -282,18 +297,34 @@ class edit_form extends \moodleform {
                 $table->data[] = $row;
             }
             // Create link to order the elements.
-            $link = \html_writer::link(new \moodle_url('/blocks/coupon/view/templates/rearrange.php', ['pid' => $page->id]),
-                get_string('rearrangeelements', 'block_coupon'));
+            $link = \html_writer::link(
+                new \moodle_url('/blocks/coupon/view/templates/rearrange.php', ['pid' => $page->id]),
+                get_string('rearrangeelements', 'block_coupon')
+            );
             // Add the table to the form.
-            $mform->addElement('static', 'elements_' . $page->id, get_string('elements', 'block_coupon'),
-                    \html_writer::table($table) . \html_writer::tag( 'div', $link));
+            $mform->addElement(
+                'static',
+                'elements_' . $page->id,
+                get_string('elements', 'block_coupon'),
+                \html_writer::table($table) . \html_writer::tag('div', $link)
+            );
             $mform->addHelpButton('elements_' . $page->id, 'elements', 'block_coupon');
         }
 
         $group = [];
-        $group[] = $mform->createElement('select', 'element_' . $page->id, '', element_helper::get_available_element_types());
-        $group[] = $mform->createElement('submit', 'addelement_' . $page->id, get_string('addelement', 'block_coupon'),
-            [], false);
+        $group[] = $mform->createElement(
+            'select',
+            'element_' . $page->id,
+            '',
+            element_helper::get_available_element_types()
+        );
+        $group[] = $mform->createElement(
+            'submit',
+            'addelement_' . $page->id,
+            get_string('addelement', 'block_coupon'),
+            [],
+            false
+        );
         $mform->addElement('group', 'elementgroup', '', $group, '', false);
 
         // Add option to delete this page if there is more than one page.

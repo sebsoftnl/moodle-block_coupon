@@ -44,7 +44,6 @@ require_once($CFG->dirroot . '/user/filters/lib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class couponbatchselect extends \user_filter_type {
-
     /** @var string */
     protected $fieldid;
 
@@ -102,9 +101,11 @@ class couponbatchselect extends \user_filter_type {
     public function setup_form(&$mform) {
         global $CFG;
 
-        \MoodleQuickForm::registerElementType('findbatches',
+        \MoodleQuickForm::registerElementType(
+            'findbatches',
             $CFG->dirroot . '/blocks/coupon/classes/forms/element/findbatches.php',
-                '\\block_coupon\\forms\\element\\findbatches');
+            '\\block_coupon\\forms\\element\\findbatches'
+        );
 
         $objs = [];
         $objs['select'] = $mform->createElement('select', $this->_name . '_op', null, $this->get_operators());

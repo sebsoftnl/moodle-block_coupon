@@ -41,7 +41,6 @@ namespace block_coupon\output\component;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class requestdetails implements \renderable, \templatable {
-
     /**
      * @var \stdClass instance from requests table
      */
@@ -101,16 +100,17 @@ class requestdetails implements \renderable, \templatable {
         if ($generatoroptions->type == \block_coupon\coupon\generatoroptions::COURSE) {
             $data->type = get_string('label:type_course', 'block_coupon');
             $data->hascourses = true;
-            $data->courses = array_values($DB->get_records_list('course', 'id',
-                    $generatoroptions->courses, 'fullname ASC', 'id,shortname,fullname,idnumber'));
+            $data->courses = array_values(
+                $DB->get_records_list('course', 'id', $generatoroptions->courses, 'fullname ASC', 'id,shortname,fullname,idnumber')
+            );
         } else {
             $data->type = get_string('label:type_cohorts', 'block_coupon');
-            $data->cohorts = array_values($DB->get_records_list('cohort', 'id',
-                    $generatoroptions->cohorts, 'name ASC', 'id,name,idnumber'));
+            $data->cohorts = array_values(
+                $DB->get_records_list('cohort', 'id', $generatoroptions->cohorts, 'name ASC', 'id,name,idnumber')
+            );
             $data->hascohorts = true;
         }
 
         return $data;
     }
-
 }

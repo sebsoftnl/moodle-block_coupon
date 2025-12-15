@@ -29,10 +29,6 @@
 
 namespace block_coupon\tables;
 
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->libdir . '/tablelib.php');
-
 /**
  * block_coupon\tables\coursegroupings
  *
@@ -42,8 +38,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class coursegroupings extends \table_sql {
-
+class coursegroupings extends base {
     /**
      * Filter for coupon display
      *
@@ -67,35 +62,11 @@ class coursegroupings extends \table_sql {
     protected $strdetails;
 
     /**
-     *
-     * @var \block_coupon\filtering\filtering
-     */
-    protected $filtering;
-
-    /**
-     * Get filtering instance
-     * @return \block_coupon\filtering\filtering
-     */
-    public function get_filtering() {
-        return $this->filtering;
-    }
-
-    /**
-     * Set filtering instance
-     * @param \block_coupon\filtering\filtering $filtering
-     * @return \block_coupon\tables\coursegroupings
-     */
-    public function set_filtering(\block_coupon\filtering\filtering $filtering) {
-        $this->filtering = $filtering;
-        return $this;
-    }
-
-    /**
      * Create a new instance of the table
      */
     public function __construct() {
         global $USER;
-        parent::__construct(__CLASS__. '-' . $USER->id);
+        parent::__construct(__CLASS__ . '-' . $USER->id);
         $this->no_sorting('numcourses');
         $this->no_sorting('action');
         $this->sortable(true, 'name', SORT_DESC);
@@ -150,7 +121,7 @@ class coursegroupings extends \table_sql {
         $params = [];
         // Add filtering rules.
         if (!empty($this->filtering)) {
-            list($fsql, $fparams) = $this->filtering->get_sql_filter();
+            [$fsql, $fparams] = $this->filtering->get_sql_filter();
             if (!empty($fsql)) {
                 $where[] = $fsql;
                 $params += $fparams;
@@ -175,9 +146,10 @@ class coursegroupings extends \table_sql {
      * @return string time string
      */
     public function col_name($row) {
-        return \html_writer::link(new \moodle_url($this->baseurl,
-                ['action' => 'details', 'itemid' => $row->id, 'sesskey' => sesskey()]),
-                $row->name);
+        return \html_writer::link(
+            new \moodle_url($this->baseurl, ['action' => 'details', 'itemid' => $row->id, 'sesskey' => sesskey()]),
+            $row->name
+        );
     }
 
     /**
@@ -190,22 +162,43 @@ class coursegroupings extends \table_sql {
         global $OUTPUT;
         $actions = [];
 
-        $details = \html_writer::link(new \moodle_url($this->baseurl,
-                ['action' => 'details', 'itemid' => $row->id, 'sesskey' => sesskey()]),
-                \html_writer::img($OUTPUT->image_url('i/info'), $this->strdetails,
-                        ['class' => 'icon action-icon']));
+        $details = \html_writer::link(
+            new \moodle_url(
+                $this->baseurl,
+                ['action' => 'details', 'itemid' => $row->id, 'sesskey' => sesskey()]
+            ),
+            \html_writer::img(
+                $OUTPUT->image_url('i/info'),
+                $this->strdetails,
+                ['class' => 'icon action-icon']
+            )
+        );
         $actions[] = $details;
 
-        $delete = \html_writer::link(new \moodle_url($this->baseurl,
-                ['action' => 'delete', 'itemid' => $row->id, 'sesskey' => sesskey()]),
-                \html_writer::img($OUTPUT->image_url('i/delete'), $this->strdelete,
-                        ['class' => 'icon action-icon']));
+        $delete = \html_writer::link(
+            new \moodle_url(
+                $this->baseurl,
+                ['action' => 'delete', 'itemid' => $row->id, 'sesskey' => sesskey()]
+            ),
+            \html_writer::img(
+                $OUTPUT->image_url('i/delete'),
+                $this->strdelete,
+                ['class' => 'icon action-icon']
+            )
+        );
         $actions[] = $delete;
 
-        $edit = \html_writer::link(new \moodle_url($this->baseurl,
-                ['action' => 'edit', 'itemid' => $row->id, 'sesskey' => sesskey()]),
-                \html_writer::img($OUTPUT->image_url('i/edit'), $this->stredit,
-                        ['class' => 'icon action-icon']));
+        $edit = \html_writer::link(
+            new \moodle_url(
+                $this->baseurl,
+                ['action' => 'edit', 'itemid' => $row->id, 'sesskey' => sesskey()]
+            ),
+            \html_writer::img(
+                $OUTPUT->image_url('i/edit'),
+                $this->stredit,
+                ['class' => 'icon action-icon']
+            )
+        );
         $actions[] = $edit;
 
         return implode('', $actions);
@@ -225,5 +218,4 @@ class coursegroupings extends \table_sql {
         }
         $this->define_headers($headers);
     }
-
 }

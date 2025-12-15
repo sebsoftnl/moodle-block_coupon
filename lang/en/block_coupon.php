@@ -37,6 +37,7 @@ $string['addcohortstoexisting'] = 'Add cohorts to coupon? If unchecked, old coho
 $string['addcoursestoexisting'] = 'Add courses to coupon? If unchecked, old courses are unlinked first.';
 $string['addelement'] = 'Add element';
 $string['addpage'] = 'Add page';
+$string['affecteditems'] = '#Affected';
 $string['aligncenter'] = 'Centered';
 $string['alignleft'] = 'Left alignment';
 $string['alignment'] = 'Alignment';
@@ -307,7 +308,13 @@ As soon as you\'ve downloaded, the related file <i>will</i> be deleted.<br/>
 $string['duplicate'] = 'Duplicate';
 $string['duplicateconfirm'] = 'Duplicate confirmation';
 $string['duplicatetemplateconfirm'] = 'Are you sure you want to duplicate this template?';
+$string['editcohortcoupon:add:desc'] = 'Add the following cohorts to this coupon';
+$string['editcohortcoupon:known'] = 'Existing coupon cohorts';
+$string['editcohortcoupon:known:desc'] = 'Uncheck the existing cohorts for this coupon that should not be kept';
 $string['editcohorts'] = 'Edit coupon cohorts';
+$string['editcoursecoupon:add:desc'] = 'Add the following courses to this coupon';
+$string['editcoursecoupon:known'] = 'Existing coupon courses';
+$string['editcoursecoupon:known:desc'] = 'Uncheck the existing courses for this coupon that should not be kept';
 $string['editcourses'] = 'Edit coupon courses';
 $string['editelement'] = 'Edit element';
 $string['edittemplate'] = 'Edit template';
@@ -351,12 +358,19 @@ $string['err:coupon:generic'] = 'Something went wrong. Please contact the system
 $string['err:download-not-exists'] = 'The archive you want to download no longer exists<br/>
 Most likely you have already downloaded the archive.<br/>
 If you are absolutely sure you have <i>not</i> downloaded the generated coupons yourself, please contact the system administrator.';
+$string['err:editcoupon:notcohortcoupon'] = 'Implied coupon is not a cohort type coupon: cannot continue';
+$string['err:editcoupon:notcoursecoupon'] = 'Implied coupon is not a course type coupon: cannot continue';
 $string['err:expiration:date'] = 'Expiration date is invalid (must be after {$a})';
 $string['err:flags:nonumericonly'] = 'Numbers only coupon codes not allowed';
 $string['err:idnumber-not-unique'] = 'IDNumber must be unique';
 $string['err:myrequests:finalized'] = 'This coupon request has already been finalized.';
 $string['err:not-a-requestuser'] = 'You have insufficient rights to access this page';
 $string['err:overflow'] = 'More than {$a} results found for your query: please narrow your search';
+$string['err:revert:params'] = 'Insufficient parameters given (expect: procid or modid)';
+$string['err:revertcohortmod:sourcecohortnotexists'] = 'Cannot revert: original cohort no longer exists';
+$string['err:revertcohortmod:targetcohortnotexists'] = 'Cannot revert: target cohort no longer exists';
+$string['err:revertcoursemod:sourcecoursenotexists'] = 'Cannot revert: original course no longer exists';
+$string['err:revertcoursemod:targetcoursenotexists'] = 'Cannot revert: target course no longer exists';
 $string['err:tab:enablemycouponsforru'] = '"my coupons" is not enabled for display.';
 $string['err:tab:enablemyprogressforru'] = 'Enable "my progress"';
 $string['err:template:delete'] = 'Template could not be deleted';
@@ -409,6 +423,8 @@ $string['error:validate-groupings'] = 'Grouping validation errors:<br/>{$a}';
 $string['error:wrong_code_length'] = 'Please enter a number between 6 and 32.';
 $string['error:wrong_doc_page'] = 'You are trying to access a page that does not exist.';
 $string['error:wrong_image_size'] = 'The uploaded background does not have the required size. Please upload an image with a ratio of 210 mm by 297 mm.';
+$string['event:coupon:cohortreplaced'] = 'Coupon cohort replaced';
+$string['event:coupon:coursereplaced'] = 'Coupon course replaced';
 $string['event:coupon:used'] = 'Coupon was claimed';
 $string['eventelementcreated'] = 'Template element created';
 $string['eventelementdeleted'] = 'Template element deleted';
@@ -498,6 +514,7 @@ We\'ll (try to) import all vouchers, linked course/cohort data, email templates 
 we can <i>not</i> guarantee a full import without errors.<br/>
 However, importing the basic voucher codes and linked data is most likely to succeed without issues.';
 $string['indefinite'] = 'Indefinite';
+$string['intfsettings'] = 'Interface settings';
 $string['invalidcode'] = 'Invalid code supplied.';
 $string['invalidcolour'] = 'Invalid colour chosen, please enter a valid HTML colour name, or a six-digit, or three-digit hexadecimal colour.';
 $string['invalidelementwidthorheightnotnumber'] = 'Please enter a valid number.';
@@ -622,6 +639,8 @@ $string['label:groupingselectactiveonly'] = 'Only active enrolments?';
 $string['label:groupingselectactiveonly_help'] = 'If not checked, all courses will be checked for enrolments, including active ones.<br/>
 This means that even inactive / expired enrolments will count towards the courses the user redeeming the coupon is enrolled in.<br/>
 All courses the redeeming person can select will be compensated for courses he or she is alreay enrolled in';
+$string['label:hidetabs'] = 'Tabs to hide';
+$string['label:hidetabs_help'] = 'Select the tabs you don\'t use and wish to hide from the interface.';
 $string['label:image'] = 'Coupon background';
 $string['label:image_desc'] = 'Background to be placed in the generated coupons';
 $string['label:info_coupon_cohort_courses'] = 'Information on page: Cohort courses';
@@ -689,6 +708,7 @@ $string['mailtemplates'] = 'Manage e-mail templates';
 $string['mailtemplates:title'] = 'Manage e-mail templates';
 $string['managetemplates'] = 'Manage templates';
 $string['managetemplatesdesc'] = 'This link will take you to a new screen where you will be able to manage templates used by Template activities in courses.';
+$string['massaction'] = 'Select mass action';
 $string['messageprovider:coupon_notification'] = 'Coupons generated notification';
 $string['messageprovider:coupon_task_notification'] = 'Personal coupons sent out notification';
 $string['missing_config_info'] = 'Put your extra information here - to be set up in the global configuration of the block.';
@@ -747,6 +767,7 @@ $string['privacy:metadata:block_coupon_requests:clientref'] = 'Client reference'
 $string['privacy:metadata:block_coupon_requests:configuration'] = 'Specific configuration';
 $string['privacy:metadata:block_coupon_requests:denied'] = 'Whether the request was denied or not';
 $string['privacy:metadata:block_coupon_requests:finalized'] = 'Whether or not the request was finalized';
+$string['procid'] = 'Process ID';
 $string['promo'] = 'Coupon plugin for Moodle';
 $string['promodesc'] = 'This plugin is written by Sebsoft Managed Hosting & Software Development
 (<a href=\'http://www.sebsoft.nl/\' target=\'_new\'>http://sebsoft.nl</a>).<br /><br />
@@ -762,6 +783,10 @@ $string['refpoint'] = 'Reference point location';
 $string['refpoint_help'] = 'The reference point is the location of an element from which its x and y coordinates are determined. It is indicated by the \'+\' that appears in the centre or corners of the element.';
 $string['remove-count'] = 'This will remove <i>{$a}</i> coupon(s)';
 $string['removecourse'] = 'Remove course \'{$a}\' from options';
+$string['replacecohorts'] = 'Replace cohort(s)';
+$string['replacecohorts:err:nocoupons'] = 'No unclaimed cohort type coupons exist';
+$string['replacecourses'] = 'Replace course(s)';
+$string['replacecourses:err:nocoupons'] = 'No unclaimed course type coupons exist';
 $string['replacetemplate'] = 'Replace';
 $string['report:cohorts'] = 'Cohort';
 $string['report:coupon_code'] = 'Subscription code';
@@ -821,6 +846,25 @@ These settings have been specifically introduced to limit what request users can
 For GDPR compliance you may wish to disable some of these options.';
 $string['required:atleastonecohortorcourse'] = 'At least one course or cohort is required!';
 $string['requiredtimenotmet'] = 'You must spend at least a minimum of {$a->requiredtime} minutes in the course before you can access this certificate.';
+$string['revert:confirm'] = 'I understand and wish to revert the changes.';
+$string['revert:mod'] = 'This is a single item reversion for record with ID {$a}.';
+$string['revert:numfailed'] = '{$a} reversions could not be done (data no longer reflects correct/current state or coupon was claimed).';
+$string['revert:numsuccess'] = '{$a} coupons have been reverted.';
+$string['revert:proc'] = 'This is a batch reversion for records with process ID {$a}.';
+$string['revertcohortmod'] = 'Revert cohort modification(s).';
+$string['revertcohortmod:descriptor'] = '<div class="alert alert-info">You are about to revert the cohort modifications made to {$a->numitems} coupons.<br/>
+{$a->extinfo}<br/>
+Reversion will mean we will undo the action where cohort {$a->fromname} ({$a->fromidnumber}) was updated to {$a->toname} ({$a->toidnumber}).<br/><br/>
+Please note the relevant modification record(s) will be removed as part of the process.
+</div>';
+$string['revertcoursemod'] = 'Revert course modification(s).';
+$string['revertcoursemod:descriptor'] = '<div class="alert alert-info">You are about to revert the course modifications made to {$a->numitems} coupons.<br/>
+{$a->extinfo}<br/>
+Reversion will mean we will undo the action where course {$a->fromname} ({$a->fromidnumber}) was updated to {$a->toname} ({$a->toidnumber}).<br/><br/>
+Please note the relevant modification record(s) will be removed as part of the process.
+</div>';
+$string['revertmod'] = 'Revert item modification.';
+$string['revertproc'] = 'Revert proces modification.';
 $string['rightmargin'] = 'Right margin';
 $string['rightmargin_help'] = 'This is the right margin of the PDF in mm.';
 $string['save'] = 'Save';
@@ -846,6 +890,9 @@ This isn\'t required if you plan on solely using the drag and drop interface for
 $string['signup:login'] = 'I already have an account and want to login';
 $string['signup:success'] = 'You have signed up and will now be redirected to the login page.<br/>
 Please validate you have actually been granted access to the course after logging in.';
+$string['sourcecohort'] = 'From cohort';
+$string['sourcecourse'] = 'From course';
+$string['sourceitem'] = 'From item';
 $string['str:coursegroupings:add'] = 'Add coursegrouping';
 $string['str:inputhelp'] = 'Use the input field below to gain access to courses if you received a coupon code';
 $string['str:mandatory'] = 'Mandatory';
@@ -877,6 +924,9 @@ $string['tab:used'] = 'Used coupons';
 $string['tab:wzcoupongroupings'] = 'Manage course groupings';
 $string['tab:wzcouponimage'] = 'Template image';
 $string['tab:wzcoupons'] = 'Generate coupon(s)';
+$string['targetcohort'] = 'To cohort';
+$string['targetcourse'] = 'To course';
+$string['targetitem'] = 'To item';
 $string['task:cleanup'] = 'Cleaning up unused old coupons';
 $string['task:sendcoupons'] = 'Send scheduled coupons';
 $string['task:unenrolcohorts'] = 'Remove expired coupon enrolments from cohorts';
@@ -972,6 +1022,8 @@ $string['view:index.php:title'] = 'Coupon generator';
 $string['view:input_coupon:heading'] = 'Input Coupon';
 $string['view:input_coupon:title'] = 'Input Coupon';
 $string['view:mailtemplates'] = 'E-mail templates';
+$string['view:reports-editlog:heading'] = 'Edit log';
+$string['view:reports-editlog:title'] = 'Edit log';
 $string['view:reports-maillog:heading'] = 'E-mail log';
 $string['view:reports-maillog:title'] = 'E-mail log';
 $string['view:reports-personal:heading'] = 'Report - Personalised Coupons';

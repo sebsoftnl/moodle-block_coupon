@@ -26,7 +26,7 @@ namespace block_coupon\template;
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
-require_once($CFG->libdir.'/formslib.php');
+require_once($CFG->libdir . '/formslib.php');
 
 /**
  * Handles uploading files.
@@ -36,7 +36,6 @@ require_once($CFG->libdir.'/formslib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class upload_image_form extends \moodleform {
-
     /** @var array the filemanager options */
     protected $filemanageroptions = [];
 
@@ -52,8 +51,13 @@ class upload_image_form extends \moodleform {
             'subdirs' => 1,
             'accepted_types' => 'image',
         ];
-        $mform->addElement('filemanager', 'templateimage', get_string('uploadimage', 'block_coupon'), '',
-            $this->filemanageroptions);
+        $mform->addElement(
+            'filemanager',
+            'templateimage',
+            get_string('uploadimage', 'block_coupon'),
+            '',
+            $this->filemanageroptions
+        );
 
         $this->add_action_buttons();
     }
@@ -66,8 +70,14 @@ class upload_image_form extends \moodleform {
 
         // Editing existing instance - copy existing files into draft area.
         $draftitemid = file_get_submitted_draft_itemid('templateimage');
-        file_prepare_draft_area($draftitemid, \context_system::instance()->id, 'block_coupon', 'image', 0,
-            $this->filemanageroptions);
+        file_prepare_draft_area(
+            $draftitemid,
+            \context_system::instance()->id,
+            'block_coupon',
+            'image',
+            0,
+            $this->filemanageroptions
+        );
         $element = $mform->getElement('templateimage');
         $element->setValue($draftitemid);
     }

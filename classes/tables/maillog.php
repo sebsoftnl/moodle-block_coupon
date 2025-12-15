@@ -29,10 +29,6 @@
 
 namespace block_coupon\tables;
 
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->libdir . '/tablelib.php');
-
 /**
  * block_coupon\tables\maillog
  *
@@ -42,8 +38,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class maillog extends \table_sql {
-
+class maillog extends base {
     /**
      * Do we render the history or the current status?
      *
@@ -56,29 +51,6 @@ class maillog extends \table_sql {
      * @var string
      */
     protected $strdelete;
-    /**
-     *
-     * @var \block_coupon\filtering\filtering
-     */
-    protected $filtering;
-
-    /**
-     * Get filtering instance
-     * @return \block_coupon\filtering\filtering
-     */
-    public function get_filtering() {
-        return $this->filtering;
-    }
-
-    /**
-     * Set filtering instance
-     * @param \block_coupon\filtering\filtering $filtering
-     * @return \block_coupon\tables\coupons
-     */
-    public function set_filtering(\block_coupon\filtering\filtering $filtering) {
-        $this->filtering = $filtering;
-        return $this;
-    }
 
     /**
      * Create a new instance of the logtable
@@ -87,7 +59,7 @@ class maillog extends \table_sql {
      */
     public function __construct($ownerid = null) {
         global $USER;
-        parent::__construct(__CLASS__. '-' . $USER->id . '-' . ((int)$ownerid));
+        parent::__construct(__CLASS__ . '-' . $USER->id . '-' . ((int)$ownerid));
         $this->ownerid = (int)$ownerid;
     }
 
@@ -113,7 +85,7 @@ class maillog extends \table_sql {
         $queries = $this->get_query(true);
         $total = 0;
         foreach ($queries as $parts) {
-            list($sql, $params) = $parts;
+            [$sql, $params] = $parts;
             $total += $DB->count_records_sql($sql, $params);
         }
         return $total;
@@ -133,7 +105,7 @@ class maillog extends \table_sql {
 
         // Add filtering rules.
         if (!empty($this->filtering)) {
-            list($fsql, $fparams) = $this->filtering->get_sql_filter();
+            [$fsql, $fparams] = $this->filtering->get_sql_filter();
             if (!empty($fsql)) {
                 $where[] = $fsql;
                 $params += $fparams;
@@ -154,14 +126,14 @@ class maillog extends \table_sql {
      * @param boolean $useinitialsbar do you want to use the initials bar. Bar
      * will only be used if there is a fullname column defined for the table.
      */
-    public function query_db($pagesize, $useinitialsbar=true) {
+    public function query_db($pagesize, $useinitialsbar = true) {
         global $DB;
 
         // Get count / data (modified version to parent).
-        list($sql, $params) = $this->get_query(false);
+        [$sql, $params] = $this->get_query(false);
 
         if (!$this->is_downloading()) {
-            $total = $DB->count_records_sql('SELECT COUNT(*) FROM ('.$sql.') t', $params);
+            $total = $DB->count_records_sql('SELECT COUNT(*) FROM (' . $sql . ') t', $params);
             $this->pagesize($pagesize, $total);
         }
 
@@ -170,7 +142,7 @@ class maillog extends \table_sql {
         if ($sort) {
             $sort = "ORDER BY $sort";
         }
-        $sql = 'SELECT * FROM ('.$sql.') t ' . $sort;
+        $sql = 'SELECT * FROM (' . $sql . ') t ' . $sort;
 
         if (!$this->is_downloading()) {
             $reportdata = $DB->get_records_sql($sql, $params, $this->get_page_start(), $this->get_page_size());
@@ -188,21 +160,11 @@ class maillog extends \table_sql {
      * @param boolean $useinitialsbar
      * @param mixed $downloadhelpbutton unused
      */
-    public function out($pagesize, $useinitialsbar, $downloadhelpbutton='') {
+    public function out($pagesize, $useinitialsbar, $downloadhelpbutton = '') {
         $this->setup();
         $this->query_db($pagesize, $useinitialsbar);
         $this->build_table();
         $this->finish_output();
-    }
-
-    /**
-     * Render visual representation of the 'timecreated' column for use in the table
-     *
-     * @param \stdClass $row
-     * @return string time string
-     */
-    public function col_timecreated($row) {
-        return userdate($row->timecreated);
     }
 
     /**
@@ -219,5 +181,4 @@ class maillog extends \table_sql {
         }
         $this->define_headers($headers);
     }
-
 }

@@ -1,3 +1,29 @@
+
+Version 4.4.3 (build 2025120100)
+** Added "cohort_is_member" check to task (since Moodle does NOT when using "cohort_remove_member")
+** Changed detection query for cohort task
+** Corrected PARAM_ type in "find_batches" (entry permits PARAM_TEXT, WS states PARAM_ALPHANUMEXT)
+** Added has_capability checks on dynamic tables
+** Fixed issue #28 - fix COUNT() sql (remove "order by" seems to fix it).
+** Fixed issue #31
+** Fixed issue #32
+** Fixed issue #34
+** Fixed issue #35
+** Fixed issue #39
+** Fixed issue #40 (implements PR#42). Thanks, @ryanjbudhu
+** Fixed issue #41 (implements PR#43). Thanks, @ryanjbudhu
+** Fixed issue #44 (duplicate of #35)
+** Fixed issue #46
+** Fixed issue #47
+** Fixed issue #48
+** Fixed issue #49
+** Fixed notice in durationext element.
+** Fixed issue #37 - webservice calls to generate coupons. Thanks @ Antoni Bertran.
+** Do not create "query"/search part in find_courses() if the search is empty.
+** Moved fetching of element data for templates to service due to "Too much data passed as arguments to js_call_amd".
+
+----------
+
 Version 4.4.2 (build 2024100103)
 ** Requiring Moodle 4.5+
 ** Centralized all CI actions to new defaults for Sebsoft
@@ -17,7 +43,7 @@ Version 4.4.0 (build 2024100100)
 ** Implementation for batch filter is now an autocomplete
 ** Fixed issue with CSV upload not being processed
 ** Fixed (github) issue #27
-** Fixed (github) issue #3 (was done long ago already, but just to be complete).
+** Fixed (github) issue #3 (was done long ago already, but just to be complete)
 ** Supported up to Moodle 4.5
 
 ----------

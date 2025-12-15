@@ -29,10 +29,6 @@
 
 namespace block_coupon\tables;
 
-defined('MOODLE_INTERNAL') || die();
-
-require_once($CFG->libdir . '/tablelib.php');
-
 /**
  * block_coupon\tables\requests
  *
@@ -42,8 +38,7 @@ require_once($CFG->libdir . '/tablelib.php');
  * @author      RvD <helpdesk@sebsoft.nl>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class requests extends \table_sql {
-
+class requests extends base {
     /**
      * Filter for coupon display
      *
@@ -62,35 +57,11 @@ class requests extends \table_sql {
     protected $strdeleteconfirm;
 
     /**
-     *
-     * @var \block_coupon\filtering\filtering
-     */
-    protected $filtering;
-
-    /**
-     * Get filtering instance
-     * @return \block_coupon\filtering\filtering
-     */
-    public function get_filtering() {
-        return $this->filtering;
-    }
-
-    /**
-     * Set filtering instance
-     * @param \block_coupon\filtering\filtering $filtering
-     * @return \block_coupon\tables\requests
-     */
-    public function set_filtering(\block_coupon\filtering\filtering $filtering) {
-        $this->filtering = $filtering;
-        return $this;
-    }
-
-    /**
      * Create a new instance of the table
      */
     public function __construct() {
         global $USER;
-        parent::__construct(__CLASS__. '-' . $USER->id);
+        parent::__construct(__CLASS__ . '-' . $USER->id);
         $this->no_sorting('action');
         $this->sortable(true, 'timecreated', SORT_DESC);
         $this->strdelete = get_string('action:coupon:delete', 'block_coupon');
@@ -136,7 +107,7 @@ class requests extends \table_sql {
         $params = [];
         // Add filtering rules.
         if (!empty($this->filtering)) {
-            list($fsql, $fparams) = $this->filtering->get_sql_filter();
+            [$fsql, $fparams] = $this->filtering->get_sql_filter();
             if (!empty($fsql)) {
                 $where[] = $fsql;
                 $params += $fparams;
@@ -145,16 +116,6 @@ class requests extends \table_sql {
 
         parent::set_sql($fields, $from, implode(' AND ', $where), $params);
         $this->out($pagesize, $useinitialsbar);
-    }
-
-    /**
-     * Render visual representation of the 'timecreated' column for use in the table
-     *
-     * @param \stdClass $row
-     * @return string time string
-     */
-    public function col_timecreated($row) {
-        return userdate($row->timecreated);
     }
 
     /**
@@ -181,49 +142,25 @@ class requests extends \table_sql {
         global $OUTPUT;
         $actions = [];
 
-        $deny = \html_writer::link(new \moodle_url($this->baseurl,
-                ['action' => 'denyrequest', 'itemid' => $row->id, 'sesskey' => sesskey()]),
-                \html_writer::img($OUTPUT->image_url('i/invalid'), 'Deny', ['class' => 'icon']));
+        $deny = \html_writer::link(
+            new \moodle_url(
+                $this->baseurl,
+                ['action' => 'denyrequest', 'itemid' => $row->id, 'sesskey' => sesskey()]
+            ),
+            \html_writer::img($OUTPUT->image_url('i/invalid'), 'Deny', ['class' => 'icon'])
+        );
         $actions[] = $deny;
 
-        $accept = \html_writer::link(new \moodle_url($this->baseurl,
-                ['action' => 'acceptrequest', 'itemid' => $row->id, 'sesskey' => sesskey()]),
-                \html_writer::img($OUTPUT->image_url('i/checked'), 'Accept', ['class' => 'icon']));
+        $accept = \html_writer::link(
+            new \moodle_url(
+                $this->baseurl,
+                ['action' => 'acceptrequest', 'itemid' => $row->id, 'sesskey' => sesskey()]
+            ),
+            \html_writer::img($OUTPUT->image_url('i/checked'), 'Accept', ['class' => 'icon'])
+        );
         $actions[] = $accept;
 
         return implode('', $actions);
-    }
-
-    /**
-     * Return the image tag representing an action image
-     *
-     * @param string $action
-     * @return string HTML image tag
-     */
-    protected function get_action_image($action) {
-        global $OUTPUT;
-        return '<img src="' . $OUTPUT->image_url($action, 'block_coupon') . '"/>';
-    }
-
-    /**
-     * Return a string containing the link to an action
-     *
-     * @param \stdClass $row
-     * @param string $action
-     * @param boolean $confirm true to enable javascript confirmation of this action
-     * @return string link representing the action with an image
-     */
-    protected function get_action($row, $action, $confirm = false) {
-        $actionstr = 'str' . $action;
-        $onclick = '';
-        if ($confirm) {
-            $actionconfirmstr = 'str' . $action . 'confirm';
-            $onclick = ' onclick="return confirm(\'' . $this->{$actionconfirmstr} . '\');"';
-        }
-        return '<a ' . $onclick . 'href="' . new \moodle_url($this->baseurl,
-                ['action' => $action, 'itemid' => $row->id, 'sesskey' => sesskey()]) .
-                '" alt="' . $this->{$actionstr} .
-                '">' . $this->get_action_image($action) . '</a>';
     }
 
     /**
@@ -240,5 +177,4 @@ class requests extends \table_sql {
         }
         $this->define_headers($headers);
     }
-
 }
