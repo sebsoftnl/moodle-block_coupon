@@ -1,3 +1,8 @@
+Version 4.4.4.2 (build 2025120102)
+** Fix #51
+
+Version 4.4.4.1 (build 2025120101)
+** Fix invalid $CFG->supported
 
 Version 4.4.3 (build 2025120100)
 ** Added "cohort_is_member" check to task (since Moodle does NOT when using "cohort_remove_member")

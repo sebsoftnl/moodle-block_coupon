@@ -68,7 +68,7 @@ class unenrolcohorts extends \core\task\scheduled_task {
             'then' => $this->get_last_run_time(),
             'now' => $this->get_next_run_time(),
         ];
-        \core\task\manager::adhoc_task_from_record($record);
+
         $records = $DB->get_records_sql($sql, $params);
         foreach ($records as $coupon) {
             // Fetch cohorts.
